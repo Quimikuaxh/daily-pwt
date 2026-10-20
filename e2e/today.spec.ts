@@ -3,7 +3,7 @@ import { TodayPage } from './pages/TodayPage'
 import { collectProblems, D0 } from './support'
 
 test.describe('Pantalla Hoy', () => {
-  test('E2E-01 Hoy completo con ?date=2026-10-17', async ({ page }) => {
+  test('E2E-01 Hoy completo con ?date=2026-10-19', async ({ page }) => {
     const problems = collectProblems(page)
     const today = new TodayPage(page)
     await today.goto(D0)
@@ -74,7 +74,7 @@ test.describe('Pantalla Hoy', () => {
 
 test.describe('Cambio de día (page.clock)', () => {
   test('E2E-03 23:59:55 + 10 s: #1 pasa a #2 sin recargar', async ({ page }) => {
-    await page.clock.install({ time: new Date('2026-10-17T23:59:55+02:00') })
+    await page.clock.install({ time: new Date('2026-10-19T23:59:55+02:00') })
     const today = new TodayPage(page)
     await page.goto('./')
     await today.challengeNumber.waitFor()

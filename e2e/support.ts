@@ -2,8 +2,8 @@ import type { Locator, Page } from '@playwright/test'
 import { BattlePage } from './pages/BattlePage'
 import { TodayPage } from './pages/TodayPage'
 
-export const D0 = '2026-10-17'
-export const REF_DATES = ['2026-10-17', '2026-10-18', '2026-10-19'] as const
+export const D0 = '2026-10-19'
+export const REF_DATES = ['2026-10-19', '2026-10-20', '2026-10-21'] as const
 
 /** Palabras en inglés / marcas de protocolo que nunca deben llegar al registro (RF-51). */
 export const FORBIDDEN_IN_LOG = /\||\b(used|fainted|sent out|super effective|not very effective|The opposing|Go!|foe)\b|\bp[12][a-d]?:/i

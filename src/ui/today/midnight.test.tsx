@@ -18,7 +18,7 @@ const mount = () => render(<TodayScreen data={data} onStart={vi.fn()} />)
 
 describe('medianoche con Hoy abierta', () => {
   it('cruzar la medianoche cambia #1 a #2 sin recargar', async () => {
-    setLocalTime('2026-10-17', 23, 59, 55)
+    setLocalTime('2026-10-19', 23, 59, 55)
     mount()
     expect(screen.getByRole('banner')).toHaveTextContent('#1')
     await settle(6000)
@@ -26,30 +26,30 @@ describe('medianoche con Hoy abierta', () => {
   })
 
   it('el rival pasa a ser el del día siguiente', async () => {
-    setLocalTime('2026-10-17', 23, 59, 55)
+    setLocalTime('2026-10-19', 23, 59, 55)
     mount()
     await settle(6000)
-    const next = getDailyChallenge('2026-10-18', data)
+    const next = getDailyChallenge('2026-10-20', data)
     expect(screen.getByRole('region', { name: /rival/i })).toHaveTextContent(next.trainer.nameEs)
   })
 
   it('el equipo del jugador pasa a ser el del día siguiente', async () => {
-    setLocalTime('2026-10-17', 23, 59, 55)
+    setLocalTime('2026-10-19', 23, 59, 55)
     mount()
     await settle(6000)
-    const next = getDailyChallenge('2026-10-18', data)
+    const next = getDailyChallenge('2026-10-20', data)
     expect(screen.getByRole('region', { name: /tu equipo/i })).toHaveTextContent(next.playerTeam[0].nameEs)
   })
 
   it('la cuenta atrás se reinicia tras la medianoche (más de 23 h)', async () => {
-    setLocalTime('2026-10-17', 23, 59, 55)
+    setLocalTime('2026-10-19', 23, 59, 55)
     mount()
     await settle(6000)
     expect(screen.getByRole('banner').textContent).toMatch(/23:59:5\d/)
   })
 
   it('hay un solo temporizador activo antes y después de cruzar la medianoche', async () => {
-    setLocalTime('2026-10-17', 23, 59, 55)
+    setLocalTime('2026-10-19', 23, 59, 55)
     mount()
     const before = vi.getTimerCount()
     await settle(6000)
@@ -57,14 +57,14 @@ describe('medianoche con Hoy abierta', () => {
   })
 
   it('al desmontar no queda ningún temporizador', () => {
-    setLocalTime('2026-10-17', 12)
+    setLocalTime('2026-10-19', 12)
     const { unmount } = mount()
     unmount()
     expect(vi.getTimerCount()).toBe(0)
   })
 
   it('el inicial elegido se deselecciona al cambiar de reto', async () => {
-    setLocalTime('2026-10-17', 23, 59, 55)
+    setLocalTime('2026-10-19', 23, 59, 55)
     mount()
     const { default: userEvent } = await import('@testing-library/user-event')
     await userEvent.setup({ advanceTimers: vi.advanceTimersByTime }).click(screen.getAllByRole('button', { name: /primero/i })[0])
@@ -97,7 +97,7 @@ describe('medianoche con Hoy abierta', () => {
   })
 
   it('con el reloj del dispositivo cambiado hacia atrás se usa la fecha del dispositivo', () => {
-    setLocalTime('2026-10-20', 12)
+    setLocalTime('2026-10-22', 12)
     mount()
     expect(screen.getByRole('banner')).toHaveTextContent('#4')
   })

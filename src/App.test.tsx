@@ -25,7 +25,7 @@ beforeEach(() => {
 })
 afterEach(() => { vi.useRealTimers() })
 
-function mountApp(date = '2026-10-17', h = 12, mi = 0, s = 0) {
+function mountApp(date = '2026-10-19', h = 12, mi = 0, s = 0) {
   setLocalTime(date, h, mi, s)
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
   render(<App data={data} createClient={() => { const c = mockClient(); clients.push(c); return c as any }} />)
@@ -50,7 +50,7 @@ describe('navegación', () => {
   it('Combatir lleva a la pantalla de combate e inicia el motor con el reto, el inicial y una semilla nueva', async () => {
     const user = mountApp()
     await startBattle(user, 2)
-    const c = getDailyChallenge('2026-10-17', data)
+    const c = getDailyChallenge('2026-10-19', data)
     expect(screen.getByTestId('battle-screen')).toBeInTheDocument()
     expect(initCalls()[0]).toMatchObject({ battleSeed: 'seed-1', playerLead: 2, player: c.playerTeam, rival: c.rivalTeam })
   })
@@ -119,7 +119,7 @@ describe('navegación', () => {
 
 describe('medianoche en combate (REQUISITOS §5)', () => {
   it('con combate en curso sigue el reto con que empezó: la pantalla de combate no cambia', async () => {
-    const user = mountApp('2026-10-17', 23, 59, 50)
+    const user = mountApp('2026-10-19', 23, 59, 50)
     await startBattle(user)
     await settle(20_000)
     expect(screen.getByTestId('battle-screen')).toBeInTheDocument()
@@ -127,17 +127,17 @@ describe('medianoche en combate (REQUISITOS §5)', () => {
   })
 
   it('el "Otro combate" tras la medianoche sigue usando el reto original', async () => {
-    const user = mountApp('2026-10-17', 23, 59, 50)
+    const user = mountApp('2026-10-19', 23, 59, 50)
     await startBattle(user)
     await settle(20_000)
     await finish()
     await user.click(screen.getByRole('button', { name: /otro combate/i }))
-    const c1 = getDailyChallenge('2026-10-17', data)
+    const c1 = getDailyChallenge('2026-10-19', data)
     expect(initCalls()[1].rival).toEqual(c1.rivalTeam)
   })
 
   it('al volver a Hoy se muestra el reto nuevo (#2)', async () => {
-    const user = mountApp('2026-10-17', 23, 59, 50)
+    const user = mountApp('2026-10-19', 23, 59, 50)
     await startBattle(user)
     await settle(20_000)
     await finish()

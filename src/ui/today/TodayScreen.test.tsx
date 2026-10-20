@@ -16,7 +16,7 @@ import type { ResolvedSet } from '../../test-utils/types'
 //   role="article"; <footer> (contentinfo) con el aviso fan.
 //   Botones: "Combatir", "Sacar primero" (aria-pressed), toggle con aria-expanded: /Ver movimientos y objetos del rival/.
 const data = makeGameData()
-const NOW = '2026-10-17'
+const NOW = '2026-10-19'
 const challengeOf = (date = NOW) => getDailyChallenge(date, data)
 const name = (kind: 'species' | 'moves' | 'abilities' | 'items' | 'types', id: string) => (data.names as any)[kind][id] as string
 
@@ -40,7 +40,7 @@ describe('cabecera (CMP-01)', () => {
   })
 
   it('el número crece con la fecha (#3 dos días después del lanzamiento)', () => {
-    renderToday({ date: '2026-10-19' })
+    renderToday({ date: '2026-10-21' })
     expect(screen.getByRole('banner')).toHaveTextContent('#3')
   })
 

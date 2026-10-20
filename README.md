@@ -12,13 +12,13 @@ El desarrollo se divide en tres fases (detalle en [docs/PRD.md](docs/PRD.md) §0
 
 | Fase | Contenido |
 |---|---|
-| F1 (en curso a 2026-10-19) | Reto diario determinista; 5 entrenadores (Brock, Misty, Camila, Plubio, Rojo) con 8 variantes de equipo; pool provisional del jugador; combate 6 contra 6 con IA heurística; pantalla Hoy, combate (con intro, mensajes uno a uno e historial a demanda) y resultado, con el estilo de los menús de N2/B2 y del PWT. |
+| F1 (en curso a 2026-10-19) | Reto diario determinista; 6 entrenadores (Brock, Misty, Camila, Plubio, Rojo, Máximo) con 9 variantes de equipo; pool provisional del jugador; combate 6 contra 6 con IA heurística; pantalla Hoy, combate (con intro, mensajes uno a uno e historial a demanda) y resultado, con el estilo de los menús de N2/B2 y del PWT. |
 | F2 | Roster completo de 53 entrenadores con todas sus variantes; scripts de datos y validación completos; sprites de todos los entrenadores. |
 | F3 | Combate oficial único y prácticas, reanudar partida, estadísticas, compartir, pantallas Ayuda y Ajustes. |
 
 En F1 no hay límite de un combate oficial al día ni persistencia: un mismo reto admite combates ilimitados.
 
-Fecha de lanzamiento (`#1`) en F1: 2026-10-17 (ver [Configuración](#lanzamiento-launch_date)).
+Fecha de lanzamiento (`#1`) en F1: 2026-10-19 (provisional) (ver [Configuración](#lanzamiento-launch_date)).
 
 ## Requisitos
 
@@ -105,13 +105,13 @@ daily-pwt/
 
 ### Lanzamiento (`LAUNCH_DATE`)
 
-- Archivo: `src/core/launch.ts` (`src/config.ts` lo reexporta). Valor actual: `2026-10-17`.
+- Archivo: `src/core/launch.ts` (`src/config.ts` lo reexporta). Valor actual: `2026-10-19` (apaño para que el 2026-10-21 toque Máximo; se fija en F2).
 - Efecto: fija el día `#1` del reto y, con él, el desplazamiento de la bolsa de entrenadores. Las fechas anteriores a `LAUNCH_DATE` muestran `#1`.
 - Cambiarlo altera el entrenador y el equipo de cada fecha. Solo debe hacerse en una fase que lo permita (ver [PENDIENTE.md](docs/PENDIENTE.md)).
 
 Pasos al cambiarlo:
 
-1. Actualizar las referencias fijas al lanzamiento: `LAUNCH` en `src/test-utils/dates.ts` (fecha base de los tests que usan `dates()`), `D0` en `e2e/support.ts` y las expectativas `#N` de `e2e/` (p. ej. `#9` para 2026-10-25 en `e2e/build.spec.ts`).
+1. Actualizar las referencias fijas al lanzamiento: `LAUNCH` en `src/test-utils/dates.ts` (fecha base de los tests que usan `dates()`), `D0` en `e2e/support.ts` y las expectativas `#N` de `e2e/` (p. ej. `#7` para 2026-10-25 en `e2e/build.spec.ts`).
 2. Regenerar el snapshot de referencia y revisarlo a mano antes de versionarlo:
    ```sh
    npx vitest run src/core/challenge.snapshot.test.ts -u

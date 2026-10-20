@@ -403,5 +403,59 @@
     "moves": ["icebeam", "hydropump", "iceshard", "thunderbolt"],
     "verified": true,
     "tags": ["source:rojo"]
+  },
+  {
+    "species": "metagross",
+    "level": 50,
+    "item": "occaberry",
+    "abilities": ["clearbody"],
+    "moves": ["zenheadbutt", "hammerarm", "earthquake", "bulletpunch"],
+    "verified": true,
+    "tags": ["source:maximo"]
+  },
+  {
+    "species": "aggron",
+    "level": 50,
+    "item": "airballoon",
+    "abilities": ["sturdy", "rockhead"],
+    "moves": ["headsmash", "avalanche", "earthquake", "metalburst"],
+    "verified": true,
+    "tags": ["source:maximo"]
+  },
+  {
+    "species": "excadrill",
+    "level": 50,
+    "item": "focussash",
+    "abilities": ["sandrush", "sandforce"],
+    "moves": ["earthquake", "rockslide", "xscissor", "sandstorm"],
+    "verified": true,
+    "tags": ["source:maximo"]
+  },
+  {
+    "species": "archeops",
+    "level": 50,
+    "item": "sitrusberry",
+    "abilities": ["defeatist"],
+    "moves": ["headsmash", "acrobatics", "earthquake", "quickattack"],
+    "verified": true,
+    "tags": ["source:maximo"]
+  },
+  {
+    "species": "cradily",
+    "level": 50,
+    "item": "expertbelt",
+    "abilities": ["suctioncups"],
+    "moves": ["stoneedge", "seedbomb", "earthquake", "sandstorm"],
+    "verified": true,
+    "tags": ["source:maximo"]
+  },
+  {
+    "species": "armaldo",
+    "level": 50,
+    "item": "whiteherb",
+    "abilities": ["battlearmor"],
+    "moves": ["xscissor", "rockblast", "earthquake", "superpower"],
+    "verified": true,
+    "tags": ["source:maximo"]
   }
 ]

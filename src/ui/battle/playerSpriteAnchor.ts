@@ -5,6 +5,11 @@ export const MESSAGE_BOX_TOP = 147
 export const SCREEN_BOTTOM = 192
 export const PLAYER_SPRITE_SCALE = 2
 export const PLAYER_SPRITE_CENTER_X = 62
+/** Escala del sprite del jugador: 2x, salvo que así superase el alto de la pantalla (Archeops: 98 px de GIF), que se reduce lo justo para no salirse por arriba. */
+export function playerSpriteScale(spriteHeight: number): number {
+  return Math.min(PLAYER_SPRITE_SCALE, SCREEN_BOTTOM / spriteHeight)
+}
+
 /** Parte del sprite que como máximo se pierde bajo la caja de mensajes. */
 const MAX_HIDDEN_FRACTION = 0.4
 const MAX_HIDDEN_PIXELS = 40
@@ -23,7 +28,7 @@ export function backSpriteHeight(spriteId: string): number {
  * solo se pierde la parte baja bajo la caja de mensajes; un sprite muy alto sube lo justo para no salirse por arriba.
  */
 export function playerSpriteBottom(spriteHeight: number): number {
-  const scaledHeight = spriteHeight * PLAYER_SPRITE_SCALE
+  const scaledHeight = spriteHeight * playerSpriteScale(spriteHeight)
   const hidden = Math.min(Math.round(scaledHeight * MAX_HIDDEN_FRACTION), MAX_HIDDEN_PIXELS)
   const preferredBottom = MESSAGE_BOX_TOP + hidden
   return Math.min(SCREEN_BOTTOM, Math.max(preferredBottom, scaledHeight))
@@ -32,5 +37,5 @@ export function playerSpriteBottom(spriteHeight: number): number {
 /** Caja visible resultante: `{ top, bottom }` en la pantalla superior. */
 export function playerSpriteVisibleSpan(spriteHeight: number): { top: number; bottom: number } {
   const bottom = playerSpriteBottom(spriteHeight)
-  return { top: bottom - spriteHeight * PLAYER_SPRITE_SCALE, bottom }
+  return { top: bottom - spriteHeight * playerSpriteScale(spriteHeight), bottom }
 }

@@ -163,7 +163,8 @@ test.describe('Combate', () => {
   })
 
   test('E2E-18 la táctil queda en espera durante animación y turno rival (sin botones); cinco clics = una decisión; «Turno N» no sale en pantalla', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    // 2026-10-20 (Misty): el primer turno no debilita a nadie; contra el rival de D0 hay cambio forzado y no habría «Turno 2».
+    const { battle } = await startBattle(page, { date: '2026-10-20', seed: 'a' })
     await battle.waitForActionOrResult()
     expect((await battle.logLines()).filter((l) => /^Turno \d+$/.test(l))).toEqual(['Turno 1'])
 
@@ -200,7 +201,8 @@ test.describe('Combate', () => {
   })
 
   test('E2E-20 resultado mínimo: victoria y derrota', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    // 2026-10-20 (Misty): con el primer movimiento siempre, el jugador gana en ~25 decisiones; contra el rival de D0 pierde.
+    const { battle } = await startBattle(page, { date: '2026-10-20', seed: 'a' })
     await battle.maxSpeed()
     await battle.playToResult()
     const win = await battle.outcome()

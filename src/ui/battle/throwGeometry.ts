@@ -1,6 +1,6 @@
 import spriteBoxes from '../../generated/sprite-boxes.json'
 import type { Avatar } from './introAssets'
-import { PLAYER_SPRITE_CENTER_X, PLAYER_SPRITE_SCALE, backSpriteHeight, playerSpriteBottom } from './playerSpriteAnchor'
+import { PLAYER_SPRITE_CENTER_X, backSpriteHeight, playerSpriteBottom, playerSpriteScale } from './playerSpriteAnchor'
 
 /**
  * Geometría del lanzamiento de la Poké Ball (píxeles lógicos de la pantalla superior): sale de la MANO del entrenador y cae donde aparece
@@ -31,7 +31,7 @@ export function playerHandPoint(avatar: Avatar): Point {
 
 /** Centro visible del Pokémon del jugador (a 2x, anclado como en TopScreen), sin bajar de la caja de mensajes para que la bola se vea llegar. */
 export function playerLandingPoint(backSpriteId: string): Point {
-  const height = backSpriteHeight(backSpriteId) * PLAYER_SPRITE_SCALE
+  const height = backSpriteHeight(backSpriteId) * playerSpriteScale(backSpriteHeight(backSpriteId))
   return { x: PLAYER_SPRITE_CENTER_X, y: Math.min(MESSAGE_BOX_TOP - 6, playerSpriteBottom(backSpriteHeight(backSpriteId)) - height / 2) }
 }
 

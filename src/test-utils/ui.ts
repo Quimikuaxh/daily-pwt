@@ -11,7 +11,7 @@ export async function settle(ms = 30_000): Promise<void> {
 }
 
 /** Primera fecha a partir de `from` cuyo rival del día es `trainerId`. */
-export function dateForTrainer(trainerId: string, data: GameData, from = '2026-10-17'): string {
+export function dateForTrainer(trainerId: string, data: GameData, from = '2026-10-19'): string {
   const [y, m, d] = from.split('-').map(Number)
   for (let i = 0; i < 400; i++) {
     const date = new Date(Date.UTC(y, m - 1, d + i)).toISOString().slice(0, 10)

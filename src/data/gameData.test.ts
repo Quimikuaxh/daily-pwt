@@ -10,17 +10,17 @@ import { makeGameData } from '../test-utils/fixtures'
 describe('loadGameData (datos reales)', () => {
   const data = loadGameData()
 
-  it('carga los 5 entrenadores de F1', () => {
-    expect(data.trainers.map((t) => t.id).sort()).toEqual(['brock', 'camila', 'misty', 'plubio', 'rojo'])
+  it('carga los 6 entrenadores de F1', () => {
+    expect(data.trainers.map((t) => t.id).sort()).toEqual(['brock', 'camila', 'maximo', 'misty', 'plubio', 'rojo'])
   })
 
   it('tiene dataVersion no vacía', () => {
     expect(data.dataVersion.length).toBeGreaterThan(0)
   })
 
-  it('tiene un rosterSchedule que arranca en el día 0 con los 5 ids', () => {
+  it('tiene un rosterSchedule que arranca en el día 0 con los 6 ids', () => {
     expect(data.rosterSchedule[0]).toMatchObject({ fromDayIndex: 0 })
-    expect([...data.rosterSchedule[0].trainerIds].sort()).toEqual(['brock', 'camila', 'misty', 'plubio', 'rojo'])
+    expect([...data.rosterSchedule[0].trainerIds].sort()).toEqual(['brock', 'camila', 'maximo', 'misty', 'plubio', 'rojo'])
   })
 
   it('incluye pool del jugador, dex y nombres', () => {

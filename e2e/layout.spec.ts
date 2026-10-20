@@ -5,7 +5,7 @@ import { D0, openParty, openSummary, startBattle } from './support'
 import { TodayPage } from './pages/TodayPage'
 
 // Alineación y recortes: tarjetas de Hoy (jugador y rival), iconos de tipo, pantalla de datos y glifos de la fuente del juego.
-const FIVE_DATES = ['2026-10-17', '2026-10-18', '2026-10-19', '2026-10-20', '2026-10-21']
+const SIX_DATES = ['2026-10-19', '2026-10-20', '2026-10-21', '2026-10-22', '2026-10-23', '2026-10-24']
 
 /** decodePng de scripts/lib/png.mjs (el mismo decodificador del script de assets). */
 async function decodePng(bytes: Buffer): Promise<{ width: number; height: number; rgba: Uint8Array }> {
@@ -118,7 +118,7 @@ const SUMMARY_BOXES: { selector: string; page: number | null; box: [number, numb
 ]
 
 test.describe('Pantalla de datos: ningún texto desborda su caja', () => {
-  for (const date of FIVE_DATES) {
+  for (const date of SIX_DATES) {
     test(`E2E-33 ${date}: los 6 Pokémon en las tres páginas`, async ({ page }) => {
       await openSummaryAt(page, date, 0)
       const summary = page.locator('.bt-summary')

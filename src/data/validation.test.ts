@@ -19,8 +19,8 @@ const allRivalSets = trainers.flatMap((t) => t.variants.flatMap((v) => v.team))
 const REGIONS = ['kanto', 'johto', 'hoenn', 'sinnoh', 'unova', null]
 
 describe('estructura (UT-27)', () => {
-  it('hay 5 entrenadores de F1', () => {
-    expect(trainers.map((t) => t.id).sort()).toEqual(['brock', 'camila', 'misty', 'plubio', 'rojo'])
+  it('hay 6 entrenadores de F1', () => {
+    expect(trainers.map((t) => t.id).sort()).toEqual(['brock', 'camila', 'maximo', 'misty', 'plubio', 'rojo'])
   })
 
   it('Brock tiene 2 variantes (Kanto y Mundial)', () => {

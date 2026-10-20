@@ -214,6 +214,15 @@
   transform: translateY(40px) scale(2);
 }
 
+/* Sprites más altos que la pantalla a 2x (Archeops): escala reducida (playerSpriteAnchor.ts). */
+.bt-mon.bt-mon-player[data-oversize] .bt-sprite {
+  transform: scale(var(--player-scale));
+}
+
+.bt-mon.bt-mon-player[data-oversize][data-fainted="true"] .bt-sprite {
+  transform: translateY(40px) scale(var(--player-scale));
+}
+
 .bt-mon .bt-sprite {
   display: block;
   width: auto;

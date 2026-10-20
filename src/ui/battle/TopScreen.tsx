@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import type { BattleView, MonView } from '../../battle/protocol'
 import type { Challenge, GameData } from '../../core/types'
 import type { IntroPhase, SwitchAnimation } from '../../hooks/useBattle'
@@ -9,7 +10,7 @@ import { IntroLayer, IrisWipe } from './IntroLayer'
 import { MessageBox } from './MessageBox'
 import { genderOfSpecies, speciesLabel } from './battleModel'
 import { uiAsset, type Avatar } from './introAssets'
-import { backSpriteHeight, playerSpriteBottom } from './playerSpriteAnchor'
+import { backSpriteHeight, PLAYER_SPRITE_SCALE, playerSpriteBottom, playerSpriteScale } from './playerSpriteAnchor'
 import { playerHandPoint, playerLandingPoint, rivalHandPoint, rivalLandingPoint } from './throwGeometry'
 
 type TopScreenProps = {
@@ -25,6 +26,11 @@ type TopScreenProps = {
 }
 
 const FALLBACK_BOX = 96
+
+function playerSpriteStyle(spriteId: string): CSSProperties {
+  const spriteHeight = backSpriteHeight(spriteId)
+  return { top: playerSpriteBottom(spriteHeight), '--player-scale': playerSpriteScale(spriteHeight) } as CSSProperties
+}
 
 function weatherLabel(weather: string): string {
   return (es.battle.weather as Record<string, string>)[weather] ?? es.battle.weatherUnknown
@@ -51,7 +57,7 @@ export function TopScreen({ view, data, challenge, introPhase, switchAnim, avata
         </div>
       )}
       {playerMon && (
-        <div className="bt-mon bt-mon-player" data-fainted={playerMon.fainted} style={{ top: playerSpriteBottom(backSpriteHeight(data.dex.species[playerMon.species]?.spriteId ?? playerMon.species)) }}>
+        <div className="bt-mon bt-mon-player" data-fainted={playerMon.fainted} data-oversize={playerSpriteScale(backSpriteHeight(playerSpriteId)) < PLAYER_SPRITE_SCALE || undefined} style={playerSpriteStyle(playerSpriteId)}>
           <Sprite src={speciesSprite(data.dex, playerMon.species, 'back')} name={speciesLabel(data.names, playerMon.species)} width={FALLBACK_BOX} height={FALLBACK_BOX} className="bt-sprite" />
         </div>
       )}

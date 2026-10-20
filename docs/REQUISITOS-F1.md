@@ -4,7 +4,7 @@ Base: [PRD](PRD.md) (la §0 manda). Arquitectura: [ARQUITECTURA.md](ARQUITECTURA
 
 ## 1. Alcance
 
-F1 entrega el núcleo jugable: generador diario determinista, datos verificados de 5 entrenadores, pool provisional del jugador, combate 6v6 Gen 5 a Nv. 50 contra IA heurística y pantalla Hoy.
+F1 entrega el núcleo jugable: generador diario determinista, datos verificados de 6 entrenadores, pool provisional del jugador, combate 6v6 Gen 5 a Nv. 50 contra IA heurística y pantalla Hoy.
 
 Lo marcado **[F1, se amplía]** es alcance de F1 y crece en F2/F3. Lo marcado **[regla]** es definitivo, aunque ajustable.
 
@@ -14,7 +14,7 @@ Lo marcado **[F1, se amplía]** es alcance de F1 y crece en F2/F3. Lo marcado **
 | §4.3 Oficial/prácticas | Nada: todo combate es libre, ilimitado y sin registro | F3 |
 | §5 Reglas | Todas | — |
 | §6 Equipo del jugador | Reglas de generación y pool provisional | Pool definitivo; validación por script (F2) |
-| §7 Roster | 5 entrenadores **[F1, se amplía a 53 en F2]** | 53 entrenadores (F2) |
+| §7 Roster | 6 entrenadores **[F1, se amplía a 53 en F2]** | 53 entrenadores (F2) |
 | §8.3 Validación | Test unitario con lo básico **[F1, se amplía a script CI en F2]** | Script CI (F2) |
 | §9 IA | Reglas 1-5 | Calibración final (F2) |
 | §10.1 Hoy | Todo salvo iconos Estadísticas/Ayuda/Ajustes, doble botón y **panel de emparejamientos (eliminado el 19/10/2026, PRD §0)**; botón único "Combatir"; un solo tema, con el estilo de los menús de N2/B2 y del PWT **[F1, se amplía en F3]** | F3 |
@@ -27,8 +27,8 @@ Lo marcado **[F1, se amplía]** es alcance de F1 y crece en F2/F3. Lo marcado **
 
 ## 2. Decisiones cerradas
 
-1. Entrenadores de F1: Brock (2 variantes: Líderes de Kanto y Mundial), Misty, Camila, Plubio y Rojo. Cubren `alwaysLeadsWith`, IV 20/25/30, primera fase con Mineral Evolutivo y habilidades dobles.
-2. `LAUNCH_DATE` provisional = 2026-10-17, constante editable en `src/config.ts`. Una fecha anterior cuenta como `#1`. Se fija en F2 y entonces se regeneran los snapshots.
+1. Entrenadores de F1: Brock (2 variantes: Líderes de Kanto y Mundial), Misty, Camila, Plubio, Rojo y Máximo (adelantado de F2, ver PRD §0). Cubren `alwaysLeadsWith`, IV 20/25/30, primera fase con Mineral Evolutivo y habilidades dobles.
+2. `LAUNCH_DATE` provisional = 2026-10-19, constante editable en `src/core/launch.ts` (`src/config.ts` la reexporta). Una fecha anterior cuenta como `#1`. Es un apaño para que el 2026-10-21 toque Máximo con el roster de 6 (ciclo de 6 días, sin entrada nueva en `rosterSchedule`); se fija en F2 y entonces se regeneran los snapshots.
 3. Sprites: solo las especies y entrenadores de F1, descargados una vez al repo, con texto de reserva si falta alguno.
 4. **[regla]** Naturaleza neutra (Seria) si el set no la indica; se marca en los datos.
 5. Validación de datos en F1 como test unitario.

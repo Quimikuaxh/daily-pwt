@@ -79,7 +79,7 @@ describe('getDailyChallenge: forma y pureza (UT-08)', () => {
   })
 
   it('el número crece un día a día', () => {
-    expect([getDailyChallenge('2026-10-17', data).number, getDailyChallenge('2026-10-18', data).number]).toEqual([1, 2])
+    expect([getDailyChallenge('2026-10-19', data).number, getDailyChallenge('2026-10-20', data).number]).toEqual([1, 2])
   })
 
   it('una fecha anterior al lanzamiento da #1 y no lanza', () => {

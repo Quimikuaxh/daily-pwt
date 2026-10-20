@@ -4,7 +4,7 @@ import { calcStats } from '../../../core/stats'
 import { loadGameData } from '../../../data/gameData'
 
 export const realData = loadGameData()
-export const realChallenge = getDailyChallenge('2026-10-19', realData)
+export const realChallenge = getDailyChallenge('2026-10-21', realData)
 export const realTeam = realChallenge.playerTeam
 
 const displayName = (speciesId: string): string => realData.dex.species[speciesId].name

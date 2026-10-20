@@ -71,7 +71,8 @@ test.describe('Menú de equipo y datos', () => {
   })
 
   test('E2E-26 los PS actuales y los PP de Datos reflejan el combate', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    // 2026-10-20: tras el primer movimiento no hay cambio forzado (en D0 sí, y la pantalla de equipo ya estaría abierta).
+    const { battle } = await startBattle(page, { date: '2026-10-20', seed: 'a' })
     await battle.maxSpeed()
     await battle.waitForActionOrResult()
     await battle.chooseFirstMove()

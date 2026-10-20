@@ -16,7 +16,7 @@ test.describe('Build de producción (sin VITE_TEST_HOOKS)', () => {
       if (/\.js$/.test(new URL(response.url()).pathname)) scriptUrls.add(response.url())
     })
     const today = new TodayPage(page)
-    await page.goto('./?date=2026-10-17&seed=zzz&ai=trivial')
+    await page.goto('./?date=2026-10-19&seed=zzz&ai=trivial')
     await today.challengeNumber.waitFor()
     await today.chooseLead(0)
     await today.fightButton.click()
@@ -25,8 +25,8 @@ test.describe('Build de producción (sin VITE_TEST_HOOKS)', () => {
     await page.getByRole('button', { name: 'Sí, salir' }).click()
     await today.challengeNumber.waitFor()
 
-    // 2026-10-25 es el día #9: ?date= no manda en producción.
-    await expect(today.challengeNumber, '?date= ignorado').toHaveText('#9')
+    // 2026-10-25 es el día #7: ?date= no manda en producción.
+    await expect(today.challengeNumber, '?date= ignorado').toHaveText('#7')
     const scripts = await Promise.all([...scriptUrls].map(async (url) => (await context.request.get(url)).text()))
     expect(scripts.length, 'se han leído los scripts del sitio').toBeGreaterThan(0)
     for (const script of scripts) {

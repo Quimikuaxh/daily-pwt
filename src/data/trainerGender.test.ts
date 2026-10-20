@@ -11,9 +11,9 @@ describe('género del entrenador', () => {
     expect(data.trainers.filter((t) => t.gender !== 'F' && t.gender !== 'M').map((t) => t.id)).toEqual([])
   })
 
-  it('Misty y Camila son F; Brock, Plubio y Rojo son M', () => {
+  it('Misty y Camila son F; Brock, Máximo, Plubio y Rojo son M', () => {
     const byId = Object.fromEntries(data.trainers.map((t) => [t.id, t.gender]))
-    expect(byId).toEqual({ brock: 'M', misty: 'F', camila: 'F', plubio: 'M', rojo: 'M' })
+    expect(byId).toEqual({ brock: 'M', misty: 'F', camila: 'F', plubio: 'M', rojo: 'M', maximo: 'M' })
   })
 
   it('el reto expone el género del rival del día', () => {

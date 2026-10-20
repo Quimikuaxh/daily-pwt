@@ -5,7 +5,7 @@ Base: [REQUISITOS-F1](REQUISITOS-F1.md), [ARQUITECTURA](ARQUITECTURA.md) §9.
 ## 0. Convenciones
 - Niveles: **UT** (Vitest, Node), **CMP** (RTL + jsdom, user-event, fake timers), **INT** (motor en Node sobre `Battle` síncrono), **E2E** (Playwright sobre `vite preview` con `VITE_TEST_HOOKS=1`; chromium y webkit), **VIS** (capturas a 360×740 y 1280×800 con playwright-cli, revisadas con web-design-guidelines).
 - Roster F1: `brock` (variantes `brock-kanto-leaders`, `brock-world-leaders`), `misty`, `camila`, `plubio`, `rojo`. Ciclo de la bolsa = 5 días.
-- Fechas de referencia (`LAUNCH_DATE=2026-10-17`): D-1 2026-10-16; D0 2026-10-17; D+1..D+4 2026-10-18..21; D+5 2026-10-22 (ciclo 2); D+365 2027-10-17; cambios de hora 2027 (Europe/Madrid) 03-27/28/29 y 10-30/31, 11-01.
+- Fechas de referencia (`LAUNCH_DATE=2026-10-19`, roster de 6 entrenadores y ciclo de 6 días): D-1 2026-10-18; D0 2026-10-19; D+1..D+4 2026-10-20..23; D+5 2026-10-24 (último día del ciclo 1; el ciclo 2 empieza en D+6); D+365 2027-10-19; cambios de hora 2027 (Europe/Madrid) 03-27/28/29 y 10-30/31, 11-01.
 - Fixtures: `GameData` sintético mínimo y real; `AiState` manual; semillas de combate fijas; pools imposibles; JSON corrupto.
 - Criterios fijados: fecha anterior a `LAUNCH_DATE` = `#1` (prevalece sobre la fórmula literal de RF-09); "Sacar primero" sobre el ya elegido no lo deselecciona (siempre hay uno).
 - Ningún test hace peticiones de red; los scripts de descarga no se ejecutan en tests.
@@ -45,7 +45,7 @@ Base: [REQUISITOS-F1](REQUISITOS-F1.md), [ARQUITECTURA](ARQUITECTURA.md) §9.
 - UT-26 Sustituir `player-sets.json` por otro fixture funciona sin tocar código.
 
 **Validación de datos**
-- UT-27 Estructura: 6 sets por variante, nivel 50, `sourceTournament`/`sourceUrl` válidos, ids únicos, categoría y región válidas, 4 movimientos; 5 entrenadores, Brock con 2 variantes.
+- UT-27 Estructura: 6 sets por variante, nivel 50, `sourceTournament`/`sourceUrl` válidos, ids únicos, categoría y región válidas, 4 movimientos; 6 entrenadores (con Máximo), Brock con 2 variantes.
 - UT-28 Legalidad Gen 5: especie, objeto, habilidad (de la especie) y movimientos existen en Gen 5; nada prohibido por el PWT; validador de `@pkmn/sim` gen5; un set de Gen 6 se rechaza.
 - UT-29 Todos `verified: true`.
 - UT-30 IV por categoría: líderes 20, campeones 25, Rojo 30.
@@ -132,7 +132,7 @@ Base: [REQUISITOS-F1](REQUISITOS-F1.md), [ARQUITECTURA](ARQUITECTURA.md) §9.
 - INT-16 Sin `debug`/`raw` en las líneas a la UI; un nombre con HTML se renderiza como texto.
 
 ## 4. E2E (chromium + webkit; ganchos `?date=`, `?seed=`, `?ai=trivial`; `page.clock`)
-- E2E-01 Hoy completo con `?date=2026-10-17`: `#1`, cuenta atrás, rival, 6 especies, 6 tarjetas, "Combatir" desactivado con motivo, aviso fan, consola limpia.
+- E2E-01 Hoy completo con `?date=2026-10-19`: `#1`, cuenta atrás, rival, 6 especies, 6 tarjetas, "Combatir" desactivado con motivo, aviso fan, consola limpia.
 - E2E-02 Dos contextos (distinto `timezoneId`) con la misma fecha → mismo reto.
 - E2E-03 `page.clock` 23:59:55 + 10 s: `#1`→`#2`, cambia el reto, reinicia la cuenta atrás, sin recarga; variante 2027-03-27 (~23 h).
 - E2E-04 Medianoche con combate en curso: sigue el reto original; Hoy muestra el nuevo al volver.

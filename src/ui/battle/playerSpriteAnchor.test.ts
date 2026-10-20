@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import spriteBoxes from '../../generated/sprite-boxes.json'
-import { MESSAGE_BOX_TOP, SCREEN_BOTTOM, backSpriteHeight, playerSpriteVisibleSpan } from './playerSpriteAnchor'
+import { MESSAGE_BOX_TOP, SCREEN_BOTTOM, backSpriteHeight, playerSpriteScale, playerSpriteVisibleSpan } from './playerSpriteAnchor'
 
 const backBoxes = (spriteBoxes as { back: Record<string, number[]> }).back
 
@@ -28,5 +28,13 @@ describe('ancla del sprite del jugador respecto a la caja de mensajes', () => {
 
   it('una especie sin caja usa un alto de reserva en vez de fallar', () => {
     expect(backSpriteHeight('inexistente')).toBeGreaterThan(0)
+  })
+})
+
+describe('escala del sprite del jugador', () => {
+  it('es 2x salvo que el sprite superase la pantalla, y entonces se reduce lo justo', () => {
+    expect(playerSpriteScale(80)).toBe(2)
+    expect(playerSpriteScale(98)).toBeCloseTo(SCREEN_BOTTOM / 98)
+    expect(playerSpriteVisibleSpan(98).top).toBeGreaterThanOrEqual(0)
   })
 })
