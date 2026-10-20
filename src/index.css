@@ -1,0 +1,835 @@
+@import "tailwindcss";
+
+/*
+ * Fuente del juego: UNA sola regla de fuente y UNA sola variable. Para cambiarla basta sustituir
+ * el fichero de public/fonts (y su entrada en data/ui-assets.json); nada más lo nombra.
+ */
+@font-face {
+  font-family: "Game";
+  src: url("/fonts/pokemon-dp.ttf") format("truetype");
+  font-display: block;
+}
+
+@theme {
+  --color-text: #f8f8f8;
+  --color-muted: #d0d0d0;
+  --color-ink: #181818;
+  --font-game: "Game", ui-monospace, "Cascadia Mono", monospace;
+}
+
+/*
+ * Estilo de los menús de N2/B2 y del PWT (PRD §0): fondo granate con franjas, placas oscuras con puntos y borde,
+ * cajas blancas con borde negro, botones biselados como los de la pantalla táctil. Colores muestreados de las capturas de
+ * referencia (e2e-artifacts/ref/shots): granate #700018 / #b81840, placa #383838 con puntos #484848, borde amarillo #f8c830.
+ */
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  color: #f8f8f8;
+  font-family: var(--font-game);
+  font-size: 16px;
+  line-height: 20px;
+  background:
+    repeating-linear-gradient(135deg, transparent 0 40px, rgb(0 0 0 / 0.18) 40px 80px),
+    #700018;
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 400;
+}
+
+p {
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 3px solid #48b8f8;
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 0.5rem;
+  top: -4rem;
+  z-index: 60;
+  padding: 0.5rem 0.75rem;
+  color: #181818;
+  background: #f8f8f8;
+  border: 3px solid #181818;
+}
+
+.skip-link:focus {
+  top: 0.5rem;
+}
+
+img.sprite,
+.sprite-fallback {
+  image-rendering: pixelated;
+}
+
+/* Sprites de Hoy: tamaño natural (x1) dentro de una caja de 100 px, que cubre el mayor GIF (98x92): sin escalado fraccionario. */
+.sprite-natural {
+  object-fit: none;
+  object-position: center;
+  width: 100px;
+  height: 100px;
+}
+
+.sprite-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 4px;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  text-align: center;
+  font-size: 14px;
+  line-height: 14px;
+  color: #d0d0d0;
+  background: #383838;
+  border: 2px dashed #888890;
+}
+
+/* ---------- Placa: caja oscura con puntos, borde de color y esquinas cortadas ---------- */
+.plate,
+.btn,
+.dialog-panel {
+  --cut: 12px;
+  --bw: 3px;
+  --edge: #f0f0f0;
+  --fill: #383838;
+  --dots: #484848;
+  position: relative;
+  isolation: isolate;
+  box-sizing: border-box;
+  background: var(--edge);
+  clip-path: polygon(
+    var(--cut) 0,
+    calc(100% - var(--cut)) 0,
+    100% var(--cut),
+    100% calc(100% - var(--cut)),
+    calc(100% - var(--cut)) 100%,
+    var(--cut) 100%,
+    0 calc(100% - var(--cut)),
+    0 var(--cut)
+  );
+}
+
+.plate::before,
+.btn::before,
+.dialog-panel::before {
+  content: "";
+  position: absolute;
+  inset: var(--bw);
+  z-index: -1;
+  background: radial-gradient(circle at 2px 2px, var(--dots) 1px, transparent 1.5px) 0 0 / 4px 4px, var(--fill);
+  clip-path: polygon(
+    calc(var(--cut) - 1px) 0,
+    calc(100% - var(--cut) + 1px) 0,
+    100% calc(var(--cut) - 1px),
+    100% calc(100% - var(--cut) + 1px),
+    calc(100% - var(--cut) + 1px) 100%,
+    calc(var(--cut) - 1px) 100%,
+    0 calc(100% - var(--cut) + 1px),
+    0 calc(var(--cut) - 1px)
+  );
+}
+
+/* El recorte de la placa también recorta un outline exterior: el foco se dibuja dentro, con desplazamiento negativo. */
+.btn:focus-visible,
+.plate:focus-visible {
+  outline: 2px dashed #48b8f8;
+  outline-offset: -6px;
+}
+
+/* ---------- Botones biselados de la pantalla táctil ---------- */
+.btn {
+  --cut: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 20px;
+  border: 0;
+  color: #f8f8f8;
+  font: inherit;
+  font-size: 18px;
+  line-height: 20px;
+  text-align: center;
+  text-shadow: 1px 1px 0 #181818;
+  cursor: pointer;
+}
+
+.btn:hover:not(:disabled) {
+  --edge: #f8c830;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-primary,
+.btn-danger {
+  --fill: #b81840;
+  --dots: #c83058;
+}
+
+.btn-danger {
+  --fill: #881830;
+  --dots: #983048;
+}
+
+.btn-small {
+  font-size: 16px;
+  padding: 4px 14px;
+}
+
+/* ---------- Cajas blancas con borde negro (nombres, avisos, texto) ---------- */
+.namebox {
+  display: inline-block;
+  padding: 2px 10px;
+  color: #181818;
+  background: #f8f8f8;
+  border: 3px solid #181818;
+  box-shadow: 0 0 0 2px #f8f8f8;
+  text-shadow: none;
+}
+
+.type-chip {
+  --s: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: calc(12px * var(--s));
+  width: calc(var(--chip-width, 44) * 1px * var(--s));
+  /* La fuente del juego apoya los glifos bajos en su caja: se sube el texto 1,5 px lógicos para centrarlo (medido con las 17 etiquetas). */
+  padding: 0 0 calc(3px * var(--s));
+  border: calc(1px * var(--s)) solid transparent;
+  border-image-slice: 1 fill;
+  border-image-width: calc(1px * var(--s));
+  border-image-repeat: stretch;
+  vertical-align: middle;
+  white-space: nowrap;
+  font-size: calc(8px * var(--s));
+  line-height: 1;
+  text-transform: uppercase;
+  color: #f8f8f8;
+  text-shadow: calc(1px * var(--s)) calc(1px * var(--s)) 0 #525252;
+  image-rendering: pixelated;
+}
+
+/* Dentro del lienzo de la DS (escala lógica 1) */
+.type-chip[data-compact="true"] {
+  --s: 1;
+  --chip-width: 36;
+}
+
+/* ---------- Diálogo ---------- */
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgb(5 0 8 / 0.8);
+}
+
+.dialog-panel {
+  --edge: #f8c830;
+  --cut: 14px;
+  width: min(100%, 26rem);
+  padding: 20px 22px;
+}
+
+.dialog-title {
+  margin: 0 0 8px;
+  font-size: 22px;
+  line-height: 24px;
+  text-shadow: 1px 1px 0 #181818;
+}
+
+.dialog-body {
+  margin: 0 0 16px;
+  color: #d0d0d0;
+}
+
+.dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+/* ---------- Pantalla Hoy ---------- */
+.page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.today-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #181818;
+  border-bottom: 4px solid #b81840;
+  box-shadow: 0 4px 0 #181818;
+}
+
+.today-header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 16px;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 8px 12px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 26px;
+  line-height: 28px;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 0 #b81840;
+}
+
+.logo-ball {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #181818;
+  background: linear-gradient(#e82848 0 42%, #181818 42% 58%, #f8f8f8 58% 100%);
+  box-shadow: 0 0 0 2px #f8f8f8;
+}
+
+.today-header-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+}
+
+/* Pestaña roja como los rótulos de sección: sin cajas blancas sueltas sobre el fondo oscuro. */
+.challenge-number {
+  padding: 0 18px;
+  font-size: 22px;
+  line-height: 28px;
+  color: #f8f8f8;
+  background: #b81840;
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  text-shadow: 1px 1px 0 #181818;
+}
+
+.countdown {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #d0d0d0;
+}
+
+/* Cifras sobre fondo negro con filete gris, como las cajas de PS del juego. */
+.countdown-value {
+  padding: 0 8px;
+  color: #f8f8f8;
+  background: #000;
+  border: 2px solid #585858;
+  font-variant-numeric: tabular-nums;
+}
+
+.page-main {
+  flex: 1;
+  width: 100%;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 16px 12px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.panel {
+  --edge: #f8c830;
+  --cut: 14px;
+  padding: 16px;
+}
+
+.section-title {
+  display: inline-block;
+  margin: -4px 0 12px -4px;
+  padding: 2px 26px 2px 12px;
+  font-size: 22px;
+  line-height: 26px;
+  color: #f8f8f8;
+  background: #b81840;
+  border: 3px solid #181818;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+  text-shadow: 1px 1px 0 #181818;
+}
+
+.subsection-title {
+  margin: 16px 0 8px;
+  font-size: 18px;
+  color: #f8c830;
+  text-shadow: 1px 1px 0 #181818;
+}
+
+.section-hint {
+  margin: 0 0 12px;
+  color: #d0d0d0;
+}
+
+.alert {
+  padding: 12px 16px;
+  color: #181818;
+  background: #f8f8f8;
+  border: 4px solid #181818;
+  box-shadow: 0 0 0 3px #f8f8f8;
+}
+
+.rival-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Escenario del PWT (fondo ripeado del juego) con el entrenador sobre la plataforma rival. */
+.rival-stage {
+  flex: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 124px;
+  height: 120px;
+  overflow: hidden;
+  background: #504848 url("/ui/battle/bg/pwt.png") -124px 12px / 256px 192px no-repeat;
+  border: 3px solid #181818;
+  box-shadow: 0 0 0 2px #f8f8f8;
+  image-rendering: pixelated;
+}
+
+.rival-stage .sprite-natural {
+  margin-bottom: -2px;
+}
+
+.rival-card-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+}
+
+.rival-name {
+  margin: 0;
+  padding: 0 28px 0 12px;
+  font-size: 28px;
+  line-height: 32px;
+  color: #f8f8f8;
+  background: linear-gradient(90deg, #181818 70%, transparent);
+  border-left: 4px solid #f8c830;
+  text-shadow: 2px 2px 0 #b81840;
+}
+
+.rival-meta {
+  color: #f8f8f8;
+  text-shadow: 1px 1px 0 #181818;
+}
+
+.rival-team {
+  display: grid;
+  /* 6 casillas: 2x3 en móvil, 3x2 en tablet y 6x1 en escritorio, siempre repartidas por igual a todo el ancho del panel (sin filas incompletas ni huecos a la derecha). */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.rival-mon {
+  --cut: 8px;
+  --bw: 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 6px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.rival-mon-name {
+  font-size: 18px;
+  text-shadow: 1px 1px 0 #181818;
+}
+
+@media (min-width: 30rem) {
+  .rival-team {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .rival-team {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.rival-team[data-detailed="true"] {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 40rem) {
+  .rival-team[data-detailed="true"] {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 64rem) {
+  .rival-team[data-detailed="true"] {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.rival-mon-detailed {
+  align-items: stretch;
+  padding: 12px;
+  text-align: left;
+}
+
+.rival-mon-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.mon-facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 10px;
+  margin: 0;
+  color: #d0d0d0;
+}
+
+.mon-facts > div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.mon-facts dt {
+  color: #f8c830;
+}
+
+.mon-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.player-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 40rem) {
+  .player-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 64rem) {
+  .player-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.player-card {
+  --cut: 14px;
+  --edge: var(--type-edge, #f0f0f0);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  min-width: 0;
+}
+
+.player-card-lead {
+  --edge: #f8c830;
+  --bw: 5px;
+}
+
+.mon-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.player-card-head {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 10px;
+  align-items: center;
+  min-height: 100px;
+}
+
+.player-card-title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+}
+
+.player-name {
+  font-size: 22px;
+  line-height: 24px;
+  text-shadow: 1px 1px 0 #181818;
+}
+
+.type-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.player-meta {
+  color: #d0d0d0;
+}
+
+.base-total {
+  color: #f8c830;
+  text-shadow: 1px 1px 0 #181818;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin: 0;
+}
+
+.stat-cell {
+  padding: 2px 8px;
+  background: #181818;
+  border: 2px solid #585858;
+}
+
+.stat-cell dt {
+  font-size: 14px;
+  line-height: 16px;
+  color: #d0d0d0;
+}
+
+.stat-cell dd {
+  margin: 0;
+  font-size: 22px;
+  line-height: 24px;
+}
+
+.move-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.move-row {
+  display: grid;
+  grid-template-columns: 1fr calc(44px * 2);
+  grid-template-areas:
+    "name type"
+    "stats stats";
+  align-items: center;
+  gap: 2px 8px;
+  padding: 4px 8px;
+  background: #181818;
+  border-left: 4px solid var(--move-color, #f8c830);
+}
+
+.move-name {
+  grid-area: name;
+  min-width: 0;
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+
+.move-type {
+  grid-area: type;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.category-icon {
+  display: inline-block;
+  margin-right: 6px;
+  vertical-align: middle;
+  image-rendering: pixelated;
+}
+
+.move-stats {
+  grid-area: stats;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  color: #d0d0d0;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.move-number {
+  display: inline-block;
+  min-width: 3ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.btn-lead {
+  align-self: stretch;
+}
+
+.fight-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  padding: 10px 0 12px;
+  background: linear-gradient(transparent, rgb(60 0 12 / 0.92) 40%);
+}
+
+.btn-fight {
+  --cut: 16px;
+  min-height: 56px;
+  font-size: 30px;
+  line-height: 32px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.fight-hint {
+  text-align: center;
+  color: #f8f8f8;
+  text-shadow: 1px 1px 0 #181818;
+}
+
+.today-footer {
+  padding: 12px;
+  background: #181818;
+  border-top: 4px solid #b81840;
+  text-align: center;
+  font-size: 14px;
+  line-height: 18px;
+  color: #d0d0d0;
+}
+
+.today-footer p {
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+/* ---------- Resultado ---------- */
+.result-screen {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+
+.result-panel {
+  --cut: 18px;
+  width: min(100%, 28rem);
+  padding: 22px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+}
+
+.result-win {
+  --edge: #48b8f8;
+}
+
+.result-loss {
+  --edge: #ff5070;
+}
+
+/* Banda como la de la pantalla VS del PWT: azul y roja con un corte oblicuo. */
+.result-title {
+  padding: 6px 0;
+  font-size: 44px;
+  line-height: 46px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0 #181818;
+  background: linear-gradient(100deg, #b81840 0 52%, #1858b8 52% 100%);
+  border: 3px solid #181818;
+}
+
+.result-win .result-title {
+  background: linear-gradient(100deg, #1858b8 0 55%, #b81840 55% 100%);
+}
+
+.result-lead {
+  align-self: center;
+}
+
+.result-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 20px;
+}
+
+.result-stats li {
+  padding: 2px 8px;
+  background: #181818;
+  border: 2px solid #585858;
+}
+
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

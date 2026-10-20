@@ -1,0 +1,210 @@
+# Daily PWT · Plan de pruebas F1
+
+Base: [REQUISITOS-F1](REQUISITOS-F1.md), [ARQUITECTURA](ARQUITECTURA.md) §9.
+
+## 0. Convenciones
+- Niveles: **UT** (Vitest, Node), **CMP** (RTL + jsdom, user-event, fake timers), **INT** (motor en Node sobre `Battle` síncrono), **E2E** (Playwright sobre `vite preview` con `VITE_TEST_HOOKS=1`; chromium y webkit), **VIS** (capturas a 360×740 y 1280×800 con playwright-cli, revisadas con web-design-guidelines).
+- Roster F1: `brock` (variantes `brock-kanto-leaders`, `brock-world-leaders`), `misty`, `camila`, `plubio`, `rojo`. Ciclo de la bolsa = 5 días.
+- Fechas de referencia (`LAUNCH_DATE=2026-10-17`): D-1 2026-10-16; D0 2026-10-17; D+1..D+4 2026-10-18..21; D+5 2026-10-22 (ciclo 2); D+365 2027-10-17; cambios de hora 2027 (Europe/Madrid) 03-27/28/29 y 10-30/31, 11-01.
+- Fixtures: `GameData` sintético mínimo y real; `AiState` manual; semillas de combate fijas; pools imposibles; JSON corrupto.
+- Criterios fijados: fecha anterior a `LAUNCH_DATE` = `#1` (prevalece sobre la fórmula literal de RF-09); "Sacar primero" sobre el ya elegido no lo deselecciona (siempre hay uno).
+- Ningún test hace peticiones de red; los scripts de descarga no se ejecutan en tests.
+- Aserciones estadísticas: semillas fijas; no relajar umbrales sin analizar.
+
+## 1. Unitarios
+**Núcleo y fechas**
+- UT-01 PRNG: misma semilla → misma secuencia; distinta → distinta; `nextInt` en rango; `shuffle`/`sample` permutan sin mutar; `deriveSeed` distinto por flujo. (RF-02/03)
+- UT-02 Aislamiento de `core/`: sin `Math.random`, `Date.now`, `new Date()` sin argumentos ni imports externos; el test falla con un fixture que lo incumple. (DEC-01)
+- UT-03 `localDate` con getters locales (nunca UTC), TZ UTC/Madrid/Auckland, 23:59:59 → 00:00:00. (RF-01)
+- UT-04 `challengeNumber`: D0 `#1`, D+1 `#2`, D+5 `#6`, D+365 `#366`, D-1 y anteriores `#1`; días de cambio de hora cuentan 1 día exacto. (RF-09)
+- UT-05 `msUntilNextLocalMidnight`: 1000 ms a 23:59:59; 86 400 000 a 00:00; 82 800 000 en día de 23 h; 90 000 000 en día de 25 h. (RF-30)
+- UT-06 `calcStats` coincide con `@pkmn/data` Gen 5 y el sim (Shedinja 1 PS, naturalezas, IV 20/25/30, EV ≠ 0). (RF-35/16)
+- UT-07 Tabla de tipos Gen 5 completa igual que `@pkmn/data`; Acero resiste Fantasma y Siniestro; sin Hada. (RF-14)
+
+**Generador y bolsa**
+- UT-08 Pureza: dos llamadas iguales → `deepEqual`; `Math.random` espiado sin llamadas; contiene todos los campos de RF-04; el PRNG de combate no altera el reto. (RF-02/04)
+- UT-09 Cambiar el prefijo de semilla cambia el reto; añadir un flujo nuevo no desplaza los existentes. (RF-03, DEC-02)
+- UT-10 Bolsa: un ciclo = permutación del roster; 10 ciclos, cada bloque permutación. (RF-05)
+- UT-11 Orden del JSON no afecta a la secuencia. (DEC-03)
+- UT-12 Frontera de ciclo: si primero(k+1) = último(k) se intercambia con la posición 1; 1000 ciclos simulados con roster sintético de 2..6 ids sin repetición entre ciclos; roster de 1 no cuelga. (regla 12)
+- UT-13 `rosterSchedule`: entrada fuera de frontera de ciclo falla con mensaje claro; añadir un entrenador en `fromDayIndex=5` no altera días 0-4.
+- UT-14 Variante: Brock ≈50 % ±10 % en 400 fechas; una variante siempre esa; variantes idénticas deduplicadas sin sesgo. (RF-06)
+- UT-15 Habilidad doble: siempre de la lista del set, ambas aparecen en 200 fechas, repetible por fecha; habilidad única se respeta. (RF-07)
+- UT-16 `alwaysLeadsWith`: Misty→Starmie, Plubio→Milotic, Brock→Onix; sin regla (Rojo) el primero varía y es reproducible; regla con especie ausente → error de datos. (RF-08)
+- UT-17 Snapshot de `getDailyChallenge` con las fechas de referencia y datos reales (incluye `number`, trainer, variant, rivalTeam con habilidades, playerTeam, `meta`); cambiar un dato lo rompe. Regenerar al fijar `LAUNCH_DATE` en F2. (RF-04)
+- UT-18 Mismo string de fecha con distinto `TZ` → mismo reto.
+
+**Equipo del jugador**
+- UT-19 En D0..D+4: 6 sets; todos totalmente evolucionados; sin especies/objetos repetidos; sin legendarios prohibidos; ≥4 tipos; ≥1 movimiento de daño ×2 por tipos contra algún rival; Nv. 50, IV iguales a los del rival del día, EV 0, naturaleza Seria. (RF-10/12/13/14/16)
+- UT-20 Igual en 365 días (también IV del jugador = IV del rival, `playerIvs.test.ts`: contra líder 20, campeón 25 y Rojo 30; el snapshot del reto solo cambia en `playerTeam[].ivs`); RF-14 solo relajado si consta en `meta.relaxedRules`; ningún día lanza error; `teamAttempts` ≤ 1000.
+- UT-21 Ningún set con tag `source:<rivalDelDía>`; misma especie de otro rival puede entrar, solo una. (RF-11)
+- UT-22 Onix (nfe) aparece en el rival; ninguna nfe en `player-sets.json` ni elegida; un pool contaminado no la devuelve.
+- UT-23 Tirada que incumple RF-13 → reintento (`attempts>1`), equipo válido y determinista. (RF-15)
+- UT-24 Pool sin solución para RF-14 → 1000 intentos, `relaxed=['RF-14']`; pool sin solución para RF-12/13 → error de datos tipado en español. (regla 7)
+- UT-25 Sin `nature` → `Serious` y marcado; con naturaleza se respeta. (regla 4)
+- UT-26 Sustituir `player-sets.json` por otro fixture funciona sin tocar código.
+
+**Validación de datos**
+- UT-27 Estructura: 6 sets por variante, nivel 50, `sourceTournament`/`sourceUrl` válidos, ids únicos, categoría y región válidas, 4 movimientos; 5 entrenadores, Brock con 2 variantes.
+- UT-28 Legalidad Gen 5: especie, objeto, habilidad (de la especie) y movimientos existen en Gen 5; nada prohibido por el PWT; validador de `@pkmn/sim` gen5; un set de Gen 6 se rechaza.
+- UT-29 Todos `verified: true`.
+- UT-30 IV por categoría: líderes 20, campeones 25, Rojo 30.
+- UT-31 EV ausentes → 0 y marcados; presentes → usados.
+- UT-32 Todo nombre resuelve en `names-es.json`; ninguno igual a su id; overrides mandan; Hidden Power y Vise Grip resuelven.
+- UT-33 `dex-gen5.json`, `names-es.json`, `player-sets.json` iguales a su regeneración en memoria.
+- UT-34 Sprites existen (Pokémon front/back por `spriteId`; entrenador `.gif` y `-mini.png`) con cabecera GIF/PNG válida.
+- UT-35 Pool provisional: solo evolucionados completos, deduplicados, con tags `source:`, ≥12 sets y ≥8 especies.
+
+**IA** (`chooseRivalAction`, ≥20 semillas por caso)
+- UT-36 Regla 1: elige el KO garantizado de mayor precisión; KO solo con crítico no cuenta; sin KO garantizado pasa a regla 2.
+- UT-37 Empate de KO: desempate determinista por semilla.
+- UT-38 Regla 2: mayor daño × precisión con tipo, STAB, clima y objeto; nunca una inmunidad si hay otra opción.
+- UT-39 Regla 3: Danza Espada / clima si está a salvo; ataca bajo amenaza de KO; no repite con +6, ni clima ya activo, ni estado sobre estado.
+- UT-40 Regla 4: cambia al que resiste si recibe KO sin movimiento útil; no cambia sin resistente, atrapado ni sin desventaja.
+- UT-41 Regla 5: mejor emparejamiento entre candidatos; índices de `switch N` según `request.side.pokemon` reordenado.
+- UT-42 Determinismo; el RNG de la IA es `Prng(battleSeed+":ai")` y no consume el del sim.
+- UT-43 IA trivial: primer movimiento habilitado o Forcejeo; primer vivo en `forceSwitch`; nunca inválida.
+- UT-44 Decisión < 50 ms con 6 vs 6.
+
+**Registro**
+- UT-45 Una línea de cada uno de ~30 tipos → español sin ids; descartes de `-message`, `-hint`, `raw`, `debug`; tipo desconocido → texto genérico en español.
+- UT-46 Sobre los logs de INT-01: sin `|`, ids, ni palabras inglesas (`used`, `fainted`, `sent out`, `super effective`, `The opposing`…). (RF-51)
+- UT-47 Intro: "¡La Líder Camila te desafía!", "¡El Campeón Rojo te desafía!", "¡Camila saca a [Pokémon]!" y envío del inicial. (RF-53)
+- UT-48 Sin literales de interfaz en `src/ui/**` fuera de `i18n/es.ts`.
+
+**Vista y fin**
+- UT-49 `viewReducer`: aplica líneas y se reconcilia con el snapshot; rival solo en %; restantes correctos.
+- UT-50 Fin: turno 300 sigue, 301 → `turnLimit` derrota; empate → derrota; rendición → `lose('p1')`; gana quien debilita 6.
+- UT-51 `partyMembers` (`partyModel.test.ts`): orden del request, estadísticas = `calcStats`, objeto/habilidad/naturaleza/movimientos en español, PP del estado del combate, debilitado/activo/estado, género, caída al request sin set. (RF-70, RF-71)
+- UT-52 Datos generados: `icon-index.json`, `descriptions-es.json` y `sprite-boxes.json` iguales a su regeneración; toda especie usada tiene icono dentro de la hoja; todo movimiento y habilidad usados tienen descripción en español. (RF-71)
+- UT-53 Geometría (`playerSpriteAnchor.test.ts`, `throwGeometry.test.ts`): el sprite del jugador asoma sobre la caja de mensajes (≥ 65 % visible, nada por arriba) para los 33 sprites; la mano del entrenador y el aterrizaje de la bola están dentro del campo y sobre su sprite. (RF-53, RF-72)
+- UT-54 El motor expone los PP del jugador en la vista (no los del rival) y bajan al usar un movimiento (`engine.test.ts`). (RF-71)
+- UT-55 `fetch-ui-assets`: operaciones `tile`, `clone` y `fill` con `clip`, `strip` y limpiezas con nombre válidas; todos los assets existen en `public/ui`. (RF-70, RF-71)
+
+## 2. Componente
+- CMP-01 Cabecera: `#N`, cuenta atrás hh:mm:ss con ceros, sin iconos de Estadísticas/Ayuda/Ajustes.
+- CMP-02 Cambio de día con fake timers sin recargar: `#1`→`#2`, rival/equipo cambian, cuenta atrás reinicia; un solo temporizador; variante de día de 23 h.
+- CMP-03 Tarjeta rival: sprite, nombre, categoría, región, especialidad solo si existe, torneo.
+- CMP-04 Equipo rival: 6 especies; con el toggle oculto no hay movimientos/objetos/habilidades en el DOM; al abrir, 4 movimientos, objeto y habilidad elegida; `aria-expanded`.
+- CMP-05 Tarjeta jugador: sprite, tipos, objeto, habilidad, total de base, 6 stats Nv. 50 (= `calcStats`), 4 movimientos con tipo/categoría/potencia/precisión, "—" si no aplica; tipo y categoría en texto.
+- CMP-06 "Sacar primero": único inicial, visible (`aria-pressed` y texto); repetir no deselecciona.
+- CMP-07 "Combatir": desactivado sin inicial con motivo visible; con inicial llama a `onStart`; botón único, sin "Práctica".
+- ~~CMP-08 Emparejamientos~~ **Eliminado** con RF-37 (PRD §0, 19/10/2026); sus tests y los de `estimate` en `damage.test.ts` se borraron.
+- CMP-09 Pie con aviso fan (Nintendo, Creatures, GAME FREAK, The Pokémon Company).
+- CMP-10 Datos corruptos / sin solución del equipo → error en español, sin traza ni ids, sin pantalla en blanco.
+- CMP-11 Sprite ausente → caja con el nombre, mismas dimensiones.
+- CMP-12 Menú de movimientos: 4 botones con tipo y PP; desactivados con motivo accesible; solo Forcejeo si no hay ninguno; los desactivados no llaman a `choose`.
+- CMP-13 Cambiar: abre la pantalla de equipo con los 6 Pokémon; al elegir uno, Cambiar / Datos / Cancelar; el debilitado y el activo no son elegibles (Cambiar con `aria-disabled` y motivo); el `slot` sigue el orden de `side.pokemon`; atrapado o sin banquillo → botón desactivado con motivo.
+- CMP-14 Cambio forzado: solo pantalla de equipo, sin Cancelar ni Volver ni movimientos; Escape no sale; Datos disponible; debilitados no elegibles.
+- CMP-15 Turno automático (recarga, dos turnos) avanza sin input.
+- CMP-16 Cinco clics rápidos → un `choose`; durante animación y turno rival la pantalla táctil queda en espera (sin botones ni movimientos) y al llegar el turno siguiente reaparece el menú principal con el foco en Luchar; «Turno N» no sale en la caja de mensajes pero sí en el historial. (RF-77, RF-78)
+- CMP-17 Restantes 6/6 → bajan al debilitarse, con texto.
+- CMP-18 Campo: rival de frente, jugador de espaldas; barra rival solo %, jugador actual/máx; estado en español, clima visible.
+- CMP-19 Rendirse: diálogo (foco dentro, Escape cancela); cancelar sin cambios; confirmar → `forfeit` y Resultado derrota.
+- CMP-20 Salir del combate pide confirmación y descarta.
+- CMP-21 Control de velocidad; con `prefers-reduced-motion` sin desplazamientos.
+- CMP-22 Error del worker → mensaje en español y "Volver a Hoy".
+- CMP-23 Resultado: victoria (turnos, en pie), derrota (x/6), rendición, 300 turnos; "Volver a Hoy" y "Otro combate" (mismo reto, nuevo `battleSeed`).
+- CMP-24 Navegación today → battle → result → today/battle; medianoche en combate mantiene el reto de inicio.
+- CMP-25 Pantalla de equipo (`PartyScreen.test.tsx`): 6 placas con nombre, PS y estado accesibles; icono, nivel y placa roja del debilitado; menú Cambiar / Datos / Cancelar; Cambiar envía el `slot`; Escape cierra el menú y devuelve el foco; sin Cancelar/Volver en el forzado; desactivada si el turno no está abierto. (RF-49, RF-70)
+- CMP-26 Pantalla de datos: tres páginas con ← →, botones « » y pestañas, sin pasar de los extremos; ↑ ↓ cambian de Pokémon dando la vuelta; Habilidades con las 5 estadísticas reales, PS, habilidad y descripción; naturaleza marcada con texto; detalle del movimiento (categoría, potencia, precisión, descripción, `aria-pressed`); PP actuales/máx; Volver, Escape y Cerrar; el foco vuelve a la placa. (RF-71)
+- CMP-27 Cambio animado (`BattleScreen.switch.test.tsx`): retirada a los 0,5 s y envío con su texto; rival; forzado sin retirada (`-send`); controles bloqueados y abiertos al terminar; mensajes uno a uno y sin duplicados en el historial; x4; un toque adelanta el texto; `drag` sin bola; `prefers-reduced-motion`; no se anima en el primer update. (RF-72)
+- CMP-28 Mochila atenuada con motivo accesible y aviso en la caja de texto (`BattleScreen.intro.test.tsx`). (RF-73)
+- CMP-30 Orden de las fases (`introTimeline.test.ts`): en la intro y en los cambios el entrenador termina de salir antes de que empiece a aparecer su Pokémon (leído de `battle.css`). (RF-76)
+- CMP-29 Escala del lienzo (`useStageScale.test.ts`): fraccionaria por debajo de x2 a todo el ancho (360, 400 px), entera desde x2, entre 1 y 4, el alto manda con ventanas bajas. (RNF-06)
+
+## 3. Integración del motor (Node)
+- INT-01 20 semillas × 5 retos, jugador trivial vs rival heurístico: todas terminan, turnos ≤ 301.
+- INT-02 Misma semilla y elecciones → log idéntico byte a byte; semillas distintas difieren.
+- INT-03 El reto no cambia tras correr partidas; dos combates del mismo reto con distinto `battleSeed` difieren; `battleSeed` de `crypto.getRandomValues`.
+- INT-04 PS rival en `/100`; jugador con PS reales; sin `|debug|` ni `|raw|`.
+- INT-05 Formato: sin Team Preview; Nv. 50; IV rival por categoría, jugador con los IV del rival/EV 0; stats del sim = `calcStats`; sin cláusula de sueño ni OHKO (Frío Polar usable); sin cláusulas de especie/objeto en combate.
+- INT-06 Inicial del jugador y del rival (`alwaysLeadsWith`); índices de `switch N` tras reordenar.
+- INT-07 Restricciones del request (Elección, Anulación, Mofa, Otra Vez, sin PP, atrapado, recarga, dos turnos); elección inválida rechazada sin avanzar.
+- INT-08 Cambios forzados (KO, Ida y Vuelta, Voltiocambio, arrastre); sin banquillo se resuelve sin bloqueo.
+- INT-09 Debilitamientos simultáneos y empate → derrota.
+- INT-10 300 turnos exactos siguen; superarlos → `turnLimit` (con `maxTurns` bajo forzado).
+- INT-11 `forfeit` → derrota; `choose` posterior ignorado.
+- INT-12 Tras cada `choose`, la IA responde a todos los requests de p2 (incluido `forceSwitch`); sin cuelgues.
+- INT-13 En ≥100 partidas el rival usa al menos un movimiento de estado y un cambio.
+- INT-14 Dificultad preliminar: 50 partidas con jugador "mejor daño" sobre los 5 rivales; informe de % de victorias (detecta extremos <10 % o >95 %), sin aserción estricta.
+- INT-15 Turno completo (jugador + IA + traducción) < 300 ms (mediana y p95 en 200 turnos).
+- INT-16 Sin `debug`/`raw` en las líneas a la UI; un nombre con HTML se renderiza como texto.
+
+## 4. E2E (chromium + webkit; ganchos `?date=`, `?seed=`, `?ai=trivial`; `page.clock`)
+- E2E-01 Hoy completo con `?date=2026-10-17`: `#1`, cuenta atrás, rival, 6 especies, 6 tarjetas, "Combatir" desactivado con motivo, aviso fan, consola limpia.
+- E2E-02 Dos contextos (distinto `timezoneId`) con la misma fecha → mismo reto.
+- E2E-03 `page.clock` 23:59:55 + 10 s: `#1`→`#2`, cambia el reto, reinicia la cuenta atrás, sin recarga; variante 2027-03-27 (~23 h).
+- E2E-04 Medianoche con combate en curso: sigue el reto original; Hoy muestra el nuevo al volver.
+- E2E-05 Partida completa contra IA trivial (3 semillas × 3 fechas) hasta Resultado; registro en español; misma semilla y decisiones → mismo resultado.
+- E2E-06 Cambio voluntario y forzado tras KO.
+- E2E-07 Rendirse: cancelar sin cambios; confirmar → Derrota; "Volver a Hoy" y "Otro combate".
+- E2E-08 Salir del combate pide confirmación y descarta.
+- E2E-09 Toggle del rival: oculto por defecto, mostrar/ocultar con datos (ya no hay toggle de emparejamientos).
+- E2E-10 Teclado completo: partida jugable sin ratón, foco visible, diálogos devuelven el foco.
+- E2E-11 `@axe-core/playwright` sin violaciones serias/críticas en Hoy, Combate, Resultado y diálogo; contraste AA.
+- E2E-12 360 px táctil: `scrollWidth ≤ 360`, objetivos ≥ 44 px, jugable con `tap`.
+- E2E-13 Datos corruptos (`page.route`) → error en español.
+- E2E-14 Fallo del worker → error con volver a Hoy.
+- E2E-15 GIF abortado → caja con nombre.
+- E2E-16 `image-rendering: pixelated`; tamaño renderizado múltiplo entero del natural; GIF animado.
+- E2E-17 Build sin `VITE_TEST_HOOKS`: ganchos ignorados y ausentes del bundle.
+- E2E-18 Táctil en espera durante animación y turno rival; cinco clics = una decisión; «Turno N» no sale en pantalla. (RF-77, RF-78)
+- E2E-19 Solo peticiones del mismo origen; fuente local.
+- E2E-20 Resultado mínimo (RF-60/61).
+- E2E-21 Throttling 4G + CPU ×4: Hoy < 3 s; ruta crítica < 200 KB gzip; sim y `@smogon/calc` fuera de ella.
+- E2E-22 E2E-01, 05, 07, 10 y 12 pasan en chromium y webkit; Firefox si el entorno lo permite.
+- E2E-23 Mochila atenuada: `aria-disabled`, motivo accesible y aviso en la caja de texto. (RF-73)
+- E2E-24 El sprite del jugador asoma sobre la caja de mensajes. (RF-44)
+- E2E-25 Equipo desde el combate: 6 placas con nombre, nivel, PS, estado e icono; Volver; elegir Pokémon abre Cambiar / Datos / Cancelar y cambiar desde el menú envía el cambio. (RF-70)
+- E2E-26 Datos: tres páginas con botones y teclado, otro Pokémon, detalle de movimiento, Volver y Escape; los PS y PP reflejan el combate. (RF-71)
+- E2E-27 Cambio forzado: sin Cancelar ni Volver, Escape no sale, Datos disponible. (RF-49)
+- E2E-28 axe sin violaciones serias en equipo, menú y las tres páginas de datos. (RNF-04)
+- E2E-29 Teclado en el equipo: Tab, Enter abre el menú con el foco en Cambiar, Escape devuelve el foco a la placa.
+- E2E-30 Alineación en Hoy: iconos de tipo del mismo ancho; en cada lista de movimientos tipo, categoría, potencia y precisión en la misma columna; cabeceras y tarjetas de la misma fila con la misma altura; tarjetas del jugador con la misma rejilla. (RF-34, RF-35)
+- E2E-31 El contenido de Hoy termina por encima de la barra fija «Combatir». (RF-35b)
+- E2E-32 Texto de los iconos de tipo centrado (tinta medida sobre una captura, tolerancia 2 px lógicos en horizontal). (RF-35)
+- E2E-33 Pantalla de datos sin desbordes en 5 fechas × 6 Pokémon × 3 páginas (cajas dentro del lienzo, `scrollHeight ≤ clientHeight`, nombre del movimiento a la derecha del icono, descripción de la habilidad centrada en vertical). (RF-71)
+- E2E-34 Ningún texto con `overflow` oculto corta los descendentes de la fuente (se mide el alto de tinta de `ÁÉÍÓÚpgjqyÑ` con la fuente cargada frente al alto útil de la caja) en Hoy, combate, equipo y datos.
+- E2E-35 Cambio animado: el entrenador y la bola aparecen en el campo durante el cambio y desaparecen al terminar, sin bloquear el turno. (RF-72)
+- E2E-37 Rejillas de Hoy (equipo rival, tarjetas del jugador y detalle del rival) a 360, 768, 1280 y 1440 px: el último elemento de cada fila llega al borde derecho del panel (±2 px).
+- E2E-38 Datos: texto de los iconos de tipo de las placas de movimientos centrado (≤ 1 px lógico); el selector « Página » y el título de la cabecera se comprueban en E2E-42. (RF-71)
+- E2E-42 Pantalla de datos: las mayúsculas de cada texto quedan centradas en la franja del fondo que le corresponde (`data-band`, tabla `summaryLayout.ts`), ≤ 1 px nativo, en las tres páginas. (RF-71)
+- E2E-43 Equipo: las mayúsculas del nombre, el nivel y los PS de cada placa quedan centradas en su franja (`PANEL_BANDS`), ≤ 1 px nativo. (RF-70)
+- E2E-39 Intro: el entrenador sale antes de que aparezca su Pokémon (rival y protagonista, leído de `getAnimations()`) y no queda ninguno tras la intro. (RF-76)
+- E2E-40 Barra superior en una línea en escritorio. (RF-75)
+- E2E-41 Teselas de movimiento: sin icono de tipo, nombre accesible con tipo y PP, PP centrados con el mismo hueco, botón Volver ripeado. (RF-46)
+- E2E-36 Escala: a 360 y 400 px el lienzo ocupa todo el ancho (fraccionaria); a 1280×800 escala 2 y sin escala fraccionaria en los sprites. (RNF-06)
+
+## 5. Verificación visual (360×740 y 1280×800, fechas fijas; capturas en `e2e-artifacts/vis/` con `npm run vis`, ignoradas por git)
+| ID | Estado | Comprobar |
+|---|---|---|
+| VIS-01 | Hoy en D0, D+1, D+3 | Jerarquía, sin scroll horizontal, estilo de los menús de N2/B2 y del PWT |
+| VIS-02 | Hoy con el panel del rival abierto | Sin desbordes ni truncados |
+| VIS-03 | Inicial elegido / sin inicial con motivo | Selección distinguible sin color |
+| VIS-04 | Nombres largos, "—" en movimientos | Sin recortes, stats alineados |
+| VIS-05 | Error de datos | Mensaje legible |
+| VIS-06 | Combate: inicio | Lienzo 256×192 a escala entera, campo, caja de texto, menú 2×2, barras |
+| VIS-07 | Movimientos desactivados / PP bajos | Desactivado sin solo color, tipo en texto |
+| VIS-08 | Cambio y cambio forzado | Legible a 360 px, sin cancelar en forzado |
+| VIS-09 | Estados, clima, PS bajos | Etiquetas de estado, contraste |
+| VIS-10 | Diálogo de Rendirse | Foco, contraste, tamaño táctil |
+| VIS-11 | Registro | Español, sin ids ni inglés |
+| VIS-12 | Resultado victoria y derrota | Datos de RF-60 |
+| VIS-13 | Pixelado | Sprites sin difuminar |
+| VIS-14 | `prefers-reduced-motion`, alto contraste | Sin desplazamientos, sin pérdida de información |
+| VIS-16 | Pantalla de equipo (360, 400, 1280) y menú Cambiar / Datos | Comparada con `BW_Party`/`B2W2_Party`: posiciones de placas, texto y barras |
+| VIS-17 | Datos, páginas 1 a 3 (360, 400, 1280) | Superpuestas a `BW_summary_1/2/2_desc` (50 %): cada texto en su hueco, sin restos del fondo original |
+| VIS-18 | Hoy (360, 1280) con el rival abierto | Cajas integradas, iconos de tipo en español alineados |
+| VIS-21 | Elegir ataque, espera y turno siguiente (400 px) | Menú de movimientos → táctil en espera → menú principal |
+| VIS-19 | Lanzamiento de la intro y cambio (hoja de contactos) | La bola sale de la mano y cae sobre el Pokémon; retirada con rayo rojo |
+
+Aceptación: las 14 capturas × 2 anchos revisadas sin hallazgos de severidad alta abiertos; cada hallazgo corregido o justificado.
+
+## 6. Trazabilidad resumida
+RF-01 UT-03/18, E2E-02/03 · RF-02/03 UT-01/02/08/09 · RF-04 UT-08/17 · RF-05 UT-10..13 · RF-06 UT-14 · RF-07 UT-15 · RF-08 UT-16, INT-06 · RF-09 UT-04 · RF-10..16 UT-19..26 · RF-17..21 UT-27..32 · RF-30/31 UT-05, CMP-01/02, E2E-03/04 · RF-32..36 y RF-38/39 CMP-03..07 y CMP-09 (RF-37 eliminado) · RF-40..43 INT-01..06, UT-42 · RF-44/45 UT-49, INT-04, CMP-17/18 · RF-46..49 CMP-12..15, INT-07/08 · RF-70 CMP-25, UT-51, E2E-25/27..29, VIS-16 · RF-71 CMP-26, UT-51/52/54, E2E-26/28/33, VIS-17 · RF-72 CMP-27, UT-53, E2E-35, VIS-19 · RF-73 CMP-28, E2E-23 · RF-74 VIS-06 · RF-50 UT-36..44, INT-12/13 · RF-51/53 UT-45..48, INT-16 · RF-52 CMP-21 · RF-54..56 UT-50, INT-10/11, CMP-19, E2E-07 · RF-57 VIS-06..11 · RF-60/61 CMP-23, E2E-20 · RNF-01 E2E-21 · RNF-02 INT-15 · RNF-03 E2E-12 · RNF-04 E2E-10/11 · RNF-05 UT-32/46/48 · RNF-06 UT-34, CMP-29, E2E-16/36 · RNF-07 E2E-19 · RNF-08 E2E-22 · RNF-10 VIS · criterios 1..13 cubiertos por los casos anteriores (1: UT-08, E2E-02; 2: CMP-02, E2E-03; 3: UT-10/12; 4: UT-17; 5: INT-05/06; 6: UT-36/40/41; 7: CMP-19, E2E-07; 8: UT-19/20; 9: UT-28/29; 10: UT-34, E2E-16; 11: E2E-05; 12: VIS; 13: E2E-10/11).
+
+## 7. Entorno y limitaciones
+- Node ≥ 22.12; `@pkmn/sim` 0.10.11 y `@smogon/calc` 0.12.0 exactas; `@axe-core/playwright` como devDependency; Playwright con chromium y webkit (`npx playwright install`).
+- `VITE_TEST_HOOKS=1` para el build de E2E; segundo build sin ella para E2E-17. `TZ` controlable por proceso en UT-03/05.
+- Limitaciones: Safari iOS real, Firefox y móviles modestos quedan como prueba manual; rendimiento con throttling simulado; axe cubre solo parte de WCAG; RF-57 (fidelidad N2/B2) y el criterio 12 son revisión visual; los datos se validan en forma y legalidad, no en exactitud frente al juego (revisión manual con dos fuentes); el sim puede diferir de N2/B2 en casos concretos; el pool provisional es pequeño y puede forzar la relajación de RF-14.

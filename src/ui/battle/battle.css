@@ -1,0 +1,1363 @@
+/*
+ * Pantalla de combate fiel a Pokémon Negro 2 / Blanco 2 (PRD §0 "Redirección visual").
+ * Lienzo lógico de 256x384: la pantalla de batalla (256x192) y la táctil (256x192) apiladas. Todo se coloca en píxeles
+ * lógicos de la DS y `.bt-ds` se escala con `transform: scale(var(--k))`, siempre con k entero (useStageScale).
+ */
+.bt-root {
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+}
+
+.bt {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 4px 0 8px;
+  box-sizing: border-box;
+}
+
+.bt-layout {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.bt-layout[data-layout="wide"] {
+  padding: 4px 8px;
+  box-sizing: border-box;
+  flex-direction: row-reverse;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.bt-chrome {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 8px;
+}
+
+.bt-layout[data-layout="wide"] .bt-chrome {
+  width: 288px;
+  padding: 0;
+}
+
+/* En escritorio los tres botones caben en una sola línea compacta; los contadores van debajo. */
+.bt-layout[data-layout="wide"] .bt-chrome-buttons {
+  flex-wrap: nowrap;
+  gap: 6px;
+}
+
+.bt-layout[data-layout="wide"] .bt-chrome-buttons .btn {
+  flex: 1 1 auto;
+  padding-inline: 0.5rem;
+  white-space: nowrap;
+}
+
+/* En vertical los botones van en una sola fila fina encima del lienzo y los contadores debajo: el lienzo gana altura y no sobra una pantalla de controles. */
+.bt-layout[data-layout="stacked"] .bt-chrome {
+  display: contents;
+}
+
+.bt-layout[data-layout="stacked"] .bt-chrome-buttons {
+  order: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 8px;
+  flex-wrap: nowrap;
+}
+
+.bt-layout[data-layout="stacked"] .bt-chrome-buttons .btn {
+  flex: 1 1 0;
+  min-width: 0;
+  padding-inline: 0.25rem;
+}
+
+.bt-layout[data-layout="stacked"] .bt-stage {
+  order: 1;
+}
+
+.bt-layout[data-layout="stacked"] .bt-counters {
+  order: 2;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 8px;
+  justify-content: space-between;
+}
+
+.bt-chrome-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bt-chrome-buttons .btn {
+  min-height: 44px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.bt-counters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1rem;
+}
+
+.bt-remaining {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-family: var(--font-game);
+  font-size: 1rem;
+}
+
+.bt-remaining-label {
+  min-width: 2.5rem;
+  color: #d0d0d0;
+}
+
+.bt-balls {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.bt-ball-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  background: linear-gradient(#e63946 0 45%, #ffffff 45% 55%, #f1f3f9 55% 100%);
+}
+
+.bt-ball-fainted {
+  background: #3a4260;
+  border-color: #6b7599;
+}
+
+.bt-stage {
+  position: relative;
+  flex: none;
+}
+
+.bt-ds {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: scale(var(--k, 1));
+  transform-origin: 0 0;
+  font-family: var(--font-game);
+  font-size: 16px;
+  line-height: 16px;
+  color: #f8f8f8;
+  image-rendering: pixelated;
+  /* Texto de píxel sin suavizado ni kerning (la fuente del juego va a su tamaño de píxel). */
+  -webkit-font-smoothing: none;
+  text-rendering: optimizeSpeed;
+  font-kerning: none;
+  font-synthesis: none;
+}
+
+.bt-ds img {
+  display: block;
+  image-rendering: pixelated;
+}
+
+/* ---------- Pantalla superior ---------- */
+.bt-top {
+  position: relative;
+  width: 256px;
+  height: 192px;
+  overflow: hidden;
+  background: #000;
+}
+
+.bt-bg {
+  position: absolute;
+  inset: 0;
+  width: 256px;
+  height: 192px;
+}
+
+/* Plataforma rival PWT: centro ≈ (186,96); la del jugador ≈ (112,170). Los pies de cada sprite van sobre su plataforma. */
+.bt-mon {
+  position: absolute;
+  translate: -50% -100%;
+  line-height: 0;
+  opacity: 0;
+}
+
+.bt-mon-rival {
+  left: 186px;
+  top: 97px;
+}
+
+/* Como en el juego: el Pokémon del jugador está más cerca de la cámara, a escala entera 2x, con los pies fuera del lienzo;
+   lo recortan el borde izquierdo y la caja de mensajes. `top` (los pies) lo pone TopScreen según el alto real del sprite
+   (playerSpriteAnchor.ts), para que el cuerpo quede sobre el campo y solo se pierda la parte baja. */
+.bt-mon-player {
+  left: 62px;
+  top: 167px;
+}
+
+.bt-mon.bt-mon-player .bt-sprite {
+  transform: scale(2);
+}
+
+.bt-mon.bt-mon-player[data-fainted="true"] .bt-sprite {
+  transform: translateY(40px) scale(2);
+}
+
+.bt-mon .bt-sprite {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: none;
+  transform-origin: 50% 100%;
+  transition: opacity calc(400ms / var(--speed, 1)), transform calc(400ms / var(--speed, 1));
+}
+
+.bt-mon[data-fainted="true"] .bt-sprite {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.bt-mon .sprite-fallback {
+  line-height: 1.1;
+  color: #1d2233;
+  background: rgb(246 241 220 / 0.85);
+}
+
+.bt-databox {
+  position: absolute;
+  opacity: 0;
+}
+
+.bt-databox-rival {
+  left: 0;
+  top: 32px;
+  width: 104px;
+  height: 19px;
+  --bar-left: 37px;
+}
+
+.bt-databox-player {
+  left: 139px;
+  top: 112px;
+  width: 113px;
+  height: 25px;
+  --bar-left: 49px;
+}
+
+.bt-databox-visual {
+  position: absolute;
+  inset: 0;
+}
+
+.bt-databox-visual > * {
+  position: absolute;
+}
+
+.bt-databox-plate {
+  left: 0;
+  top: 0;
+}
+
+.bt-databox-track,
+.bt-databox-fill {
+  left: var(--bar-left);
+  top: 8px;
+}
+
+.bt-databox-fill img {
+  /* El preflight de Tailwind pone max-width:100% a las imágenes: sin esto el relleno se encoge (se aplasta) en vez de recortarse. */
+  width: 50px;
+  max-width: none;
+  height: 5px;
+}
+
+.bt-databox-fill {
+  width: var(--fill, 50px);
+  height: 5px;
+  overflow: hidden;
+  transition: width calc(700ms / var(--speed, 1)) linear;
+}
+
+.bt-databox-exp {
+  left: 25px;
+  top: 22px;
+}
+
+.bt-databox-name {
+  left: 20px;
+  top: -9px;
+  white-space: nowrap;
+  color: #f8f8f8;
+  text-shadow: 1px 0 #181818, -1px 0 #181818, 0 1px #181818, 0 -1px #181818, 1px 1px #181818, -1px -1px #181818, 1px -1px #181818, -1px 1px #181818;
+}
+
+.bt-databox-player .bt-databox-name {
+  left: 13px;
+}
+
+.bt-databox-gender {
+  top: -4px;
+}
+
+.bt-databox-rival .bt-databox-gender {
+  left: 69px;
+}
+
+.bt-databox-player .bt-databox-gender {
+  left: 66px;
+}
+
+.bt-digits {
+  display: flex;
+}
+
+.bt-databox-level {
+  top: -3px;
+}
+
+.bt-databox-rival .bt-databox-level {
+  left: 86px;
+}
+
+.bt-databox-player .bt-databox-level {
+  left: 82px;
+}
+
+.bt-databox-status {
+  top: 10px;
+}
+
+.bt-databox-rival .bt-databox-status {
+  left: 2px;
+}
+
+.bt-databox-player .bt-databox-status {
+  left: 14px;
+}
+
+.bt-databox-hp-now {
+  right: 37px;
+  top: 11px;
+}
+
+.bt-databox-hp-max {
+  left: 81px;
+  top: 11px;
+}
+
+.bt-weather {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  z-index: 2;
+  margin: 0;
+  padding: 1px 4px;
+  color: #f8f8f8;
+  background: rgb(0 0 0 / 0.67);
+  border: 1px solid #a03848;
+}
+
+/* Caja de mensajes: banda translúcida oscura de ancho completo (y ≈ 147..189), línea rojiza arriba, texto blanco con sombra. */
+.bt-message {
+  position: absolute;
+  left: 0;
+  top: 147px;
+  width: 256px;
+  height: 42px;
+  box-sizing: border-box;
+  padding: 3px 8px 0;
+  background: rgb(0 0 0 / 0.67);
+  border-top: 1px solid #a03848;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.bt-message-text {
+  margin: 0;
+  padding-bottom: 2px;
+  max-height: 40px;
+  overflow: hidden;
+  font-size: 16px;
+  line-height: 18px;
+  color: #f8f8f8;
+  text-shadow: 1px 1px 0 #585858;
+}
+
+/* ---------- Intro (PRD §10.2.1) ---------- */
+.bt-iris {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  overflow: hidden;
+  background: #000;
+  pointer-events: none;
+}
+
+.bt-iris-ball {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 128px;
+  height: 128px;
+  margin: -64px 0 0 -64px;
+  border-radius: 50%;
+  image-rendering: auto;
+  transform: scale(0.5);
+}
+
+[data-intro="iris"] .bt-iris {
+  animation: bt-iris-fade calc(500ms / var(--speed, 1)) ease-in both;
+}
+
+[data-intro="iris"] .bt-iris-ball {
+  animation: bt-iris-zoom calc(500ms / var(--speed, 1)) ease-in both;
+}
+
+@keyframes bt-iris-fade {
+  0%,
+  35% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes bt-iris-zoom {
+  from {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  to {
+    transform: scale(7);
+    opacity: 0;
+  }
+}
+
+.bt-intro {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bt-trainer {
+  position: absolute;
+  translate: -50% -100%;
+  line-height: 0;
+  opacity: 0;
+}
+
+.bt-trainer-rival {
+  left: 186px;
+  top: 102px;
+}
+
+.bt-trainer-player {
+  left: 78px;
+  top: 182px;
+  width: 90px;
+  height: 120px;
+}
+
+.bt-trainer-img {
+  display: block;
+  width: auto;
+  height: auto;
+}
+
+.bt-avatar-stand,
+.bt-avatar-pose {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  translate: -50% 0;
+  background-repeat: no-repeat;
+}
+
+.bt-avatar-pose {
+  opacity: 0;
+}
+
+.bt-ball,
+.bt-shine {
+  position: absolute;
+  opacity: 0;
+  translate: -50% -50%;
+}
+
+/* Poké Ball del juego (hoja de Negro/Blanco): 6 fotogramas de giro y el 7.º con la tapa abierta, 12x15 cada uno (la bola mide 11 px, como la que lleva el protagonista en la mano). */
+.bt-ball {
+  width: 12px;
+  height: 15px;
+  translate: -50% -40%;
+  background-repeat: no-repeat;
+  background-size: 84px 15px;
+  background-position: 0 0;
+  image-rendering: pixelated;
+}
+
+@keyframes bt-ball-frames {
+  0% {
+    background-position-x: 0;
+    animation-timing-function: steps(6);
+  }
+  80%,
+  100% {
+    background-position-x: -72px;
+  }
+}
+
+/* La bola sale de la mano del entrenador (--*-from: mano menos aterrizaje) y cae donde aparece su Pokémon (--*-land); medidas en throwGeometry.ts. */
+.bt-ball-rival,
+.bt-shine-rival {
+  left: var(--rival-land-x, 186px);
+  top: var(--rival-land-y, 70px);
+}
+
+.bt-ball-player,
+.bt-shine-player {
+  left: var(--player-land-x, 72px);
+  top: var(--player-land-y, 120px);
+}
+
+/* Rayo rojo de la retirada: de la mano del entrenador al Pokémon. */
+.bt-beam {
+  position: absolute;
+  height: 3px;
+  width: 0;
+  opacity: 0;
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, #f8f8f8, #ff3030 35%, #ff7070);
+}
+
+.bt-beam-rival {
+  left: var(--rival-hand-x, 186px);
+  top: var(--rival-hand-y, 60px);
+  rotate: var(--rival-beam-angle, 0deg);
+}
+
+.bt-beam-player {
+  left: var(--player-hand-x, 80px);
+  top: var(--player-hand-y, 70px);
+  rotate: var(--player-beam-angle, 0deg);
+}
+
+@keyframes bt-slide-in-right {
+  from {
+    transform: translateX(150px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes bt-slide-out-right {
+  from {
+    transform: none;
+    opacity: 1;
+  }
+  to {
+    transform: translateX(150px);
+    opacity: 0;
+  }
+}
+
+@keyframes bt-slide-in-left {
+  from {
+    transform: translateX(-150px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes bt-slide-out-left {
+  from {
+    transform: none;
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-150px);
+    opacity: 0;
+  }
+}
+
+@keyframes bt-ball-rival-flight {
+  0% {
+    transform: translate(var(--rival-from-x, -24px), var(--rival-from-y, -22px));
+    opacity: 1;
+  }
+  50% {
+    transform: translate(calc(var(--rival-from-x, -24px) * 0.5), calc(var(--rival-from-y, -22px) * 0.5 - 22px));
+    opacity: 1;
+  }
+  96% {
+    transform: none;
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+    opacity: 0;
+  }
+}
+
+/* La bola del jugador se aleja de la cámara: empieza al tamaño de la mano y llega más pequeña. La del rival ya está lejos y va a escala 1. */
+@keyframes bt-ball-player-flight {
+  0% {
+    transform: translate(var(--player-from-x, -50px), var(--player-from-y, -64px));
+    scale: 1;
+    opacity: 1;
+  }
+  50% {
+    transform: translate(calc(var(--player-from-x, -50px) * 0.5), calc(var(--player-from-y, -64px) * 0.5 - 22px));
+    scale: 0.85;
+    opacity: 1;
+  }
+  96% {
+    transform: none;
+    scale: 0.7;
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+    scale: 0.7;
+    opacity: 0;
+  }
+}
+
+@keyframes bt-shine-flash {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0;
+  }
+}
+
+@keyframes bt-appear {
+  from {
+    transform: scale(0.15);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes bt-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bt-hide {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes bt-show {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bt-show-then-hide {
+  0%,
+  98% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* enter: entran los dos entrenadores */
+[data-intro="enter"] .bt-trainer-rival {
+  animation: bt-slide-in-right calc(500ms / var(--speed, 1)) ease-out both;
+}
+
+[data-intro="enter"] .bt-trainer-player {
+  animation: bt-slide-in-left calc(500ms / var(--speed, 1)) ease-out both;
+}
+
+[data-intro="challenge"] .bt-trainer {
+  opacity: 1;
+}
+
+/* rivalSend: lanza el rival, aparece su Pokémon y sale el entrenador */
+[data-intro="rivalSend"] .bt-trainer-player {
+  opacity: 1;
+}
+
+[data-intro="rivalSend"] .bt-trainer-rival {
+  animation: bt-slide-out-right calc(280ms / var(--speed, 1)) calc(300ms / var(--speed, 1)) ease-in both;
+}
+
+[data-intro="rivalSend"] .bt-ball-rival {
+  animation: bt-ball-rival-flight calc(450ms / var(--speed, 1)) calc(100ms / var(--speed, 1)) linear both,
+    bt-ball-frames calc(450ms / var(--speed, 1)) calc(100ms / var(--speed, 1)) linear both;
+}
+
+[data-intro="rivalSend"] .bt-shine-rival {
+  animation: bt-shine-flash calc(350ms / var(--speed, 1)) calc(520ms / var(--speed, 1)) ease-out both;
+}
+
+[data-intro="rivalSend"] .bt-mon-rival {
+  animation: bt-appear calc(300ms / var(--speed, 1)) calc(620ms / var(--speed, 1)) ease-out both;
+  transform-origin: 50% 100%;
+}
+
+[data-intro="rivalSend"] .bt-databox-rival {
+  animation: bt-fade-in calc(250ms / var(--speed, 1)) calc(950ms / var(--speed, 1)) linear both;
+}
+
+/* playerSend: lanza el jugador (tres poses), aparece su Pokémon y sale el protagonista */
+[data-intro="playerSend"] .bt-mon-rival,
+[data-intro="playerSend"] .bt-databox-rival,
+[data-intro="done"] .bt-mon,
+[data-intro="done"] .bt-databox {
+  opacity: 1;
+}
+
+[data-intro="playerSend"] .bt-trainer-player {
+  animation: bt-slide-out-left calc(280ms / var(--speed, 1)) calc(850ms / var(--speed, 1)) ease-in both;
+}
+
+[data-intro="playerSend"] .bt-avatar-stand {
+  animation: bt-hide 1ms calc(150ms / var(--speed, 1)) both;
+}
+
+[data-intro="playerSend"] .bt-avatar-raise {
+  animation: bt-show-then-hide calc(500ms / var(--speed, 1)) calc(150ms / var(--speed, 1)) both;
+}
+
+[data-intro="playerSend"] .bt-avatar-throw {
+  animation: bt-show 1ms calc(650ms / var(--speed, 1)) both;
+}
+
+[data-intro="playerSend"] .bt-ball-player {
+  animation: bt-ball-player-flight calc(450ms / var(--speed, 1)) calc(650ms / var(--speed, 1)) linear both,
+    bt-ball-frames calc(450ms / var(--speed, 1)) calc(650ms / var(--speed, 1)) linear both;
+}
+
+[data-intro="playerSend"] .bt-shine-player {
+  animation: bt-shine-flash calc(350ms / var(--speed, 1)) calc(1070ms / var(--speed, 1)) ease-out both;
+}
+
+[data-intro="playerSend"] .bt-mon-player {
+  animation: bt-appear calc(300ms / var(--speed, 1)) calc(1170ms / var(--speed, 1)) ease-out both;
+  transform-origin: 50% 100%;
+}
+
+[data-intro="playerSend"] .bt-databox-player {
+  animation: bt-fade-in calc(250ms / var(--speed, 1)) calc(1250ms / var(--speed, 1)) linear both;
+}
+
+/*
+ * Cambio de Pokémon: el entrenador entra, recoge al Pokémon con un rayo rojo (0 a 0,5 s), lanza la bola del nuevo (0,8 s) y el nuevo aparece (1,2 s).
+ * Dura 1,6 s a x1, igual que SWITCH_DURATIONS_MS en useBattle; `-send` (el anterior ya estaba debilitado) arranca en el envío (retraso negativo).
+ * Todo va dividido por --speed y el JS cambia la vista a los 0,5 s, con el Pokémon invisible.
+ */
+:root {
+  --switch-total: 1600ms;
+  --switch-skip: 0ms;
+}
+
+[data-switch$="-send"] {
+  --switch-skip: 500ms;
+}
+
+[data-switch] .bt-trainer {
+  animation-duration: calc(var(--switch-total) / var(--speed, 1));
+  animation-delay: calc(var(--switch-skip) / var(--speed, 1) * -1);
+  animation-fill-mode: both;
+  animation-timing-function: ease-out;
+}
+
+[data-switch^="player"] .bt-trainer-player {
+  animation-name: bt-visit-left;
+}
+
+[data-switch^="rival"] .bt-trainer-rival {
+  animation-name: bt-visit-right;
+}
+
+[data-switch] .bt-trainer-img {
+  opacity: 1;
+}
+
+@keyframes bt-visit-left {
+  0% {
+    transform: translateX(-150px);
+    opacity: 0;
+  }
+  15%,
+  53% {
+    transform: none;
+    opacity: 1;
+  }
+  72%,
+  100% {
+    transform: translateX(-150px);
+    opacity: 0;
+  }
+}
+
+@keyframes bt-visit-right {
+  0% {
+    transform: translateX(150px);
+    opacity: 0;
+  }
+  15%,
+  53% {
+    transform: none;
+    opacity: 1;
+  }
+  72%,
+  100% {
+    transform: translateX(150px);
+    opacity: 0;
+  }
+}
+
+[data-switch^="player"] .bt-avatar-stand {
+  animation: bt-hide 1ms calc((500ms - var(--switch-skip)) / var(--speed, 1)) both;
+}
+
+[data-switch^="player"] .bt-avatar-raise {
+  animation: bt-show-then-hide calc(300ms / var(--speed, 1)) calc((500ms - var(--switch-skip)) / var(--speed, 1)) both;
+}
+
+[data-switch^="player"] .bt-avatar-throw {
+  animation: bt-show 1ms calc((800ms - var(--switch-skip)) / var(--speed, 1)) both;
+}
+
+[data-switch^="rival"] .bt-ball-rival {
+  animation: bt-ball-rival-flight calc(350ms / var(--speed, 1)) calc((800ms - var(--switch-skip)) / var(--speed, 1)) linear both,
+    bt-ball-frames calc(350ms / var(--speed, 1)) calc((800ms - var(--switch-skip)) / var(--speed, 1)) linear both;
+}
+
+[data-switch^="player"] .bt-ball-player {
+  animation: bt-ball-player-flight calc(350ms / var(--speed, 1)) calc((800ms - var(--switch-skip)) / var(--speed, 1)) linear both,
+    bt-ball-frames calc(350ms / var(--speed, 1)) calc((800ms - var(--switch-skip)) / var(--speed, 1)) linear both;
+}
+
+[data-switch^="rival"] .bt-shine-rival {
+  animation: bt-shine-flash calc(280ms / var(--speed, 1)) calc((1120ms - var(--switch-skip)) / var(--speed, 1)) ease-out both;
+}
+
+[data-switch^="player"] .bt-shine-player {
+  animation: bt-shine-flash calc(280ms / var(--speed, 1)) calc((1120ms - var(--switch-skip)) / var(--speed, 1)) ease-out both;
+}
+
+[data-switch^="rival"] .bt-beam-rival,
+[data-switch^="player"] .bt-beam-player {
+  animation: bt-beam calc(var(--switch-total) / var(--speed, 1)) calc(var(--switch-skip) / var(--speed, 1) * -1) linear both;
+}
+
+@keyframes bt-beam {
+  0%,
+  15% {
+    width: 0;
+    opacity: 0;
+  }
+  17% {
+    width: 0;
+    opacity: 1;
+  }
+  25% {
+    width: var(--beam-length, 60px);
+    opacity: 1;
+  }
+  31% {
+    width: var(--beam-length, 60px);
+    opacity: 1;
+  }
+  38%,
+  100% {
+    width: var(--beam-length, 60px);
+    opacity: 0;
+  }
+}
+
+[data-switch^="rival"] .bt-beam-rival {
+  --beam-length: var(--rival-beam-length, 60px);
+}
+
+[data-switch^="player"] .bt-beam-player {
+  --beam-length: var(--player-beam-length, 60px);
+}
+
+/* El Pokémon que sale se pone rojo y se encoge hacia la bola; el nuevo aparece desde la bola. */
+[data-switch^="rival"] .bt-mon-rival,
+[data-switch^="player"] .bt-mon-player {
+  animation: bt-switch-mon calc(var(--switch-total) / var(--speed, 1)) calc(var(--switch-skip) / var(--speed, 1) * -1) ease-in-out both;
+  transform-origin: 50% 100%;
+}
+
+[data-switch^="rival"] .bt-databox-rival,
+[data-switch^="player"] .bt-databox-player {
+  animation: bt-switch-databox calc(var(--switch-total) / var(--speed, 1)) calc(var(--switch-skip) / var(--speed, 1) * -1) linear both;
+}
+
+@keyframes bt-switch-mon {
+  0%,
+  15% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  22% {
+    opacity: 1;
+    transform: none;
+    filter: brightness(0) invert(0.35) sepia(1) saturate(12) hue-rotate(-30deg);
+  }
+  31% {
+    opacity: 0;
+    transform: scale(0.1);
+    filter: brightness(0) invert(0.35) sepia(1) saturate(12) hue-rotate(-30deg);
+  }
+  32%,
+  74% {
+    opacity: 0;
+    transform: scale(0.15);
+    filter: none;
+  }
+  94%,
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@keyframes bt-switch-databox {
+  0% {
+    opacity: 1;
+  }
+  8%,
+  84% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Con movimiento reducido (PRD §10.2.1) no hay desplazamientos: solo fundidos por fase. */
+[data-reduced-motion="true"] .bt-intro,
+[data-reduced-motion="true"] .bt-iris-ball {
+  display: none;
+}
+
+[data-reduced-motion="true"] .bt-mon,
+[data-reduced-motion="true"] .bt-databox {
+  animation: none !important;
+  transition: opacity 300ms;
+}
+
+/* Cambio de Pokémon con movimiento reducido: sin entrenador, bola ni rayo; el que sale se desvanece y el nuevo entra con un fundido. */
+[data-reduced-motion="true"] [data-switch] .bt-mon,
+[data-reduced-motion="true"] [data-switch] .bt-databox {
+  animation: bt-switch-fade calc(var(--switch-total) / var(--speed, 1)) calc(var(--switch-skip) / var(--speed, 1) * -1) linear both !important;
+}
+
+@keyframes bt-switch-fade {
+  0%,
+  15% {
+    opacity: 1;
+  }
+  31%,
+  74% {
+    opacity: 0;
+  }
+  94%,
+  100% {
+    opacity: 1;
+  }
+}
+
+[data-reduced-motion="true"] [data-intro="rivalSend"] .bt-mon-rival,
+[data-reduced-motion="true"] [data-intro="rivalSend"] .bt-databox-rival,
+[data-reduced-motion="true"] [data-intro="playerSend"] .bt-mon-player,
+[data-reduced-motion="true"] [data-intro="playerSend"] .bt-databox-player {
+  opacity: 1;
+}
+
+[data-reduced-motion="true"] .bt-iris {
+  animation: none !important;
+  transition: opacity 300ms;
+}
+
+[data-reduced-motion="true"] [data-intro="iris"] .bt-iris {
+  opacity: 0;
+}
+
+/* ---------- Pantalla táctil ---------- */
+.bt-touch {
+  position: relative;
+  width: 256px;
+  height: 192px;
+  overflow: hidden;
+  background: #d8d8e0;
+}
+
+
+.bt-touch-svg {
+  position: absolute;
+  inset: 0;
+  width: 256px;
+  height: 192px;
+}
+
+.bt-touch button {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #f8f8f8;
+  font: inherit;
+  cursor: pointer;
+}
+
+.bt-touch button:disabled {
+  cursor: not-allowed;
+}
+
+.bt-back:disabled {
+  opacity: 0.55;
+}
+
+.bt-touch button:focus-visible {
+  outline: 2px solid #7cc4ff;
+  outline-offset: -2px;
+}
+
+/* Texto sobre los botones: contorno oscuro como el rótulo del juego */
+.bt-plate-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow: 1px 0 #181818, -1px 0 #181818, 0 1px #181818, 0 -1px #181818, 1px 1px #181818, -1px -1px #181818;
+  pointer-events: none;
+}
+
+.bt-main {
+  position: absolute;
+  inset: 0;
+}
+
+/* Plato oscuro con puntos y borde blanco: el de las placas del juego (periodo 5, #393939 / #424242 / #4a4a4a). */
+.bt-fight-shape {
+  position: absolute;
+  inset: 0;
+}
+
+.bt-fight {
+  left: 6px;
+  top: 24px;
+  width: 244px;
+  height: 120px;
+}
+
+.bt-fight-shape {
+  background: #f0f0f0;
+  clip-path: polygon(24px 0, 220px 0, 244px 48px, 244px 72px, 220px 120px, 24px 120px, 0 72px, 0 48px);
+  filter: drop-shadow(0 2px 0 #9898a0);
+}
+
+.bt-fight-shape::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background: radial-gradient(circle at 2px 2px, #4a4a4a 1px, transparent 1.5px) 0 0 / 5px 5px, #393939;
+  clip-path: polygon(21px 0, 215px 0, 238px 46px, 238px 68px, 215px 114px, 21px 114px, 0 68px, 0 46px);
+}
+
+.bt-fight-label {
+  position: absolute;
+  inset: 0 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  line-height: 32px;
+  text-transform: uppercase;
+  color: #d8003c;
+  text-shadow: 2px 0 #181818, -2px 0 #181818, 0 2px #181818, 0 -2px #181818, 2px 2px #181818, -2px -2px #181818, 2px -2px #181818, -2px 2px #181818;
+}
+
+.bt-bag {
+  position: absolute;
+  left: 0;
+  top: 132px;
+  width: 78px;
+  height: 60px;
+}
+
+/* Como el juego cuando no se permite usar objetos: atenuado, pero se puede tocar para ver el motivo. */
+.bt-bag[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+.bt-bag[aria-disabled="true"] img,
+.bt-bag[aria-disabled="true"] .bt-plate-label {
+  opacity: 0.55;
+}
+
+.bt-bag .bt-plate-label {
+  top: 29px;
+  color: #f8b838;
+}
+
+.bt-pokemon {
+  left: 176px;
+  top: 144px;
+  width: 80px;
+  height: 48px;
+}
+
+.bt-pokemon .bt-plate-label {
+  top: 14px;
+  color: #73ff52;
+}
+
+.bt-pokemon img {
+  position: absolute;
+  left: 2px;
+  top: -12px;
+}
+
+.bt-run {
+  left: 88px;
+  top: 148px;
+  width: 80px;
+  height: 44px;
+}
+
+.bt-run img {
+  position: absolute;
+  left: 2px;
+  top: 0;
+}
+
+.bt-run .bt-plate-label {
+  top: 21px;
+  color: #48b8f8;
+}
+
+.bt-pokemon:disabled img,
+.bt-fight:disabled .bt-fight-shape,
+.bt-fight:disabled .bt-fight-label {
+  opacity: 0.55;
+}
+
+.bt-switch-reason {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 3px;
+  margin: 0;
+  font-size: 12px;
+  line-height: 12px;
+  color: #f8f8f8;
+  text-shadow: 1px 1px 0 #181818;
+}
+
+/* Menú de movimientos: 4 teselas de 128x48 en (0,32), (128,32), (0,80), (128,80) */
+.bt-moves {
+  position: absolute;
+  inset: 0;
+}
+
+.bt-move {
+  width: 128px;
+  height: 48px;
+  text-shadow: 1px 1px 0 #606060;
+}
+
+.bt-move[data-slot="1"] {
+  left: 0;
+  top: 32px;
+}
+
+.bt-move[data-slot="2"] {
+  left: 128px;
+  top: 32px;
+}
+
+.bt-move[data-slot="3"] {
+  left: 0;
+  top: 80px;
+}
+
+.bt-move[data-slot="4"] {
+  left: 128px;
+  top: 80px;
+}
+
+.bt-move-shape {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  clip-path: polygon(2px 24px, 14px 2px, 114px 2px, 126px 24px, 114px 46px, 14px 46px);
+}
+
+.bt-move-shape::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--tile, #a0a0a0);
+  clip-path: polygon(3px 24px, 15px 3px, 113px 3px, 125px 24px, 113px 45px, 15px 45px);
+}
+
+.bt-move-shape::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 2px 2px, #484848 1px, transparent 1.5px) 0 0 / 4px 4px, #383838;
+  clip-path: polygon(6px 24px, 17px 6px, 111px 6px, 122px 24px, 111px 42px, 17px 42px);
+}
+
+.bt-move-name {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 7px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* Los descendentes (p, g, j, q, y) de la fuente del juego caen por debajo de la línea: sin este margen el recorte los corta. */
+  padding-bottom: 3px;
+}
+
+.bt-move-pp {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 24px;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.bt-move-reason {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 24px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 11px;
+  color: #ffd0d0;
+}
+
+.bt-move:disabled .bt-move-shape,
+.bt-move:disabled .bt-move-name,
+.bt-move:disabled .bt-move-pp {
+  opacity: 0.5;
+}
+
+.bt-move:disabled .bt-move-reason {
+  opacity: 1;
+}
+
+.bt-back {
+  left: 180px;
+  top: 134px;
+  width: 76px;
+  height: 58px;
+}
+
+.bt-back img {
+  position: absolute;
+  inset: 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+.bt-error {
+  padding: 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+  background: #504848;
+}
+
+.bt-error p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 14px;
+}
+
+/* ---------- Historial ---------- */
+.bt-history {
+  width: min(100%, 32rem);
+}
+
+.bt-history-log {
+  max-height: 50vh;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0.75rem;
+  background: #181818;
+  border: 2px solid #585858;
+  border-radius: 0.5rem;
+  font-family: var(--font-game);
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+.bt-line {
+  margin: 0;
+}
+
+[data-reduced-motion="true"] .bt-ds * {
+  animation-duration: 0.01ms !important;
+}
+
+/* Pantallas de batalla y táctil bajo la de equipo: se quedan montadas (mensajes, intro) pero inertes mientras esta se ve. */
+.bt-underlay {
+  display: contents;
+}

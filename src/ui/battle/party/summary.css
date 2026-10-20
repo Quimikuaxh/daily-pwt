@@ -1,0 +1,351 @@
+/*
+ * Pantalla de datos del Pokémon: el fondo (256x384, dos pantallas) es la captura de Negro/Blanco limpiada por script
+ * (data/ui-assets.json, "cleanups"); texto, sprite, barras, iconos y PP se pintan encima con datos reales. Medidas en píxeles lógicos de la DS.
+ */
+.bt-summary {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 256px;
+  height: 384px;
+  z-index: 30;
+  overflow: hidden;
+  background: #181818;
+  outline: none;
+}
+
+.bt-sum-bg {
+  position: absolute;
+  left: 0;
+  width: 256px;
+  height: 192px;
+}
+
+.bt-summary > .bt-sum-label,
+.bt-summary > .bt-sum-value,
+.bt-summary > span > .bt-sum-label,
+.bt-summary > span > .bt-sum-value {
+  position: absolute;
+}
+
+/* La fuente del juego a su tamaño de píxel de la DS (13 px: las mayúsculas miden 8 px como en las capturas). `top` es el borde superior de las mayúsculas. */
+.bt-sum-label,
+.bt-sum-value {
+  position: absolute;
+  margin-top: -2px;
+  white-space: nowrap;
+  font-size: 13px;
+  line-height: 13px;
+}
+
+.bt-sum-label {
+  color: #f8f8f8;
+  text-shadow: 1px 1px 0 #6a6a72;
+}
+
+.bt-sum-label::before {
+  content: "";
+  position: absolute;
+  left: -9px;
+  top: 5px;
+  width: 4px;
+  height: 4px;
+  background: #c8c8d0;
+}
+
+.bt-sum-label[data-plain]::before {
+  display: none;
+}
+
+.bt-sum-value {
+  color: #585858;
+  text-shadow: 1px 1px 0 #b8b8c0;
+}
+
+.bt-sum-value[data-small="true"] {
+  font-size: 11px;
+  line-height: 13px;
+}
+
+.bt-sum-value[data-small="tiny"] {
+  font-size: 10px;
+  line-height: 13px;
+}
+
+.bt-sum-value[data-max] {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* Margen para los descendentes de la fuente (p, g, j, q, y): el recorte no los corta. */
+  padding-bottom: 3px;
+}
+
+.bt-sum-value[data-align="right"] {
+  text-align: right;
+}
+
+.bt-sum-blue {
+  color: #2020e0;
+}
+
+.bt-sum-stat[data-tone="up"] {
+  color: #ffa0a0;
+}
+
+.bt-sum-stat[data-tone="down"] {
+  color: #a0a8ff;
+}
+
+.bt-sum-bar,
+.bt-sum-gender,
+.bt-sum-status {
+  position: absolute;
+}
+
+.bt-sum-types {
+  position: absolute;
+  display: flex;
+  gap: 4px;
+}
+
+.bt-sum-sprite {
+  position: absolute;
+  display: block;
+  line-height: 0;
+}
+
+.bt-sum-heading {
+  position: absolute;
+  left: 8px;
+  font-size: 12px;
+  line-height: 13px;
+  letter-spacing: 2px;
+  white-space: nowrap;
+  color: #f8f8f8;
+}
+
+.bt-sum-pager {
+  position: absolute;
+  left: 164px;
+  width: 88px;
+  height: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  line-height: 13px;
+  color: #29c6ad;
+}
+
+.bt-sum-page-title {
+  white-space: nowrap;
+  letter-spacing: 0;
+}
+
+.bt-sum-pager .bt-sum-hit {
+  position: relative;
+  left: auto;
+  top: auto;
+  translate: none;
+  width: max(10px, calc(45px / var(--k, 1)));
+  height: max(11px, calc(45px / var(--k, 1)));
+  margin: 0 calc(-0.5 * (max(10px, calc(45px / var(--k, 1))) - 10px));
+  color: #29c6ad;
+  font: inherit;
+}
+
+.bt-sum-hit {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  translate: -50% -50%;
+  cursor: pointer;
+}
+
+.bt-sum-hit:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.bt-sum-tab-info,
+.bt-sum-tab-skills,
+.bt-sum-prev-mon,
+.bt-sum-next-mon,
+.bt-sum-close,
+.bt-sum-back {
+  top: 372px;
+}
+
+.bt-sum-tab-info {
+  left: 20px;
+  width: max(34px, calc(45px / var(--k, 1)));
+  height: max(20px, calc(45px / var(--k, 1)));
+}
+
+.bt-sum-tab-skills {
+  left: 60px;
+  width: max(34px, calc(45px / var(--k, 1)));
+  height: max(20px, calc(45px / var(--k, 1)));
+}
+
+.bt-sum-prev-mon {
+  left: 156px;
+}
+
+.bt-sum-next-mon {
+  left: 180px;
+}
+
+.bt-sum-close {
+  left: 212px;
+}
+
+.bt-sum-back {
+  left: 245px;
+}
+
+.bt-sum-prev-mon,
+.bt-sum-next-mon,
+.bt-sum-close,
+.bt-sum-back {
+  width: max(20px, calc(45px / var(--k, 1)));
+  height: max(18px, calc(45px / var(--k, 1)));
+}
+
+/* Recuadro del texto: la descripción (1, 2 o 3 líneas) queda centrada en vertical en el espacio libre del panel. */
+.bt-sum-text-box {
+  position: absolute;
+  display: flex;
+  align-items: center;
+}
+
+.bt-sum-ability-box {
+  width: 150px;
+  height: 32px;
+}
+
+.bt-sum-move-box {
+  width: 240px;
+  height: 48px;
+}
+
+.bt-sum-description {
+  margin: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  color: #585858;
+  text-shadow: 1px 1px 0 #b8b8c0;
+}
+
+.bt-sum-ability-text {
+  width: 150px;
+  max-height: 31px;
+  padding-bottom: 1px;
+  font-size: 10px;
+  line-height: 10px;
+}
+
+.bt-sum-move-text {
+  width: 240px;
+  max-height: 48px;
+  font-size: 13px;
+  line-height: 16px;
+}
+
+.bt-sum-category {
+  position: absolute;
+  display: block;
+  line-height: 0;
+}
+
+.bt-sum-moves {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bt-sum-slot {
+  position: absolute;
+  left: 8px;
+  width: 136px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #f8f8f8;
+  font: inherit;
+  text-align: left;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.bt-sum-slot-highlight {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 136px;
+  height: 34px;
+}
+
+.bt-sum-slot-visual {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bt-sum-slot-type,
+.bt-sum-slot-name,
+.bt-sum-slot-pp,
+.bt-sum-slot-pp-value {
+  position: absolute;
+  white-space: nowrap;
+  text-shadow: 1px 1px 0 #7b7b7b;
+}
+
+.bt-sum-slot-type {
+  left: 9px;
+  top: 4px;
+  display: flex;
+  line-height: 0;
+}
+
+/* Icono de tipo de 31 px como en el juego: el nombre empieza 3 px a su derecha y nunca se solapa con él. */
+.bt-sum-slot-type .type-chip {
+  --chip-width: 32;
+}
+
+.bt-sum-slot-name {
+  left: 44px;
+  top: 1px;
+  width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-bottom: 3px;
+  font-size: 13px;
+  line-height: 13px;
+}
+
+.bt-sum-slot-name[data-size="small"] {
+  font-size: 11px;
+}
+
+.bt-sum-slot-name[data-size="tiny"] {
+  font-size: 10px;
+}
+
+.bt-sum-slot-pp {
+  left: 52px;
+  top: 17px;
+  font-size: 13px;
+  line-height: 13px;
+}
+
+.bt-sum-slot-pp-value {
+  right: 19px;
+  top: 17px;
+  font-size: 13px;
+  line-height: 13px;
+}

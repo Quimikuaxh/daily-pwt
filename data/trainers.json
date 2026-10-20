@@ -1,0 +1,614 @@
+{
+  "dataVersion": "f1-1",
+  "rosterSchedule": [
+    {
+      "fromDayIndex": 0,
+      "trainerIds": ["brock", "misty", "camila", "plubio", "rojo"]
+    }
+  ],
+  "trainers": [
+    {
+      "id": "brock",
+      "nameEs": "Brock",
+      "nameEn": "Brock",
+      "gender": "M",
+      "category": "leader",
+      "region": "kanto",
+      "specialtyType": "Rock",
+      "sprite": "brock",
+      "ivs": 20,
+      "alwaysLeadsWith": "onix",
+      "variants": [
+        {
+          "id": "brock-kanto-leaders",
+          "sourceTournament": "Kanto Leaders",
+          "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/Kanto_Leaders_Tournament#Brock",
+          "team": [
+            {
+              "species": "onix",
+              "level": 50,
+              "item": "salacberry",
+              "abilities": ["rockhead", "sturdy"],
+              "moves": ["sandtomb", "protect", "stealthrock", "sandstorm"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "golem",
+              "level": 50,
+              "item": "darkgem",
+              "abilities": ["rockhead", "sturdy"],
+              "moves": ["stoneedge", "earthquake", "suckerpunch", "irondefense"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "kabutops",
+              "level": 50,
+              "item": "liechiberry",
+              "abilities": ["swiftswim", "battlearmor"],
+              "moves": ["stoneedge", "aquajet", "superpower", "swordsdance"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "omastar",
+              "level": 50,
+              "item": "rindoberry",
+              "abilities": ["swiftswim", "shellarmor"],
+              "moves": ["hydropump", "ancientpower", "earthpower", "icebeam"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "aerodactyl",
+              "level": 50,
+              "item": "chartiberry",
+              "abilities": ["rockhead", "pressure"],
+              "moves": ["rockslide", "earthquake", "thunderfang", "tailwind"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "relicanth",
+              "level": 50,
+              "item": "rockgem",
+              "abilities": ["swiftswim", "rockhead"],
+              "moves": ["rockslide", "waterfall", "rockpolish", "yawn"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            }
+          ]
+        },
+        {
+          "id": "brock-world-leaders",
+          "sourceTournament": "World Leaders",
+          "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/World_Leaders_Tournament/Kanto#Brock",
+          "team": [
+            {
+              "species": "onix",
+              "level": 50,
+              "item": "eviolite",
+              "abilities": ["rockhead", "sturdy"],
+              "moves": ["stoneedge", "earthquake", "ironhead", "sandstorm"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "golem",
+              "level": 50,
+              "item": "lumberry",
+              "abilities": ["rockhead", "sturdy"],
+              "moves": ["stoneedge", "earthquake", "rockpolish", "suckerpunch"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "kabutops",
+              "level": 50,
+              "item": "focussash",
+              "abilities": ["swiftswim", "battlearmor"],
+              "moves": ["waterfall", "rockslide", "xscissor", "swordsdance"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "tyranitar",
+              "level": 50,
+              "item": "chopleberry",
+              "abilities": ["sandstream"],
+              "moves": ["stoneedge", "payback", "thunderpunch", "icepunch"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "aerodactyl",
+              "level": 50,
+              "item": "choicescarf",
+              "abilities": ["rockhead", "pressure"],
+              "moves": ["rockslide", "earthquake", "firefang", "icefang"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "rhyperior",
+              "level": 50,
+              "item": "expertbelt",
+              "abilities": ["lightningrod", "solidrock"],
+              "moves": ["earthquake", "stoneedge", "megahorn", "avalanche"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "misty",
+      "nameEs": "Misty",
+      "nameEn": "Misty",
+      "gender": "F",
+      "category": "leader",
+      "region": "kanto",
+      "specialtyType": "Water",
+      "sprite": "misty",
+      "ivs": 20,
+      "alwaysLeadsWith": "starmie",
+      "variants": [
+        {
+          "id": "misty-kanto-leaders",
+          "sourceTournament": "Kanto Leaders",
+          "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/Kanto_Leaders_Tournament#Misty",
+          "team": [
+            {
+              "species": "starmie",
+              "level": 50,
+              "item": "petayaberry",
+              "abilities": ["illuminate", "naturalcure"],
+              "moves": ["psychic", "hydropump", "icebeam", "thunderbolt"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "golduck",
+              "level": 50,
+              "item": "watergem",
+              "abilities": ["damp", "cloudnine"],
+              "moves": ["blizzard", "focusblast", "aquajet", "honeclaws"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "seaking",
+              "level": 50,
+              "item": "wacanberry",
+              "abilities": ["swiftswim", "waterveil"],
+              "moves": ["megahorn", "waterfall", "poisonjab", "agility"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "lapras",
+              "level": 50,
+              "item": "ganlonberry",
+              "abilities": ["waterabsorb", "shellarmor"],
+              "moves": ["hydropump", "icebeam", "thunderbolt", "confuseray"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "slowbro",
+              "level": 50,
+              "item": "apicotberry",
+              "abilities": ["oblivious", "owntempo"],
+              "moves": ["psyshock", "scald", "slackoff", "yawn"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "blastoise",
+              "level": 50,
+              "item": "salacberry",
+              "abilities": ["torrent"],
+              "moves": ["avalanche", "hydropump", "irontail", "irondefense"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            }
+          ]
+        },
+        {
+          "id": "misty-world-leaders",
+          "sourceTournament": "World Leaders",
+          "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/World_Leaders_Tournament/Kanto#Misty",
+          "team": [
+            {
+              "species": "starmie",
+              "level": 50,
+              "item": "choicescarf",
+              "abilities": ["illuminate", "naturalcure"],
+              "moves": ["psychic", "grassknot", "icebeam", "thunderbolt"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "lanturn",
+              "level": 50,
+              "item": "sitrusberry",
+              "abilities": ["voltabsorb", "illuminate"],
+              "moves": ["thunderbolt", "scald", "icebeam", "toxic"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "jellicent",
+              "level": 50,
+              "item": "leftovers",
+              "abilities": ["waterabsorb", "cursedbody"],
+              "moves": ["surf", "shadowball", "recover", "willowisp"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "lapras",
+              "level": 50,
+              "item": "zoomlens",
+              "abilities": ["waterabsorb", "shellarmor"],
+              "moves": ["hydropump", "blizzard", "iceshard", "sheercold"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "quagsire",
+              "level": 50,
+              "item": "focussash",
+              "abilities": ["damp", "waterabsorb"],
+              "moves": ["waterfall", "earthquake", "raindance", "yawn"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "blastoise",
+              "level": 50,
+              "item": "salacberry",
+              "abilities": ["torrent"],
+              "moves": ["avalanche", "hydropump", "outrage", "irondefense"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "camila",
+      "nameEs": "Camila",
+      "nameEn": "Elesa",
+      "gender": "F",
+      "category": "leader",
+      "region": "unova",
+      "specialtyType": "Electric",
+      "sprite": "camila",
+      "ivs": 20,
+      "alwaysLeadsWith": "zebstrika",
+      "variants": [
+        {
+          "id": "camila-unova-leaders",
+          "sourceTournament": "Unova Leaders",
+          "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/Unova_Leaders_Tournament#Elesa",
+          "team": [
+            {
+              "species": "zebstrika",
+              "level": 50,
+              "item": "liechiberry",
+              "abilities": ["lightningrod", "motordrive"],
+              "moves": ["wildcharge", "flamecharge", "thrash", "mefirst"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "ampharos",
+              "level": 50,
+              "item": "shucaberry",
+              "abilities": ["static"],
+              "moves": ["cottonguard", "powergem", "signalbeam", "discharge"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "galvantula",
+              "level": 50,
+              "item": "sitrusberry",
+              "abilities": ["compoundeyes", "unnerve"],
+              "moves": ["thunder", "energyball", "bugbuzz", "disable"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "emolga",
+              "level": 50,
+              "item": "flyinggem",
+              "abilities": ["static"],
+              "moves": ["voltswitch", "thunderwave", "acrobatics", "attract"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "eelektross",
+              "level": 50,
+              "item": "salacberry",
+              "abilities": ["levitate"],
+              "moves": ["coil", "zapcannon", "flamethrower", "dragonclaw"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "stunfisk",
+              "level": 50,
+              "item": "petayaberry",
+              "abilities": ["static", "limber"],
+              "moves": ["earthpower", "stoneedge", "muddywater", "discharge"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            }
+          ]
+        },
+        {
+          "id": "camila-world-leaders",
+          "sourceTournament": "World Leaders",
+          "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/World_Leaders_Tournament/Unova#Elesa",
+          "team": [
+            {
+              "species": "zebstrika",
+              "level": 50,
+              "item": "lifeorb",
+              "abilities": ["lightningrod", "motordrive"],
+              "moves": ["wildcharge", "overheat", "return", "quickattack"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "ampharos",
+              "level": 50,
+              "item": "shucaberry",
+              "abilities": ["static"],
+              "moves": ["focusblast", "powergem", "signalbeam", "discharge"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "luxray",
+              "level": 50,
+              "item": "expertbelt",
+              "abilities": ["rivalry", "intimidate"],
+              "moves": ["firefang", "wildcharge", "icefang", "quickattack"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "emolga",
+              "level": 50,
+              "item": "flyinggem",
+              "abilities": ["static"],
+              "moves": ["wildcharge", "uturn", "acrobatics", "charm"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "eelektross",
+              "level": 50,
+              "item": "choiceband",
+              "abilities": ["levitate"],
+              "moves": ["brickbreak", "thunderpunch", "firepunch", "dragonclaw"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "stunfisk",
+              "level": 50,
+              "item": "sitrusberry",
+              "abilities": ["static", "limber"],
+              "moves": ["earthpower", "foulplay", "scald", "discharge"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "plubio",
+      "nameEs": "Plubio",
+      "nameEn": "Wallace",
+      "gender": "M",
+      "category": "champion",
+      "region": "hoenn",
+      "sprite": "plubio",
+      "ivs": 25,
+      "alwaysLeadsWith": "milotic",
+      "variants": [
+        {
+          "id": "plubio-champions",
+          "sourceTournament": "Champions",
+          "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/Champions_Tournament#Wallace",
+          "team": [
+            {
+              "species": "milotic",
+              "level": 50,
+              "item": "rockyhelmet",
+              "abilities": ["marvelscale"],
+              "moves": ["scald", "icywind", "rest", "sleeptalk"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "sharpedo",
+              "level": 50,
+              "item": "focussash",
+              "abilities": ["roughskin"],
+              "moves": ["hydropump", "crunch", "zenheadbutt", "aquajet"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "walrein",
+              "level": 50,
+              "item": "leftovers",
+              "abilities": ["thickfat", "icebody"],
+              "moves": ["surf", "yawn", "blizzard", "sheercold"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "ludicolo",
+              "level": 50,
+              "item": "lifeorb",
+              "abilities": ["swiftswim", "raindish"],
+              "moves": ["surf", "focusblast", "gigadrain", "raindance"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "swampert",
+              "level": 50,
+              "item": "rindoberry",
+              "abilities": ["torrent"],
+              "moves": ["muddywater", "earthpower", "icebeam", "focusblast"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "starmie",
+              "level": 50,
+              "item": "expertbelt",
+              "abilities": ["illuminate", "naturalcure"],
+              "moves": ["surf", "psychic", "thunderbolt", "signalbeam"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rojo",
+      "nameEs": "Rojo",
+      "nameEn": "Red",
+      "gender": "M",
+      "category": "champion",
+      "region": "kanto",
+      "sprite": "rojo",
+      "ivs": 30,
+      "variants": [
+        {
+          "id": "rojo-champions",
+          "sourceTournament": "Champions",
+          "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/Champions_Tournament#Red",
+          "team": [
+            {
+              "species": "pikachu",
+              "level": 50,
+              "item": "lightball",
+              "abilities": ["static"],
+              "moves": ["volttackle", "irontail", "brickbreak", "fakeout"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "venusaur",
+              "level": 50,
+              "item": "whiteherb",
+              "abilities": ["overgrow"],
+              "moves": ["leafstorm", "sludgebomb", "earthquake", "sleeppowder"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "charizard",
+              "level": 50,
+              "item": "focussash",
+              "abilities": ["blaze"],
+              "moves": ["fireblast", "focusblast", "airslash", "dragonpulse"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "blastoise",
+              "level": 50,
+              "item": "choicescarf",
+              "abilities": ["torrent"],
+              "moves": ["waterspout", "hydropump", "blizzard", "focusblast"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "snorlax",
+              "level": 50,
+              "item": "quickclaw",
+              "abilities": ["immunity", "thickfat"],
+              "moves": ["bodyslam", "earthquake", "crunch", "seedbomb"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            },
+            {
+              "species": "lapras",
+              "level": 50,
+              "item": "sitrusberry",
+              "abilities": ["waterabsorb", "shellarmor"],
+              "moves": ["icebeam", "hydropump", "iceshard", "thunderbolt"],
+              "natureAssumed": true,
+              "evsAssumed": true,
+              "verified": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

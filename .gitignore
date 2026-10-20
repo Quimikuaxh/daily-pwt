@@ -1,0 +1,15 @@
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.vite/
+test-results/
+playwright-report/
+scripts/.cache/
+.env
+.env.*
+!.env.example
+.idea/
+dist-e2e/
+dist-e2e-prod/
+e2e-artifacts/

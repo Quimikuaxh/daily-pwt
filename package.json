@@ -1,0 +1,58 @@
+{
+  "name": "daily-pwt",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "vis": "node scripts/capture-vis.mjs",
+    "test:e2e:install": "playwright install chromium webkit",
+    "lint": "eslint .",
+    "gen:names": "node scripts/build-names-es.mjs",
+    "gen:descriptions": "node scripts/build-descriptions-es.mjs",
+    "gen:dex": "node scripts/build-dex.mjs",
+    "gen:player-sets": "node scripts/build-player-sets.mjs",
+    "gen:sprites": "node scripts/fetch-sprites.mjs",
+    "gen:sprite-boxes": "node scripts/build-sprite-boxes.mjs",
+    "gen:icon-index": "node scripts/build-icon-index.mjs",
+    "gen:ui": "node scripts/fetch-ui-assets.mjs",
+    "gen": "npm run gen:names && npm run gen:dex && npm run gen:player-sets"
+  },
+  "dependencies": {
+    "@pkmn/sim": "0.10.11",
+    "@smogon/calc": "0.12.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@pkmn/data": "0.10.11",
+    "@pkmn/dex": "0.10.11",
+    "@playwright/test": "^1.64.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.8",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "@vitest/coverage-v8": "^5.0.5",
+    "eslint": "^10.13.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "jsdom": "^30.1.3",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.2",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.5"
+  }
+}

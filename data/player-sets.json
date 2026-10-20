@@ -1,0 +1,407 @@
+[
+  {
+    "species": "golem",
+    "level": 50,
+    "item": "darkgem",
+    "abilities": ["rockhead", "sturdy"],
+    "moves": ["stoneedge", "earthquake", "suckerpunch", "irondefense"],
+    "verified": true,
+    "tags": ["source:brock"]
+  },
+  {
+    "species": "kabutops",
+    "level": 50,
+    "item": "liechiberry",
+    "abilities": ["swiftswim", "battlearmor"],
+    "moves": ["stoneedge", "aquajet", "superpower", "swordsdance"],
+    "verified": true,
+    "tags": ["source:brock"]
+  },
+  {
+    "species": "omastar",
+    "level": 50,
+    "item": "rindoberry",
+    "abilities": ["swiftswim", "shellarmor"],
+    "moves": ["hydropump", "ancientpower", "earthpower", "icebeam"],
+    "verified": true,
+    "tags": ["source:brock"]
+  },
+  {
+    "species": "aerodactyl",
+    "level": 50,
+    "item": "chartiberry",
+    "abilities": ["rockhead", "pressure"],
+    "moves": ["rockslide", "earthquake", "thunderfang", "tailwind"],
+    "verified": true,
+    "tags": ["source:brock"]
+  },
+  {
+    "species": "relicanth",
+    "level": 50,
+    "item": "rockgem",
+    "abilities": ["swiftswim", "rockhead"],
+    "moves": ["rockslide", "waterfall", "rockpolish", "yawn"],
+    "verified": true,
+    "tags": ["source:brock"]
+  },
+  {
+    "species": "golem",
+    "level": 50,
+    "item": "lumberry",
+    "abilities": ["rockhead", "sturdy"],
+    "moves": ["stoneedge", "earthquake", "rockpolish", "suckerpunch"],
+    "verified": true,
+    "tags": ["source:brock"]
+  },
+  {
+    "species": "kabutops",
+    "level": 50,
+    "item": "focussash",
+    "abilities": ["swiftswim", "battlearmor"],
+    "moves": ["waterfall", "rockslide", "xscissor", "swordsdance"],
+    "verified": true,
+    "tags": ["source:brock"]
+  },
+  {
+    "species": "tyranitar",
+    "level": 50,
+    "item": "chopleberry",
+    "abilities": ["sandstream"],
+    "moves": ["stoneedge", "payback", "thunderpunch", "icepunch"],
+    "verified": true,
+    "tags": ["source:brock"]
+  },
+  {
+    "species": "aerodactyl",
+    "level": 50,
+    "item": "choicescarf",
+    "abilities": ["rockhead", "pressure"],
+    "moves": ["rockslide", "earthquake", "firefang", "icefang"],
+    "verified": true,
+    "tags": ["source:brock"]
+  },
+  {
+    "species": "rhyperior",
+    "level": 50,
+    "item": "expertbelt",
+    "abilities": ["lightningrod", "solidrock"],
+    "moves": ["earthquake", "stoneedge", "megahorn", "avalanche"],
+    "verified": true,
+    "tags": ["source:brock"]
+  },
+  {
+    "species": "starmie",
+    "level": 50,
+    "item": "petayaberry",
+    "abilities": ["illuminate", "naturalcure"],
+    "moves": ["psychic", "hydropump", "icebeam", "thunderbolt"],
+    "verified": true,
+    "tags": ["source:misty"]
+  },
+  {
+    "species": "golduck",
+    "level": 50,
+    "item": "watergem",
+    "abilities": ["damp", "cloudnine"],
+    "moves": ["blizzard", "focusblast", "aquajet", "honeclaws"],
+    "verified": true,
+    "tags": ["source:misty"]
+  },
+  {
+    "species": "seaking",
+    "level": 50,
+    "item": "wacanberry",
+    "abilities": ["swiftswim", "waterveil"],
+    "moves": ["megahorn", "waterfall", "poisonjab", "agility"],
+    "verified": true,
+    "tags": ["source:misty"]
+  },
+  {
+    "species": "lapras",
+    "level": 50,
+    "item": "ganlonberry",
+    "abilities": ["waterabsorb", "shellarmor"],
+    "moves": ["hydropump", "icebeam", "thunderbolt", "confuseray"],
+    "verified": true,
+    "tags": ["source:misty"]
+  },
+  {
+    "species": "slowbro",
+    "level": 50,
+    "item": "apicotberry",
+    "abilities": ["oblivious", "owntempo"],
+    "moves": ["psyshock", "scald", "slackoff", "yawn"],
+    "verified": true,
+    "tags": ["source:misty"]
+  },
+  {
+    "species": "blastoise",
+    "level": 50,
+    "item": "salacberry",
+    "abilities": ["torrent"],
+    "moves": ["avalanche", "hydropump", "irontail", "irondefense"],
+    "verified": true,
+    "tags": ["source:misty"]
+  },
+  {
+    "species": "starmie",
+    "level": 50,
+    "item": "choicescarf",
+    "abilities": ["illuminate", "naturalcure"],
+    "moves": ["psychic", "grassknot", "icebeam", "thunderbolt"],
+    "verified": true,
+    "tags": ["source:misty"]
+  },
+  {
+    "species": "lanturn",
+    "level": 50,
+    "item": "sitrusberry",
+    "abilities": ["voltabsorb", "illuminate"],
+    "moves": ["thunderbolt", "scald", "icebeam", "toxic"],
+    "verified": true,
+    "tags": ["source:misty"]
+  },
+  {
+    "species": "jellicent",
+    "level": 50,
+    "item": "leftovers",
+    "abilities": ["waterabsorb", "cursedbody"],
+    "moves": ["surf", "shadowball", "recover", "willowisp"],
+    "verified": true,
+    "tags": ["source:misty"]
+  },
+  {
+    "species": "lapras",
+    "level": 50,
+    "item": "zoomlens",
+    "abilities": ["waterabsorb", "shellarmor"],
+    "moves": ["hydropump", "blizzard", "iceshard", "sheercold"],
+    "verified": true,
+    "tags": ["source:misty"]
+  },
+  {
+    "species": "quagsire",
+    "level": 50,
+    "item": "focussash",
+    "abilities": ["damp", "waterabsorb"],
+    "moves": ["waterfall", "earthquake", "raindance", "yawn"],
+    "verified": true,
+    "tags": ["source:misty"]
+  },
+  {
+    "species": "blastoise",
+    "level": 50,
+    "item": "salacberry",
+    "abilities": ["torrent"],
+    "moves": ["avalanche", "hydropump", "outrage", "irondefense"],
+    "verified": true,
+    "tags": ["source:misty"]
+  },
+  {
+    "species": "zebstrika",
+    "level": 50,
+    "item": "liechiberry",
+    "abilities": ["lightningrod", "motordrive"],
+    "moves": ["wildcharge", "flamecharge", "thrash", "mefirst"],
+    "verified": true,
+    "tags": ["source:camila"]
+  },
+  {
+    "species": "ampharos",
+    "level": 50,
+    "item": "shucaberry",
+    "abilities": ["static"],
+    "moves": ["cottonguard", "powergem", "signalbeam", "discharge"],
+    "verified": true,
+    "tags": ["source:camila"]
+  },
+  {
+    "species": "galvantula",
+    "level": 50,
+    "item": "sitrusberry",
+    "abilities": ["compoundeyes", "unnerve"],
+    "moves": ["thunder", "energyball", "bugbuzz", "disable"],
+    "verified": true,
+    "tags": ["source:camila"]
+  },
+  {
+    "species": "emolga",
+    "level": 50,
+    "item": "flyinggem",
+    "abilities": ["static"],
+    "moves": ["voltswitch", "thunderwave", "acrobatics", "attract"],
+    "verified": true,
+    "tags": ["source:camila"]
+  },
+  {
+    "species": "eelektross",
+    "level": 50,
+    "item": "salacberry",
+    "abilities": ["levitate"],
+    "moves": ["coil", "zapcannon", "flamethrower", "dragonclaw"],
+    "verified": true,
+    "tags": ["source:camila"]
+  },
+  {
+    "species": "stunfisk",
+    "level": 50,
+    "item": "petayaberry",
+    "abilities": ["static", "limber"],
+    "moves": ["earthpower", "stoneedge", "muddywater", "discharge"],
+    "verified": true,
+    "tags": ["source:camila"]
+  },
+  {
+    "species": "zebstrika",
+    "level": 50,
+    "item": "lifeorb",
+    "abilities": ["lightningrod", "motordrive"],
+    "moves": ["wildcharge", "overheat", "return", "quickattack"],
+    "verified": true,
+    "tags": ["source:camila"]
+  },
+  {
+    "species": "ampharos",
+    "level": 50,
+    "item": "shucaberry",
+    "abilities": ["static"],
+    "moves": ["focusblast", "powergem", "signalbeam", "discharge"],
+    "verified": true,
+    "tags": ["source:camila"]
+  },
+  {
+    "species": "luxray",
+    "level": 50,
+    "item": "expertbelt",
+    "abilities": ["rivalry", "intimidate"],
+    "moves": ["firefang", "wildcharge", "icefang", "quickattack"],
+    "verified": true,
+    "tags": ["source:camila"]
+  },
+  {
+    "species": "emolga",
+    "level": 50,
+    "item": "flyinggem",
+    "abilities": ["static"],
+    "moves": ["wildcharge", "uturn", "acrobatics", "charm"],
+    "verified": true,
+    "tags": ["source:camila"]
+  },
+  {
+    "species": "eelektross",
+    "level": 50,
+    "item": "choiceband",
+    "abilities": ["levitate"],
+    "moves": ["brickbreak", "thunderpunch", "firepunch", "dragonclaw"],
+    "verified": true,
+    "tags": ["source:camila"]
+  },
+  {
+    "species": "stunfisk",
+    "level": 50,
+    "item": "sitrusberry",
+    "abilities": ["static", "limber"],
+    "moves": ["earthpower", "foulplay", "scald", "discharge"],
+    "verified": true,
+    "tags": ["source:camila"]
+  },
+  {
+    "species": "milotic",
+    "level": 50,
+    "item": "rockyhelmet",
+    "abilities": ["marvelscale"],
+    "moves": ["scald", "icywind", "rest", "sleeptalk"],
+    "verified": true,
+    "tags": ["source:plubio"]
+  },
+  {
+    "species": "sharpedo",
+    "level": 50,
+    "item": "focussash",
+    "abilities": ["roughskin"],
+    "moves": ["hydropump", "crunch", "zenheadbutt", "aquajet"],
+    "verified": true,
+    "tags": ["source:plubio"]
+  },
+  {
+    "species": "walrein",
+    "level": 50,
+    "item": "leftovers",
+    "abilities": ["thickfat", "icebody"],
+    "moves": ["surf", "yawn", "blizzard", "sheercold"],
+    "verified": true,
+    "tags": ["source:plubio"]
+  },
+  {
+    "species": "ludicolo",
+    "level": 50,
+    "item": "lifeorb",
+    "abilities": ["swiftswim", "raindish"],
+    "moves": ["surf", "focusblast", "gigadrain", "raindance"],
+    "verified": true,
+    "tags": ["source:plubio"]
+  },
+  {
+    "species": "swampert",
+    "level": 50,
+    "item": "rindoberry",
+    "abilities": ["torrent"],
+    "moves": ["muddywater", "earthpower", "icebeam", "focusblast"],
+    "verified": true,
+    "tags": ["source:plubio"]
+  },
+  {
+    "species": "starmie",
+    "level": 50,
+    "item": "expertbelt",
+    "abilities": ["illuminate", "naturalcure"],
+    "moves": ["surf", "psychic", "thunderbolt", "signalbeam"],
+    "verified": true,
+    "tags": ["source:plubio"]
+  },
+  {
+    "species": "venusaur",
+    "level": 50,
+    "item": "whiteherb",
+    "abilities": ["overgrow"],
+    "moves": ["leafstorm", "sludgebomb", "earthquake", "sleeppowder"],
+    "verified": true,
+    "tags": ["source:rojo"]
+  },
+  {
+    "species": "charizard",
+    "level": 50,
+    "item": "focussash",
+    "abilities": ["blaze"],
+    "moves": ["fireblast", "focusblast", "airslash", "dragonpulse"],
+    "verified": true,
+    "tags": ["source:rojo"]
+  },
+  {
+    "species": "blastoise",
+    "level": 50,
+    "item": "choicescarf",
+    "abilities": ["torrent"],
+    "moves": ["waterspout", "hydropump", "blizzard", "focusblast"],
+    "verified": true,
+    "tags": ["source:rojo"]
+  },
+  {
+    "species": "snorlax",
+    "level": 50,
+    "item": "quickclaw",
+    "abilities": ["immunity", "thickfat"],
+    "moves": ["bodyslam", "earthquake", "crunch", "seedbomb"],
+    "verified": true,
+    "tags": ["source:rojo"]
+  },
+  {
+    "species": "lapras",
+    "level": 50,
+    "item": "sitrusberry",
+    "abilities": ["waterabsorb", "shellarmor"],
+    "moves": ["icebeam", "hydropump", "iceshard", "thunderbolt"],
+    "verified": true,
+    "tags": ["source:rojo"]
+  }
+]

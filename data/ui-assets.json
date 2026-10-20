@@ -1,0 +1,3318 @@
+{
+  "_nota": "Fuente de verdad de scripts/fetch-ui-assets.mjs (npm run gen:ui). Cada asset indica su origen; \"crop\" es [x,y,ancho,alto] sobre la hoja de \"source.url\" (sin reescalar) y \"transparent\" los colores RGB de la hoja que pasan a alfa 0. Orígenes y créditos: PRD §0 y Ayuda.",
+  "sources": {
+    "bulbagarden-archives": {
+      "name": "Bulbagarden Archives",
+      "page": "https://archives.bulbagarden.net/",
+      "credit": "Gráficos de Pokémon Negro 2 / Blanco 2 (y Negro / Blanco para los iconos de tipo) © Nintendo / Game Freak / Creatures Inc., alojados en Bulbagarden Archives",
+      "license": "Gráficos propiedad de sus titulares, usados como fan project no oficial (mismo riesgo asumido que con los sprites, PRD §0). Los textos del wiki son CC BY-NC-SA 2.5; las imágenes no se relicencian."
+    },
+    "tsr-hp-bars-b2w2": {
+      "name": "The Spriters Resource - Pokémon Black 2 / White 2 - HP Bars",
+      "page": "https://www.spriters-resource.com/ds_dsi/pokemonblack2white2/asset/207786/",
+      "url": "https://web.archive.org/web/20260914213919im_/https://www.spriters-resource.com/media/assets/205/207786.png?updated=1755489522",
+      "credit": "Ripeado por GameMaster12 (The Spriters Resource); © Nintendo / Game Freak. El autor indica \"No credit needed\".",
+      "license": "Gráficos propiedad de sus titulares; sin licencia abierta. Descarga vía Internet Archive porque The Spriters Resource está tras Cloudflare."
+    },
+    "tsr-battle-hud-bw": {
+      "name": "The Spriters Resource - Pokémon Black / White - Battle HUD",
+      "page": "https://www.spriters-resource.com/ds_dsi/pokemonblackwhite/asset/43946/",
+      "url": "https://web.archive.org/web/20260714022418im_/https://www.spriters-resource.com/media/assets/41/43946.png?updated=1755472872",
+      "credit": "Ripeado por Ploaj (The Spriters Resource); © Nintendo / Game Freak. El autor indica \"Credit not needed\". Es de Negro / Blanco; los botones de la pantalla táctil de N2/B2 son idénticos en forma (verificado contra capturas).",
+      "license": "Gráficos propiedad de sus titulares; sin licencia abierta. Descarga vía Internet Archive."
+    },
+    "tsr-trainers-back-b2w2": {
+      "name": "The Spriters Resource - Pokémon Black 2 / White 2 - Trainers (Back)",
+      "page": "https://www.spriters-resource.com/ds_dsi/pokemonblack2white2/asset/48032/",
+      "url": "https://web.archive.org/web/20260914213858im_/https://www.spriters-resource.com/media/assets/45/48032.png?updated=1755472947",
+      "credit": "Ripeado por redblueyellow (The Spriters Resource); © Nintendo / Game Freak. El autor indica \"No credit needed\".",
+      "license": "Gráficos propiedad de sus titulares; sin licencia abierta. Descarga vía Internet Archive."
+    },
+    "showdown-fx": {
+      "name": "Pokémon Showdown - efectos (play.pokemonshowdown.com/fx)",
+      "page": "https://play.pokemonshowdown.com/fx/",
+      "credit": "Efectos de combate de Pokémon Showdown (no ripeados de N2/B2); Poké Ball © Nintendo / Game Freak",
+      "license": "Cliente de Pokémon Showdown (https://github.com/smogon/pokemon-showdown-client); los gráficos de Pokémon siguen siendo de sus titulares."
+    },
+    "hexparrot-pokemon-assets": {
+      "name": "hexparrot/pokemon-assets (fuentes Pokemon-DP)",
+      "page": "https://github.com/hexparrot/pokemon-assets",
+      "credit": "Pokemon-DP.ttf: réplica fan de la fuente de Pokémon Diamante/Perla en hexparrot/pokemon-assets (MIT, carpeta assets/fonts). La fuente original © Nintendo / Game Freak.",
+      "license": "El repositorio es MIT; los glifos replican una fuente de sus titulares (mismo riesgo asumido que con los sprites, PRD §0). Provisional: Jose la sustituirá por 'Pokémon Black and White 2' (FontStruct)."
+    },
+    "tsr-party-screen-bw": {
+      "name": "The Spriters Resource - Pokémon Black / White - Party Screen",
+      "page": "https://www.spriters-resource.com/ds_dsi/pokemonblackwhite/asset/157163/",
+      "url": "https://web.archive.org/web/20260726104131im_/https://www.spriters-resource.com/media/assets/154/157163.png?updated=1755484116",
+      "credit": "Ripeado por Floofy Panthar (The Spriters Resource); © Nintendo / Game Freak. El autor pide crédito si se usa. Es de Negro / Blanco; la pantalla de equipo de N2/B2 usa las mismas placas (verificado contra capturas).",
+      "license": "Gráficos propiedad de sus titulares; sin licencia abierta. Descarga vía Internet Archive."
+    },
+    "showdown-icons": {
+      "name": "Pokémon Showdown - iconos de equipo (play.pokemonshowdown.com/sprites/pokemonicons-sheet.png)",
+      "page": "https://play.pokemonshowdown.com/sprites/",
+      "url": "https://play.pokemonshowdown.com/sprites/pokemonicons-sheet.png",
+      "credit": "Hoja de iconos de menú de Pokémon Showdown (estilo Negro/Blanco, todas las especies); iconos © Nintendo / Game Freak. Las hojas de The Spriters Resource solo traen las especies de Teselia.",
+      "license": "Cliente de Pokémon Showdown (https://github.com/smogon/pokemon-showdown-client); los gráficos siguen siendo de sus titulares."
+    },
+    "tsr-misc-icons-bw": {
+      "name": "The Spriters Resource - Pokémon Black / White - Miscellaneous Icons",
+      "page": "https://www.spriters-resource.com/ds_dsi/pokemonblackwhite/asset/255185/",
+      "url": "https://web.archive.org/web/20260714022418im_/https://www.spriters-resource.com/media/assets/252/255185.png?updated=1755493831",
+      "credit": "Hoja de iconos de Pokémon BW/B2W2 (sprites de PokéAPI y Pokémon Essentials según la propia hoja); © Nintendo / Game Freak.",
+      "license": "Gráficos propiedad de sus titulares; sin licencia abierta. Descarga vía Internet Archive."
+    },
+    "tsr-pokeballs-bw": {
+      "name": "The Spriters Resource - Pokémon Black / White - Poké Balls",
+      "page": "https://www.spriters-resource.com/ds_dsi/pokemonblackwhite/asset/39327/",
+      "url": "https://web.archive.org/web/20260825133947im_/https://www.spriters-resource.com/media/assets/36/39327.png?updated=1755472779",
+      "credit": "Ripeado por redblueyellow (The Spriters Resource); © Nintendo / Game Freak. El autor indica \"No credit needed\". Fotogramas de giro y apertura de la Poké Ball de Negro/Blanco.",
+      "license": "Gráficos propiedad de sus titulares; sin licencia abierta. Descarga vía Internet Archive."
+    }
+  },
+  "assets": [
+    {
+      "path": "battle/bg/grass.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/9/9c/Battle_terrain_grass_B2W2.png",
+      "size": [
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/bg/tall-grass.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/8/8a/Battle_terrain_tall_grass_B2W2.png",
+      "size": [
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/bg/plain.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/f/fe/Battle_terrain_plain_B2W2.png",
+      "size": [
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/bg/cave.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/4/42/Battle_terrain_cave_B2W2.png",
+      "size": [
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/bg/water.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/e/e0/Battle_terrain_water_B2W2.png",
+      "size": [
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/bg/shallow-water.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/f/f5/Battle_terrain_shallow_water_B2W2.png",
+      "size": [
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/bg/mountain.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/3/36/Battle_terrain_mountain_B2W2.png",
+      "size": [
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/bg/sand.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/4/47/Battle_terrain_sand_B2W2.png",
+      "size": [
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/bg/snow.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/1/13/Battle_terrain_snow_B2W2.png",
+      "size": [
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/bg/ice.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/5/5a/Battle_terrain_ice_B2W2.png",
+      "size": [
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/bg/building.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/f/fa/Battle_terrain_building_B2W2.png",
+      "size": [
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/bg/manmade.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/0/09/Battle_terrain_manmade_B2W2.png",
+      "size": [
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/bg/leaves.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/8/8c/Battle_terrain_leaves_B2W2.png",
+      "size": [
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/bg/special.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/3/3b/Battle_terrain_special_B2W2.png",
+      "size": [
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/bg/pwt.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/6/69/Battle_terrain_PWT_B2W2.png",
+      "size": [
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/bg/championships.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/b/b3/Battle_terrain_Championships_B2W2.png",
+      "size": [
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/bg/marshal.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/1/13/Battle_terrain_Marshal_B2W2.png",
+      "size": [
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/bg/shauntal.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/1/1c/Battle_terrain_Shauntal_B2W2.png",
+      "size": [
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/bg/grimsley.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/f/f5/Battle_terrain_Grimsley_B2W2.png",
+      "size": [
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/bg/caitlin.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/2/2b/Battle_terrain_Caitlin_B2W2.png",
+      "size": [
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/types/normal.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/2/28/NormalIC_BW.png",
+      "size": [
+        32,
+        12
+      ]
+    },
+    {
+      "path": "battle/types/fire.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/1/15/FireIC_BW.png",
+      "size": [
+        32,
+        12
+      ]
+    },
+    {
+      "path": "battle/types/water.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/2/2b/WaterIC_BW.png",
+      "size": [
+        32,
+        12
+      ]
+    },
+    {
+      "path": "battle/types/electric.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/6/67/ElectricIC_BW.png",
+      "size": [
+        32,
+        12
+      ]
+    },
+    {
+      "path": "battle/types/grass.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/2/23/GrassIC_BW.png",
+      "size": [
+        32,
+        12
+      ]
+    },
+    {
+      "path": "battle/types/ice.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/a/ad/IceIC_BW.png",
+      "size": [
+        32,
+        12
+      ]
+    },
+    {
+      "path": "battle/types/fighting.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/c/c8/FightingIC_BW.png",
+      "size": [
+        32,
+        12
+      ]
+    },
+    {
+      "path": "battle/types/poison.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/b/ba/PoisonIC_BW.png",
+      "size": [
+        32,
+        12
+      ]
+    },
+    {
+      "path": "battle/types/ground.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/f/f4/GroundIC_BW.png",
+      "size": [
+        32,
+        12
+      ]
+    },
+    {
+      "path": "battle/types/flying.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/8/8e/FlyingIC_BW.png",
+      "size": [
+        32,
+        12
+      ]
+    },
+    {
+      "path": "battle/types/psychic.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/6/60/PsychicIC_BW.png",
+      "size": [
+        32,
+        12
+      ]
+    },
+    {
+      "path": "battle/types/bug.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/2/2e/BugIC_BW.png",
+      "size": [
+        32,
+        12
+      ]
+    },
+    {
+      "path": "battle/types/rock.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/8/85/RockIC_BW.png",
+      "size": [
+        32,
+        12
+      ]
+    },
+    {
+      "path": "battle/types/ghost.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/9/99/GhostIC_BW.png",
+      "size": [
+        32,
+        12
+      ]
+    },
+    {
+      "path": "battle/types/dragon.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/a/ad/DragonIC_BW.png",
+      "size": [
+        32,
+        12
+      ]
+    },
+    {
+      "path": "battle/types/dark.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/3/35/DarkIC_BW.png",
+      "size": [
+        32,
+        12
+      ]
+    },
+    {
+      "path": "battle/types/steel.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/0/04/SteelIC_BW.png",
+      "size": [
+        32,
+        12
+      ]
+    },
+    {
+      "path": "battle/trainers/nate-back.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/5/5d/B2W2_Nate_Back.png",
+      "size": [
+        73,
+        120
+      ]
+    },
+    {
+      "path": "battle/trainers/rosa-back.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/b/b6/B2W2_Rosa_Back.png",
+      "size": [
+        73,
+        120
+      ]
+    },
+    {
+      "path": "battle/databox/b2-player.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        12,
+        40,
+        113,
+        25
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ]
+      ]
+    },
+    {
+      "path": "battle/databox/b2-rival.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        144,
+        40,
+        104,
+        19
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ]
+      ]
+    },
+    {
+      "path": "battle/databox/w2-player.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        12,
+        80,
+        113,
+        25
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ]
+      ]
+    },
+    {
+      "path": "battle/databox/w2-rival.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        144,
+        80,
+        104,
+        19
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ]
+      ]
+    },
+    {
+      "path": "battle/hp/track.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        12,
+        111,
+        50,
+        5
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ]
+      ]
+    },
+    {
+      "path": "battle/hp/fill-red.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        63,
+        111,
+        50,
+        5
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ]
+      ]
+    },
+    {
+      "path": "battle/hp/fill-yellow.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        12,
+        117,
+        50,
+        5
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ]
+      ]
+    },
+    {
+      "path": "battle/hp/fill-green.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        63,
+        117,
+        50,
+        5
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ]
+      ]
+    },
+    {
+      "path": "battle/hp/exp-fill.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        12,
+        123,
+        82,
+        4
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ]
+      ]
+    },
+    {
+      "path": "battle/hp/exp-track.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        12,
+        128,
+        82,
+        4
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ]
+      ]
+    },
+    {
+      "path": "battle/icons/gender-male.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        102,
+        123,
+        7,
+        10
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ]
+      ]
+    },
+    {
+      "path": "battle/icons/gender-female.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        111,
+        123,
+        7,
+        10
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ]
+      ]
+    },
+    {
+      "path": "battle/status/slp.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        122,
+        123,
+        19,
+        6
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ]
+      ]
+    },
+    {
+      "path": "battle/status/psn.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        142,
+        123,
+        19,
+        6
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ]
+      ]
+    },
+    {
+      "path": "battle/status/tox.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        162,
+        123,
+        19,
+        6
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ]
+      ]
+    },
+    {
+      "path": "battle/status/brn.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        182,
+        123,
+        19,
+        6
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ]
+      ]
+    },
+    {
+      "path": "battle/status/frz.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        202,
+        123,
+        19,
+        6
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ]
+      ]
+    },
+    {
+      "path": "battle/status/par.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        222,
+        123,
+        19,
+        6
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ]
+      ]
+    },
+    {
+      "path": "battle/digits/hp-0.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        145,
+        111,
+        8,
+        8
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ],
+        [
+          0,
+          127,
+          70
+        ]
+      ]
+    },
+    {
+      "path": "battle/digits/hp-1.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        154,
+        111,
+        8,
+        8
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ],
+        [
+          0,
+          127,
+          70
+        ]
+      ]
+    },
+    {
+      "path": "battle/digits/hp-2.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        163,
+        111,
+        8,
+        8
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ],
+        [
+          0,
+          127,
+          70
+        ]
+      ]
+    },
+    {
+      "path": "battle/digits/hp-3.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        172,
+        111,
+        8,
+        8
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ],
+        [
+          0,
+          127,
+          70
+        ]
+      ]
+    },
+    {
+      "path": "battle/digits/hp-4.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        181,
+        111,
+        8,
+        8
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ],
+        [
+          0,
+          127,
+          70
+        ]
+      ]
+    },
+    {
+      "path": "battle/digits/hp-5.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        190,
+        111,
+        8,
+        8
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ],
+        [
+          0,
+          127,
+          70
+        ]
+      ]
+    },
+    {
+      "path": "battle/digits/hp-6.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        199,
+        111,
+        8,
+        8
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ],
+        [
+          0,
+          127,
+          70
+        ]
+      ]
+    },
+    {
+      "path": "battle/digits/hp-7.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        208,
+        111,
+        8,
+        8
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ],
+        [
+          0,
+          127,
+          70
+        ]
+      ]
+    },
+    {
+      "path": "battle/digits/hp-8.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        217,
+        111,
+        8,
+        8
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ],
+        [
+          0,
+          127,
+          70
+        ]
+      ]
+    },
+    {
+      "path": "battle/digits/hp-9.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        226,
+        111,
+        8,
+        8
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ],
+        [
+          0,
+          127,
+          70
+        ]
+      ]
+    },
+    {
+      "path": "battle/digits/level-0.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        172,
+        166,
+        7,
+        9
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ],
+        [
+          0,
+          255,
+          33
+        ]
+      ]
+    },
+    {
+      "path": "battle/digits/level-1.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        180,
+        166,
+        4,
+        9
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ],
+        [
+          0,
+          255,
+          33
+        ]
+      ]
+    },
+    {
+      "path": "battle/digits/level-2.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        185,
+        166,
+        7,
+        9
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ],
+        [
+          0,
+          255,
+          33
+        ]
+      ]
+    },
+    {
+      "path": "battle/digits/level-3.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        193,
+        166,
+        7,
+        9
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ],
+        [
+          0,
+          255,
+          33
+        ]
+      ]
+    },
+    {
+      "path": "battle/digits/level-4.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        201,
+        166,
+        8,
+        9
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ],
+        [
+          0,
+          255,
+          33
+        ]
+      ]
+    },
+    {
+      "path": "battle/digits/level-5.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        210,
+        166,
+        7,
+        9
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ],
+        [
+          0,
+          255,
+          33
+        ]
+      ]
+    },
+    {
+      "path": "battle/digits/level-6.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        218,
+        166,
+        7,
+        9
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ],
+        [
+          0,
+          255,
+          33
+        ]
+      ]
+    },
+    {
+      "path": "battle/digits/level-7.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        226,
+        166,
+        7,
+        9
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ],
+        [
+          0,
+          255,
+          33
+        ]
+      ]
+    },
+    {
+      "path": "battle/digits/level-8.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        234,
+        166,
+        7,
+        9
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ],
+        [
+          0,
+          255,
+          33
+        ]
+      ]
+    },
+    {
+      "path": "battle/digits/level-9.png",
+      "source": "tsr-hp-bars-b2w2",
+      "crop": [
+        242,
+        166,
+        7,
+        9
+      ],
+      "transparent": [
+        [
+          124,
+          112,
+          57
+        ],
+        [
+          0,
+          255,
+          33
+        ]
+      ]
+    },
+    {
+      "path": "battle/touch/bag.png",
+      "source": "tsr-battle-hud-bw",
+      "crop": [
+        518,
+        219,
+        78,
+        60
+      ],
+      "transparent": [
+        [
+          189,
+          189,
+          231
+        ]
+      ],
+      "clone": [
+        {
+          "from": [
+            3,
+            30,
+            25,
+            12
+          ],
+          "to": [
+            28,
+            30
+          ]
+        }
+      ],
+      "_nota": "El rótulo inglés BAG se tapa repitiendo el patrón de puntos (periodo 5); la UI dibuja el rótulo en español."
+    },
+    {
+      "path": "battle/touch/pokemon.png",
+      "source": "tsr-battle-hud-bw",
+      "crop": [
+        696,
+        219,
+        78,
+        60
+      ],
+      "transparent": [
+        [
+          189,
+          189,
+          231
+        ]
+      ],
+      "erase": [
+        [
+          71,
+          1,
+          1,
+          1
+        ]
+      ],
+      "clone": [
+        {
+          "from": [
+            71,
+            28,
+            5,
+            15
+          ],
+          "to": [
+            16,
+            28
+          ]
+        },
+        {
+          "from": [
+            71,
+            28,
+            5,
+            15
+          ],
+          "to": [
+            21,
+            28
+          ]
+        },
+        {
+          "from": [
+            71,
+            28,
+            5,
+            15
+          ],
+          "to": [
+            26,
+            28
+          ]
+        },
+        {
+          "from": [
+            71,
+            28,
+            5,
+            15
+          ],
+          "to": [
+            31,
+            28
+          ]
+        },
+        {
+          "from": [
+            71,
+            28,
+            5,
+            15
+          ],
+          "to": [
+            36,
+            28
+          ]
+        },
+        {
+          "from": [
+            71,
+            28,
+            5,
+            15
+          ],
+          "to": [
+            41,
+            28
+          ]
+        },
+        {
+          "from": [
+            71,
+            28,
+            5,
+            15
+          ],
+          "to": [
+            46,
+            28
+          ]
+        },
+        {
+          "from": [
+            71,
+            28,
+            5,
+            15
+          ],
+          "to": [
+            51,
+            28
+          ]
+        },
+        {
+          "from": [
+            71,
+            28,
+            5,
+            15
+          ],
+          "to": [
+            56,
+            28
+          ]
+        },
+        {
+          "from": [
+            71,
+            28,
+            5,
+            15
+          ],
+          "to": [
+            61,
+            28
+          ]
+        },
+        {
+          "from": [
+            71,
+            28,
+            5,
+            15
+          ],
+          "to": [
+            66,
+            28
+          ]
+        }
+      ],
+      "_nota": "El rótulo POKÉMON se tapa repitiendo en horizontal 5 píxeles limpios del propio plato (periodo 5; en vertical el plato lleva un degradado que no se puede repetir). La UI dibuja los cuatro rótulos (LUCHAR, MOCHILA, RENDIRSE, POKÉMON) con la misma fuente y el mismo contorno."
+    },
+    {
+      "path": "battle/touch/run.png",
+      "source": "tsr-battle-hud-bw",
+      "crop": [
+        608,
+        235,
+        76,
+        44
+      ],
+      "transparent": [
+        [
+          189,
+          189,
+          231
+        ]
+      ],
+      "clone": [
+        {
+          "from": [
+            25,
+            15,
+            25,
+            12
+          ],
+          "to": [
+            25,
+            25
+          ]
+        }
+      ],
+      "_nota": "El rótulo inglés RUN se tapa repitiendo el patrón de puntos (periodo 5); la UI dibuja el rótulo en español."
+    },
+    {
+      "path": "battle/touch/fight-label.png",
+      "source": "tsr-battle-hud-bw",
+      "crop": [
+        515,
+        179,
+        57,
+        19
+      ],
+      "transparent": [
+        [
+          189,
+          189,
+          231
+        ]
+      ],
+      "erase": [
+        [
+          0,
+          0,
+          47,
+          5
+        ]
+      ]
+    },
+    {
+      "path": "battle/transition/pokeball-wipe.png",
+      "source": "tsr-battle-hud-bw",
+      "crop": [
+        0,
+        0,
+        512,
+        512
+      ],
+      "transparent": []
+    },
+    {
+      "path": "battle/trainers/nate-throw-sheet.png",
+      "source": "tsr-trainers-back-b2w2",
+      "crop": [
+        2,
+        2,
+        256,
+        128
+      ],
+      "transparent": [
+        [
+          176,
+          248,
+          168
+        ]
+      ],
+      "atlas": {
+        "nota": "cajas [x,y,ancho,alto] dentro de la hoja: tres poses del cuerpo y las piezas del brazo que lanza",
+        "cuerpo-1": [
+          1,
+          16,
+          47,
+          112
+        ],
+        "cuerpo-2": [
+          51,
+          11,
+          58,
+          117
+        ],
+        "cuerpo-3": [
+          112,
+          28,
+          87,
+          100
+        ],
+        "brazo-a": [
+          218,
+          9,
+          36,
+          46
+        ],
+        "brazo-b": [
+          201,
+          79,
+          30,
+          46
+        ],
+        "brazo-c": [
+          234,
+          66,
+          19,
+          60
+        ]
+      }
+    },
+    {
+      "path": "battle/trainers/rosa-throw-sheet.png",
+      "source": "tsr-trainers-back-b2w2",
+      "crop": [
+        260,
+        2,
+        256,
+        128
+      ],
+      "transparent": [
+        [
+          248,
+          128,
+          248
+        ]
+      ],
+      "atlas": {
+        "nota": "cajas [x,y,ancho,alto] dentro de la hoja; cuerpo-1 y cuerpo-2 vienen juntos en la caja [0,14,120,114] (el pelo las une)",
+        "cuerpos-1-2": [
+          0,
+          14,
+          120,
+          114
+        ],
+        "cuerpo-3": [
+          122,
+          38,
+          84,
+          90
+        ],
+        "brazo-a": [
+          228,
+          11,
+          25,
+          43
+        ],
+        "brazo-b": [
+          218,
+          83,
+          13,
+          39
+        ],
+        "brazo-c": [
+          234,
+          63,
+          20,
+          61
+        ],
+        "pieza-manga": [
+          18,
+          6,
+          28,
+          15
+        ]
+      }
+    },
+    {
+      "path": "battle/fx/shine.png",
+      "source": "showdown-fx",
+      "url": "https://play.pokemonshowdown.com/fx/shine.png"
+    },
+    {
+      "path": "battle/types-blank/normal.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/2/28/NormalIC_BW.png",
+      "size": [
+        32,
+        12
+      ],
+      "fill": [
+        {
+          "box": [
+            1,
+            1,
+            30,
+            10
+          ],
+          "from": [
+            1,
+            1
+          ]
+        }
+      ],
+      "_nota": "Icono de tipo sin rótulo inglés: el interior se rellena con el color base; la UI pinta el nombre en español."
+    },
+    {
+      "path": "battle/types-blank/fire.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/1/15/FireIC_BW.png",
+      "size": [
+        32,
+        12
+      ],
+      "fill": [
+        {
+          "box": [
+            1,
+            1,
+            30,
+            10
+          ],
+          "from": [
+            1,
+            1
+          ]
+        }
+      ],
+      "_nota": "Icono de tipo sin rótulo inglés: el interior se rellena con el color base; la UI pinta el nombre en español."
+    },
+    {
+      "path": "battle/types-blank/water.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/2/2b/WaterIC_BW.png",
+      "size": [
+        32,
+        12
+      ],
+      "fill": [
+        {
+          "box": [
+            1,
+            1,
+            30,
+            10
+          ],
+          "from": [
+            1,
+            1
+          ]
+        }
+      ],
+      "_nota": "Icono de tipo sin rótulo inglés: el interior se rellena con el color base; la UI pinta el nombre en español."
+    },
+    {
+      "path": "battle/types-blank/electric.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/6/67/ElectricIC_BW.png",
+      "size": [
+        32,
+        12
+      ],
+      "fill": [
+        {
+          "box": [
+            1,
+            1,
+            30,
+            10
+          ],
+          "from": [
+            1,
+            1
+          ]
+        }
+      ],
+      "_nota": "Icono de tipo sin rótulo inglés: el interior se rellena con el color base; la UI pinta el nombre en español."
+    },
+    {
+      "path": "battle/types-blank/grass.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/2/23/GrassIC_BW.png",
+      "size": [
+        32,
+        12
+      ],
+      "fill": [
+        {
+          "box": [
+            1,
+            1,
+            30,
+            10
+          ],
+          "from": [
+            1,
+            1
+          ]
+        }
+      ],
+      "_nota": "Icono de tipo sin rótulo inglés: el interior se rellena con el color base; la UI pinta el nombre en español."
+    },
+    {
+      "path": "battle/types-blank/ice.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/a/ad/IceIC_BW.png",
+      "size": [
+        32,
+        12
+      ],
+      "fill": [
+        {
+          "box": [
+            1,
+            1,
+            30,
+            10
+          ],
+          "from": [
+            1,
+            1
+          ]
+        }
+      ],
+      "_nota": "Icono de tipo sin rótulo inglés: el interior se rellena con el color base; la UI pinta el nombre en español."
+    },
+    {
+      "path": "battle/types-blank/fighting.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/c/c8/FightingIC_BW.png",
+      "size": [
+        32,
+        12
+      ],
+      "fill": [
+        {
+          "box": [
+            1,
+            1,
+            30,
+            10
+          ],
+          "from": [
+            1,
+            1
+          ]
+        }
+      ],
+      "_nota": "Icono de tipo sin rótulo inglés: el interior se rellena con el color base; la UI pinta el nombre en español."
+    },
+    {
+      "path": "battle/types-blank/poison.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/b/ba/PoisonIC_BW.png",
+      "size": [
+        32,
+        12
+      ],
+      "fill": [
+        {
+          "box": [
+            1,
+            1,
+            30,
+            10
+          ],
+          "from": [
+            1,
+            1
+          ]
+        }
+      ],
+      "_nota": "Icono de tipo sin rótulo inglés: el interior se rellena con el color base; la UI pinta el nombre en español."
+    },
+    {
+      "path": "battle/types-blank/ground.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/f/f4/GroundIC_BW.png",
+      "size": [
+        32,
+        12
+      ],
+      "fill": [
+        {
+          "box": [
+            1,
+            1,
+            30,
+            10
+          ],
+          "from": [
+            1,
+            1
+          ]
+        }
+      ],
+      "_nota": "Icono de tipo sin rótulo inglés: el interior se rellena con el color base; la UI pinta el nombre en español."
+    },
+    {
+      "path": "battle/types-blank/flying.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/8/8e/FlyingIC_BW.png",
+      "size": [
+        32,
+        12
+      ],
+      "fill": [
+        {
+          "box": [
+            1,
+            1,
+            30,
+            10
+          ],
+          "from": [
+            1,
+            1
+          ]
+        }
+      ],
+      "_nota": "Icono de tipo sin rótulo inglés: el interior se rellena con el color base; la UI pinta el nombre en español."
+    },
+    {
+      "path": "battle/types-blank/psychic.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/6/60/PsychicIC_BW.png",
+      "size": [
+        32,
+        12
+      ],
+      "fill": [
+        {
+          "box": [
+            1,
+            1,
+            30,
+            10
+          ],
+          "from": [
+            1,
+            1
+          ]
+        }
+      ],
+      "_nota": "Icono de tipo sin rótulo inglés: el interior se rellena con el color base; la UI pinta el nombre en español."
+    },
+    {
+      "path": "battle/types-blank/bug.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/2/2e/BugIC_BW.png",
+      "size": [
+        32,
+        12
+      ],
+      "fill": [
+        {
+          "box": [
+            1,
+            1,
+            30,
+            10
+          ],
+          "from": [
+            1,
+            1
+          ]
+        }
+      ],
+      "_nota": "Icono de tipo sin rótulo inglés: el interior se rellena con el color base; la UI pinta el nombre en español."
+    },
+    {
+      "path": "battle/types-blank/rock.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/8/85/RockIC_BW.png",
+      "size": [
+        32,
+        12
+      ],
+      "fill": [
+        {
+          "box": [
+            1,
+            1,
+            30,
+            10
+          ],
+          "from": [
+            1,
+            1
+          ]
+        }
+      ],
+      "_nota": "Icono de tipo sin rótulo inglés: el interior se rellena con el color base; la UI pinta el nombre en español."
+    },
+    {
+      "path": "battle/types-blank/ghost.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/9/99/GhostIC_BW.png",
+      "size": [
+        32,
+        12
+      ],
+      "fill": [
+        {
+          "box": [
+            1,
+            1,
+            30,
+            10
+          ],
+          "from": [
+            1,
+            1
+          ]
+        }
+      ],
+      "_nota": "Icono de tipo sin rótulo inglés: el interior se rellena con el color base; la UI pinta el nombre en español."
+    },
+    {
+      "path": "battle/types-blank/dragon.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/a/ad/DragonIC_BW.png",
+      "size": [
+        32,
+        12
+      ],
+      "fill": [
+        {
+          "box": [
+            1,
+            1,
+            30,
+            10
+          ],
+          "from": [
+            1,
+            1
+          ]
+        }
+      ],
+      "_nota": "Icono de tipo sin rótulo inglés: el interior se rellena con el color base; la UI pinta el nombre en español."
+    },
+    {
+      "path": "battle/types-blank/dark.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/3/35/DarkIC_BW.png",
+      "size": [
+        32,
+        12
+      ],
+      "fill": [
+        {
+          "box": [
+            1,
+            1,
+            30,
+            10
+          ],
+          "from": [
+            1,
+            1
+          ]
+        }
+      ],
+      "_nota": "Icono de tipo sin rótulo inglés: el interior se rellena con el color base; la UI pinta el nombre en español."
+    },
+    {
+      "path": "battle/types-blank/steel.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/0/04/SteelIC_BW.png",
+      "size": [
+        32,
+        12
+      ],
+      "fill": [
+        {
+          "box": [
+            1,
+            1,
+            30,
+            10
+          ],
+          "from": [
+            1,
+            1
+          ]
+        }
+      ],
+      "_nota": "Icono de tipo sin rótulo inglés: el interior se rellena con el color base; la UI pinta el nombre en español."
+    },
+    {
+      "path": "battle/categories/physical.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/e/ed/PhysicalIC_BW.png",
+      "size": [
+        28,
+        14
+      ]
+    },
+    {
+      "path": "battle/categories/special.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/8/8c/SpecialIC_BW.png",
+      "size": [
+        28,
+        14
+      ]
+    },
+    {
+      "path": "battle/categories/status.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/7/71/StatusIC_BW.png",
+      "size": [
+        28,
+        14
+      ]
+    },
+    {
+      "path": "battle/party/bg-top.png",
+      "source": "tsr-party-screen-bw",
+      "crop": [
+        2,
+        2,
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/party/bg-bottom.png",
+      "source": "tsr-party-screen-bw",
+      "crop": [
+        262,
+        2,
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/party/panel-blue-left.png",
+      "source": "tsr-party-screen-bw",
+      "crop": [
+        5,
+        201,
+        126,
+        46
+      ],
+      "transparent": [
+        [
+          160,
+          234,
+          0
+        ],
+        [
+          191,
+          143,
+          0
+        ]
+      ]
+    },
+    {
+      "path": "battle/party/panel-blue-left-lit.png",
+      "source": "tsr-party-screen-bw",
+      "crop": [
+        133,
+        201,
+        126,
+        46
+      ],
+      "transparent": [
+        [
+          160,
+          234,
+          0
+        ],
+        [
+          191,
+          143,
+          0
+        ]
+      ]
+    },
+    {
+      "path": "battle/party/panel-blue-right.png",
+      "source": "tsr-party-screen-bw",
+      "crop": [
+        261,
+        201,
+        126,
+        46
+      ],
+      "transparent": [
+        [
+          160,
+          234,
+          0
+        ],
+        [
+          191,
+          143,
+          0
+        ]
+      ]
+    },
+    {
+      "path": "battle/party/panel-blue-right-lit.png",
+      "source": "tsr-party-screen-bw",
+      "crop": [
+        389,
+        201,
+        126,
+        46
+      ],
+      "transparent": [
+        [
+          160,
+          234,
+          0
+        ],
+        [
+          191,
+          143,
+          0
+        ]
+      ]
+    },
+    {
+      "path": "battle/party/panel-red-left.png",
+      "source": "tsr-party-screen-bw",
+      "crop": [
+        5,
+        249,
+        126,
+        46
+      ],
+      "transparent": [
+        [
+          160,
+          234,
+          0
+        ],
+        [
+          191,
+          143,
+          0
+        ]
+      ]
+    },
+    {
+      "path": "battle/party/panel-red-left-lit.png",
+      "source": "tsr-party-screen-bw",
+      "crop": [
+        133,
+        249,
+        126,
+        46
+      ],
+      "transparent": [
+        [
+          160,
+          234,
+          0
+        ],
+        [
+          191,
+          143,
+          0
+        ]
+      ]
+    },
+    {
+      "path": "battle/party/panel-red-right.png",
+      "source": "tsr-party-screen-bw",
+      "crop": [
+        261,
+        249,
+        126,
+        46
+      ],
+      "transparent": [
+        [
+          160,
+          234,
+          0
+        ],
+        [
+          191,
+          143,
+          0
+        ]
+      ]
+    },
+    {
+      "path": "battle/party/panel-red-right-lit.png",
+      "source": "tsr-party-screen-bw",
+      "crop": [
+        389,
+        249,
+        126,
+        46
+      ],
+      "transparent": [
+        [
+          160,
+          234,
+          0
+        ],
+        [
+          191,
+          143,
+          0
+        ]
+      ]
+    },
+    {
+      "path": "battle/party/panel-green-left.png",
+      "source": "tsr-party-screen-bw",
+      "crop": [
+        5,
+        297,
+        126,
+        46
+      ],
+      "transparent": [
+        [
+          160,
+          234,
+          0
+        ],
+        [
+          191,
+          143,
+          0
+        ]
+      ]
+    },
+    {
+      "path": "battle/party/panel-green-left-lit.png",
+      "source": "tsr-party-screen-bw",
+      "crop": [
+        133,
+        297,
+        126,
+        46
+      ],
+      "transparent": [
+        [
+          160,
+          234,
+          0
+        ],
+        [
+          191,
+          143,
+          0
+        ]
+      ]
+    },
+    {
+      "path": "battle/party/panel-green-right.png",
+      "source": "tsr-party-screen-bw",
+      "crop": [
+        261,
+        297,
+        126,
+        46
+      ],
+      "transparent": [
+        [
+          160,
+          234,
+          0
+        ],
+        [
+          191,
+          143,
+          0
+        ]
+      ]
+    },
+    {
+      "path": "battle/party/panel-green-right-lit.png",
+      "source": "tsr-party-screen-bw",
+      "crop": [
+        389,
+        297,
+        126,
+        46
+      ],
+      "transparent": [
+        [
+          160,
+          234,
+          0
+        ],
+        [
+          191,
+          143,
+          0
+        ]
+      ]
+    },
+    {
+      "path": "battle/party/icons-sheet.png",
+      "source": "showdown-icons",
+      "size": [
+        480,
+        4110
+      ]
+    },
+    {
+      "path": "battle/summary/info-top.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/0/05/BW_summary_1.png",
+      "size": [
+        256,
+        384
+      ],
+      "clean": "summary-info",
+      "crop": [
+        0,
+        0,
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/summary/info-bottom.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/0/05/BW_summary_1.png",
+      "size": [
+        256,
+        384
+      ],
+      "clean": "summary-info",
+      "crop": [
+        0,
+        192,
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/summary/skills-top.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/8/81/BW_summary_2.png",
+      "size": [
+        256,
+        384
+      ],
+      "clean": "summary-skills",
+      "crop": [
+        0,
+        0,
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/summary/skills-bottom.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/8/81/BW_summary_2.png",
+      "size": [
+        256,
+        384
+      ],
+      "clean": "summary-skills",
+      "crop": [
+        0,
+        192,
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/summary/moves-top.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/b/bf/BW_summary_2_desc.png",
+      "size": [
+        256,
+        384
+      ],
+      "clean": "summary-moves",
+      "crop": [
+        0,
+        0,
+        256,
+        192
+      ]
+    },
+    {
+      "path": "battle/status/fnt.png",
+      "source": "tsr-misc-icons-bw",
+      "crop": [
+        79,
+        347,
+        19,
+        6
+      ],
+      "transparent": [
+        [
+          66,
+          66,
+          255
+        ]
+      ],
+      "_nota": "Rótulo FNT (debilitado) del mismo estilo que el resto de iconos de estado."
+    },
+    {
+      "path": "battle/party/bar.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/0/05/BW_summary_1.png",
+      "size": [
+        256,
+        384
+      ],
+      "clean": "party-bar",
+      "crop": [
+        0,
+        360,
+        256,
+        24
+      ],
+      "_nota": "Barra inferior (negro degradado) con solo los botones Cancelar (X) y Volver (U); se quitan pestañas, casilla y flechas del original."
+    },
+    {
+      "path": "battle/party/hp-track.png",
+      "source": "tsr-party-screen-bw",
+      "crop": [
+        6,
+        397,
+        64,
+        6
+      ],
+      "transparent": [
+        [
+          160,
+          234,
+          0
+        ],
+        [
+          191,
+          143,
+          0
+        ]
+      ],
+      "_nota": "Rótulo HP y pista de la barra de PS de la pantalla de equipo y de datos (64x6); el relleno de 48x2 se pinta en ejecución con los colores de la hoja (verde #63ff63/#18c621, amarillo #ffde00/#efad00, rojo #ff9c9c/#ff4a39)."
+    },
+    {
+      "path": "battle/fx/pokeball-strip.png",
+      "source": "tsr-pokeballs-bw",
+      "strip": [
+        [
+          131,
+          449,
+          24,
+          30
+        ],
+        [
+          131,
+          489,
+          24,
+          30
+        ],
+        [
+          130,
+          529,
+          24,
+          30
+        ],
+        [
+          129,
+          569,
+          24,
+          30
+        ],
+        [
+          133,
+          609,
+          24,
+          30
+        ],
+        [
+          134,
+          649,
+          24,
+          30
+        ],
+        [
+          131,
+          404,
+          24,
+          30
+        ]
+      ],
+      "transparent": [
+        [
+          0,
+          128,
+          128
+        ]
+      ],
+      "_nota": "Fotogramas de la Poké Ball de la hoja BW: 6 de giro y el 7.º con la tapa abierta (24x30 en la hoja). En la hoja la bola mide 22 px, el doble que la que lleva en la mano el protagonista; se reduce a la mitad (vecino más cercano) y queda en 12x15 por fotograma. La UI los recorre con steps().",
+      "shrink": 2
+    },
+    {
+      "path": "battle/touch/back.png",
+      "source": "bulbagarden-archives",
+      "url": "https://archives.bulbagarden.net/media/upload/7/79/Pokemon_Battle_Moves_BW.png",
+      "size": [
+        256,
+        193
+      ],
+      "crop": [
+        180,
+        135,
+        76,
+        58
+      ],
+      "flood": {
+        "seeds": [
+          [
+            0,
+            0
+          ],
+          [
+            75,
+            0
+          ],
+          [
+            0,
+            57
+          ]
+        ],
+        "stop": [
+          248,
+          248,
+          248
+        ]
+      },
+      "_nota": "Botón Volver del menú de movimientos tal cual en la captura de Negro/Blanco (marco blanco, plato punteado y flecha azul); se quita el fondo exterior rellenando desde las esquinas hasta el marco."
+    }
+  ],
+  "fonts": [
+    {
+      "path": "pokemon-dp.ttf",
+      "source": "hexparrot-pokemon-assets",
+      "url": "https://raw.githubusercontent.com/hexparrot/pokemon-assets/2386d4308f6995d9539a5c15c1256c22025385e4/assets/fonts/Pokemon-DP.ttf"
+    }
+  ],
+  "cleanups": {
+    "summary-info": {
+      "tile": [
+        {
+          "from": [
+            32,
+            128,
+            80,
+            48
+          ],
+          "box": [
+            30,
+            42,
+            84,
+            86
+          ]
+        },
+        {
+          "from": [
+            56,
+            208,
+            16,
+            64
+          ],
+          "box": [
+            8,
+            200,
+            71,
+            82
+          ]
+        },
+        {
+          "from": [
+            96,
+            282,
+            32,
+            16
+          ],
+          "box": [
+            8,
+            282,
+            71,
+            16
+          ]
+        },
+        {
+          "from": [
+            96,
+            314,
+            32,
+            16
+          ],
+          "box": [
+            8,
+            314,
+            71,
+            16
+          ]
+        },
+        {
+          "from": [
+            112,
+            232,
+            32,
+            48
+          ],
+          "box": [
+            80,
+            200,
+            34,
+            80
+          ]
+        },
+        {
+          "from": [
+            112,
+            298,
+            32,
+            16
+          ],
+          "box": [
+            80,
+            298,
+            32,
+            16
+          ]
+        },
+        {
+          "from": [
+            112,
+            329,
+            32,
+            16
+          ],
+          "box": [
+            80,
+            329,
+            32,
+            16
+          ]
+        },
+        {
+          "from": [
+            40,
+            344,
+            16,
+            8
+          ],
+          "box": [
+            56,
+            344,
+            96,
+            8
+          ]
+        },
+        {
+          "from": [
+            208,
+            193,
+            32,
+            16
+          ],
+          "box": [
+            160,
+            193,
+            48,
+            16
+          ]
+        },
+        {
+          "from": [
+            222,
+            193,
+            16,
+            16
+          ],
+          "box": [
+            238,
+            193,
+            14,
+            16
+          ]
+        },
+        {
+          "from": [
+            192,
+            209,
+            16,
+            16
+          ],
+          "box": [
+            160,
+            209,
+            48,
+            13
+          ]
+        },
+        {
+          "from": [
+            200,
+            329,
+            32,
+            32
+          ],
+          "box": [
+            158,
+            333,
+            44,
+            26
+          ]
+        },
+        {
+          "from": [
+            128,
+            256,
+            32,
+            64
+          ],
+          "box": [
+            160,
+            262,
+            73,
+            50
+          ],
+          "clip": [
+            -1000,
+            -74
+          ]
+        },
+        {
+          "from": [
+            240,
+            262,
+            16,
+            48
+          ],
+          "box": [
+            196,
+            264,
+            40,
+            38
+          ],
+          "clip": [
+            -69,
+            1000
+          ]
+        },
+        {
+          "from": [
+            88,
+            360,
+            16,
+            24
+          ],
+          "box": [
+            122,
+            360,
+            22,
+            24
+          ]
+        }
+      ],
+      "clone": [
+        {
+          "from": [
+            181,
+            248,
+            24,
+            24
+          ],
+          "to": [
+            197,
+            264
+          ],
+          "clip": [
+            -73,
+            -70
+          ]
+        },
+        {
+          "from": [
+            181,
+            248,
+            24,
+            24
+          ],
+          "to": [
+            213,
+            280
+          ],
+          "clip": [
+            -73,
+            -70
+          ]
+        },
+        {
+          "from": [
+            181,
+            248,
+            24,
+            24
+          ],
+          "to": [
+            229,
+            296
+          ],
+          "clip": [
+            -73,
+            -70
+          ]
+        }
+      ],
+      "fill": [
+        {
+          "box": [
+            0,
+            11,
+            256,
+            11
+          ],
+          "from": [
+            1,
+            11
+          ]
+        },
+        {
+          "box": [
+            176,
+            297,
+            57,
+            15
+          ],
+          "color": [
+            173,
+            173,
+            181
+          ],
+          "clip": [
+            -1000,
+            -74
+          ]
+        }
+      ]
+    },
+    "summary-skills": {
+      "tile": [
+        {
+          "from": [
+            8,
+            33,
+            32,
+            15
+          ],
+          "box": [
+            40,
+            33,
+            78,
+            15
+          ]
+        },
+        {
+          "from": [
+            8,
+            56,
+            32,
+            64
+          ],
+          "box": [
+            40,
+            49,
+            78,
+            87
+          ]
+        },
+        {
+          "from": [
+            192,
+            96,
+            32,
+            32
+          ],
+          "box": [
+            121,
+            33,
+            66,
+            103
+          ]
+        },
+        {
+          "from": [
+            172,
+            160,
+            32,
+            32
+          ],
+          "box": [
+            40,
+            160,
+            128,
+            32
+          ]
+        },
+        {
+          "from": [
+            38,
+            144,
+            8,
+            16
+          ],
+          "box": [
+            52,
+            144,
+            42,
+            16
+          ]
+        },
+        {
+          "from": [
+            150,
+            144,
+            32,
+            16
+          ],
+          "box": [
+            112,
+            144,
+            38,
+            16
+          ]
+        },
+        {
+          "from": [
+            208,
+            193,
+            32,
+            16
+          ],
+          "box": [
+            160,
+            193,
+            48,
+            16
+          ]
+        },
+        {
+          "from": [
+            222,
+            193,
+            16,
+            16
+          ],
+          "box": [
+            238,
+            193,
+            14,
+            16
+          ]
+        },
+        {
+          "from": [
+            192,
+            209,
+            16,
+            16
+          ],
+          "box": [
+            160,
+            209,
+            48,
+            13
+          ]
+        },
+        {
+          "from": [
+            200,
+            329,
+            32,
+            32
+          ],
+          "box": [
+            158,
+            333,
+            44,
+            26
+          ]
+        },
+        {
+          "from": [
+            144,
+            280,
+            16,
+            16
+          ],
+          "box": [
+            160,
+            280,
+            73,
+            16
+          ],
+          "clip": [
+            -1000,
+            -74
+          ]
+        },
+        {
+          "from": [
+            240,
+            262,
+            16,
+            48
+          ],
+          "box": [
+            196,
+            264,
+            40,
+            38
+          ],
+          "clip": [
+            -69,
+            1000
+          ]
+        },
+        {
+          "from": [
+            88,
+            360,
+            16,
+            24
+          ],
+          "box": [
+            122,
+            360,
+            22,
+            24
+          ]
+        }
+      ],
+      "clone": [
+        {
+          "from": [
+            181,
+            248,
+            24,
+            24
+          ],
+          "to": [
+            197,
+            264
+          ],
+          "clip": [
+            -73,
+            -70
+          ]
+        },
+        {
+          "from": [
+            181,
+            248,
+            24,
+            24
+          ],
+          "to": [
+            213,
+            280
+          ],
+          "clip": [
+            -73,
+            -70
+          ]
+        },
+        {
+          "from": [
+            181,
+            248,
+            24,
+            24
+          ],
+          "to": [
+            229,
+            296
+          ],
+          "clip": [
+            -73,
+            -70
+          ]
+        }
+      ],
+      "fill": [
+        {
+          "box": [
+            0,
+            11,
+            256,
+            11
+          ],
+          "from": [
+            1,
+            11
+          ]
+        },
+        {
+          "box": [
+            18,
+            210,
+            112,
+            15
+          ],
+          "from": [
+            100,
+            212
+          ]
+        },
+        {
+          "box": [
+            18,
+            242,
+            112,
+            15
+          ],
+          "from": [
+            100,
+            212
+          ]
+        },
+        {
+          "box": [
+            18,
+            274,
+            112,
+            15
+          ],
+          "from": [
+            100,
+            212
+          ]
+        },
+        {
+          "box": [
+            18,
+            306,
+            112,
+            15
+          ],
+          "from": [
+            100,
+            212
+          ]
+        },
+        {
+          "box": [
+            50,
+            225,
+            79,
+            14
+          ],
+          "from": [
+            100,
+            212
+          ]
+        },
+        {
+          "box": [
+            50,
+            257,
+            79,
+            14
+          ],
+          "from": [
+            100,
+            212
+          ]
+        },
+        {
+          "box": [
+            50,
+            289,
+            79,
+            14
+          ],
+          "from": [
+            100,
+            212
+          ]
+        },
+        {
+          "box": [
+            50,
+            321,
+            79,
+            14
+          ],
+          "from": [
+            100,
+            212
+          ]
+        },
+        {
+          "box": [
+            160,
+            267,
+            73,
+            13
+          ],
+          "color": [
+            148,
+            148,
+            148
+          ],
+          "clip": [
+            -1000,
+            -74
+          ]
+        },
+        {
+          "box": [
+            160,
+            296,
+            73,
+            1
+          ],
+          "color": [
+            99,
+            99,
+            99
+          ],
+          "clip": [
+            -1000,
+            -74
+          ]
+        },
+        {
+          "box": [
+            176,
+            297,
+            57,
+            15
+          ],
+          "color": [
+            115,
+            115,
+            115
+          ],
+          "clip": [
+            -1000,
+            -74
+          ]
+        }
+      ]
+    },
+    "summary-moves": {
+      "tile": [
+        {
+          "from": [
+            0,
+            32,
+            64,
+            64
+          ],
+          "box": [
+            64,
+            44,
+            80,
+            52
+          ]
+        },
+        {
+          "from": [
+            184,
+            64,
+            16,
+            32
+          ],
+          "box": [
+            145,
+            48,
+            46,
+            48
+          ]
+        },
+        {
+          "from": [
+            208,
+            104,
+            32,
+            48
+          ],
+          "box": [
+            4,
+            104,
+            200,
+            48
+          ]
+        }
+      ],
+      "clone": [],
+      "fill": [
+        {
+          "box": [
+            0,
+            11,
+            256,
+            11
+          ],
+          "from": [
+            1,
+            11
+          ]
+        }
+      ]
+    },
+    "_nota": "Limpieza de las capturas 256x384 de Bulbagarden Archives (BW_summary_1, BW_summary_2, BW_summary_2_desc) antes de recortar: quita textos, sprite, sombra, barras y rótulos ingleses repitiendo el mosaico de 16 px del propio fondo (tile), copiando la línea turquesa de 45° (clone con clip) y rellenando colores planos medidos (fill). Operaciones en png.mjs (cleanImage).",
+    "party-bar": {
+      "tile": [
+        {
+          "from": [
+            88,
+            360,
+            16,
+            24
+          ],
+          "box": [
+            0,
+            360,
+            88,
+            24
+          ]
+        },
+        {
+          "from": [
+            88,
+            360,
+            16,
+            24
+          ],
+          "box": [
+            124,
+            360,
+            78,
+            24
+          ]
+        }
+      ]
+    }
+  }
+}

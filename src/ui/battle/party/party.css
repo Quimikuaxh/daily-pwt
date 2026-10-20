@@ -1,0 +1,224 @@
+/*
+ * Pantalla de equipo del combate (PRD §0 "Menú de cambio de Pokémon"): ocupa las dos pantallas del lienzo 256x384.
+ * Fondos y placas ripeados de Negro/Blanco (The Spriters Resource); nombre, nivel, PS y relleno de la barra se pintan en ejecución.
+ */
+.bt-party {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 256px;
+  height: 384px;
+  z-index: 20;
+  overflow: hidden;
+  background: #101820;
+}
+
+.bt-party-bg {
+  position: absolute;
+  left: 0;
+  width: 256px;
+  height: 192px;
+}
+
+.bt-party-bg-top {
+  top: 0;
+}
+
+.bt-party-bg-bottom {
+  top: 192px;
+}
+
+.bt-party-members {
+  position: absolute;
+  inset: 0;
+}
+
+.bt-party-panel {
+  position: absolute;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  font: inherit;
+  color: #f8f8f8;
+  cursor: pointer;
+}
+
+.bt-party-panel:disabled {
+  cursor: not-allowed;
+}
+
+.bt-party-panel:focus-visible,
+.bt-party-option:focus-visible,
+.bt-sum-hit:focus-visible,
+.bt-sum-slot:focus-visible,
+.bt-party-back:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 1px;
+}
+
+.bt-party-visual {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bt-party-visual > * {
+  position: absolute;
+}
+
+.bt-party-name,
+.bt-party-level,
+.bt-party-hp {
+  font-size: 13px;
+  line-height: 13px;
+  white-space: nowrap;
+  color: #f8f8f8;
+  text-shadow: 1px 1px 0 #707078;
+}
+
+.bt-party-hp {
+  text-align: right;
+}
+
+.bt-member-icon {
+  display: block;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+
+.bt-member-icon[data-dimmed="true"] {
+  opacity: 0.65;
+}
+
+/* Relleno de la barra de PS: dos filas de 1 px con los colores de la hoja (claro arriba, oscuro abajo). */
+.bt-party-fill {
+  position: absolute;
+  height: 2px;
+}
+
+.bt-party-fill[data-fill="green"] {
+  background: linear-gradient(#63ff63 50%, #18c621 50%);
+}
+
+.bt-party-fill[data-fill="yellow"] {
+  background: linear-gradient(#ffde00 50%, #efad00 50%);
+}
+
+.bt-party-fill[data-fill="red"] {
+  background: linear-gradient(#ff9c9c 50%, #ff4a39 50%);
+}
+
+/* Cuadro de texto blanco de la parte baja ("Elige un Pokémon.") */
+.bt-party-prompt {
+  position: absolute;
+  left: 3px;
+  top: 358px;
+  width: 178px;
+  height: 20px;
+  margin: 0;
+  box-sizing: border-box;
+  padding: 3px 5px 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 12px;
+  line-height: 14px;
+  color: #181818;
+  background: #f8f8f8;
+  border: 1px solid #181818;
+}
+
+.bt-party-toolbar {
+  position: absolute;
+  left: 0;
+  top: 360px;
+  width: 256px;
+  height: 24px;
+  pointer-events: none;
+}
+
+.bt-party-back,
+.bt-party-cancel {
+  position: absolute;
+  top: 372px;
+  width: max(24px, calc(45px / var(--k, 1)));
+  height: max(20px, calc(45px / var(--k, 1)));
+  padding: 0;
+  border: 0;
+  background: transparent;
+  translate: -50% -50%;
+  cursor: pointer;
+}
+
+.bt-party-back {
+  left: 245px;
+}
+
+.bt-party-cancel {
+  left: 212px;
+}
+
+.bt-party-back:disabled,
+.bt-party-cancel:disabled {
+  cursor: not-allowed;
+}
+
+/* Menú Cambiar / Datos / Cancelar: placas hexagonales del color de los botones del juego sobre la pantalla atenuada. */
+.bt-party-options-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: rgb(0 0 0 / 0.55);
+}
+
+.bt-party-dismiss {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  cursor: default;
+}
+
+.bt-party-options {
+  position: absolute;
+  left: 64px;
+  top: 218px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bt-party-option {
+  position: relative;
+  width: 128px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: #48b8f8;
+  clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0 50%);
+  font: inherit;
+  color: #f8f8f8;
+  text-shadow: 1px 1px 0 #181818;
+  cursor: pointer;
+}
+
+.bt-party-option::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  z-index: -1;
+  background: #10406e;
+  clip-path: polygon(13px 0, calc(100% - 13px) 0, 100% 50%, calc(100% - 13px) 100%, 13px 100%, 0 50%);
+}
+
+.bt-party-option:focus-visible::before {
+  background: #1f6fb0;
+}
+
+.bt-party-option[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
