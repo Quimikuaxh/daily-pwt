@@ -1,10 +1,10 @@
-import { useId, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import type { Challenge, GameData } from '../../core/types'
 import { es } from '../../i18n/es'
 import { Sprite } from '../common/Sprite'
 import { speciesSprite, trainerSprite } from '../common/spriteUrls'
 import { TypeBadge } from '../common/TypeBadge'
-import { TODAY_SPRITE_BOX, TODAY_SPRITE_CLASS } from './spriteBox'
+import { TODAY_SPRITE_BOX, TODAY_SPRITE_CLASS, pokemonSpriteClass } from './spriteBox'
 import { cardModel } from './cardModel'
 import { MonHead } from './MonHead'
 import { MoveList } from './MoveList'
@@ -52,9 +52,24 @@ export function RivalSection({ challenge, data }: RivalSectionProps) {
   const headingId = useId()
   const teamId = useId()
   const [showDetails, setShowDetails] = useState(false)
+  const sectionRef = useRef<HTMLElement>(null)
+  const justHidden = useRef(false)
+
+  // Al ocultar los sets la página se acorta y el usuario queda lejos del panel: se sube hasta él cuando ya se ha recolocado el contenido.
+  useEffect(() => {
+    if (showDetails || !justHidden.current) return
+    justHidden.current = false
+    const reducedMotion = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    sectionRef.current?.scrollIntoView?.({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' })
+  }, [showDetails])
+
+  function toggleDetails() {
+    justHidden.current = showDetails
+    setShowDetails(!showDetails)
+  }
 
   return (
-    <section aria-labelledby={headingId} className="panel plate">
+    <section ref={sectionRef} aria-labelledby={headingId} className="panel plate rival-section">
       <h2 id={headingId} className="section-title">{es.today.rivalSection}</h2>
       <RivalCard challenge={challenge} data={data} />
 
@@ -66,7 +81,7 @@ export function RivalSection({ challenge, data }: RivalSectionProps) {
               <RivalMonDetails set={set} data={data} />
             ) : (
               <>
-                <Sprite src={speciesSprite(data.dex, set.species, 'front')} name={set.nameEs} width={TODAY_SPRITE_BOX} height={TODAY_SPRITE_BOX} className={TODAY_SPRITE_CLASS} />
+                <Sprite src={speciesSprite(data.dex, set.species, 'front')} name={set.nameEs} width={TODAY_SPRITE_BOX} height={TODAY_SPRITE_BOX} className={pokemonSpriteClass(data.dex.species[set.species]?.spriteId)} />
                 <span className="rival-mon-name" translate="no">{set.nameEs}</span>
               </>
             )}
@@ -74,8 +89,8 @@ export function RivalSection({ challenge, data }: RivalSectionProps) {
         ))}
       </ul>
 
-      <button type="button" className="btn btn-secondary" aria-expanded={showDetails} aria-controls={teamId} onClick={() => setShowDetails((open) => !open)}>
-        {es.today.toggleRivalDetails}
+      <button type="button" className="btn btn-secondary" aria-expanded={showDetails} aria-controls={teamId} onClick={toggleDetails}>
+        {showDetails ? es.today.hideRivalDetails : es.today.showRivalDetails}
       </button>
     </section>
   )

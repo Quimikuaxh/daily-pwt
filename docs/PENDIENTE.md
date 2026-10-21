@@ -7,7 +7,6 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 - **Fijar `LAUNCH_DATE`** (`src/core/launch.ts`, provisional 2026-10-19) y regenerar el snapshot `src/core/__snapshots__/challenge.reference.json`. Hay referencias fijas a la fecha en `src/test-utils/dates.ts`, `e2e/support.ts` y `e2e/build.spec.ts` (ver README, "Lanzamiento"). **La fecha actual es un apaño:** se ajustó (de 2026-10-17 a 2026-10-19) para que, con Máximo añadido al roster base (6 entrenadores, bolsa rebarajada desde el inicio, sin entrada nueva de `rosterSchedule`), el 2026-10-21 tocase Máximo. Es la fecha más cercana a 2026-10-17 que lo cumple sin ser posterior a 2026-10-21 (con 2026-10-17 tocaba Camila; con 2026-10-18 tocaba Máximo el 20). Orden de la bolsa desde #1: Plubio, Misty, Máximo, Camila, Rojo, Brock. Cambia el rival de todas las fechas respecto a la 2026-10-17; se fija de verdad en F2.
 - **Calibrar la dificultad** (PRD §14, criterio 19). Resultado preliminar (INT-14) con el jugador de prueba "mejor daño" y los IV del jugador iguales a los del rival (RF-16): Brock 100 %, Misty 70 %, Camila 70 %, Plubio 50 %, Rojo 0 %. Brock y Rojo siguen fuera del rango 40-80 %; con IV 31 eran Brock 100 %, Misty 90 %, Plubio 60 %, Camila 50 %, Rojo 0 %.
 - **Discrepancia de datos:** Stunfisk de Camila (Mundial) lleva Juego Sucio según Bulbapedia y Serebii, Impresionar según WikiDex. Se usa Juego Sucio; confirmar al cargar el roster completo.
-- **Pool definitivo del jugador** (PRD §0): sets de Smogon Gen 5 de individuales (Ubers a NU y demás tiers de individuales, sin dobles ni LC; solo objeto, habilidad y movimientos) más los de los rivales del PWT, varios por Pokémon. `npm run gen:player-sets` sobrescribe `data/player-sets.json`; al sustituir el pool, adaptar el test UT-33 (`src/data/generated.test.ts`).
 - **Sprites de entrenadores:** el CDN de WikiDex no respondió y los de F1 se obtuvieron de Internet Archive. `scripts/fetch-sprites.mjs` intenta WikiDex primero; comprobar al descargar los 53.
 
 ## Para F3
@@ -31,7 +30,10 @@ Fuente: catálogo de `../pokemon-heardle/scripts/catalog/data/catalog.json` (OST
 
 Pistas del PWT disponibles para otras pantallas: "PWT - Final Round!" (`70ebcCUXjEE`), "Winning In The PWT!" (`eqgbyzLRsRs`), "PWT Victor!" (`lZOXxRaWDfQ`), "The PWT" (`d2BpRKyuw8A`), "Pokémon World Tournament (PWT)" (`nmo9CHFfV1A`). Antes de implementar, confirmar contra Bulbapedia qué tema suena con cada entrenador en el PWT.
 
-## Animaciones de movimientos (F3, PRD §0)
+## Efectos de sonido (F3, PRD §0)
+Golpe supereficaz, poco eficaz y neutro al atacar, y los básicos del combate (lanzar y abrir Poké Ball, debilitado). Ripeados de N2/B2 (p. ej. The Sounds Resource), con script reproducible y créditos. Mismo control de silencio y volumen que la música, y nada suena hasta la primera interacción del usuario.
+
+## Animaciones de movimientos (al final, después de F3; PRD §0)
 Propias, en pixel art a la escala del lienzo. No usar las de Pokémon Showdown ni intentar extraer las de la ROM. Definir antes el alcance: animación por movimiento para los más usados en el roster y en el pool del jugador, y una genérica por tipo y categoría (físico, especial, estado) para el resto.
 
 ## Despliegue
@@ -44,8 +46,8 @@ Propias, en pixel art a la escala del lienzo. No usar las de Pokémon Showdown n
 - **Cambiar con el activo atrapado o sin banquillo:** el botón sigue desactivado (RF-47), así que en esos casos no se puede abrir el equipo para ver Datos.
 
 ## Pendientes menores conocidos
-- **Cambio forzado del jugador sin animación de lanzamiento:** al debilitarse un Pokémon propio y elegir el siguiente, el nuevo debe salir con la misma secuencia de Poké Ball que ya usa el rival (PRD §0, "Animación de cambio de Pokémon"). Comprobar: forzar un KO propio y verificar que aparece la Poké Ball lanzada y el Pokémon sale de ella, no de golpe.
-- **Entrada del entrenador en la intro:** el entrenador rival debe entrar deslizándose desde el borde derecho (y el protagonista desde el izquierdo), simétrico a su salida tras lanzar la Poké Ball (PRD §10.2.1). Comprobar: capturas o `getBoundingClientRect` en varios instantes de la intro (con y sin `prefers-reduced-motion`, donde solo hay fundido); la posición debe variar de forma continua desde fuera del lienzo.
+- **Verificar en un Windows real** el arreglo de métricas de la fuente (`@font-face` con `ascent/descent/line-gap-override`, ARQUITECTURA DEC-27): comparar la pantalla de datos con la captura de Linux (texto alineado con el fondo, barra de PS en su hueco). En Linux se reprodujo y corrigió con Chromium y Firefox.
+- **Parpadeo de PS del jugador:** la causa más probable (dígitos sin precargar, DEC-28) está corregida, pero no se reprodujo con el motor ni con el DOM. Si reaparece, anotar fecha, semilla y el texto del Registro del turno.
 - **Primera línea del registro:** es la frase de desafío de la intro (`¡[Categoría] [Nombre] te desafía!`); los e2e dependen de ello.
 - **`translate="no"`** está en los nombres propios de Hoy; revisar que no falte en nombres de entrenadores y Pokémon de otras pantallas.
 - **Enlace "saltar al contenido"** solo existe en Hoy.

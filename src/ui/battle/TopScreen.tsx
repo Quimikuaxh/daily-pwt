@@ -23,6 +23,8 @@ type TopScreenProps = {
   avatar: Avatar
   message: string | null
   onAdvance: () => void
+  speed?: number
+  reducedMotion?: boolean
 }
 
 const FALLBACK_BOX = 96
@@ -41,7 +43,7 @@ function activeMon(side: BattleView['player']): MonView | null {
 }
 
 /** Pantalla superior (256x192): fondo del PWT, Pokémon, cajas de datos, clima y caja de mensajes. */
-export function TopScreen({ view, data, challenge, introPhase, switchAnim, avatar, message, onAdvance }: TopScreenProps) {
+export function TopScreen({ view, data, challenge, introPhase, switchAnim, avatar, message, onAdvance, speed, reducedMotion }: TopScreenProps) {
   const rivalMon = view ? activeMon(view.rival) : null
   const playerMon = view ? activeMon(view.player) : null
   const playerSpriteId = playerMon ? data.dex.species[playerMon.species]?.spriteId ?? playerMon.species : ''
@@ -72,8 +74,8 @@ export function TopScreen({ view, data, challenge, introPhase, switchAnim, avata
         />
       )}
 
-      {rivalMon && <DataBox side="rival" mon={rivalMon} name={speciesLabel(data.names, rivalMon.species)} testId="rival-hp" gender={genderOfSpecies(challenge.rivalTeam, rivalMon.species)} />}
-      {playerMon && <DataBox side="player" mon={playerMon} name={speciesLabel(data.names, playerMon.species)} testId="player-hp" gender={genderOfSpecies(challenge.playerTeam, playerMon.species)} />}
+      {rivalMon && <DataBox side="rival" mon={rivalMon} name={speciesLabel(data.names, rivalMon.species)} testId="rival-hp" gender={genderOfSpecies(challenge.rivalTeam, rivalMon.species)} speed={speed} reducedMotion={reducedMotion} />}
+      {playerMon && <DataBox side="player" mon={playerMon} name={speciesLabel(data.names, playerMon.species)} testId="player-hp" gender={genderOfSpecies(challenge.playerTeam, playerMon.species)} speed={speed} reducedMotion={reducedMotion} />}
       {view?.weather && <p data-testid="weather" className="bt-weather">{weatherLabel(view.weather)}</p>}
 
       <MessageBox text={message} onAdvance={onAdvance} />

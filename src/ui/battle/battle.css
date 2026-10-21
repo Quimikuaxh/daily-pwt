@@ -295,7 +295,6 @@
   width: var(--fill, 50px);
   height: 5px;
   overflow: hidden;
-  transition: width calc(700ms / var(--speed, 1)) linear;
 }
 
 .bt-databox-exp {
@@ -563,10 +562,11 @@
   rotate: var(--player-beam-angle, 0deg);
 }
 
+/* La entrada parte de fuera del lienzo (150 px desde el borde) y no se funde: con opacidad y ease-out el entrenador parecía aparecer de golpe. */
 @keyframes bt-slide-in-right {
   from {
     transform: translateX(150px);
-    opacity: 0;
+    opacity: 1;
   }
   to {
     transform: none;
@@ -588,7 +588,7 @@
 @keyframes bt-slide-in-left {
   from {
     transform: translateX(-150px);
-    opacity: 0;
+    opacity: 1;
   }
   to {
     transform: none;
@@ -709,11 +709,11 @@
 
 /* enter: entran los dos entrenadores */
 [data-intro="enter"] .bt-trainer-rival {
-  animation: bt-slide-in-right calc(500ms / var(--speed, 1)) ease-out both;
+  animation: bt-slide-in-right calc(500ms / var(--speed, 1)) ease-in-out both;
 }
 
 [data-intro="enter"] .bt-trainer-player {
-  animation: bt-slide-in-left calc(500ms / var(--speed, 1)) ease-out both;
+  animation: bt-slide-in-left calc(500ms / var(--speed, 1)) ease-in-out both;
 }
 
 [data-intro="challenge"] .bt-trainer {

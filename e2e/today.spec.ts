@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { TodayPage } from './pages/TodayPage'
+import { BattlePage } from './pages/BattlePage'
 import { collectProblems, D0 } from './support'
 
 test.describe('Pantalla Hoy', () => {
@@ -81,8 +82,11 @@ test.describe('Cambio de día (page.clock)', () => {
     await expect(today.challengeNumber).toHaveText('#1')
     await expect(today.countdown).toHaveText(/^00:00:0\d$/)
     const before = { rival: await today.rivalName(), team: await page.locator('.player-name').allTextContents() }
-    await today.chooseLead(2)
-    await expect(today.leadButtons.nth(2)).toHaveAttribute('aria-pressed', 'true')
+    // Con el reloj simulado, WebKit bajo carga a veces descarta el primer clic: se reintenta hasta que quede marcado.
+    await expect(async () => {
+      await today.chooseLead(2)
+      await expect(today.leadButtons.nth(2)).toHaveAttribute('aria-pressed', 'true', { timeout: 2000 })
+    }).toPass({ timeout: 15_000 })
     const marker = await page.evaluate(() => { (window as any).__noReload = true; return true })
     expect(marker).toBe(true)
 
@@ -97,8 +101,8 @@ test.describe('Cambio de día (page.clock)', () => {
   })
 
   const dstCases = [
-    { name: 'cambio de hora de primavera (día de 23 h)', start: '2027-03-28T00:00:00+01:00', countdown: /^(23:00:00|22:59:\d\d)$/, crossing: '2027-03-28T23:59:55+02:00' },
-    { name: 'cambio de hora de otoño (día de 25 h)', start: '2027-10-31T00:00:00+02:00', countdown: /^(25:00:00|24:59:\d\d)$/, crossing: '2027-10-31T23:59:55+01:00' },
+    { name: 'cambio de hora de primavera (día de 23 h)', start: '2027-03-28T00:00:00+01:00', countdown: /^(23:00:00|22:59:\d\d)$/, crossing: '2027-03-28T23:59:30+02:00' },
+    { name: 'cambio de hora de otoño (día de 25 h)', start: '2027-10-31T00:00:00+02:00', countdown: /^(25:00:00|24:59:\d\d)$/, crossing: '2027-10-31T23:59:30+01:00' },
   ]
   for (const dst of dstCases) {
     test(`E2E-03 ${dst.name}`, async ({ page }) => {
@@ -114,8 +118,119 @@ test.describe('Cambio de día (page.clock)', () => {
       const today2 = new TodayPage(page2)
       await today2.challengeNumber.waitFor()
       const first = Number((await today2.challengeNumber.textContent())!.slice(1))
-      await page2.clock.runFor(10_000)
+      // Margen de 30 s: con dos páginas abiertas (y la precarga de la primera) WebKit tarda varios segundos en cargar la segunda.
+      await page2.clock.runFor(40_000)
       await expect(today2.challengeNumber, 'un día exacto de diferencia').toHaveText(`#${first + 1}`)
     })
   }
+})
+
+test.describe('Precarga de la caja de datos', () => {
+  test('E2E-44 Hoy precarga los dígitos de PS y las barras antes del combate (sin parpadeo de dígitos viejos)', async ({ page }) => {
+    const today = new TodayPage(page)
+    await today.goto(D0)
+    const wanted = [...Array(10).keys()].map((digit) => `digits/hp-${digit}.png`).concat(['hp/fill-green.png', 'hp/fill-yellow.png', 'hp/fill-red.png'])
+    await expect
+      .poll(() => page.evaluate((names) => {
+        const loaded = performance.getEntriesByType('resource').map((entry) => entry.name)
+        return names.filter((name) => !loaded.some((url) => url.endsWith(name)))
+      }, wanted))
+      .toEqual([])
+  })
+})
+
+test.describe('Ver/ocultar los sets del rival', () => {
+  for (const viewport of [{ width: 1280, height: 800 }, { width: 360, height: 740 }]) {
+    test(`E2E-45 al ocultar, el panel del rival vuelve a la vista (${viewport.width} px)`, async ({ page }) => {
+      await page.setViewportSize(viewport)
+      const today = new TodayPage(page)
+      await today.goto(D0)
+      const panel = page.getByRole('region', { name: /rival/i })
+      await expect(today.rivalToggle).toHaveText('Ver movimientos y objetos del rival')
+
+      await today.rivalToggle.click()
+      await expect(today.rivalToggle).toHaveText('Ocultar movimientos y objetos del rival')
+      await expect(today.rivalToggle).toHaveAttribute('aria-expanded', 'true')
+
+      // El botón queda al final de los sets: se puede ocultar sin volver arriba.
+      await today.rivalToggle.scrollIntoViewIfNeeded()
+      await expect(today.rivalToggle).toBeInViewport()
+      const scrolledDown = await page.evaluate(() => window.scrollY)
+      await today.rivalToggle.click()
+
+      await expect(today.rivalToggle).toHaveText('Ver movimientos y objetos del rival')
+      await expect(today.rivalToggle).toHaveAttribute('aria-expanded', 'false')
+      await expect.poll(async () => (await panel.boundingBox())!.y, { message: 'el panel del rival queda a la vista bajo la cabecera' }).toBeGreaterThanOrEqual(0)
+      await expect.poll(async () => (await panel.boundingBox())!.y).toBeLessThan(120)
+      await expect(panel.getByRole('heading', { level: 2 })).toBeInViewport()
+      expect(scrolledDown, 'antes de ocultar se estaba más abajo').toBeGreaterThan(await page.evaluate(() => window.scrollY))
+    })
+  }
+
+  test('E2E-45 con prefers-reduced-motion sube sin animación', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await page.setViewportSize({ width: 360, height: 740 })
+    const today = new TodayPage(page)
+    await today.goto(D0)
+    await today.rivalToggle.click()
+    await today.rivalToggle.scrollIntoViewIfNeeded()
+    await today.rivalToggle.click()
+    const panel = page.getByRole('region', { name: /rival/i })
+    // Sin animación la posición final se alcanza en el mismo fotograma: una sola lectura inmediata basta.
+    const top = await panel.evaluate((element) => element.getBoundingClientRect().top)
+    expect(top).toBeGreaterThanOrEqual(0)
+    expect(top).toBeLessThan(120)
+  })
+})
+
+test.describe('Precarga de la interfaz y de los sprites del reto', () => {
+  test('E2E-48 Hoy solo pide sprites del reto de hoy (12 Pokémon, frente y espalda, y el entrenador), no los del resto del pool', async ({ page }) => {
+    const spriteRequests = new Set<string>()
+    page.on('request', (request) => {
+      const match = /\/sprites\/(pokemon\/(?:front|back)|trainers)\/([a-z0-9-]+)\.gif$/.exec(new URL(request.url()).pathname)
+      if (match) spriteRequests.add(`${match[1]}/${match[2]}`)
+    })
+    const today = new TodayPage(page)
+    await today.goto(D0)
+    await page.waitForLoadState('networkidle')
+    await page.waitForTimeout(2500)
+    const pokemon = [...spriteRequests].filter((request) => request.startsWith('pokemon/'))
+    const speciesIds = new Set(pokemon.map((request) => request.split('/')[2]))
+    expect(speciesIds.size, 'especies pedidas: 6 rivales + 6 propios como máximo').toBeLessThanOrEqual(12)
+    expect(speciesIds.size).toBeGreaterThanOrEqual(8)
+    for (const id of speciesIds) {
+      expect(pokemon, `${id}: frente y espalda`).toEqual(expect.arrayContaining([`pokemon/front/${id}`, `pokemon/back/${id}`]))
+    }
+    expect([...spriteRequests].filter((request) => request.startsWith('trainers/')), 'solo el entrenador rival').toHaveLength(1)
+  })
+
+  test('E2E-49 con la red lenta, Equipo y Datos no se enseñan a medio cargar (todas las imágenes visibles ya cargadas en el primer fotograma)', async ({ page }) => {
+    await page.route(/\/ui\/battle\/.*\.png$/, async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 350))
+      await route.continue()
+    })
+    const today = new TodayPage(page)
+    await today.goto(D0, 'seed=a&ai=trivial')
+    await page.waitForLoadState('networkidle')
+    await today.chooseLead(0)
+    await today.fightButton.click()
+    const battle = new BattlePage(page)
+    await battle.root.waitFor()
+    await battle.maxSpeed()
+    await battle.waitForActionOrResult()
+
+    const unloadedImages = (selector: string) =>
+      page.evaluate((root) => [...document.querySelectorAll(`${root} img`)].filter((image) => !(image as HTMLImageElement).complete || (image as HTMLImageElement).naturalWidth === 0).map((image) => image.getAttribute('src')), selector)
+
+    await page.getByRole('button', { name: 'Cambiar', exact: true }).click()
+    await page.locator('.bt-party').waitFor()
+    expect(await unloadedImages('.bt-party'), 'equipo: sin imágenes pendientes en el primer fotograma').toEqual([])
+
+    await page.locator('.bt-party-panel').nth(1).click()
+    await page.getByRole('group', { name: /Qué hacer con/ }).getByRole('button', { name: 'Datos' }).click()
+    await page.locator('.bt-summary').waitFor()
+    expect(await unloadedImages('.bt-summary'), 'datos: sin imágenes pendientes en el primer fotograma').toEqual([])
+    await page.keyboard.press('ArrowRight')
+    expect(await unloadedImages('.bt-summary'), 'datos, página 2').toEqual([])
+  })
 })

@@ -20,14 +20,7 @@ export function frontSpriteSize(spriteId: string, fallback: number): { width: nu
   return { width: box ? box[2] : fallback, height: box ? box[3] : fallback }
 }
 
-export const hpFillColor = (percent: number): 'green' | 'yellow' | 'red' => (percent > 50 ? 'green' : percent > 20 ? 'yellow' : 'red')
-
-/** Relleno de la barra de PS de 48 px: ancho en píxeles (al menos 1 si queda vida) y color por umbral. */
-export function hpBar(member: Pick<PartyMember, 'hp' | 'maxHp'>, fullWidth: number): { width: number; color: 'green' | 'yellow' | 'red' } {
-  const percent = member.maxHp > 0 ? Math.round((100 * member.hp) / member.maxHp) : 0
-  const width = member.hp > 0 ? Math.max(1, Math.round((fullWidth * member.hp) / member.maxHp)) : 0
-  return { width, color: hpFillColor(percent) }
-}
+export { hpBar, hpFillColor } from './hpBar'
 
 export function natureEffectText(member: Pick<PartyMember, 'natureUp' | 'natureDown'>): string {
   const statName = (key: keyof StatsTable): string => es.today.statNames[key]

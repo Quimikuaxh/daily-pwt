@@ -106,7 +106,7 @@ describe('tarjeta del rival (CMP-03, RF-32)', () => {
 })
 
 describe('equipo rival y toggle (CMP-04, RF-33/34)', () => {
-  const toggle = () => screen.getByRole('button', { name: /ver movimientos y objetos del rival/i })
+  const toggle = () => screen.getByRole('button', { name: /(ver|ocultar) movimientos y objetos del rival/i })
 
   it('muestra las 6 especies del rival', () => {
     renderToday()
@@ -155,6 +155,42 @@ describe('equipo rival y toggle (CMP-04, RF-33/34)', () => {
     await user.click(toggle())
     const first = challengeOf().rivalTeam[0]
     expect(rivalRegion()).not.toHaveTextContent(name('items', first.item))
+  })
+
+  it('el texto cambia a «Ocultar…» al desplegar y vuelve a «Ver…» al ocultar, con aria-expanded coherente', async () => {
+    const { user } = renderToday()
+    expect(toggle()).toHaveTextContent('Ver movimientos y objetos del rival')
+    await user.click(toggle())
+    expect([toggle().textContent, toggle().getAttribute('aria-expanded')]).toEqual(['Ocultar movimientos y objetos del rival', 'true'])
+    await user.click(toggle())
+    expect([toggle().textContent, toggle().getAttribute('aria-expanded')]).toEqual(['Ver movimientos y objetos del rival', 'false'])
+  })
+
+  describe('al ocultar, la página sube al panel del rival', () => {
+    const scrollIntoView = vi.fn()
+    const mockReducedMotion = (reduced: boolean) =>
+      vi.stubGlobal('matchMedia', (query: string) => ({ matches: reduced && query.includes('prefers-reduced-motion'), media: query, addEventListener() {}, removeEventListener() {} }))
+    beforeEach(() => { scrollIntoView.mockClear(); Element.prototype.scrollIntoView = scrollIntoView })
+    afterEach(() => vi.unstubAllGlobals())
+
+    it('desplegar no hace scroll; ocultar sube con scroll suave al inicio de la sección del rival', async () => {
+      mockReducedMotion(false)
+      const { user } = renderToday()
+      await user.click(toggle())
+      expect(scrollIntoView).not.toHaveBeenCalled()
+      await user.click(toggle())
+      expect(scrollIntoView).toHaveBeenCalledTimes(1)
+      expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' })
+      expect(scrollIntoView.mock.contexts[0]).toBe(rivalRegion())
+    })
+
+    it('con prefers-reduced-motion sube sin animación', async () => {
+      mockReducedMotion(true)
+      const { user } = renderToday()
+      await user.click(toggle())
+      await user.click(toggle())
+      expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'auto', block: 'start' })
+    })
   })
 })
 

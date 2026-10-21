@@ -53,7 +53,7 @@ Base: [REQUISITOS-F1](REQUISITOS-F1.md), [ARQUITECTURA](ARQUITECTURA.md) §9.
 - UT-32 Todo nombre resuelve en `names-es.json`; ninguno igual a su id; overrides mandan; Hidden Power y Vise Grip resuelven.
 - UT-33 `dex-gen5.json`, `names-es.json`, `player-sets.json` iguales a su regeneración en memoria.
 - UT-34 Sprites existen (Pokémon front/back por `spriteId`; entrenador `.gif` y `-mini.png`) con cabecera GIF/PNG válida.
-- UT-35 Pool provisional: solo evolucionados completos, deduplicados, con tags `source:`, ≥12 sets y ≥8 especies.
+- UT-35 Pool: solo evolucionados completos, deduplicados, con tags `source:<idEntrenador>` o `source:smogon-<tier>`, ≥500 sets y ≥200 especies, todos los tiers presentes, sin Caída Libre ni Rocío Bondad, sets de Smogon sin EVs ni naturaleza y con habilidad de la especie; UT-28 valida la legalidad Gen 5 de todo el pool (Smeargle/Sketch aparte) y UT-33 la regeneración de `player-sets.json` y `battle-ui-images.json`; UT-34 existencia de los sprites de todas las especies del pool.
 
 **IA** (`chooseRivalAction`, ≥20 semillas por caso)
 - UT-36 Regla 1: elige el KO garantizado de mayor precisión; KO solo con crítico no cuenta; sin KO garantizado pasa a regla 2.
@@ -141,6 +141,13 @@ Base: [REQUISITOS-F1](REQUISITOS-F1.md), [ARQUITECTURA](ARQUITECTURA.md) §9.
 - E2E-07 Rendirse: cancelar sin cambios; confirmar → Derrota; "Volver a Hoy" y "Otro combate".
 - E2E-08 Salir del combate pide confirmación y descarta.
 - E2E-09 Toggle del rival: oculto por defecto, mostrar/ocultar con datos (ya no hay toggle de emparejamientos).
+- E2E-44 Hoy precarga los 10 dígitos de PS y las 3 barras antes del combate (sin parpadeo de dígitos viejos). Unitario: `preloadAssets.test.ts`; propiedad de PS exactos y sin subidas fuera de curaciones: `viewReducer.hpSequence.test.ts`.
+- E2E-45 Ocultar los sets del rival (1280 y 360 px y con `prefers-reduced-motion`): texto «Ver/Ocultar…», `aria-expanded` y panel del rival a la vista tras ocultar. Unitarios en `TodayScreen.test.tsx` (texto, `aria-expanded`, `scrollIntoView` con `smooth`/`auto`). (RF-34)
+- E2E-46 Cambio forzado: la pantalla de equipo se cierra al elegir y el nuevo Pokémon sale con la Poké Ball (`data-switch="player-send"`, bola animada). (RF-47)
+- E2E-48 Hoy solo pide sprites del reto de hoy (≤12 especies con frente y espalda y 1 entrenador). (RF-11b)
+- E2E-49 Con la red lenta (retardo en `/ui/battle/*.png`), Equipo y Datos no se enseñan a medio cargar: todas las `<img>` ya cargadas en el primer fotograma. Falla sin la precarga y la espera. (RF-11b)
+- E2E-50 Los PS numéricos del jugador bajan monótonos, con valores intermedios y a la par de la barra (≤1 px), y terminan en el PS exacto. Unitarios: `DataBox.hpAnimation.test.tsx` (bajada, curación, varios golpes, x2/x4, `prefers-reduced-motion`, cambio de Pokémon). (RF-11c)
+- E2E-47 Intro: los dos entrenadores entran deslizándose opacos desde fuera del lienzo (muestreo por fotograma de la fase `enter`). (PRD §10.2.1)
 - E2E-10 Teclado completo: partida jugable sin ratón, foco visible, diálogos devuelven el foco.
 - E2E-11 `@axe-core/playwright` sin violaciones serias/críticas en Hoy, Combate, Resultado y diálogo; contraste AA.
 - E2E-12 360 px táctil: `scrollWidth ≤ 360`, objetivos ≥ 44 px, jugable con `tap`.

@@ -1,3 +1,4 @@
+import pwtRules from './pwt-rules.json'
 import { NEUTRAL_NATURE, TEAM_SIZE } from './constants'
 import { DataError } from './errors'
 import { Prng } from './prng'
@@ -7,12 +8,8 @@ import type { DexData, PokemonSet, ResolvedSet, StatsTable } from './types'
 export const MAX_TEAM_ATTEMPTS = 1000
 const MIN_DISTINCT_TYPES = 4
 
-/** Legendarios prohibidos en el PWT (PRD §6). Lista explícita: los tags de @pkmn vetarían también legendarios legales. */
-const FORBIDDEN_SPECIES = [
-  'mewtwo', 'mew', 'lugia', 'hooh', 'celebi', 'kyogre', 'groudon', 'rayquaza', 'jirachi', 'deoxys',
-  'dialga', 'palkia', 'giratina', 'phione', 'manaphy', 'darkrai', 'shaymin', 'arceus', 'victini',
-  'reshiram', 'zekrom', 'kyurem', 'keldeo', 'meloetta', 'genesect',
-]
+/** Legendarios prohibidos en el PWT (PRD §6). Lista explícita: los tags de @pkmn vetarían también legendarios legales. Vive en src/core/pwt-rules.json, que también lee scripts/build-player-sets.mjs. */
+const FORBIDDEN_SPECIES: readonly string[] = pwtRules.forbiddenSpecies
 
 // Las formas llevan el id base como prefijo (kyuremblack, deoxysattack); 'mew' lo compartiría con Mewtwo, que ya está en la lista.
 export function isForbiddenSpecies(speciesId: string): boolean {

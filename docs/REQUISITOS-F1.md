@@ -4,7 +4,7 @@ Base: [PRD](PRD.md) (la §0 manda). Arquitectura: [ARQUITECTURA.md](ARQUITECTURA
 
 ## 1. Alcance
 
-F1 entrega el núcleo jugable: generador diario determinista, datos verificados de 6 entrenadores, pool provisional del jugador, combate 6v6 Gen 5 a Nv. 50 contra IA heurística y pantalla Hoy.
+F1 entrega el núcleo jugable: generador diario determinista, datos verificados de 6 entrenadores, pool del jugador (Smogon Gen 5 y sets de los rivales), combate 6v6 Gen 5 a Nv. 50 contra IA heurística y pantalla Hoy.
 
 Lo marcado **[F1, se amplía]** es alcance de F1 y crece en F2/F3. Lo marcado **[regla]** es definitivo, aunque ajustable.
 
@@ -13,7 +13,7 @@ Lo marcado **[F1, se amplía]** es alcance de F1 y crece en F2/F3. Lo marcado **
 | §4.1/4.2 Reto y generador | Todo | — |
 | §4.3 Oficial/prácticas | Nada: todo combate es libre, ilimitado y sin registro | F3 |
 | §5 Reglas | Todas | — |
-| §6 Equipo del jugador | Reglas de generación y pool provisional | Pool definitivo; validación por script (F2) |
+| §6 Equipo del jugador | Reglas de generación y pool de Smogon Gen 5 (todos los tiers de individuales) más los sets de los rivales | Validación por script completa (F2) |
 | §7 Roster | 6 entrenadores **[F1, se amplía a 53 en F2]** | 53 entrenadores (F2) |
 | §8.3 Validación | Test unitario con lo básico **[F1, se amplía a script CI en F2]** | Script CI (F2) |
 | §9 IA | Reglas 1-5 | Calibración final (F2) |
@@ -57,7 +57,9 @@ Lo marcado **[F1, se amplía]** es alcance de F1 y crece en F2/F3. Lo marcado **
 
 ### Equipo del jugador
 - RF-10 6 sets del pool elegidos con el PRNG del día.
-- RF-11 Pool provisional: sets totalmente evolucionados de todas las variantes de los rivales de F1, sin los del rival del día. Cambiar de pool = cambiar `data/player-sets.json`.
+- RF-11 Pool del jugador (`data/player-sets.json`, `npm run gen:player-sets`): los sets de Smogon de Gen 5 en individuales (Ubers, OU, UU, RU, NU, PU y ZU; solo objeto, habilidad y movimientos, con la regla de alternativas de DEC-31) más los sets totalmente evolucionados de todas las variantes de los rivales de F1, deduplicados, varios por especie, sin los del rival del día. Cada set pasa por el validador de `@pkmn/sim` (Gen 5) y por las prohibiciones del PWT; los descartados se listan en `data/smogon/discarded.json`.
+- RF-11b Precarga: desde Hoy se piden con prioridad baja los gráficos de interfaz del combate y los sprites de los 12 Pokémon del reto (nunca los del resto del pool), y las pantallas de equipo y de datos no se enseñan hasta tener sus imágenes (DEC-33).
+- RF-11c Los PS numéricos del jugador bajan o suben a la par de la barra (lineal, 700 ms a x1, enteros en cada fotograma, sin animación con `prefers-reduced-motion`) y terminan en el PS exacto (DEC-34).
 - RF-12 Sin Pokémon evolucionables, especies repetidas, objetos repetidos ni legendarios prohibidos (lista de PRD §6).
 - RF-13 Al menos 4 tipos distintos.
 - RF-14 Al menos un movimiento de daño ×2 o más por tipos contra algún Pokémon del rival.
@@ -76,7 +78,7 @@ Lo marcado **[F1, se amplía]** es alcance de F1 y crece en F2/F3. Lo marcado **
 - RF-31 Al llegar a 0, sin recargar, se muestra el reto nuevo y la cuenta atrás reinicia.
 - RF-32 Tarjeta del rival: sprite, nombre, categoría, región y tipo de especialidad (si existe). No muestra el torneo de origen; `sourceTournament` y `sourceUrl` se conservan en los datos (PRD §7.4).
 - RF-33 Equipo rival: 6 especies visibles.
-- RF-34 Toggle "Ver movimientos y objetos del rival", oculto por defecto (`aria-expanded`). Abierto, cada Pokémon rival usa el mismo componente que las tarjetas del jugador, sin estadísticas: sprite, nombre, tipos (iconos en español), objeto y habilidad elegida con su etiqueta, y los 4 movimientos como filas (RF-35).
+- RF-34 Toggle "Ver movimientos y objetos del rival", oculto por defecto (`aria-expanded`). Abierto, cada Pokémon rival usa el mismo componente que las tarjetas del jugador, sin estadísticas: sprite, nombre, tipos (iconos en español), objeto y habilidad elegida con su etiqueta, y los 4 movimientos como filas (RF-35). El botón queda al final de los sets, su texto pasa a «Ocultar movimientos y objetos del rival» con `aria-expanded="true"`, y al ocultarlos la página sube con scroll suave (sin animación con `prefers-reduced-motion`) hasta el panel del rival.
 - RF-35 "Tu equipo": 6 tarjetas con sprite, tipos, objeto y habilidad (con etiqueta), total de stats base, 6 stats reales a Nv. 50 y 4 movimientos como filas de rejilla fija: chip de tipo de ancho fijo en la misma columna en todas las filas, categoría con su icono, potencia y precisión en columnas alineadas ("—" si no aplica). Los iconos de tipo son la base de color ripeada con el nombre del tipo en español centrado, todos del mismo ancho.
 - RF-35b Con la barra fija "Combatir", el contenido termina siempre por encima de ella: el último movimiento de la última tarjeta es visible al llegar al final.
 - RF-36 "Sacar primero" por tarjeta; un único inicial seleccionado, visible.

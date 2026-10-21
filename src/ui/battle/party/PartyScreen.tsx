@@ -5,10 +5,12 @@ import { uiAsset } from '../../common/uiAssets'
 import { MemberIcon } from './MemberIcon'
 import { PANEL, PANEL_BANDS, PANEL_HEIGHT, PANEL_WIDTH, panelPosition } from './layout'
 import { memberStateLabel, type PartyMember } from './partyModel'
-import { hpBar } from './summaryModel'
+import { hpBar } from './hpBar'
 import './party.css'
+import { SUMMARY_SCREEN_IMAGES, useImagesReady } from '../preloadAssets'
 
 const SummaryScreen = lazy(() => import('./SummaryScreen'))
+
 
 type PartyScreenProps = {
   members: PartyMember[]
@@ -87,6 +89,7 @@ function whyCannotSwitch(member: PartyMember): string | null {
 export function PartyScreen({ members, data, forced, enabled, onChoose, onClose }: PartyScreenProps) {
   const [selectedSlot, setSelectedSlot] = useState(null as number | null)
   const [summarySlot, setSummarySlot] = useState(null as number | null)
+  const summaryReady = useImagesReady(SUMMARY_SCREEN_IMAGES, summarySlot !== null)
   const panelRefs = useRef(new Map<number, HTMLButtonElement>())
   const switchRef = useRef(null as HTMLButtonElement | null)
   const summaryReturnSlot = useRef(null as number | null)
@@ -197,7 +200,7 @@ export function PartyScreen({ members, data, forced, enabled, onChoose, onClose 
         </div>
       )}
 
-      {summarySlot !== null && (
+      {summarySlot !== null && summaryReady && (
         <Suspense fallback={null}>
           <SummaryScreen members={members} initialSlot={summarySlot} data={data} onClose={() => setSummarySlot(null)} />
         </Suspense>

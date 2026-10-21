@@ -77,3 +77,28 @@ describe('scripts/fetch-ui-assets.mjs', () => {
     expect([strip.width, strip.height]).toEqual([12 * 7, 15])
   })
 })
+
+describe('métricas verticales de la fuente del juego', () => {
+  it('@font-face fija ascent/descent para que la línea base no dependa de la plataforma (hhea de la TTF tiene el descender con signo cambiado)', () => {
+    const font = readFileSync(fromRoot('public', 'fonts', 'pokemon-dp.ttf'))
+    const tableCount = font.readUInt16BE(4)
+    let hheaOffset = -1
+    let unitsPerEm = 0
+    for (let index = 0; index < tableCount; index += 1) {
+      const entry = 12 + 16 * index
+      const tag = font.toString('latin1', entry, entry + 4)
+      const offset = font.readUInt32BE(entry + 8)
+      if (tag === 'hhea') hheaOffset = offset
+      if (tag === 'head') unitsPerEm = font.readUInt16BE(offset + 18)
+    }
+    const ascender = font.readInt16BE(hheaOffset + 4)
+    const descender = font.readInt16BE(hheaOffset + 6)
+    const lineGap = font.readInt16BE(hheaOffset + 8)
+    const css = readFileSync(fromRoot('src', 'index.css'), 'utf8')
+    // Si la TTF se corrige (descender negativo) o se sustituye, estos valores hay que recalcularlos.
+    expect(descender, 'descender de hhea').toBeGreaterThan(0)
+    expect(css).toContain(`ascent-override: ${((ascender + descender) / unitsPerEm) * 100}%`)
+    expect(css).toContain('descent-override: 0%')
+    expect(css).toContain(`line-gap-override: ${(lineGap / unitsPerEm) * 100}%`)
+  })
+})

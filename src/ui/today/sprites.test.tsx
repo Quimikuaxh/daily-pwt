@@ -3,6 +3,7 @@ import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { render, screen } from '@testing-library/react'
 import { TodayScreen } from './TodayScreen'
+import { pokemonSpriteClass } from './spriteBox'
 import { makeGameData } from '../../test-utils/fixtures'
 import { setLocalTime } from '../../test-utils/ui'
 
@@ -35,11 +36,18 @@ describe('sprites de Hoy', () => {
     }
   })
 
-  it('la caja cubre el mayor GIF del repo (si no, se recortaría)', () => {
+  it('la caja cubre el GIF de cada entrenador, y los Pokémon que no caben (unas 20 especies) se reducen en vez de recortarse', () => {
     render(<TodayScreen data={data} onStart={vi.fn()} />)
     const box = Number(screen.getAllByRole('img')[0].getAttribute('width'))
-    const sizes = ['pokemon/front', 'trainers'].map(largestGif)
-    for (const { width, height } of sizes) expect(Math.max(width, height)).toBeLessThanOrEqual(box)
+    const trainers = largestGif('trainers')
+    expect(Math.max(trainers.width, trainers.height)).toBeLessThanOrEqual(box)
+    const frontDir = join(SPRITES_DIR, 'pokemon/front')
+    for (const file of readdirSync(frontDir).filter((name) => name.endsWith('.gif'))) {
+      const header = readFileSync(join(frontDir, file))
+      const tooBig = Math.max(header.readUInt16LE(6), header.readUInt16LE(8)) > box
+      expect(pokemonSpriteClass(file.replace('.gif', '')).includes('sprite-shrink'), file).toBe(tooBig)
+    }
+    expect(readFileSync(join(import.meta.dirname, '../../index.css'), 'utf8')).toMatch(/\.sprite-natural\.sprite-shrink\s*{[^}]*object-fit:\s*scale-down/)
   })
 
   it('el CSS no usa object-fit: contain para los sprites (escalaría de forma fraccionaria)', () => {

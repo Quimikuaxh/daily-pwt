@@ -221,3 +221,91 @@ test.describe('Combate', () => {
     expect(loss.stats[2]).toMatch(/^Rivales debilitados: \d\/6$/)
   })
 })
+
+test.describe('Animaciones de entrada', () => {
+  test('E2E-46 cambio forzado: la pantalla de equipo se cierra al elegir y el nuevo Pokémon sale de su Poké Ball a la vista', async ({ page }) => {
+    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    for (let guard = 0; guard < 60; guard += 1) {
+      const state = await battle.waitForActionOrResult()
+      expect(state).not.toBe('result')
+      if (state === 'switch') break
+      await battle.chooseFirstMove()
+      await page.waitForTimeout(50)
+    }
+    await battle.chooseSubstitute()
+    const field = page.getByTestId('field')
+    await expect(field).toHaveAttribute('data-switch', 'player-send')
+    await expect(page.locator('.bt-party'), 'la pantalla de equipo no tapa la animación').toHaveCount(0)
+    const animatedBall = await page.evaluate(() => document.getAnimations().some((animation) => (animation.effect as KeyframeEffect | null)?.target?.classList.contains('bt-ball-player') && animation.playState === 'running'))
+    expect(animatedBall, 'la Poké Ball del jugador se lanza').toBe(true)
+    await expect(field).not.toHaveAttribute('data-switch', /./)
+    expect(await battle.waitForActionOrResult()).toBe('moves')
+  })
+
+  test('E2E-47 intro: los dos entrenadores entran deslizándose desde fuera del lienzo (no aparecen de golpe)', async ({ page }) => {
+    await page.addInitScript(() => {
+      const samples: { rival: number; player: number; opacity: number }[] = []
+      ;(window as unknown as { __slide: typeof samples }).__slide = samples
+      const sample = () => {
+        const field = document.querySelector('[data-testid=field]')
+        if (field?.getAttribute('data-intro') === 'enter') {
+          const edge = field.getBoundingClientRect()
+          const rival = document.querySelector('.bt-trainer-rival')!.getBoundingClientRect()
+          const player = document.querySelector('.bt-trainer-player')!.getBoundingClientRect()
+          samples.push({ rival: rival.left - edge.right, player: edge.left - player.right, opacity: Math.min(+getComputedStyle(document.querySelector('.bt-trainer-rival')!).opacity, +getComputedStyle(document.querySelector('.bt-trainer-player')!).opacity) })
+        }
+        requestAnimationFrame(sample)
+      }
+      requestAnimationFrame(sample)
+    })
+    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    await battle.root.waitFor()
+    await expect(page.getByTestId('field')).toHaveAttribute('data-intro', 'done', { timeout: 15000 })
+    const samples = await page.evaluate(() => (window as unknown as { __slide: { rival: number; player: number; opacity: number }[] }).__slide)
+    expect(samples.length, 'fotogramas durante la fase «enter» (500 ms)').toBeGreaterThan(5)
+    expect(Math.min(...samples.map((sample) => sample.opacity)), 'el entrenador se desliza opaco, sin fundido que lo oculte al principio').toBeGreaterThanOrEqual(0.99)
+    for (const side of ['rival', 'player'] as const) {
+      const offsets = samples.map((sample) => sample[side])
+      expect(offsets[0], `${side}: empieza fuera del lienzo`).toBeGreaterThanOrEqual(-2)
+      expect(offsets.at(-1), `${side}: termina dentro`).toBeLessThan(-40)
+      expect(offsets.filter((offset, index) => index > 0 && offset < offsets[index - 1] - 1).length, `${side}: avanza en muchos fotogramas, no de golpe`).toBeGreaterThanOrEqual(5)
+      expect(Math.max(...offsets.slice(1).map((offset, index) => Math.abs(offset - offsets[index]))), `${side}: ningún salto brusco`).toBeLessThan(70)
+    }
+  })
+})
+
+test.describe('PS del jugador animados', () => {
+  test('E2E-50 los PS numéricos bajan a la par de la barra: monótonos, sin saltar al valor final y con el PS exacto al terminar', async ({ page }) => {
+    await page.addInitScript(() => {
+      const frames: { hp: number; max: number; fill: number }[] = []
+      ;(window as unknown as { __hp: typeof frames }).__hp = frames
+      const sample = () => {
+        const box = document.querySelector('[data-testid=player-hp]')
+        if (box) {
+          const hp = [...box.querySelectorAll('.bt-databox-hp-now img')].map((image) => /hp-(\d)\.png/.exec(image.getAttribute('src') ?? '')?.[1] ?? '').join('')
+          const max = [...box.querySelectorAll('.bt-databox-hp-max img')].map((image) => /hp-(\d)\.png/.exec(image.getAttribute('src') ?? '')?.[1] ?? '').join('')
+          const fill = parseInt((box as HTMLElement).style.getPropertyValue('--fill'), 10)
+          if (hp && max) frames.push({ hp: Number(hp), max: Number(max), fill })
+        }
+        requestAnimationFrame(sample)
+      }
+      requestAnimationFrame(sample)
+    })
+    const { battle } = await startBattle(page, { date: '2026-10-20', seed: 'a' })
+    await battle.waitForActionOrResult()
+    await battle.chooseFirstMove()
+    await battle.waitForActionOrResult()
+    const frames = await page.evaluate(() => (window as unknown as { __hp: { hp: number; max: number; fill: number }[] }).__hp)
+    const sameMon = frames.filter((frame) => frame.max === frames[0].max)
+    const hps = sameMon.map((frame) => frame.hp)
+    const finalHp = hps.at(-1)!
+    expect(hps[0], 'empieza con los PS completos').toBe(frames[0].max)
+    expect(finalHp, 'el combate quita PS en el primer turno').toBeLessThan(hps[0])
+    const upToLowest = hps.slice(0, hps.indexOf(Math.min(...hps)) + 1)
+    expect(upToLowest.every((hp, index) => index === 0 || hp <= upToLowest[index - 1]), 'bajada monótona, sin rebotes').toBe(true)
+    const drop = hps[0] - finalHp
+    const intermediates = new Set(hps.filter((hp) => hp < hps[0] && hp > finalHp))
+    expect(intermediates.size, `pasa por valores intermedios entre ${hps[0]} y ${finalHp}`).toBeGreaterThanOrEqual(Math.min(5, drop - 1))
+    for (const frame of sameMon) expect(Math.abs(frame.fill - (50 * frame.hp) / frame.max), `número ${frame.hp}/${frame.max} y barra ${frame.fill}px`).toBeLessThanOrEqual(1.01)
+  })
+})

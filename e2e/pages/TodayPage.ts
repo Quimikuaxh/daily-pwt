@@ -12,7 +12,7 @@ export class TodayPage {
 
   constructor(readonly page: Page) {
     this.fightButton = page.getByRole('button', { name: 'Combatir' })
-    this.rivalToggle = page.getByRole('button', { name: 'Ver movimientos y objetos del rival' })
+    this.rivalToggle = page.getByRole('button', { name: /^(Ver|Ocultar) movimientos y objetos del rival$/ })
     this.leadButtons = page.getByRole('button', { name: /^(Sacar primero|Sale primero)/ })
     this.playerCards = page.locator('article.player-card')
     this.rivalMons = page.locator('ul.rival-team > li')

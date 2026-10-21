@@ -19,10 +19,12 @@
     "gen:names": "node scripts/build-names-es.mjs",
     "gen:descriptions": "node scripts/build-descriptions-es.mjs",
     "gen:dex": "node scripts/build-dex.mjs",
+    "gen:smogon": "node scripts/fetch-smogon-sets.mjs",
     "gen:player-sets": "node scripts/build-player-sets.mjs",
     "gen:sprites": "node scripts/fetch-sprites.mjs",
     "gen:sprite-boxes": "node scripts/build-sprite-boxes.mjs",
     "gen:icon-index": "node scripts/build-icon-index.mjs",
+    "gen:ui-index": "node scripts/build-battle-ui-index.mjs",
     "gen:ui": "node scripts/fetch-ui-assets.mjs",
     "gen": "npm run gen:names && npm run gen:dex && npm run gen:player-sets"
   },

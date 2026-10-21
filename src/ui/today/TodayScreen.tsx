@@ -3,6 +3,7 @@ import { useToday } from '../../hooks/useToday'
 import type { Challenge, GameData } from '../../core/types'
 import { es } from '../../i18n/es'
 import { PlayerCard } from './PlayerCard'
+import { usePreloadChallengeSprites } from '../battle/preloadAssets'
 import { RivalSection } from './RivalSection'
 import { TodayFooter } from './TodayFooter'
 import { TodayHeader } from './TodayHeader'
@@ -21,6 +22,7 @@ type TodayContentProps = {
 }
 
 function TodayContent({ challenge, data, onStart }: TodayContentProps) {
+  usePreloadChallengeSprites(challenge, data)
   const playerHeadingId = useId()
   const hintId = useId()
   const [leadIndex, setLeadIndex] = useState(null as number | null)

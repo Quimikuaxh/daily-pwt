@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { newBattleSeed } from './battle/seed'
 import type { BattleClient } from './battle/client'
 import type { EngineEnd } from './battle/protocol'
 import type { Challenge, GameData } from './core/types'
 import { readTestHooks } from './testHooks'
 import { BattleScreen } from './ui/battle/BattleScreen'
+import { preloadBattleImages } from './ui/battle/preloadAssets'
 import { ResultScreen } from './ui/result/ResultScreen'
 import { TodayScreen } from './ui/today/TodayScreen'
 
@@ -25,6 +26,8 @@ export default function App({ data, createClient }: AppProps) {
   const [hooks] = useState(() => readTestHooks(window.location.search))
   const [screen, setScreen] = useState<Screen>({ name: 'today' })
   const [battlesStarted, setBattlesStarted] = useState(0)
+
+  useEffect(() => preloadBattleImages(), [])
 
   function startBattle(challenge: Challenge, leadIndex: number) {
     const ordinal = battlesStarted + 1

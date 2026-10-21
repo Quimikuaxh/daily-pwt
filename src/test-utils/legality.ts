@@ -15,11 +15,13 @@ export async function gen5Problems(set: PokemonSet, bannedMoveIds: string[] = []
   if (!gen5.items.get(set.item)) out.push(`objeto no existe en Gen 5: ${set.item}`)
   const abilityIds = Object.values(sp.abilities).map((a) => toId(a as string))
   for (const a of set.abilities) if (!abilityIds.includes(a)) out.push(`habilidad ${a} no es de ${sp.id}`)
+  // Smeargle copia con Sketch cualquier movimiento: el learnset de @pkmn/data solo lista Sketch, y el sim lo valida aparte.
+  const sketches = sp.id === 'smeargle'
   for (const m of set.moves) {
     if (!gen5.moves.get(m)) { out.push(`movimiento no existe en Gen 5: ${m}`); continue }
     if (bannedMoveIds.includes(m)) out.push(`movimiento prohibido: ${m}`)
     const id = m.startsWith('hiddenpower') ? 'hiddenpower' : m
-    if (!(await gen5.learnsets.canLearn(sp.id, id as any))) out.push(`${sp.id} no aprende ${m} en Gen 5`)
+    if (!sketches && !(await gen5.learnsets.canLearn(sp.id, id as any))) out.push(`${sp.id} no aprende ${m} en Gen 5`)
   }
   return out
 }

@@ -7,14 +7,14 @@ const OUTPUT_PATH = fromRoot('src', 'generated', 'icon-index.json')
 
 /**
  * Posición de cada especie en la hoja de iconos de Showdown (`public/ui/battle/party/icons-sheet.png`: 12 columnas de 40x30).
- * En las especies base el índice es el número de Pokédex; las formas con icono propio no están en Gen 5 base y no se usan en el juego.
+ * El índice es el número de Pokédex. Las formas usadas en el pool (Rotom-Frost, Tornadus-Therian…) usan el icono de su especie base: la hoja de Gen 5 solo trae el icono base.
  * Clave = `spriteId` del dex (el mismo nombre que el sprite).
  */
 export function buildIconIndex() {
   const index = {}
   for (const entry of [...gen5.species].sort((a, b) => a.num - b.num)) {
     const spriteId = toId(entry.baseSpecies) + (entry.forme ? `-${toId(entry.forme)}` : '')
-    if (entry.num > 0 && !entry.forme) index[spriteId] = entry.num
+    if (entry.num > 0) index[spriteId] = entry.num
   }
   return index
 }

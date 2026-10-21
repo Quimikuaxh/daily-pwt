@@ -8,6 +8,13 @@
   font-family: "Game";
   src: url("/fonts/pokemon-dp.ttf") format("truetype");
   font-display: block;
+  /* La TTF tiene el descender de hhea con el signo cambiado (+512 en vez de -512). FreeType (Linux/Mac) lo toma tal cual y obtiene una caja
+     de 0,5 em (ascent 0,75, descent -0,25); Windows (DirectWrite) usa OS/2 winAscent/winDescent (1884/570) y obtiene 1,2 em, así que el texto
+     de todas las pantallas de lienzo quedaba unos 3 px lógicos más arriba. Con ascent 100 % y descent 0 % la línea base cae en el mismo sitio
+     que en Linux (ascent - descent = 1 em) con line-height fijo, en todas las plataformas. Al cambiar de fuente, revisar esto (PENDIENTE.md). */
+  ascent-override: 100%;
+  descent-override: 0%;
+  line-gap-override: 12.5%;
 }
 
 @theme {
@@ -75,12 +82,16 @@ img.sprite,
   image-rendering: pixelated;
 }
 
-/* Sprites de Hoy: tamaño natural (x1) dentro de una caja de 100 px, que cubre el mayor GIF (98x92): sin escalado fraccionario. */
+/* Sprites de Hoy: tamaño natural (x1) dentro de una caja de 100 px; los GIF más grandes (`sprite-shrink`, unas 20 especies) se reducen para no recortarse. */
 .sprite-natural {
   object-fit: none;
   object-position: center;
   width: 100px;
   height: 100px;
+}
+
+.sprite-natural.sprite-shrink {
+  object-fit: scale-down;
 }
 
 .sprite-fallback {
@@ -832,4 +843,9 @@ img.sprite,
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
   }
+}
+
+/* Al ocultar los sets del rival se sube a este panel; el margen deja libre la cabecera fija. */
+.rival-section {
+  scroll-margin-top: 88px;
 }

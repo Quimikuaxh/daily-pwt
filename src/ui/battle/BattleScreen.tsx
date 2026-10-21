@@ -11,6 +11,7 @@ import { HistoryDialog } from './HistoryDialog'
 import { RemainingIndicator } from './RemainingIndicator'
 import { TopScreen } from './TopScreen'
 import { PartyScreen } from './party/PartyScreen'
+import { PARTY_SCREEN_IMAGES, useImagesReady } from './preloadAssets'
 import { partyMembers } from './party/partyModel'
 import { TouchScreen, type TouchMode } from './TouchScreen'
 import { canChoose, hasOnlyForcedMove, isForcedSwitch, moveOptions, switchBlockedReason, switchOptions } from './battleModel'
@@ -58,15 +59,18 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   const [touchChoice, setTouchChoice] = useState({ request: null, mode: 'main' } as TouchChoice)
   const [dialog, setDialog] = useState(null as PendingDialog)
   const [bagNoticeRequest, setBagNoticeRequest] = useState(null as BattleRequest | null)
+  // Petición de cambio forzado ya contestada: la pantalla de equipo se cierra al elegir para que se vea el lanzamiento de la Poké Ball del nuevo Pokémon.
+  const [answeredForcedRequest, setAnsweredForcedRequest] = useState(null as BattleRequest | null)
 
   const { request, lastChoiceRequest, choose, advance } = battle
   const menuRequest = request ?? lastChoiceRequest
   const canActNow = battle.canAct && canChoose(request)
   const forcedSwitch = isForcedSwitch(menuRequest)
+  const forcedSwitchPending = forcedSwitch && answeredForcedRequest !== menuRequest
   const moves = moveOptions(menuRequest, data)
   const blockedReason = menuRequest === null ? null : switchBlockedReason(menuRequest, switchOptions(menuRequest, data.names))
   const members = useMemo(() => partyMembers(menuRequest, battle.view, data, playerTeam), [menuRequest, battle.view, data, playerTeam])
-  const touchMode: TouchMode = forcedSwitch ? 'switch' : touchChoice.request === menuRequest ? touchChoice.mode : 'main'
+  const touchMode: TouchMode = forcedSwitchPending ? 'switch' : touchChoice.request === menuRequest ? touchChoice.mode : 'main'
   const ended = battle.ended !== null
 
   const autoChosenFor = useRef(request)
@@ -97,11 +101,13 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   }
 
   function chooseSwitch(slot: number) {
+    if (forcedSwitch) setAnsweredForcedRequest(menuRequest)
     setTouchChoice({ request: menuRequest, mode: 'main' })
     choose({ type: 'switch', slot })
   }
 
-  const partyOpen = touchMode === 'switch' && !battle.failed && members.length > 0
+  const partyReady = useImagesReady(PARTY_SCREEN_IMAGES, touchMode === 'switch')
+  const partyOpen = touchMode === 'switch' && partyReady && !battle.failed && members.length > 0
 
   function confirmDialog() {
     const confirmed = dialog
@@ -145,7 +151,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                 />
               )}
               <div className="bt-underlay" inert={partyOpen}>
-                <TopScreen view={battle.view} data={data} challenge={challenge} introPhase={battle.introPhase} switchAnim={battle.switchAnim} avatar={avatar} message={message} onAdvance={advance} />
+                <TopScreen view={battle.view} data={data} challenge={challenge} introPhase={battle.introPhase} switchAnim={battle.switchAnim} avatar={avatar} message={message} onAdvance={advance} speed={battle.speed} reducedMotion={reducedMotion} />
                 {battle.failed ? (
                   <section role="alert" className="bt-touch bt-error" style={{ height: SCREEN_HEIGHT }}>
                     <p>{es.battle.failure}</p>

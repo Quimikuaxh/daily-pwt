@@ -1,0 +1,41 @@
+{
+  "source": "Smogon University (https://www.smogon.com/dex/bw/), vía https://data.pkmn.cc/sets",
+  "downloadedOn": "2026-10-20",
+  "tiers": {
+    "ubers": {
+      "url": "https://data.pkmn.cc/sets/gen5ubers.json",
+      "bytes": 42583,
+      "sha256": "1786f17223cf2ea2a5f6d2665d1e936c661924105de20f8f2820a01e207caa79"
+    },
+    "ou": {
+      "url": "https://data.pkmn.cc/sets/gen5ou.json",
+      "bytes": 30451,
+      "sha256": "538a5a4ec6e9257dfbd18f6058d296ca0649eeb73eb7a9cd4f9d295fe05ed0b3"
+    },
+    "uu": {
+      "url": "https://data.pkmn.cc/sets/gen5uu.json",
+      "bytes": 56179,
+      "sha256": "a84917a4b7d712e312566b09bba8c9c65e767a59220bfbc543be750f1a87645f"
+    },
+    "ru": {
+      "url": "https://data.pkmn.cc/sets/gen5ru.json",
+      "bytes": 58542,
+      "sha256": "ea88787d4967576c5bfa273ce7791d4804c3537cb423e463c2dc2e0ee5863917"
+    },
+    "nu": {
+      "url": "https://data.pkmn.cc/sets/gen5nu.json",
+      "bytes": 63103,
+      "sha256": "299e477d650445d28967183be9c9b0449b2906a2ecd1e35eef9121f6509cbb44"
+    },
+    "pu": {
+      "url": "https://data.pkmn.cc/sets/gen5pu.json",
+      "bytes": 14498,
+      "sha256": "6ccfadd4e21adfb256ff510902def03768483874d8600926ed62993dbb5107b2"
+    },
+    "zu": {
+      "url": "https://data.pkmn.cc/sets/gen5zu.json",
+      "bytes": 30612,
+      "sha256": "07e3a9d4b6e5422b700bfd3dfc4e9b98bf618f4ae9cb6820378211d1799080a3"
+    }
+  }
+}

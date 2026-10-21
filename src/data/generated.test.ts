@@ -62,6 +62,11 @@ describe('datos de la pantalla de equipo y de datos', () => {
     expect(Object.keys(generated).length).toBeGreaterThanOrEqual(649)
   })
 
+  it('battle-ui-images.json (precarga de la interfaz) es igual a su regeneración', async () => {
+    const { buildBattleUiIndex } = await importScript('scripts/build-battle-ui-index.mjs')
+    expect(buildBattleUiIndex()).toEqual(readJson('src', 'generated', 'battle-ui-images.json'))
+  })
+
   it('toda especie usada en el juego tiene icono dentro de la hoja de Showdown (12 columnas, 4110 px de alto)', () => {
     const iconIndex = readJson('src', 'generated', 'icon-index.json')
     const dex = readJson('src', 'generated', 'dex-gen5.json')

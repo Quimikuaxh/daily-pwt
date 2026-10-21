@@ -1,0 +1,9 @@
+{
+  "forbiddenSpecies": [
+    "mewtwo", "mew", "lugia", "hooh", "celebi", "kyogre", "groudon", "rayquaza", "jirachi", "deoxys",
+    "dialga", "palkia", "giratina", "phione", "manaphy", "darkrai", "shaymin", "arceus", "victini",
+    "reshiram", "zekrom", "kyurem", "keldeo", "meloetta", "genesect"
+  ],
+  "forbiddenMoves": ["skydrop"],
+  "forbiddenItems": ["souldew"]
+}

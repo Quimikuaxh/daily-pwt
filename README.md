@@ -12,7 +12,7 @@ El desarrollo se divide en tres fases (detalle en [docs/PRD.md](docs/PRD.md) §0
 
 | Fase | Contenido |
 |---|---|
-| F1 (en curso a 2026-10-19) | Reto diario determinista; 6 entrenadores (Brock, Misty, Camila, Plubio, Rojo, Máximo) con 9 variantes de equipo; pool provisional del jugador; combate 6 contra 6 con IA heurística; pantalla Hoy, combate (con intro, mensajes uno a uno e historial a demanda) y resultado, con el estilo de los menús de N2/B2 y del PWT. |
+| F1 (en curso a 2026-10-19) | Reto diario determinista; 6 entrenadores (Brock, Misty, Camila, Plubio, Rojo, Máximo) con 9 variantes de equipo; pool del jugador (sets de Smogon Gen 5 y de los rivales); combate 6 contra 6 con IA heurística; pantalla Hoy, combate (con intro, mensajes uno a uno e historial a demanda) y resultado, con el estilo de los menús de N2/B2 y del PWT. |
 | F2 | Roster completo de 53 entrenadores con todas sus variantes; scripts de datos y validación completos; sprites de todos los entrenadores. |
 | F3 | Combate oficial único y prácticas, reanudar partida, estadísticas, compartir, pantallas Ayuda y Ajustes. |
 
@@ -48,7 +48,9 @@ npm install
 | `npm run gen` | Regenera los datos precalculados: `gen:names`, `gen:dex` y `gen:player-sets`. |
 | `npm run gen:names` | Genera `src/generated/names-es.json` (nombres en español). |
 | `npm run gen:dex` | Genera `src/generated/dex-gen5.json` (especies, movimientos y tabla de tipos Gen 5). |
-| `npm run gen:player-sets` | Genera `data/player-sets.json` (pool provisional del jugador) desde `data/trainers.json`. |
+| `npm run gen:smogon` | Descarga los sets de Smogon Gen 5 (individuales) a `data/smogon/` (requiere red; el resultado se versiona). |
+| `npm run gen:player-sets` | Genera `data/player-sets.json` (pool del jugador) desde `data/smogon/` y `data/trainers.json`, y `data/smogon/discarded.json`. Sin red. |
+| `npm run gen:ui-index` | Genera `src/generated/battle-ui-images.json` (gráficos de interfaz que se precargan desde Hoy). |
 | `npm run gen:sprites` | Descarga a `public/sprites/` los sprites que falten (requiere red). |
 | `npm run gen:ui` | Descarga y recorta a `public/ui/` los gráficos de interfaz de N2/B2 (`--force` los rehace todos). Requiere red. |
 
@@ -145,9 +147,11 @@ VITE_TEST_HOOKS=1 npm run build
 
 ### Pool del jugador (`data/player-sets.json`)
 
-- Sets de los que se elige el equipo del jugador cada día.
-- Es provisional: se deriva de los equipos rivales (solo Pokémon totalmente evolucionados, sin duplicados, con tags `source:<idEntrenador>`).
-- `npm run gen:player-sets` **sobrescribe** el fichero con ese cálculo. Si se sustituye por un pool definitivo, no ejecutar `gen:player-sets` ni `npm run gen`, y el test que compara con la regeneración dejará de cumplirse.
+- Sets de los que se elige el equipo del jugador cada día: 1031 sets de 328 especies, de Smogon (Gen 5, individuales: Ubers, OU, UU, RU, NU, PU y ZU) y de los equipos de los rivales del PWT. De Smogon solo se toman objeto, habilidad y movimientos; EVs 0, naturaleza Seria, IV iguales a los del rival del día.
+- Solo Pokémon totalmente evolucionados, sin legendarios, movimientos ni objetos prohibidos en el PWT (`src/core/pwt-rules.json`) y legales en Gen 5 según el validador de `@pkmn/sim`. Los descartados están en `data/smogon/discarded.json`. Tags: `source:smogon-<tier>` y `source:<idEntrenador>`.
+- Regla de alternativas de Smogon (varios movimientos u objetos por hueco): la primera opción de cada hueco; un set de Smogon da un único set (ver ARQUITECTURA DEC-31).
+- `data/smogon/` contiene los JSON descargados con `npm run gen:smogon` y su `manifest.json` (URL, fecha, SHA-256): `npm run gen:player-sets` es offline y determinista. `gen:player-sets` **sobrescribe** `data/player-sets.json`.
+- Origen y crédito: **Smogon University** (https://www.smogon.com/dex/bw/), a través del volcado de https://data.pkmn.cc/sets (proyecto `@pkmn`).
 
 ### Nombres en español (`data/names-es-overrides.json`)
 
@@ -230,6 +234,7 @@ npm run vis
 
 ## Créditos
 
+- **Smogon University**: sets de Gen 5 en individuales del pool del jugador (`data/smogon/`).
 - **Pokémon Showdown**: sprites Gen 5 animados (`gen5ani`, `gen5ani-back`). Las dependencias `@pkmn/sim`, `@pkmn/dex` y `@pkmn/data` (paquetes de Pokémon Showdown) implementan el motor de combate y los datos.
 - **Smogon**: `@smogon/calc`, cálculo de daño.
 - **PokeAPI**: nombres en español (CSV de `pokemon_species_names`, `move_names`, `ability_names`, `item_names`, `type_names`).
