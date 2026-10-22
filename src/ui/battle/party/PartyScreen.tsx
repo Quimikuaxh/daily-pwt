@@ -60,7 +60,7 @@ function PartyPanel({ member, index, selected, enabled, onSelect, buttonRef }: {
     >
       <span className="bt-party-visual" aria-hidden="true">
         <span className="bt-party-icon" style={{ left: PANEL.icon.x, top: PANEL.icon.y }}>
-          <MemberIcon spriteId={member.speciesId} dimmed={member.fainted} />
+          <MemberIcon spriteId={member.spriteId} dimmed={member.fainted} />
         </span>
         <span className="bt-party-name" data-band={PANEL_BANDS.name.join(',')} data-size="normal" style={{ left: PANEL.name.x, top: PANEL.name.y }}>{member.name}</span>
         {' '}

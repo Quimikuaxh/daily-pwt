@@ -67,8 +67,10 @@ export function DataBox({ side, mon, name, testId, gender, speed = 1, reducedMot
           <img src={uiAsset(`hp/fill-${fillFor(percent)}.png`)} alt="" />
         </div>
         {isPlayer && <img className="bt-databox-exp" src={uiAsset('hp/exp-track.png')} alt="" />}
-        <span className="bt-databox-name">{name}</span>
-        {gender && <img className="bt-databox-gender" src={uiAsset(`icons/gender-${gender === 'M' ? 'male' : 'female'}.png`)} alt="" />}
+        <span className="bt-databox-label">
+          <span className="bt-databox-name">{name}</span>
+          {gender && <img className="bt-databox-gender" src={uiAsset(`icons/gender-${gender === 'M' ? 'male' : 'female'}.png`)} alt="" />}
+        </span>
         <Digits kind="level" value={LEVEL} className="bt-databox-level" />
         {status && <img className="bt-databox-status" src={uiAsset(`status/${mon.status}.png`)} alt="" />}
         {hasNumbers && <Digits kind="hp" value={shownHp} className="bt-databox-hp-now" />}

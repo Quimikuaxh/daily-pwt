@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { calcStats } from '../../../core/stats'
 import { es } from '../../../i18n/es'
+import iconIndex from '../../../generated/icon-index.json'
 import { partyMembers } from './partyModel'
+import { dexNumberText } from './summaryModel'
 import { realData, realRequest, realTeam, realView } from './partyFixtures'
 
 // RF-70 / RF-71: los datos de la pantalla de equipo y de datos salen del ResolvedSet y del estado del combate, sin inventar nada.
@@ -51,6 +53,32 @@ describe('partyMembers', () => {
     expect(result[1]).toMatchObject({ fainted: true, hp: 0, canSendOut: false, status: null })
     expect(result[2]).toMatchObject({ status: 'par', hp: 60, maxHp: 100, canSendOut: true })
     expect(result[0].canSendOut).toBe(false)
+  })
+
+  it('debilitado: 0 / PS máximos (el simulador manda «0 fnt» sin máximo)', () => {
+    const result = partyMembers(realRequest({ 1: { condition: '0 fnt' } }), realView(), realData, realTeam)[1]
+    expect(result).toMatchObject({ hp: 0, maxHp: result.stats.hp, hpPercent: 0 })
+    expect(result.maxHp).toBeGreaterThan(0)
+  })
+
+  it('el icono usa el id del sprite: en las formas no coincide con el de especie (Landorus-T)', () => {
+    const request = realRequest()
+    request.side.pokemon[0].details = 'Landorus-Therian, L50, M'
+    const [first] = partyMembers(request, null, realData, [])
+    expect(first).toMatchObject({ speciesId: 'landorustherian', spriteId: 'landorus-therian' })
+  })
+
+  it('toda especie del dex (formas incluidas: Rotom, Thundurus-T, Wormadam…) tiene icono y número por su spriteId', () => {
+    const missing = Object.values(realData.dex.species).filter((species) => !(species.spriteId in iconIndex) || dexNumberText(species.spriteId) === '000')
+    expect(missing.map((species) => species.id)).toEqual([])
+  })
+
+  it('las formas tienen icono propio, distinto del de la especie base, y el número de Pokédex de la base', () => {
+    const icons = iconIndex as Record<string, number>
+    for (const [form, base, number] of [['landorus-therian', 'landorus', '645'], ['thundurus-therian', 'thundurus', '642'], ['tornadus-therian', 'tornadus', '641'], ['rotom-wash', 'rotom', '479'], ['wormadam-trash', 'wormadam', '413']]) {
+      expect(icons[form], form).not.toBe(icons[base])
+      expect(dexNumberText(form), form).toBe(number)
+    }
   })
 
   it('el género viene del request cuando la especie lo tiene', () => {

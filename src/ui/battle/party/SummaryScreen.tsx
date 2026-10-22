@@ -66,8 +66,7 @@ function HpBar({ member, x, y }: { member: PartyMember; x: number; y: number }) 
 }
 
 function FrontSprite({ member, data }: { member: PartyMember; data: GameData }) {
-  const spriteId = data.dex.species[member.speciesId]?.spriteId ?? member.speciesId
-  const { width, height } = frontSpriteSize(spriteId, SPRITE_FALLBACK)
+  const { width, height } = frontSpriteSize(member.spriteId, SPRITE_FALLBACK)
   return (
     <span className="bt-sum-sprite" style={{ left: SPRITE_FEET.x - width / 2, top: SPRITE_FEET.y - height, width, height }}>
       <Sprite src={speciesSprite(data.dex, member.speciesId, 'front')} name={member.name} width={width} height={height} className="bt-sum-sprite-img" />
@@ -102,7 +101,7 @@ function InfoPage({ member }: { member: PartyMember }) {
       </Value>
       <Value x={33} band={infoLine(1)} maxWidth={200}>{natureEffectText(member)}</Value>
       <Label x={17} band={infoRow(0)}>{text.dexNumber}</Label>
-      <Value x={81} band={infoRow(0)} maxWidth={60}>{dexNumberText(member.speciesId)}</Value>
+      <Value x={81} band={infoRow(0)} maxWidth={60}>{dexNumberText(member.spriteId)}</Value>
       <Label x={17} band={infoRow(1)}>{text.name}</Label>
       <Value x={81} band={infoRow(1)} maxWidth={100}>{member.name}</Value>
       <Label x={17} band={infoRow(2)}>{text.types}</Label>

@@ -302,28 +302,28 @@
   top: 22px;
 }
 
-.bt-databox-name {
+.bt-databox-label {
+  display: flex;
+  align-items: flex-start;
   left: 20px;
-  top: -9px;
+  top: -6px;
+}
+
+.bt-databox-player .bt-databox-label {
+  left: 13px;
+}
+
+/* Más pequeño que el resto del texto para todos los nombres: los de 10 letras (Kangaskhan, Ferrothorn…) con su género caben antes del «Nv». */
+.bt-databox-name {
+  font-size: 11px;
   white-space: nowrap;
   color: #f8f8f8;
   text-shadow: 1px 0 #181818, -1px 0 #181818, 0 1px #181818, 0 -1px #181818, 1px 1px #181818, -1px -1px #181818, 1px -1px #181818, -1px 1px #181818;
 }
 
-.bt-databox-player .bt-databox-name {
-  left: 13px;
-}
-
+/* El símbolo de género va justo detrás del nombre. */
 .bt-databox-gender {
-  top: -4px;
-}
-
-.bt-databox-rival .bt-databox-gender {
-  left: 69px;
-}
-
-.bt-databox-player .bt-databox-gender {
-  left: 66px;
+  margin: 2px 0 0 1px;
 }
 
 .bt-digits {

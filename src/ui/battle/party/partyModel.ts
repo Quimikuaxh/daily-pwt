@@ -12,6 +12,8 @@ export type PartyMember = {
   /** Posición en `request.side.pokemon`, empezando en 1 (lo que espera `choose`). */
   slot: number
   speciesId: string
+  /** Id del sprite y del icono (`landorus-therian`), distinto de `speciesId` (`landorustherian`) en las formas. */
+  spriteId: string
   name: string
   level: number
   gender: 'M' | 'F' | null
@@ -88,16 +90,19 @@ export function partyMembers(request: BattleRequest | null, view: BattleView | n
       : ({ hp: condition.maxHp, ...Object.fromEntries(STAT_KEYS.filter((key) => key !== 'hp').map((key) => [key, requestStats?.[STAT_FROM_REQUEST[key]] ?? 0])) } as StatsTable)
     const itemId = set?.item ?? member.item ?? ''
     const abilityId = set?.ability ?? member.baseAbility ?? ''
+    // Debilitado, el simulador manda «0 fnt» sin PS máximos: se toman de las estadísticas.
+    const maxHp = condition.maxHp || stats.hp
     return [
       {
         slot: index + 1,
         speciesId,
+        spriteId: species.spriteId,
         name: data.names.species[speciesId] ?? set?.nameEs ?? species.name,
         level,
         gender: genderOf(member.details),
         hp: condition.hp,
-        maxHp: condition.maxHp,
-        hpPercent: condition.maxHp > 0 ? Math.round((100 * condition.hp) / condition.maxHp) : 0,
+        maxHp,
+        hpPercent: maxHp > 0 ? Math.round((100 * condition.hp) / maxHp) : 0,
         status: condition.status,
         fainted: condition.fainted,
         active: member.active,

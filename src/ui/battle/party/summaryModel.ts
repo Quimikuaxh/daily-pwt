@@ -11,8 +11,11 @@ const frontBoxes = (spriteBoxes as { front: Record<string, number[]> }).front
 export const moveDescription = (moveId: string): string | undefined => descriptionTable.moves[moveId]
 export const abilityDescription = (abilityId: string): string | undefined => descriptionTable.abilities[abilityId]
 
-/** Número de Pokédex nacional con tres cifras (la hoja de iconos se ordena por él). */
-export const dexNumberText = (speciesId: string): string => String((iconIndex as Record<string, number>)[speciesId] ?? 0).padStart(3, '0')
+/**
+ * Número de Pokédex nacional con tres cifras. La hoja de iconos se ordena por él en las especies base; las formas tienen icono propio
+ * más allá del 1000, así que el número sale de la especie base (`landorus-therian` -> `landorus`).
+ */
+export const dexNumberText = (spriteId: string): string => String((iconIndex as Record<string, number>)[spriteId.split('-')[0]] ?? 0).padStart(3, '0')
 
 /** Ancho y alto del GIF de frente (recortado al contenido), para anclarlo por los pies. */
 export function frontSpriteSize(spriteId: string, fallback: number): { width: number; height: number } {

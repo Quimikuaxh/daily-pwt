@@ -4,6 +4,7 @@ import type { BattleRequest, BattleView, Choice, EngineBattleView, EngineEnd, En
 import type { Checkpoint, Decision } from '../storage/gameStore'
 import { introLines, translateLine, type TranslateContext } from '../battle/translate'
 import { deferFaintUntilFaintLine } from '../battle/faintOrder'
+import { deferHitMessages } from '../battle/messageOrder'
 import { viewReducer } from '../battle/viewReducer'
 
 export type BattleSpeed = 1 | 2 | 4
@@ -11,11 +12,11 @@ export type BattleSpeed = 1 | 2 | 4
 const SPEEDS: BattleSpeed[] = [1, 2, 4]
 /** Cada mensaje se queda en la caja de texto este tiempo (a x1) y avanza solo; un toque o tecla lo adelanta. */
 const TEXT_PAUSE_MS = 1100
-const BAR_PAUSE_MS = 400
+const VISUAL_PAUSE_MS = 400
 /** Lo que tarda en bajar la barra de PS (y el número) a x1: DataBox la anima con esta duración. */
 export const HP_BAR_ANIMATION_MS = 700
-/** Tras un golpe letal se espera a que la barra llegue a 0 antes de nada más (DEC-42). */
-const LETHAL_BAR_PAUSE_MS = HP_BAR_ANIMATION_MS + 100
+/** Tras cambiar los PS se espera a que la barra termine antes de nada más: el texto del golpe (supereficaz, Banda Focus…) va después, y tras un golpe letal la barra llega a 0 antes del «se ha debilitado» (DEC-42). */
+const HP_BAR_PAUSE_MS = HP_BAR_ANIMATION_MS + 100
 /** Con el mensaje «se ha debilitado» ya en pantalla, el sprite espera este tiempo antes de caer. */
 const FAINT_MESSAGE_LEAD_MS = 400
 const FINISH_PAUSE_MS = 1500
@@ -37,6 +38,7 @@ export const SWITCH_DURATIONS_MS = { recall: 500, send: 1100 } as const
 
 /** Líneas que mueven una barra de PS o el Pokémon activo aunque no tengan texto propio. */
 const VISUAL_LINE_TYPES = new Set(['-damage', '-heal', '-sethp', 'faint', 'switch', 'drag'])
+const HP_LINE_TYPES = new Set(['-damage', '-heal', '-sethp'])
 
 type Update = Extract<ClientMessage, { type: 'update' }>
 
@@ -104,7 +106,7 @@ function introSteps(params: BattleParams): Step[] {
 function stepsFor(update: Update, isFirstUpdate: boolean, params: BattleParams): Step[] {
   // Las tres frases de apertura (RF-53) sustituyen a los `|switch|` del primer update, que repetirían lo mismo.
   const introPlan: Step[] = isFirstUpdate ? introSteps(params) : []
-  const lines = isFirstUpdate ? update.lines.filter((line) => !line.startsWith('|switch|')) : update.lines
+  const lines = deferHitMessages(isFirstUpdate ? update.lines.filter((line) => !line.startsWith('|switch|')) : update.lines)
   return [...introPlan, ...lines.map((line) => ({ line, text: translateLine(line, params.translateContext) }))]
 }
 
@@ -205,12 +207,10 @@ export function useBattle(params: BattleParams): BattleController {
           if (!switching.endsWith('-send')) await pause(SWITCH_DURATIONS_MS.recall, false, false)
           if (cancelled) return
         }
-        let lethalHit = false
         const isFaintLine = step.line !== null && lineType(step.line) === 'faint' && step.text !== null
         if (step.line !== null && !isFaintLine) {
           const reduced = viewReducer(shown, { type: 'lines', lines: [step.line] })
           shown = deferFaintUntilFaintLine(shown, reduced, step.line)
-          lethalHit = shown !== reduced
           setView(shown)
         }
         if (isFaintLine && step.text !== null) {
@@ -239,7 +239,7 @@ export function useBattle(params: BattleParams): BattleController {
         } else if (switching) {
           await pause(SWITCH_DURATIONS_MS.send)
         } else if (step.line !== null && VISUAL_LINE_TYPES.has(lineType(step.line))) {
-          await pause(lethalHit ? LETHAL_BAR_PAUSE_MS : BAR_PAUSE_MS)
+          await pause(HP_LINE_TYPES.has(lineType(step.line)) ? HP_BAR_PAUSE_MS : VISUAL_PAUSE_MS)
         }
         if (switching) setSwitchAnim(null)
       }
