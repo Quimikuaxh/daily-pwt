@@ -2,8 +2,9 @@
 # que no sea main y, vía workflow_call, como paso previo obligatorio del despliegue (deploy.yml).
 # Sin red hacia fuentes externas y sin scripts/.cache: los tests que comparan con una regeneración que necesita los CSV de PokeAPI
 # se omiten con aviso (src/data/generated.test.ts); `npm run validate:data` cubre esos nombres sin la caché.
-# Playwright no se ejecuta aquí: ver «Tests e2e» en el README (~7 min con 4 workers en local; con los 2 workers de CI y la instalación de
-# navegadores superaría el presupuesto de 10 min y es sensible a la carga). Se lanza en local antes de hacer merge.
+# Playwright completo no se ejecuta aquí (ver «Tests e2e» en el README: ~10 min en local con 4 workers y sensible a la carga); se lanza en
+# local antes de hacer merge. En CI corre solo un humo en Chromium (job e2e-smoke, casos @smoke): Hoy, una partida, el oficial con
+# estadísticas y compartir, Ayuda y el build sin ganchos. Unos 3-4 min con la instalación del navegador.
 name: CI
 
 on:
@@ -35,3 +36,26 @@ jobs:
       - run: npx tsc -b
       - run: npm run lint
       - run: npm run build
+
+  e2e-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e:smoke
+        env:
+          CI: 'true'
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

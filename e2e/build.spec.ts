@@ -9,7 +9,7 @@ const PORT_PROD = Number(process.env.E2E_PORT_PROD ?? 4392)
 const PROD = `http://127.0.0.1:${PORT_PROD}`
 
 test.describe('Build de producción (sin VITE_TEST_HOOKS)', () => {
-  test('E2E-17 los ganchos se ignoran y no están en el bundle', async ({ browser }) => {
+  test('E2E-17 los ganchos se ignoran y no están en el bundle @smoke', async ({ browser }) => {
     const context = await browser.newContext({ baseURL: PROD, timezoneId: 'Europe/Madrid', locale: 'es-ES' })
     const page = await context.newPage()
     await page.clock.install({ time: new Date(`${addDays(LAUNCH_DATE, 6)}T12:00:00+01:00`) })

@@ -5,6 +5,7 @@ import { CategoryIcon } from '../../common/CategoryIcon'
 import { Sprite } from '../../common/Sprite'
 import { speciesSprite } from '../../common/spriteUrls'
 import { TypeBadge } from '../../common/TypeBadge'
+import { useImagesLoadedIn } from '../preloadAssets'
 import { uiAsset } from '../../common/uiAssets'
 import type { PartyMember } from './partyModel'
 import { BANDS, infoLine, infoRow, moveDetailRow, statRow, topInBand, type Band } from './summaryLayout'
@@ -24,6 +25,10 @@ const BACKGROUNDS: Record<Page, { top: string; bottom: string }> = {
   1: { top: 'summary/skills-top.png', bottom: 'summary/skills-bottom.png' },
   2: { top: 'summary/moves-top.png', bottom: 'summary/skills-bottom.png' },
 }
+/** Fondos de todas las páginas, montados a la vez (solo se ve el de la página actual): pasar de página no crea imágenes nuevas. */
+const ALL_BACKGROUNDS: readonly { src: string; top: number }[] = [...new Map(Object.values(BACKGROUNDS).flatMap(({ top, bottom }) => [[top, 0], [bottom, 192]] as const)).entries()].map(([src, top]) => ({ src, top }))
+/** La barra de PS de la página de habilidades (pieza ripeada de 64x6). */
+const SKILLS_HP_BAR = { x: 121, y: 49 }
 const MOVE_SLOT_TOP = [207, 239, 271, 303] as const
 
 type Placed = { x: number; y: number }
@@ -55,14 +60,10 @@ function Value({ children, x, band, right = false, size = 'normal', maxWidth }: 
   )
 }
 
+/** Relleno de la barra de PS; la pieza de la barra está siempre montada (ver SummaryScreen) y solo se ve en esta página. */
 function HpBar({ member, x, y }: { member: PartyMember; x: number; y: number }) {
   const bar = hpBar(member, 48)
-  return (
-    <>
-      <img className="bt-sum-bar" style={at({ x, y })} src={uiAsset('party/hp-track.png')} alt="" />
-      <span className="bt-party-fill" data-fill={bar.color} style={{ left: x + 14, top: y + 2, width: bar.width }} />
-    </>
-  )
+  return <span className="bt-party-fill" data-fill={bar.color} style={{ left: x + 14, top: y + 2, width: bar.width }} />
 }
 
 function FrontSprite({ member, data }: { member: PartyMember; data: GameData }) {
@@ -128,7 +129,7 @@ function SkillsPage({ member }: { member: PartyMember }) {
     <>
       <Label x={89} band={BANDS.hpRow}>{es.today.statNames.hp}</Label>
       <Value x={186} band={BANDS.hpRow} right>{`${member.hp} / ${member.maxHp}`}</Value>
-      <HpBar member={member} x={121} y={49} />
+      <HpBar member={member} {...SKILLS_HP_BAR} />
       {SKILL_STAT_KEYS.map((key, index) => {
         const tone = member.natureUp === key ? 'up' : member.natureDown === key ? 'down' : undefined
         return (
@@ -232,13 +233,15 @@ export default function SummaryScreen({ members, initialSlot, data, onClose }: S
   const [page, setPage] = useState(0 as Page)
   const [moveIndex, setMoveIndex] = useState(0)
   const rootRef = useRef(null as HTMLElement | null)
+  const imagesLoaded = useImagesLoadedIn(rootRef)
 
   const position = Math.max(0, members.findIndex((member) => member.slot === slot))
   const member = members[position]
 
+  // Oculta mientras cargan sus imágenes no se puede enfocar: el foco va al enseñarla.
   useEffect(() => {
-    rootRef.current?.focus()
-  }, [])
+    if (imagesLoaded) rootRef.current?.focus()
+  }, [imagesLoaded])
 
   const goToPage = (next: number) => setPage(Math.min(PAGE_COUNT - 1, Math.max(0, next)) as Page)
   const goToMember = (offset: number) => {
@@ -274,9 +277,11 @@ export default function SummaryScreen({ members, initialSlot, data, onClose }: S
   const backgrounds = BACKGROUNDS[page]
 
   return (
-    <section ref={rootRef} tabIndex={-1} className="bt-summary" aria-label={text.label(member.name)} data-page={page}>
-      <img className="bt-sum-bg" style={{ top: 0 }} src={uiAsset(backgrounds.top)} alt="" />
-      <img className="bt-sum-bg" style={{ top: 192 }} src={uiAsset(backgrounds.bottom)} alt="" />
+    <section ref={rootRef} tabIndex={-1} className="bt-summary" aria-label={text.label(member.name)} data-page={page} data-loading={imagesLoaded ? undefined : 'true'}>
+      {ALL_BACKGROUNDS.map(({ src, top }) => (
+        <img key={src} className="bt-sum-bg" data-current={src === backgrounds.top || src === backgrounds.bottom ? 'true' : undefined} style={{ top }} src={uiAsset(src)} alt="" />
+      ))}
+      <img className="bt-sum-bar" data-current={page === 1 ? 'true' : undefined} style={at(SKILLS_HP_BAR)} src={uiAsset('party/hp-track.png')} alt="" />
       <h2 className="sr-only">{text.pageTitles[['info', 'skills', 'moves'][page] as 'info' | 'skills' | 'moves']}</h2>
 
       <span className="bt-sum-heading" aria-hidden="true" data-band={bandAttribute(BANDS.header)} data-size="head" style={{ top: topInBand(BANDS.header, 'head') }}>{text.heading}</span>

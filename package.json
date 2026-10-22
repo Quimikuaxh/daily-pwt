@@ -16,6 +16,7 @@
     "test:e2e:timing": "playwright test --grep @timing --workers=1",
     "vis": "node scripts/capture-vis.mjs",
     "test:e2e:install": "playwright install chromium webkit",
+    "test:e2e:smoke": "playwright test --project=chromium --grep @smoke",
     "lint": "eslint .",
     "gen:names": "node scripts/build-names-es.mjs",
     "gen:descriptions": "node scripts/build-descriptions-es.mjs",

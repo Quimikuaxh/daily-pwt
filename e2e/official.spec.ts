@@ -118,7 +118,7 @@ test.describe('Combate oficial: un intento por día', () => {
     expect(await storedDays(page), 'las prácticas no tocan lo guardado').toEqual(saved)
   })
 
-  test('E2E-60 tras el oficial: estadísticas actualizadas y Compartir copia el texto sin spoilers; Estadísticas también desde Hoy', async ({ page, context, browserName }) => {
+  test('E2E-60 tras el oficial: estadísticas actualizadas y Compartir copia el texto sin spoilers; Estadísticas también desde Hoy @smoke', async ({ page, context, browserName }) => {
     const { battle, today } = await startBattle(page, { seed: 'a' })
     await battle.maxSpeed()
     await battle.waitForActionOrResult()

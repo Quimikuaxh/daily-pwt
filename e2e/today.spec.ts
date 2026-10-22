@@ -4,7 +4,7 @@ import { BattlePage } from './pages/BattlePage'
 import { DEFAULT_SCENARIO, LAUNCH_DATE, collectProblems } from './support'
 
 test.describe('Pantalla Hoy', () => {
-  test('E2E-01 Hoy completo en el día de lanzamiento', async ({ page }) => {
+  test('E2E-01 Hoy completo en el día de lanzamiento @smoke', async ({ page }) => {
     const problems = collectProblems(page)
     const today = new TodayPage(page)
     await today.goto({ ...DEFAULT_SCENARIO, date: LAUNCH_DATE })

@@ -1,10 +1,17 @@
 // Capturas de verificación visual VIS-01..19 (docs/PLAN-PRUEBAS-F1.md §5) a 360x740, 400x800 (solo combate nuevo) y 1280x800.
 // Uso: VITE_TEST_HOOKS=1 npx vite build --outDir dist-e2e --emptyOutDir && node scripts/capture-vis.mjs [outDir]
+// Rivales por ?trainer= con las fechas de e2e/scenarios.json (no dependen de LAUNCH_DATE).
 // Sirve dist-e2e con `vite preview` en un puerto propio (VIS_PORT, 4393 por defecto) y escribe en e2e-artifacts/vis (ignorado por git).
 import { spawn } from 'node:child_process'
 import { existsSync, mkdirSync } from 'node:fs'
 import { chromium } from '@playwright/test'
+import { readFileSync } from 'node:fs'
 import { blend, crop, loadPng, montage, savePng, scaleNearest } from './lib/montage.mjs'
+
+// Rival por id con ?trainer= (DEC-17), igual que los E2E: las capturas no dependen de LAUNCH_DATE ni del orden de la bolsa.
+const SCENARIOS = JSON.parse(readFileSync(new URL('../e2e/scenarios.json', import.meta.url), 'utf8'))
+const ALL = ['plubio', 'misty', 'maximo', 'camila', 'rojo', 'brock'].map((id) => SCENARIOS[id])
+const q = (scenario, extra = '') => `date=${scenario.date}&trainer=${scenario.trainer}${extra ? `&${extra}` : ''}`
 
 const PORT = Number(process.env.VIS_PORT ?? 4393)
 const BASE = `http://127.0.0.1:${PORT}/`
@@ -34,7 +41,7 @@ const shot = (page, name, tag, opts = {}) => page.screenshot({ path: `${OUT}/${n
 
 async function enterBattle(page) {
   await page.getByRole('button', { name: /^Sacar primero/ }).first().click()
-  await page.getByRole('button', { name: 'Combatir' }).click()
+  await page.getByRole('button', { name: 'Práctica', exact: true }).click()
   await page.getByTestId('battle-screen').waitFor()
 }
 async function ready(page) {
@@ -45,10 +52,10 @@ for (const { tag, width, height } of SIZES) {
   const context = await browser.newContext({ viewport: { width, height }, locale: 'es-ES', timezoneId: 'Europe/Madrid', deviceScaleFactor: 1 })
 
   // VIS-01 / VIS-04: Hoy en varias fechas (equipos y nombres variados), página completa.
-  for (const [i, date] of ['2026-10-17', '2026-10-18', '2026-10-19', '2026-10-20', '2026-10-21'].entries()) {
-    const page = await open(context, `date=${date}`)
+  for (const [i, scenario] of ALL.slice(0, 5).entries()) {
+    const page = await open(context, q(scenario))
     await page.waitForLoadState('networkidle')
-    await shot(page, `vis01-hoy-${date}`, tag, { fullPage: true })
+    await shot(page, `vis01-hoy-${scenario.trainer}`, tag, { fullPage: true })
     if (i === 0) await shot(page, 'vis03-sin-inicial', tag)
     if (i === 0) {
       // VIS-03: inicial elegido
@@ -66,9 +73,9 @@ for (const { tag, width, height } of SIZES) {
     const page = await context.newPage()
     await page.route('**/assets/index-*.js', async (route) => {
       const response = await route.fetch()
-      await route.fulfill({ response, body: (await response.text()).replace('dataVersion:`f1-1`', 'dataVersion:``') })
+      await route.fulfill({ response, body: (await response.text()).replace(/dataVersion:`f\d+-\d+`/, 'dataVersion:``') })
     })
-    await page.goto(`${BASE}?date=2026-10-17`)
+    await page.goto(`${BASE}?${q(SCENARIOS.plubio)}`)
     await page.getByRole('alert').waitFor()
     await shot(page, 'vis05-error-datos', tag)
     await page.close()
@@ -77,8 +84,8 @@ for (const { tag, width, height } of SIZES) {
   // VIS-06..12: combates. Se juega y se captura la primera vez que aparece cada estado.
   const seen = new Set()
   const once = async (page, key, name, opts) => { if (!seen.has(key)) { seen.add(key); await shot(page, name, tag, opts) } }
-  for (const [date, seed] of [['2026-10-17', 'a'], ['2026-10-18', 'b'], ['2026-10-20', 'c'], ['2026-10-21', 'a']]) {
-    const page = await open(context, `date=${date}&seed=${seed}&ai=trivial`)
+  for (const [scenario, seed] of [[SCENARIOS.plubio, 'a'], [SCENARIOS.misty, 'b'], [SCENARIOS.maximo, 'c'], [SCENARIOS.camila, 'a']]) {
+    const page = await open(context, q(scenario, `seed=${seed}&ai=trivial`))
     await enterBattle(page)
     await ready(page)
     await once(page, 'start', 'vis06-combate-inicio', {})
@@ -125,7 +132,7 @@ for (const { tag, width, height } of SIZES) {
       }
       const m = page.locator('.bt-moves button:enabled')
       if (await m.count() > 0) await m.first().click()
-      else {
+      else if (await page.locator('.bt-party-panel[data-state="ready"]:enabled').count() > 0) {
         await page.locator('.bt-party-panel[data-state="ready"]:enabled').first().click()
         await page.getByRole('group', { name: /Qué hacer con/ }).getByRole('button', { name: 'Cambiar', exact: true }).click()
       }
@@ -149,7 +156,7 @@ for (const { tag, width, height } of SIZES) {
 
   // VIS-15: intro del combate (iris, entrada, lanzamientos) a intervalos fijos.
   {
-    const page = await open(context, 'date=2026-10-17&seed=a&ai=trivial')
+    const page = await open(context, q(SCENARIOS.plubio, 'seed=a&ai=trivial'))
     await enterBattle(page)
     const startedAt = Date.now()
     for (const at of [300, 1500, 2300, 2900, 3400, 4300, 4700]) {
@@ -163,7 +170,7 @@ for (const { tag, width, height } of SIZES) {
   // VIS-13: sprites sin difuminar (recorte del campo, ampliado x2 con deviceScaleFactor).
   {
     const ctx2 = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 2, locale: 'es-ES' })
-    const page = await open(ctx2, 'date=2026-10-17&seed=a&ai=trivial')
+    const page = await open(ctx2, q(SCENARIOS.plubio, 'seed=a&ai=trivial'))
     await enterBattle(page)
     await ready(page)
     await page.getByTestId('field').screenshot({ path: `${OUT}/vis13-pixelado-campo-${tag}.png` })
@@ -172,7 +179,7 @@ for (const { tag, width, height } of SIZES) {
 
   // VIS-14: reduced motion y forced colors (alto contraste).
   for (const [name, media] of [['reduced-motion', { reducedMotion: 'reduce' }], ['alto-contraste', { forcedColors: 'active' }]]) {
-    const page = await open(context, 'date=2026-10-17&seed=a&ai=trivial')
+    const page = await open(context, q(SCENARIOS.plubio, 'seed=a&ai=trivial'))
     await page.emulateMedia(media)
     await shot(page, `vis14-${name}-hoy`, tag, { fullPage: true })
     await enterBattle(page)
@@ -201,7 +208,7 @@ function compareWithReference(oursPath, referenceFile, name) {
 
 for (const { tag, width, height } of [{ tag: '360', width: 360, height: 740 }, { tag: '400', width: 400, height: 800 }, { tag: '768', width: 768, height: 1024 }, { tag: '1280', width: 1280, height: 800 }, { tag: '1440', width: 1440, height: 900 }]) {
   const context = await browser.newContext({ viewport: { width, height }, locale: 'es-ES', timezoneId: 'Europe/Madrid', deviceScaleFactor: 1 })
-  const page = await open(context, 'date=2026-10-19&seed=a&ai=trivial')
+  const page = await open(context, q(SCENARIOS.plubio, 'seed=a&ai=trivial'))
   await enterBattle(page)
   await ready(page)
   await shot(page, 'vis16-combate-completo', tag)
@@ -227,7 +234,7 @@ for (const { tag, width, height } of [{ tag: '360', width: 360, height: 740 }, {
   savePng(`${OUT}/vis17-placas-movimientos-${tag}.png`, scaleNearest(crop(full, 0, Math.round(200 * unit), Math.round(150 * unit), Math.round(140 * unit)), 4 / unit))
   await page.close()
   {
-    const hoy = await open(context, 'date=2026-10-19')
+    const hoy = await open(context, q(SCENARIOS.plubio))
     await hoy.waitForLoadState('networkidle')
     await shot(hoy, 'vis18-hoy', tag, { fullPage: true })
     await hoy.getByRole('button', { name: 'Ver movimientos y objetos del rival' }).click()
@@ -243,11 +250,11 @@ for (const { tag, width, height } of [{ tag: '360', width: 360, height: 740 }, {
   for (const { tag, width, height } of [{ tag: '400', width: 400, height: 800 }, { tag: '1280', width: 1280, height: 800 }]) {
     const context = await browser.newContext({ viewport: { width, height }, locale: 'es-ES', timezoneId: 'Europe/Madrid', deviceScaleFactor: 1 })
     const found = new Map()
-    for (const date of ['2026-10-17', '2026-10-18', '2026-10-19', '2026-10-20', '2026-10-21', '2026-10-22', '2026-10-23']) {
+    for (const scenario of ALL) {
       for (let lead = 0; lead < 6 && found.size < WANTED.length; lead += 1) {
-        const page = await open(context, `date=${date}&seed=a&ai=trivial`)
+        const page = await open(context, q(scenario, 'seed=a&ai=trivial'))
         await page.getByRole('button', { name: /^Sacar primero/ }).nth(lead).click()
-        await page.getByRole('button', { name: 'Combatir' }).click()
+        await page.getByRole('button', { name: 'Práctica', exact: true }).click()
         await page.locator('.bt-fight:enabled').waitFor({ timeout: 60000 })
         const name = ((await page.locator('.bt-databox-player .bt-databox-name').textContent()) ?? '').trim()
         if (WANTED.includes(name) && !found.has(name)) {
@@ -266,7 +273,7 @@ for (const { tag, width, height } of [{ tag: '360', width: 360, height: 740 }, {
 // ---------- VIS-21: elegir ataque -> espera -> turno siguiente ----------
 {
   const context = await browser.newContext({ viewport: { width: 400, height: 800 }, locale: 'es-ES', timezoneId: 'Europe/Madrid', deviceScaleFactor: 1 })
-  const page = await open(context, 'date=2026-10-19&seed=a&ai=trivial')
+  const page = await open(context, q(SCENARIOS.plubio, 'seed=a&ai=trivial'))
   await enterBattle(page)
   await ready(page)
   await page.locator('.bt-fight').click()
@@ -297,15 +304,15 @@ async function frameSheet(page, waitForAttribute, times, name) {
 
 {
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 }, locale: 'es-ES', timezoneId: 'Europe/Madrid', deviceScaleFactor: 1 })
-  const page = await open(context, 'date=2026-10-19&seed=a&ai=trivial')
+  const page = await open(context, q(SCENARIOS.plubio, 'seed=a&ai=trivial'))
   await page.getByRole('button', { name: /^Sacar primero/ }).first().click()
-  await page.getByRole('button', { name: 'Combatir' }).click()
+  await page.getByRole('button', { name: 'Práctica', exact: true }).click()
   const rival = await frameSheet(page, '[data-testid="field"][data-intro="rivalSend"]', [100, 300, 500, 650, 800, 1000], 'vis19-intro-rival')
   const player = await frameSheet(page, '[data-testid="field"][data-intro="playerSend"]', [200, 500, 700, 850, 1000, 1200, 1400], 'vis19-intro-jugador')
   savePng(`${OUT}/vis19-intro-lanzamiento-hoja.png`, montage([...rival, ...player], 3))
   await page.close()
 
-  const switchPage = await open(context, 'date=2026-10-19&seed=a&ai=trivial')
+  const switchPage = await open(context, q(SCENARIOS.plubio, 'seed=a&ai=trivial'))
   await enterBattle(switchPage)
   await ready(switchPage)
   await switchPage.getByRole('button', { name: 'Cambiar', exact: true }).click()

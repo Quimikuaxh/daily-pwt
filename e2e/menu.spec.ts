@@ -5,7 +5,7 @@ import { stageScale, startBattle } from './support'
 
 // F3 · PRD §10.5, §10.6 y decisiones del 22/10/2026: Ayuda, Ajustes (velocidad guardada, borrar datos) y marco de consola en escritorio.
 test.describe('Ayuda y Ajustes', () => {
-  test('E2E-61 Ayuda se abre desde Hoy con créditos y aviso legal, y se cierra con Escape', async ({ page }) => {
+  test('E2E-61 Ayuda se abre desde Hoy con créditos y aviso legal, y se cierra con Escape @smoke', async ({ page }) => {
     const today = new TodayPage(page)
     await today.goto()
     await page.getByRole('button', { name: 'Ayuda' }).click()

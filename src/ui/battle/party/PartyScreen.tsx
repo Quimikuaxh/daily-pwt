@@ -7,7 +7,7 @@ import { PANEL, PANEL_BANDS, PANEL_HEIGHT, PANEL_WIDTH, panelPosition } from './
 import { memberStateLabel, type PartyMember } from './partyModel'
 import { hpBar } from './hpBar'
 import './party.css'
-import { SUMMARY_SCREEN_IMAGES, useImagesReady } from '../preloadAssets'
+import { SUMMARY_SCREEN_IMAGES, useImagesLoadedIn, useImagesReady } from '../preloadAssets'
 
 const SummaryScreen = lazy(() => import('./SummaryScreen'))
 
@@ -69,7 +69,7 @@ function PartyPanel({ member, index, selected, enabled, onSelect, buttonRef }: {
         <span className="bt-party-fill" data-fill={bar.color} style={{ left: PANEL.barFill.x, top: PANEL.barFill.y, width: bar.width }} />
         <span className="bt-party-level" data-band={PANEL_BANDS.bottomRow.join(',')} data-size="normal" style={{ left: PANEL.level.x, top: PANEL.level.y }}>{es.battle.party.levelShort(member.level)}</span>
         {' '}
-        {statusIcon && <img className="bt-party-status" style={{ left: PANEL.status.x, top: PANEL.status.y + 2 }} src={uiAsset(`status/${statusIcon}.png`)} alt="" />}
+        {statusIcon && <img className="bt-party-status" style={{ left: PANEL.status.x, top: PANEL.status.y }} src={uiAsset(`status/${statusIcon}.png`)} alt="" />}
         <span className="bt-party-hp" data-band={PANEL_BANDS.bottomRow.join(',')} data-size="normal" style={{ right: PANEL_WIDTH - 106, top: PANEL.hp.y }}>{es.battle.hpValues(member.hp, member.maxHp)}</span>
       </span>
     </button>
@@ -93,6 +93,8 @@ export function PartyScreen({ members, data, forced, enabled, onChoose, onClose 
   const panelRefs = useRef(new Map<number, HTMLButtonElement>())
   const switchRef = useRef(null as HTMLButtonElement | null)
   const summaryReturnSlot = useRef(null as number | null)
+  const rootRef = useRef(null as HTMLElement | null)
+  const imagesLoaded = useImagesLoadedIn(rootRef)
 
   const selected = members.find((member) => member.slot === selectedSlot) ?? null
   const blockedReason = selected ? whyCannotSwitch(selected) : null
@@ -137,7 +139,7 @@ export function PartyScreen({ members, data, forced, enabled, onChoose, onClose 
   const prompt = forced ? es.battle.party.forcedPrompt : es.battle.party.choosePrompt
 
   return (
-    <section className="bt-party" aria-label={es.battle.party.label}>
+    <section ref={rootRef} className="bt-party" aria-label={es.battle.party.label} data-loading={imagesLoaded ? undefined : 'true'}>
       <img className="bt-party-bg bt-party-bg-top" src={uiAsset('party/bg-top.png')} alt="" />
       <img className="bt-party-bg bt-party-bg-bottom" src={uiAsset('party/bg-bottom.png')} alt="" />
       <div className="bt-party-members" role="group" aria-label={es.battle.party.label} inert={selected !== null || summarySlot !== null ? true : undefined}>

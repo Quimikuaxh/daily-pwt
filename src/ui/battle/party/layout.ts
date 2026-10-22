@@ -23,7 +23,8 @@ export const PANEL = {
   bar: { x: 45, y: 24 },
   barFill: { x: 59, y: 26, width: 48 },
   level: { x: 8, y: 28 },
-  status: { x: 40, y: 36 },
+  /** Estado (PAR, FNT…): siempre en la misma x, centrado en vertical con los PS (decisión de Jose). */
+  status: { x: 40, y: 33 },
   hp: { right: 20, y: 28 },
 } as const
 

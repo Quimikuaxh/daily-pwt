@@ -871,6 +871,58 @@
   opacity: 1;
 }
 
+/*
+ * Tras un debilitamiento (`-send`) no hay retirada y el resto de la secuencia arranca ya en el envío: el entrenador no se salta su
+ * entrada (aparecería ya en el centro), sino que tiene su propia animación de 1,1 s (SWITCH_DURATIONS_MS.send): entra por su lado,
+ * lanza la bola (a los 0,3 s) y vuelve a salir.
+ */
+[data-switch$="-send"] .bt-trainer {
+  animation-duration: calc(1100ms / var(--speed, 1));
+  animation-delay: 0ms;
+}
+
+[data-switch="player-send"] .bt-trainer-player {
+  animation-name: bt-visit-left-send;
+}
+
+[data-switch="rival-send"] .bt-trainer-rival {
+  animation-name: bt-visit-right-send;
+}
+
+@keyframes bt-visit-left-send {
+  0% {
+    transform: translateX(-150px);
+    opacity: 0;
+  }
+  22%,
+  45% {
+    transform: none;
+    opacity: 1;
+  }
+  68%,
+  100% {
+    transform: translateX(-150px);
+    opacity: 0;
+  }
+}
+
+@keyframes bt-visit-right-send {
+  0% {
+    transform: translateX(150px);
+    opacity: 0;
+  }
+  22%,
+  45% {
+    transform: none;
+    opacity: 1;
+  }
+  68%,
+  100% {
+    transform: translateX(150px);
+    opacity: 0;
+  }
+}
+
 @keyframes bt-visit-left {
   0% {
     transform: translateX(-150px);

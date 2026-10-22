@@ -15,7 +15,7 @@ export function TodayHeader({ challengeNumber, countdown, menu, date }: TodayHea
           {challengeNumber !== null && <p className="challenge-number">{es.today.challengeNumber(challengeNumber)}</p>}
           <p className="countdown">
             <span className="countdown-label">{es.today.nextChallengeIn}</span>{' '}
-            <time className="countdown-value">{countdown}</time>
+            <time className="plate countdown-value">{countdown}</time>
           </p>
         </div>
         {menu && date && <AppMenu {...menu} today={date} />}

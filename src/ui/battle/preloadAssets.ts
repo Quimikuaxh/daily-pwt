@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState, type RefObject } from 'react'
 import type { Challenge, GameData } from '../../core/types'
 import battleUiImages from '../../generated/battle-ui-images.json'
 import { speciesSprite, trainerSprite } from '../common/spriteUrls'
@@ -101,6 +101,36 @@ export function useImagesReady(urls: readonly string[], active: boolean): boolea
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active, key, readyKey])
   return readyKey === key
+}
+
+/**
+ * `true` cuando todas las `<img>` dentro de `ref` han cargado (o fallado), o al cabo de `timeoutMs`. Aunque la imagen ya esté precargada,
+ * una `<img>` nueva no siempre la tiene lista en el primer fotograma (sin caché HTTP, Chromium la vuelve a pedir): la pantalla se monta
+ * oculta y se enseña entera, nunca con el fondo a medio cargar.
+ */
+export function useImagesLoadedIn(ref: RefObject<HTMLElement | null>, timeoutMs = 1500): boolean {
+  const [loaded, setLoaded] = useState(false)
+  useLayoutEffect(() => {
+    const root = ref.current
+    if (!root || loaded) return
+    const allDone = () => [...root.querySelectorAll('img')].every((image) => image.complete)
+    if (allDone()) {
+      setLoaded(true)
+      return
+    }
+    const check = () => {
+      if (allDone()) setLoaded(true)
+    }
+    root.addEventListener('load', check, true)
+    root.addEventListener('error', check, true)
+    const timer = setTimeout(() => setLoaded(true), timeoutMs)
+    return () => {
+      root.removeEventListener('load', check, true)
+      root.removeEventListener('error', check, true)
+      clearTimeout(timer)
+    }
+  }, [ref, loaded, timeoutMs])
+  return loaded
 }
 
 export const PARTY_SCREEN_IMAGES: readonly string[] = BATTLE_UI_IMAGES.filter((url) => /\/(party|icons|status|digits|hp|types-blank|types|categories)\//.test(url))

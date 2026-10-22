@@ -2,6 +2,7 @@ import type { Locator, Page } from '@playwright/test'
 import { BattlePage } from './pages/BattlePage'
 import { TodayPage } from './pages/TodayPage'
 import { LAUNCH_DATE } from '../src/core/launch'
+import scenarios from './scenarios.json' with { type: 'json' }
 
 export { LAUNCH_DATE }
 
@@ -18,12 +19,13 @@ export function addDays(date: string, days: number): string {
  */
 export type Scenario = { trainer: string; variant?: string; date: string }
 
-export const PLUBIO: Scenario = { trainer: 'plubio', date: '2026-10-19' }
-export const MISTY: Scenario = { trainer: 'misty', date: '2026-10-20' }
-export const MAXIMO: Scenario = { trainer: 'maximo', date: '2026-10-21' }
-export const CAMILA: Scenario = { trainer: 'camila', date: '2026-10-22' }
-export const ROJO: Scenario = { trainer: 'rojo', date: '2026-10-23' }
-export const BROCK: Scenario = { trainer: 'brock', date: '2026-10-24' }
+// Una sola lista de escenarios para los E2E y para las capturas visuales (scripts/capture-vis.mjs).
+export const PLUBIO: Scenario = scenarios.plubio
+export const MISTY: Scenario = scenarios.misty
+export const MAXIMO: Scenario = scenarios.maximo
+export const CAMILA: Scenario = scenarios.camila
+export const ROJO: Scenario = scenarios.rojo
+export const BROCK: Scenario = scenarios.brock
 
 /** Escenario por defecto: contra Plubio hay cambio forzado tras el primer turno (ver los casos que usan MISTY). */
 export const DEFAULT_SCENARIO = PLUBIO

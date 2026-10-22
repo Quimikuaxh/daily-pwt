@@ -25,7 +25,7 @@ test.describe('Partida completa contra la IA trivial', () => {
     }
   }
 
-  test('E2E-05 el registro es español, sin ids ni inglés', async ({ page }) => {
+  test('E2E-05 el registro es español, sin ids ni inglés @smoke', async ({ page }) => {
     const { battle } = await startBattle(page, { seed: 'a' })
     await battle.maxSpeed()
     // Se lee el registro durante el combate (el Resultado lo desmonta): se juega hasta que haya varios turnos.

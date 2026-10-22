@@ -237,12 +237,14 @@ npm run test:e2e
 - Proyectos: `chromium` y `webkit` (escritorio); `mobile-360` (Pixel 5 a 360×740, solo `mobile.spec.ts`). Firefox es opcional: `E2E_FIREFOX=1` tras `npx playwright install firefox`.
 - Duración: unos 7 minutos con 4 workers (más el tramo `@timing` en serie) (medición de octubre de 2026). En CI (`CI=1`) se usan 2 workers.
 - Informes: `test-results/` (trazas de los fallos) y `playwright-report/`. Ver el informe con `npx playwright show-report`.
+- **Humo en CI** (DEC-50): `npm run test:e2e:smoke` lanza en Chromium los casos marcados `@smoke` (Hoy, una partida, el oficial con estadísticas y compartir, Ayuda y el build sin ganchos; ~30 s más la instalación del navegador). El job `e2e-smoke` de `ci.yml` lo corre en cada push que no sea a `main`, en los PR y antes de cada despliegue; si falla, sube el informe como artefacto. La batería completa sigue siendo local.
+- **Escenarios**: `e2e/scenarios.json` (rival por `?trainer=` y fecha literal) es la única lista de escenarios; la usan los E2E (`e2e/support.ts`) y las capturas visuales.
 
 Los directorios `dist-e2e/`, `dist-e2e-prod/`, `test-results/` y `playwright-report/` están en `.gitignore`.
 
 ## Capturas visuales
 
-Las capturas de verificación (VIS-01 a VIS-14) se generan a 360×740 y 1280×800 con datos de fecha y semilla fijos:
+Las capturas de verificación (VIS-01 a VIS-14) se generan a 360×740 y 1280×800 con rival por `?trainer=` y las fechas de `e2e/scenarios.json` (como los E2E; no dependen de `LAUNCH_DATE`) y semillas fijas:
 
 ```sh
 VITE_TEST_HOOKS=1 npx vite build --outDir dist-e2e --emptyOutDir

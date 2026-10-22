@@ -106,3 +106,39 @@ test.describe('Entrada deslizante de los entrenadores (PRD §10.2.1)', () => {
     }
   })
 })
+
+test.describe('Entrenador rival tras un debilitamiento', () => {
+  test('E2E-65 al sacar el siguiente Pokémon tras un KO, el rival entra desde la derecha, lanza y vuelve a salir (no aparece ya en el centro)', async ({ page }) => {
+    const { battle } = await startBattle(page, { scenario: { trainer: 'misty', date: '2026-10-20' }, seed: 'b', mode: 'practice' })
+    await battle.maxSpeed()
+    await page.evaluate(() => {
+      const w = window as unknown as { __send?: { name: string; at: Record<string, number> } }
+      const field = document.querySelector('.bt-field') as HTMLElement
+      new MutationObserver(() => {
+        const trainer = document.querySelector('.bt-trainer-rival')
+        if (field.dataset.switch !== 'rival-send' || !trainer || w.__send) return
+        const animation = trainer.getAnimations()[0] as CSSAnimation | undefined
+        if (!animation) return
+        animation.pause()
+        const total = Number(animation.effect?.getComputedTiming().duration)
+        const at: Record<string, number> = {}
+        for (const fraction of [0, 0.3, 1]) {
+          animation.currentTime = total * fraction
+          at[fraction] = new DOMMatrix(getComputedStyle(trainer).transform).m41
+        }
+        animation.play()
+        w.__send = { name: animation.animationName, at }
+      }).observe(field, { attributes: true, attributeFilter: ['data-switch'], childList: true, subtree: true })
+    })
+    for (let turn = 0; turn < 60; turn += 1) {
+      if (await page.evaluate(() => Boolean((window as unknown as { __send?: unknown }).__send))) break
+      if ((await battle.decide()) === 'result') break
+    }
+    const send = await page.evaluate(() => (window as unknown as { __send?: { name: string; at: Record<string, number> } }).__send)
+    expect(send, 'el rival llega a sacar otro Pokémon tras un KO').toBeTruthy()
+    expect(send?.name).toBe('bt-visit-right-send')
+    expect(send?.at['0'], 'empieza fuera, por la derecha').toBeGreaterThanOrEqual(140)
+    expect(send?.at['0.3'], 'en el centro al lanzar').toBe(0)
+    expect(send?.at['1'], 'acaba fuera, por la derecha').toBeGreaterThanOrEqual(140)
+  })
+})

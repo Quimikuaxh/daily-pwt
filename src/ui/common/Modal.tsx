@@ -48,7 +48,8 @@ export function Modal({ title, onClose, children, className }: ModalProps) {
           <h2 id={titleId} className="dialog-title">{title}</h2>
           <button ref={closeRef} type="button" className="btn btn-small modal-close" onClick={onClose}>{es.stats.close}</button>
         </div>
-        <div className="modal-body">{children}</div>
+        {/* Enfocable: si el contenido no cabe, se desplaza también con el teclado. */}
+        <div className="modal-body" tabIndex={0}>{children}</div>
       </div>
     </div>
   )

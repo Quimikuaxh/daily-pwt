@@ -349,3 +349,9 @@
   font-size: 13px;
   line-height: 13px;
 }
+
+/* Fondos de las tres páginas y la barra de PS montados siempre; solo se ve lo de la página actual. */
+.bt-sum-bg:not([data-current]),
+.bt-sum-bar:not([data-current]) {
+  visibility: hidden;
+}

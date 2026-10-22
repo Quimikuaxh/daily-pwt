@@ -1,0 +1,9 @@
+{
+  "_comment": "Escenarios de E2E y de las capturas visuales (scripts/capture-vis.mjs): rival por id con ?trainer= y una fecha literal que solo siembra variante y equipo del jugador. Cambiar una fecha cambia el equipo del jugador.",
+  "plubio": { "trainer": "plubio", "date": "2026-10-19" },
+  "misty": { "trainer": "misty", "date": "2026-10-20" },
+  "maximo": { "trainer": "maximo", "date": "2026-10-21" },
+  "camila": { "trainer": "camila", "date": "2026-10-22" },
+  "rojo": { "trainer": "rojo", "date": "2026-10-23" },
+  "brock": { "trainer": "brock", "date": "2026-10-24" }
+}

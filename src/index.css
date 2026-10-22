@@ -35,6 +35,8 @@ html {
 
 body {
   margin: 0;
+  /* La fuente de píxel no tiene negrita ni cursiva: el navegador no debe inventarlas (se ven borrosas). */
+  font-synthesis: none;
   color: #f8f8f8;
   font-family: var(--font-game);
   font-size: 16px;
@@ -48,7 +50,10 @@ body {
 
 h1,
 h2,
-h3 {
+h3,
+th,
+b,
+strong {
   margin: 0;
   font-weight: 400;
 }
@@ -290,7 +295,21 @@ img.sprite,
 .modal-panel {
   width: min(100%, 30rem);
   max-height: calc(100dvh - 32px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Desplaza el contenido, no el panel: así el fondo punteado cubre siempre toda la ventana. Enfocable para el teclado. */
+.modal-body:focus-visible {
+  outline: 2px dashed #48b8f8;
+  outline-offset: 2px;
+}
+
+.modal-body {
+  min-height: 0;
   overflow-y: auto;
+  margin-right: -10px;
+  padding-right: 10px;
 }
 
 .modal-head {
@@ -399,11 +418,10 @@ img.sprite,
 .help-title {
   display: inline-block;
   margin: 0 0 6px;
-  padding: 0 12px 0 8px;
+  padding: 0 36px 0 8px;
   font-size: 18px;
   line-height: 22px;
-  background: #b81840;
-  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  background: linear-gradient(90deg, #b81840 55%, rgb(184 24 64 / 0));
   text-shadow: 1px 1px 0 #181818;
 }
 
@@ -411,8 +429,8 @@ img.sprite,
   margin: 0;
   padding-left: 18px;
   list-style: square;
-  font-size: 15px;
-  line-height: 19px;
+  font-size: 16px;
+  line-height: 20px;
 }
 
 .help-list li + li {
@@ -422,8 +440,8 @@ img.sprite,
 .help-legal,
 .settings-hint {
   margin: 0;
-  font-size: 15px;
-  line-height: 19px;
+  font-size: 16px;
+  line-height: 20px;
   color: #d0d0d0;
 }
 
@@ -566,12 +584,15 @@ img.sprite,
   color: #d0d0d0;
 }
 
-/* Cifras sobre fondo negro con filete gris, como las cajas de PS del juego. */
+/* Cifras en una placa como la de los botones de la cabecera (misma altura, borde y esquinas cortadas). */
 .countdown-value {
-  padding: 0 8px;
+  --cut: 6px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
   color: #f8f8f8;
-  background: #000;
-  border: 2px solid #585858;
+  font-size: 18px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -605,13 +626,16 @@ img.sprite,
 .section-title {
   display: inline-block;
   margin: -4px 0 12px -4px;
-  padding: 2px 26px 2px 12px;
+  padding: 2px 48px 2px 12px;
   font-size: 22px;
   line-height: 26px;
   color: #f8f8f8;
-  background: #b81840;
-  border: 3px solid #181818;
-  clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+  /* Rótulo rojo con filete negro que se desvanece hacia la derecha (relleno y filete con el mismo degradado). */
+  background:
+    linear-gradient(90deg, #b81840 55%, rgb(184 24 64 / 0)) padding-box,
+    linear-gradient(90deg, #181818 55%, rgb(24 24 24 / 0)) border-box;
+  border: 3px solid transparent;
+  border-right: 0;
   text-shadow: 1px 1px 0 #181818;
 }
 

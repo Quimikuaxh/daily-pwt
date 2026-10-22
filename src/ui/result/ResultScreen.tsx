@@ -63,7 +63,7 @@ export function ResultScreen({ ended, onBackToToday, onRematch, mode, store, dat
         {mode === 'official' && store && date && <OfficialSummary store={store} date={date} />}
         <p className="countdown result-countdown">
           <span className="countdown-label">{es.today.nextChallengeIn}</span>{' '}
-          <time className="countdown-value">{countdown}</time>
+          <time className="plate countdown-value">{countdown}</time>
         </p>
         <div className="result-actions">
           <button type="button" className="btn btn-primary" onClick={onRematch}>{es.result.rematch}</button>
