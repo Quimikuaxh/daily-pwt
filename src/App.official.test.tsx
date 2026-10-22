@@ -301,7 +301,7 @@ describe('Ajustes (F3): velocidad guardada y borrar datos locales', () => {
     expect(screen.getByRole('button', { name: /velocidad/i })).toHaveTextContent('x4')
     await user.click(screen.getByRole('button', { name: /velocidad/i }))
     expect(screen.getByRole('button', { name: /velocidad/i })).toHaveTextContent('x1')
-    expect(JSON.parse(window.localStorage.getItem('daily-pwt:settings') as string)).toEqual({ version: 1, speed: 1 })
+    expect(JSON.parse(window.localStorage.getItem('daily-pwt:settings') as string)).toEqual({ version: 1, speed: 1, moveAnimations: true })
   })
 
   it('borrar datos locales devuelve el oficial del día y los ajustes por defecto', async () => {

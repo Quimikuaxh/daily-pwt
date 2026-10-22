@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import { useRef, type CSSProperties } from 'react'
 import type { BattleView, MonView } from '../../battle/protocol'
 import type { Challenge, GameData } from '../../core/types'
 import type { IntroPhase, SwitchAnimation } from '../../hooks/useBattle'
@@ -8,6 +8,8 @@ import { es } from '../../i18n/es'
 import { DataBox } from './DataBox'
 import { IntroLayer, IrisWipe } from './IntroLayer'
 import { MessageBox } from './MessageBox'
+import { resolveHiddenPowerId } from '../../core/hiddenPower'
+import { MoveFx, type MoveFxEvent } from './fx/MoveFx'
 import { genderOfSpecies, speciesLabel } from './battleModel'
 import { uiAsset, type Avatar } from './introAssets'
 import { backSpriteHeight, PLAYER_SPRITE_SCALE, playerSpriteBottom, playerSpriteScale } from './playerSpriteAnchor'
@@ -25,6 +27,8 @@ type TopScreenProps = {
   onAdvance: () => void
   speed?: number
   reducedMotion?: boolean
+  /** Movimiento que se anima ahora; `null` si no hay o si las animaciones están desactivadas (Ajustes o movimiento reducido). */
+  moveFx?: MoveFxEvent | null
 }
 
 const FALLBACK_BOX = 96
@@ -38,15 +42,22 @@ function activeMon(side: BattleView['player']): MonView | null {
   return side.active === null ? null : side.team[side.active]
 }
 
+/** Tipo del movimiento animado; Poder Oculto, el real del Pokémon que lo usa (sale de sus IV). */
+function moveFxType(event: MoveFxEvent, mon: MonView | null, team: Challenge['playerTeam'], data: GameData): string | null {
+  const set = mon ? team.find((candidate) => candidate.species === mon.species) : undefined
+  return data.dex.moves[resolveHiddenPowerId(event.moveId, set?.ivs)]?.type ?? null
+}
+
 /** Pantalla superior (256x192): fondo del PWT, Pokémon, cajas de datos, clima y caja de mensajes. */
-export function TopScreen({ view, data, challenge, introPhase, switchAnim, avatar, message, onAdvance, speed, reducedMotion }: TopScreenProps) {
+export function TopScreen({ view, data, challenge, introPhase, switchAnim, avatar, message, onAdvance, speed, reducedMotion, moveFx = null }: TopScreenProps) {
+  const fieldRef = useRef(null as HTMLElement | null)
   const rivalMon = view ? activeMon(view.rival) : null
   const playerMon = view ? activeMon(view.player) : null
   const playerSpriteId = playerMon ? data.dex.species[playerMon.species]?.spriteId ?? playerMon.species : ''
   const rivalSpriteId = rivalMon ? data.dex.species[rivalMon.species]?.spriteId ?? rivalMon.species : ''
 
   return (
-    <section data-testid="field" className="bt-top bt-field" data-intro={introPhase} data-switch={switchAnim ?? undefined} aria-label={es.battle.fieldLabel}>
+    <section ref={fieldRef} data-testid="field" className="bt-top bt-field" data-intro={introPhase} data-switch={switchAnim ?? undefined} aria-label={es.battle.fieldLabel}>
       <img className="bt-bg" src={uiAsset('bg/pwt.png')} alt="" />
 
       {rivalMon && (
@@ -73,6 +84,13 @@ export function TopScreen({ view, data, challenge, introPhase, switchAnim, avata
       {rivalMon && <DataBox side="rival" mon={rivalMon} name={speciesLabel(data.names, rivalMon.species)} testId="rival-hp" gender={genderOfSpecies(challenge.rivalTeam, rivalMon.species)} speed={speed} reducedMotion={reducedMotion} />}
       {playerMon && <DataBox side="player" mon={playerMon} name={speciesLabel(data.names, playerMon.species)} testId="player-hp" gender={genderOfSpecies(challenge.playerTeam, playerMon.species)} speed={speed} reducedMotion={reducedMotion} />}
 
+      <MoveFx
+        event={moveFx}
+        type={moveFx ? moveFxType(moveFx, moveFx.user === 'player' ? playerMon : rivalMon, moveFx.user === 'player' ? challenge.playerTeam : challenge.rivalTeam, data) : null}
+        points={{ player: playerLandingPoint(playerSpriteId), rival: rivalLandingPoint(rivalSpriteId) }}
+        speed={speed ?? 1}
+        fieldRef={fieldRef}
+      />
       <MessageBox text={message} onAdvance={onAdvance} />
       {(introPhase === 'loading' || introPhase === 'iris') && <IrisWipe />}
     </section>

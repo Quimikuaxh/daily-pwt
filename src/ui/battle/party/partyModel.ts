@@ -57,14 +57,20 @@ const genderOf = (details: string): 'M' | 'F' | null => {
 
 const levelOf = (details: string): number => Number(/L(\d+)/.exec(details)?.[1] ?? 50)
 
-function partyMoves(moveIds: readonly string[], data: GameData, view: BattleView | null, speciesId: string): PartyMove[] {
+/** Movimiento de la pantalla de datos: el de la tarjeta (Poder Oculto con su tipo y potencia reales) con los PP llenos, potencia y categoría. */
+function partyMove(moveId: string, data: GameData, ivs: StatsTable | undefined): PartyMove {
+  const model = moveModel(moveId, data, ivs)
+  const dexMove = data.dex.moves[moveId]
+  const fullPp = dexMove ? Math.floor((dexMove.pp * 8) / 5) : null
+  return { ...model, pp: fullPp, maxPp: fullPp, basePower: Number(model.power) || 0, category: dexMove?.category ?? null }
+}
+
+function partyMoves(moveIds: readonly string[], data: GameData, view: BattleView | null, speciesId: string, ivs: StatsTable | undefined): PartyMove[] {
   const viewMon = view?.player.team.find((mon) => mon.species === speciesId)
   return moveIds.map((moveId, index) => {
-    const model = moveModel(moveId, data)
-    const dexMove = data.dex.moves[moveId]
     const slot = viewMon?.moves?.[index]
-    const fullPp = dexMove ? Math.floor((dexMove.pp * 8) / 5) : null
-    return { ...model, pp: slot?.pp ?? fullPp, maxPp: slot?.maxPp ?? fullPp, basePower: dexMove?.basePower ?? 0, category: dexMove?.category ?? null }
+    const full = partyMove(moveId, data, ivs)
+    return slot ? { ...full, pp: slot.pp, maxPp: slot.maxPp } : full
   })
 }
 
@@ -118,7 +124,7 @@ export function partyMembers(request: BattleRequest | null, view: BattleView | n
         natureUp: natureEffects?.up ?? null,
         natureDown: natureEffects?.down ?? null,
         stats,
-        moves: partyMoves(set?.moves ?? member.moves ?? [], data, view, speciesId),
+        moves: partyMoves(set?.moves ?? member.moves ?? [], data, view, speciesId, set?.ivs),
       },
     ]
   })
@@ -160,11 +166,7 @@ export function rivalMembers(view: BattleView | null, data: GameData, team: read
         natureUp: natureEffects?.up ?? null,
         natureDown: natureEffects?.down ?? null,
         stats: calcStats(species.baseStats, set.ivs, set.evs, set.nature, set.level),
-        moves: set.moves.map((moveId) => {
-          const dexMove = data.dex.moves[moveId]
-          const fullPp = dexMove ? Math.floor((dexMove.pp * 8) / 5) : null
-          return { ...moveModel(moveId, data), pp: null, maxPp: fullPp, basePower: dexMove?.basePower ?? 0, category: dexMove?.category ?? null }
-        }),
+        moves: set.moves.map((moveId) => ({ ...partyMove(moveId, data, set.ivs), pp: null })),
       },
     ]
   })

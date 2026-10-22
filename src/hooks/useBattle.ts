@@ -7,6 +7,8 @@ import { deferFaintUntilFaintLine } from '../battle/faintOrder'
 import { deferHitMessages } from '../battle/messageOrder'
 import { SPEEDS, type BattleSpeed } from '../storage/settings'
 import { viewReducer } from '../battle/viewReducer'
+import { toId } from '../core/id'
+import type { MoveFxEvent } from '../ui/battle/fx/MoveFx'
 
 export type { BattleSpeed }
 /** Cada mensaje se queda en la caja de texto este tiempo (a x1) y avanza solo; un toque o tecla lo adelanta. */
@@ -74,6 +76,8 @@ export type BattleController = {
   introPhase: IntroPhase
   /** Retirada y envío en curso (`null` si no hay cambio animándose). */
   switchAnim: SwitchAnimation | null
+  /** Último movimiento usado que se anima (DEC-53); cambia de `key` en cada uso. Nunca durante la reproducción de un combate guardado. */
+  moveFx: MoveFxEvent | null
   /** Un toque o tecla: adelanta el mensaje actual o, durante la intro, la salta. */
   advance: () => void
   /** Última petición vista, aunque ya no se pueda actuar: permite pintar los controles desactivados. */
@@ -114,6 +118,18 @@ function stepsFor(update: Update, isFirstUpdate: boolean, params: BattleParams):
 
 const lineType = (line: string): string => line.split('|')[1] ?? ''
 
+/**
+ * `|move|p1a: X|Earthquake|p2a: Y` -> el movimiento y quién lo usa, para animarlo a la vez que «X usó Y» (decisión de Jose). No se anima si
+ * falla (`[miss]`), si no hace nada visible en este turno (`[still]`, carga) o si no hay objetivo (`[notarget]`).
+ */
+export function usedMove(line: string): { moveId: string; user: 'player' | 'rival' } | null {
+  const [, type, actor = '', name = '', ...rest] = line.split('|')
+  if (type !== 'move' || rest.some((part) => /^\[(miss|still|notarget)\]/.test(part))) return null
+  const side = /^p([12])/.exec(actor)?.[1]
+  if (!side || !name) return null
+  return { moveId: toId(name), user: side === '1' ? 'player' : 'rival' }
+}
+
 /** `|switch|p1a: ...` (no `drag`: arrastrar no lleva bola): bando y si el Pokémon que sale seguía en pie (hay retirada). */
 function switchAnimationFor(line: string, view: BattleView): SwitchAnimation | null {
   if (lineType(line) !== 'switch') return null
@@ -138,6 +154,8 @@ export function useBattle(params: BattleParams): BattleController {
   const [message, setMessage] = useState(null as string | null)
   const [introPhase, setIntroPhase] = useState((params.replay ? 'done' : 'loading') as IntroPhase)
   const [switchAnim, setSwitchAnim] = useState(null as SwitchAnimation | null)
+  const [moveFx, setMoveFx] = useState(null as MoveFxEvent | null)
+  const moveFxCount = useRef(0)
 
   const wakeRef = useRef(null as (() => void) | null)
   const skipIntroRef = useRef(false)
@@ -233,6 +251,11 @@ export function useBattle(params: BattleParams): BattleController {
           setLog((previous) => [...previous, text])
         } else if (step.text !== null) {
           const text = step.text
+          const used = !replaying && step.line !== null ? usedMove(step.line) : null
+          if (used) {
+            moveFxCount.current += 1
+            setMoveFx({ key: moveFxCount.current, ...used })
+          }
           setLog((previous) => [...previous, text])
           setMessage(text)
           await pause(step.wait ?? TEXT_PAUSE_MS, step.phase !== undefined)
@@ -336,5 +359,5 @@ export function useBattle(params: BattleParams): BattleController {
     paramsRef.current.onSpeedChange?.(next)
   }, [])
 
-  return { view, log, message, introPhase, switchAnim, advance, request, lastChoiceRequest, canAct: !locked && !failed && ended === null, failed, ended, speed, cycleSpeed, choose, forfeit }
+  return { view, log, message, introPhase, switchAnim, moveFx, advance, request, lastChoiceRequest, canAct: !locked && !failed && ended === null, failed, ended, speed, cycleSpeed, choose, forfeit }
 }

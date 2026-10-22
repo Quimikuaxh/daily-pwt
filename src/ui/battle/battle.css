@@ -400,6 +400,18 @@
   top: 11px;
 }
 
+/* Animaciones de movimientos (DEC-53): sobre los Pokémon y las cajas de PS, bajo la caja de mensajes. */
+.bt-fx {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  width: 256px;
+  height: 192px;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
 /* Caja de mensajes: banda translúcida oscura de ancho completo (y ≈ 147..189), línea rojiza arriba, texto blanco con sombra. */
 .bt-message {
   position: absolute;

@@ -69,6 +69,13 @@ describe('datos de la pantalla de equipo y de datos', () => {
     expect(Object.keys(generated).length).toBeGreaterThanOrEqual(649)
   })
 
+  it('move-fx.json (clase de animación de cada movimiento usado) es igual a su regeneración y cubre todos los movimientos de los equipos', async () => {
+    const { buildMoveFx } = await importScript('scripts/build-move-fx.mjs')
+    const generated = readJson('src', 'generated', 'move-fx.json')
+    expect(buildMoveFx()).toEqual(generated)
+    for (const set of usedSets()) for (const move of set.moves) expect(generated[move], move).toBeTruthy()
+  })
+
   it('battle-ui-images.json (precarga de la interfaz) es igual a su regeneración', async () => {
     const { buildBattleUiIndex } = await importScript('scripts/build-battle-ui-index.mjs')
     expect(buildBattleUiIndex()).toEqual(readJson('src', 'generated', 'battle-ui-images.json'))

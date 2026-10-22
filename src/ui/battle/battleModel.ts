@@ -19,12 +19,19 @@ export type MoveOption = {
   disabledReason: string | null
 }
 
+/** El simulador pide «Hidden Power Fighting 30» con id `hiddenpower`: se enseña con su tipo real (`hiddenpowerfighting`). */
+function shownMoveId(move: { id: string; move: string }): string {
+  const hiddenPowerType = move.id === 'hiddenpower' ? /^Hidden Power (\w+)/.exec(move.move)?.[1] : undefined
+  return hiddenPowerType ? `hiddenpower${hiddenPowerType.toLowerCase()}` : move.id
+}
+
 export function moveOptions(request: BattleRequest | null, data: GameData): MoveOption[] {
   const moves = request?.active?.[0]?.moves ?? []
   return moves.map((move, index) => {
-    const info = data.dex.moves[move.id]
+    const shownId = shownMoveId(move)
+    const info = data.dex.moves[shownId]
     const outOfPp = move.pp !== undefined && move.pp <= 0
-    const name = move.id === STRUGGLE_ID ? es.battle.struggle : data.names.moves[move.id] ?? data.names.moves[toId(move.move)] ?? es.battle.unknownMove
+    const name = move.id === STRUGGLE_ID ? es.battle.struggle : data.names.moves[shownId] ?? data.names.moves[toId(move.move)] ?? es.battle.unknownMove
     return {
       slot: index + 1,
       id: move.id,

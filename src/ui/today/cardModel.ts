@@ -1,3 +1,4 @@
+import { hiddenPower, resolveHiddenPowerId } from '../../core/hiddenPower'
 import { calcStats } from '../../core/stats'
 import type { DexMove, GameData, ResolvedSet, StatsTable } from '../../core/types'
 import { es } from '../../i18n/es'
@@ -28,9 +29,11 @@ export type CardModel = {
 
 export const STAT_KEYS = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'] as const
 
-export function moveModel(moveId: string, data: GameData): MoveModel {
-  const move = data.dex.moves[moveId]
-  const name = data.names.moves[moveId] ?? es.battle.unknownMove
+/** Con los IV del Pokémon, Poder Oculto se muestra con su tipo y potencia reales («Poder Oculto Lucha», 70); `id` sigue siendo el del set. */
+export function moveModel(moveId: string, data: GameData, ivs?: StatsTable): MoveModel {
+  const shownId = resolveHiddenPowerId(moveId, ivs)
+  const move = data.dex.moves[shownId]
+  const name = data.names.moves[shownId] ?? es.battle.unknownMove
   if (!move) return { id: moveId, name, typeName: null, typeLabel: null, category: null, categoryLabel: null, power: NOT_APPLICABLE, accuracy: NOT_APPLICABLE }
   return {
     id: moveId,
@@ -39,7 +42,7 @@ export function moveModel(moveId: string, data: GameData): MoveModel {
     typeLabel: data.names.types[move.type] ?? move.type,
     category: move.category,
     categoryLabel: es.today.categoryNames[move.category],
-    power: move.basePower > 0 ? String(move.basePower) : NOT_APPLICABLE,
+    power: shownId !== moveId && ivs ? String(hiddenPower(ivs).power) : move.basePower > 0 ? String(move.basePower) : NOT_APPLICABLE,
     accuracy: typeof move.accuracy === 'number' ? String(move.accuracy) : NOT_APPLICABLE,
   }
 }
@@ -57,6 +60,6 @@ export function cardModel(set: ResolvedSet, data: GameData): CardModel {
     abilityName: abilityName(set, data),
     baseStatTotal: STAT_KEYS.reduce((total, key) => total + species.baseStats[key], 0),
     stats: calcStats(species.baseStats, set.ivs, set.evs, set.nature, set.level),
-    moves: set.moves.map((moveId) => moveModel(moveId, data)),
+    moves: set.moves.map((moveId) => moveModel(moveId, data, set.ivs)),
   }
 }

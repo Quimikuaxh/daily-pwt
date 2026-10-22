@@ -2,11 +2,12 @@
 export type BattleSpeed = 1 | 2 | 4
 export const SPEEDS: readonly BattleSpeed[] = [1, 2, 4]
 
-export type Settings = { speed: BattleSpeed }
+/** `moveAnimations`: animaciones de movimientos en combate (DEC-53), activadas por defecto. */
+export type Settings = { speed: BattleSpeed; moveAnimations: boolean }
 
 export const SETTINGS_KEY = 'daily-pwt:settings'
 const SCHEMA_VERSION = 1
-export const DEFAULT_SETTINGS: Settings = { speed: 1 }
+export const DEFAULT_SETTINGS: Settings = { speed: 1, moveAnimations: true }
 
 /**
  * Ajustes del jugador en `localStorage` (clave `daily-pwt:settings`), aparte del progreso: son una comodidad de este navegador.
@@ -18,9 +19,13 @@ export function loadSettings(storage: Storage | null): Settings {
     if (!raw) return DEFAULT_SETTINGS
     const parsed: unknown = JSON.parse(raw)
     if (typeof parsed !== 'object' || parsed === null) return DEFAULT_SETTINGS
-    const { version, speed } = parsed as { version?: unknown; speed?: unknown }
+    const { version, speed, moveAnimations } = parsed as { version?: unknown; speed?: unknown; moveAnimations?: unknown }
     if (version !== SCHEMA_VERSION) return DEFAULT_SETTINGS
-    return { speed: SPEEDS.includes(speed as BattleSpeed) ? (speed as BattleSpeed) : DEFAULT_SETTINGS.speed }
+    return {
+      speed: SPEEDS.includes(speed as BattleSpeed) ? (speed as BattleSpeed) : DEFAULT_SETTINGS.speed,
+      // Ajustes guardados antes de existir la opción: activadas.
+      moveAnimations: typeof moveAnimations === 'boolean' ? moveAnimations : DEFAULT_SETTINGS.moveAnimations,
+    }
   } catch {
     return DEFAULT_SETTINGS
   }

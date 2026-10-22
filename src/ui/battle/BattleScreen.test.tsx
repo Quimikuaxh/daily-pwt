@@ -27,13 +27,13 @@ const RSIX = ['snorlax', 'tyranitar', 'heatran', 'lapras', 'starmie', 'gyarados'
 const sixView = (o: Parameters<typeof mkView>[0] = {}) => mkView({ player: SIX.map((s) => pMon(s, 150, 150)), rival: RSIX.map((s) => rMon(s)), ...o })
 const mv = (id: string) => data.names.moves[id]
 
-function mount(over: { lead?: number } = {}) {
+function mount(over: { lead?: number; moveAnimations?: boolean } = {}) {
   const client = mockClient()
   const onFinish = vi.fn()
   const onExit = vi.fn()
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
   const utils = render(
-    <BattleScreen client={client as any} data={data} challenge={challenge} playerLead={over.lead ?? 0} battleSeed="seed-1" onFinish={onFinish} onExit={onExit} />,
+    <BattleScreen client={client as any} data={data} challenge={challenge} playerLead={over.lead ?? 0} battleSeed="seed-1" moveAnimations={over.moveAnimations} onFinish={onFinish} onExit={onExit} />,
   )
   return { client, onFinish, onExit, user, ...utils }
 }
@@ -437,6 +437,20 @@ describe('campo de batalla (CMP-18, RF-44)', () => {
   it('el estado del rival se muestra en español', async () => {
     await ready({ view: sixView({ rival: RSIX.map((s, i) => rMon(s, 100, i === 0 ? { status: 'par' } : {})) }) })
     expect(screen.getByTestId('rival-hp')).toHaveTextContent(/paraliz/i)
+  })
+
+  // UT-71 · DEC-53: el movimiento usado se anima en el lienzo del campo, salvo si se desactivan las animaciones en Ajustes.
+  it('animación de movimiento: el lienzo recibe el movimiento usado; desactivadas en Ajustes, ninguno', async () => {
+    const lines = ['|move|p1a: Garchomp|Earthquake|p2a: Snorlax', '|-damage|p2a: Snorlax|50/100']
+    const on = mount()
+    on.client.emit(mkUpdate({ lines }))
+    await settle()
+    expect(document.querySelector('.bt-fx')).toHaveAttribute('data-move', 'earthquake')
+    on.unmount()
+    const off = mount({ moveAnimations: false })
+    off.client.emit(mkUpdate({ lines }))
+    await settle()
+    expect(document.querySelector('.bt-fx')).not.toHaveAttribute('data-move')
   })
 
   it('el clima activo es visible en español', async () => {

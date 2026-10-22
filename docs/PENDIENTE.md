@@ -47,10 +47,12 @@ Pistas del PWT disponibles para otras pantallas: "PWT - Final Round!" (`70ebcCUX
 ## Efectos de sonido (F3, PRD §0)
 Golpe supereficaz, poco eficaz y neutro al atacar, y los básicos del combate (lanzar y abrir Poké Ball, debilitado). Ripeados de N2/B2 (p. ej. The Sounds Resource), con script reproducible y créditos. Mismo control de silencio y volumen que la música, y nada suena hasta la primera interacción del usuario.
 
-## Animaciones de movimientos (al final, después de F3; PRD §0)
-Propias, en pixel art a la escala del lienzo. No usar las de Pokémon Showdown ni intentar extraer las de la ROM. Definir antes el alcance: animación por movimiento para los más usados en el roster y en el pool del jugador, y una genérica por tipo y categoría (físico, especial, estado) para el resto.
+## Animaciones de movimientos (PRD §0, DEC-53)
+- **Hecho** (rama `feature/animaciones`): genéricas por tipo y clase y 20 propias, por código en píxel, con interruptor en Ajustes.
+- **Siguiente tanda:** más animaciones propias por orden de uso (los 40 más usados cubren ~la mitad de los usos; lista en ARQUITECTURA DEC-53). Revisar con Jose el aspecto de las actuales en partidas reales.
 
 ## Pantalla de equipo y de datos
+- **Poder Oculto y los IV del jugador:** como los IV del jugador son iguales en las seis características, su Poder Oculto es siempre Lucha 30, Siniestro 30 o Lucha 70 (DEC-54), aunque el set de Smogon pensara en otro tipo. Si se quiere respetar el tipo previsto habría que darle IV distintos (decisión de producto, ver PRD §0 «IVs, EVs y naturaleza del jugador»).
 - **Mochila = equipo rival:** hecho (rama `feature/mochila-rival`, DEC-52).
 - **Fondo de la pantalla de datos de N2/B2:** el actual es el de Negro/Blanco (limpiado por script de capturas de Bulbagarden Archives). Si aparece un rip limpio de N2/B2, sustituir las URLs de `battle/summary/*` en `data/ui-assets.json` y quitar sus `cleanups`.
 - **Descripciones en español:** son de Pokémon X/Y (primera edición con español en PokeAPI), no de N2/B2.

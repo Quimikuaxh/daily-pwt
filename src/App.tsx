@@ -137,6 +137,7 @@ export default function App({ data, createClient, store: injectedStore }: AppPro
         onSettled={official ? (state) => store.recordCheckpoint(date, { ...state, decisions: store.getDay(date)?.battle?.decisions.length ?? 0 }) : undefined}
         onReplayFailed={official ? () => abandonUnresumable(store.getDay(date) as DayRecord, 'replayFailed') : undefined}
         initialSpeed={settings.speed}
+        moveAnimations={settings.moveAnimations}
         onSpeedChange={(speed) => changeSettings({ ...settings, speed })}
         onFinish={(ended) => {
           // El oficial cuenta para el día del reto con el que empezó, aunque termine pasada la medianoche (PRD §4.3).

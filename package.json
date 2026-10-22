@@ -26,6 +26,7 @@
     "gen:sprites": "node scripts/fetch-sprites.mjs",
     "gen:sprite-boxes": "node scripts/build-sprite-boxes.mjs",
     "gen:icon-index": "node scripts/build-icon-index.mjs",
+    "gen:move-fx": "node scripts/build-move-fx.mjs",
     "gen:ui-index": "node scripts/build-battle-ui-index.mjs",
     "gen:ui": "node scripts/fetch-ui-assets.mjs",
     "gen:pwt-raw": "node scripts/import-pwt.mjs",

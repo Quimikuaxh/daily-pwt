@@ -301,3 +301,30 @@ test.describe('PS del jugador animados', () => {
     for (const frame of sameMon) expect(Math.abs(frame.fill - (50 * frame.hp) / frame.max), `número ${frame.hp}/${frame.max} y barra ${frame.fill}px`).toBeLessThanOrEqual(1.01)
   })
 })
+
+test.describe('Animaciones de movimientos (DEC-53)', () => {
+  test('E2E-66 al usar un movimiento se dibuja su animación en el lienzo; desactivadas en Ajustes, no', async ({ page }) => {
+    const { battle } = await startBattle(page, { seed: 'a', mode: 'practice' })
+    await battle.waitForActionOrResult()
+    await battle.chooseFirstMove()
+    await page.locator('.bt-fx[data-move]').waitFor({ state: 'attached' })
+    const painted = await page.evaluate(async () => {
+      const canvas = document.querySelector('.bt-fx') as HTMLCanvasElement
+      const context = canvas.getContext('2d') as CanvasRenderingContext2D
+      for (let i = 0; i < 60; i += 1) {
+        const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data
+        for (let p = 3; p < pixels.length; p += 4) if (pixels[p] > 0) return true
+        await new Promise((resolve) => requestAnimationFrame(resolve))
+      }
+      return false
+    })
+    expect(painted, 'el lienzo pinta algo durante la animación').toBe(true)
+
+    await page.evaluate(() => localStorage.setItem('daily-pwt:settings', JSON.stringify({ version: 1, speed: 1, moveAnimations: false })))
+    const again = await startBattle(page, { seed: 'b', mode: 'practice' })
+    await again.battle.waitForActionOrResult()
+    await again.battle.chooseFirstMove()
+    await again.battle.waitForActionOrResult()
+    await expect(page.locator('.bt-fx[data-move]')).toHaveCount(0)
+  })
+})

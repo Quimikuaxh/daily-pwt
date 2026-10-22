@@ -14,7 +14,7 @@ type SettingsDialogProps = {
   onClose: () => void
 }
 
-/** Ajustes (PRD §10.6, decisiones del 22/10/2026): velocidad del combate y «Borrar datos locales»; sin tema claro/oscuro. */
+/** Ajustes (PRD §10.6, decisiones del 22/10/2026): velocidad del combate, animaciones de movimientos y «Borrar datos locales»; sin tema claro/oscuro. */
 export function SettingsDialog({ settings, onChange, onClearData, onClose }: SettingsDialogProps) {
   const [confirming, setConfirming] = useState(false)
   const [cleared, setCleared] = useState(false)
@@ -38,6 +38,23 @@ export function SettingsDialog({ settings, onChange, onClearData, onClose }: Set
             ))}
           </div>
           <p className="settings-hint">{text.speedHint}</p>
+        </section>
+        <section className="settings-section">
+          <h3 className="help-title" id="settings-animations">{text.animationsTitle}</h3>
+          <div className="settings-options" role="group" aria-labelledby="settings-animations">
+            {[true, false].map((on) => (
+              <button
+                key={String(on)}
+                type="button"
+                className="btn btn-small settings-option"
+                aria-pressed={settings.moveAnimations === on}
+                onClick={() => onChange({ ...settings, moveAnimations: on })}
+              >
+                {on ? text.animationsOn : text.animationsOff}
+              </button>
+            ))}
+          </div>
+          <p className="settings-hint">{text.animationsHint}</p>
         </section>
         <section className="settings-section">
           <h3 className="help-title">{text.dataTitle}</h3>

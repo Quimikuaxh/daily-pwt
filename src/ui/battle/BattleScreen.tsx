@@ -37,6 +37,8 @@ type BattleScreenProps = {
   /** Velocidad de Ajustes; al cambiarla con el botón del combate se avisa para guardarla. */
   initialSpeed?: BattleParams['initialSpeed']
   onSpeedChange?: BattleParams['onSpeedChange']
+  /** Animaciones de movimientos (Ajustes, por defecto activadas). */
+  moveAnimations?: boolean
   onFinish: (ended: EngineEnd) => void
   onExit: () => void
 }
@@ -48,7 +50,7 @@ type TouchChoice = { request: BattleRequest | null; mode: TouchMode }
 
 const isInteractive = (target: EventTarget | null): boolean => target instanceof HTMLElement && target.closest('button, a, input, select, textarea, [role="dialog"]') !== null
 
-export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', replay, onDecision, onSettled, onReplayFailed, initialSpeed, onSpeedChange, onFinish, onExit }: BattleScreenProps) {
+export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', replay, onDecision, onSettled, onReplayFailed, initialSpeed, onSpeedChange, moveAnimations = true, onFinish, onExit }: BattleScreenProps) {
   const { trainer, rivalTeam, playerTeam } = challenge
   const speciesName = (speciesId: string, fallback: string): string => data.names.species[speciesId] ?? fallback
 
@@ -185,7 +187,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                 />
               )}
               <div className="bt-underlay" inert={partyOpen || rivalOpen}>
-                <TopScreen view={battle.view} data={data} challenge={challenge} introPhase={battle.introPhase} switchAnim={battle.switchAnim} avatar={avatar} message={message} onAdvance={advance} speed={battle.speed} reducedMotion={reducedMotion} />
+                <TopScreen view={battle.view} data={data} challenge={challenge} introPhase={battle.introPhase} switchAnim={battle.switchAnim} avatar={avatar} message={message} onAdvance={advance} speed={battle.speed} reducedMotion={reducedMotion} moveFx={moveAnimations && !reducedMotion ? battle.moveFx : null} />
                 {battle.failed ? (
                   <section role="alert" className="bt-touch bt-error" style={{ height: SCREEN_HEIGHT }}>
                     <p>{es.battle.failure}</p>

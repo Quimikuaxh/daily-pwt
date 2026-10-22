@@ -36,12 +36,14 @@ describe('AppMenu', () => {
 
   it('Ajustes: la velocidad marcada es la guardada y cambiarla avisa', async () => {
     const onSettingsChange = vi.fn()
-    const { user } = mount({ settings: { speed: 2 }, onSettingsChange })
+    const { user } = mount({ settings: { speed: 2, moveAnimations: true }, onSettingsChange })
     await user.click(screen.getByRole('button', { name: 'Ajustes' }))
     expect(screen.getByRole('button', { name: 'x2' })).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByRole('button', { name: 'x1' })).toHaveAttribute('aria-pressed', 'false')
     await user.click(screen.getByRole('button', { name: 'x4' }))
-    expect(onSettingsChange).toHaveBeenCalledWith({ speed: 4 })
+    expect(onSettingsChange).toHaveBeenCalledWith({ speed: 4, moveAnimations: true })
+    await user.click(screen.getByRole('button', { name: 'Desactivadas' }))
+    expect(onSettingsChange).toHaveBeenLastCalledWith({ speed: 2, moveAnimations: false })
   })
 
   it('Borrar datos locales pide confirmación; cancelar no borra y confirmar borra y avisa', async () => {
