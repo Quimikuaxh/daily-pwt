@@ -444,6 +444,16 @@ describe('campo de batalla (CMP-18, RF-44)', () => {
     expect(screen.getByTestId('weather')).toHaveTextContent(/lluvia/i)
   })
 
+  it('el clima indica los turnos que le quedan; el permanente (habilidad) va sin número', async () => {
+    await ready({ view: { ...sixView({ weather: 'raindance' }), weatherTurns: 3 } })
+    expect(screen.getByTestId('weather')).toHaveTextContent('Lluvia·3, quedan 3 turnos')
+  })
+
+  it('el clima permanente no lleva número', async () => {
+    await ready({ view: { ...sixView({ weather: 'sandstorm' }), weatherTurns: null } })
+    expect(screen.getByTestId('weather')).toHaveTextContent(/^Torm\. arena$/)
+  })
+
   it('sin clima no se muestra indicador de clima', async () => {
     await ready({ view: sixView({ weather: null }) })
     expect(screen.queryByTestId('weather')).toBeNull()

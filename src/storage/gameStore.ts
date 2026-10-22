@@ -74,4 +74,6 @@ export interface GameStore {
   recordCheckpoint(date: string, checkpoint: Checkpoint): void
   finishOfficial(date: string, ended: EngineEnd, finishedAt: string): void
   voidOfficial(date: string, reason: VoidReason, finishedAt: string): void
+  /** «Borrar datos locales» (Ajustes): olvida todo el historial, también el oficial de hoy. */
+  clear(): void
 }

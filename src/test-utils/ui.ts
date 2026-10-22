@@ -1,3 +1,6 @@
+import type { GameStore } from '../storage/gameStore'
+import { DEFAULT_SETTINGS } from '../storage/settings'
+import type { MenuContext } from '../ui/menu/AppMenu'
 import { act } from '@testing-library/react'
 import { vi } from 'vitest'
 
@@ -25,3 +28,12 @@ export function mockMatchMedia(matches: boolean): void {
     }),
   })
 }
+
+/** Menú de cabecera (Estadísticas, Ayuda, Ajustes) para pantallas montadas sueltas en los tests. */
+export const testMenu = (store: GameStore, over: Partial<MenuContext> = {}): MenuContext => ({
+  store,
+  settings: DEFAULT_SETTINGS,
+  onSettingsChange: () => {},
+  onClearData: () => {},
+  ...over,
+})

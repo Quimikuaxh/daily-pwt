@@ -5,6 +5,7 @@ import { ResultScreen } from './ResultScreen'
 import type { EngineEnd } from '../../battle/protocol'
 import { LocalStorageStore } from '../../storage/localStorageStore'
 import { MemoryStorage } from '../../test-utils/memoryStorage'
+import { testMenu } from '../../test-utils/ui'
 
 // CMP-23 · RF-60/61 · REQUISITOS §5. TODO-CONTRATO (src/ui/result/ResultScreen.tsx):
 //   <ResultScreen ended={EngineEnd} onBackToToday={() => void} onRematch={() => void} />
@@ -102,7 +103,7 @@ describe('ResultScreen con historial (F3: estadísticas y compartir)', () => {
     const user = userEvent.setup()
     const writeText = vi.fn().mockResolvedValue(undefined)
     Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
-    render(<ResultScreen ended={official} mode="official" store={store} date="2026-10-22" onBackToToday={vi.fn()} onRematch={vi.fn()} />)
+    render(<ResultScreen ended={official} mode="official" store={store} date="2026-10-22" menu={testMenu(store)} onBackToToday={vi.fn()} onRematch={vi.fn()} />)
     expect(screen.getByTestId('stats-played')).toHaveTextContent('1')
     expect(screen.getByTestId('stats-win-streak')).toHaveTextContent('1')
     await user.click(screen.getByRole('button', { name: 'Compartir' }))
@@ -113,7 +114,7 @@ describe('ResultScreen con historial (F3: estadísticas y compartir)', () => {
   it('práctica: sin estadísticas en el panel ni Compartir, pero con el acceso a Estadísticas', async () => {
     const store = finishOfficial(official)
     const user = userEvent.setup()
-    render(<ResultScreen ended={official} mode="practice" store={store} date="2026-10-22" onBackToToday={vi.fn()} onRematch={vi.fn()} />)
+    render(<ResultScreen ended={official} mode="practice" store={store} date="2026-10-22" menu={testMenu(store)} onBackToToday={vi.fn()} onRematch={vi.fn()} />)
     expect(screen.queryByRole('button', { name: 'Compartir' })).toBeNull()
     await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
     expect(screen.getByRole('dialog', { name: 'Estadísticas' })).toBeInTheDocument()
@@ -123,7 +124,7 @@ describe('ResultScreen con historial (F3: estadísticas y compartir)', () => {
   it('el modal se cierra con Escape y con «Cerrar»', async () => {
     const store = finishOfficial(official)
     const user = userEvent.setup()
-    render(<ResultScreen ended={official} mode="practice" store={store} date="2026-10-22" onBackToToday={vi.fn()} onRematch={vi.fn()} />)
+    render(<ResultScreen ended={official} mode="practice" store={store} date="2026-10-22" menu={testMenu(store)} onBackToToday={vi.fn()} onRematch={vi.fn()} />)
     await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
     await user.keyboard('{Escape}')
     expect(screen.queryByRole('dialog')).toBeNull()

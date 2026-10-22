@@ -34,10 +34,6 @@ function playerSpriteStyle(spriteId: string): CSSProperties {
   return { top: playerSpriteBottom(spriteHeight), '--player-scale': playerSpriteScale(spriteHeight) } as CSSProperties
 }
 
-function weatherLabel(weather: string): string {
-  return (es.battle.weather as Record<string, string>)[weather] ?? es.battle.weatherUnknown
-}
-
 function activeMon(side: BattleView['player']): MonView | null {
   return side.active === null ? null : side.team[side.active]
 }
@@ -76,7 +72,6 @@ export function TopScreen({ view, data, challenge, introPhase, switchAnim, avata
 
       {rivalMon && <DataBox side="rival" mon={rivalMon} name={speciesLabel(data.names, rivalMon.species)} testId="rival-hp" gender={genderOfSpecies(challenge.rivalTeam, rivalMon.species)} speed={speed} reducedMotion={reducedMotion} />}
       {playerMon && <DataBox side="player" mon={playerMon} name={speciesLabel(data.names, playerMon.species)} testId="player-hp" gender={genderOfSpecies(challenge.playerTeam, playerMon.species)} speed={speed} reducedMotion={reducedMotion} />}
-      {view?.weather && <p data-testid="weather" className="bt-weather">{weatherLabel(view.weather)}</p>}
 
       <MessageBox text={message} onAdvance={onAdvance} />
       {(introPhase === 'loading' || introPhase === 'iris') && <IrisWipe />}

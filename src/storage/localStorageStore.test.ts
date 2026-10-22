@@ -201,6 +201,22 @@ describe('versión y corrupción', () => {
   })
 })
 
+describe('borrar datos locales (Ajustes)', () => {
+  it('clear olvida todo el historial, también el oficial de hoy, y vuelve a dejar jugar', () => {
+    const storage = new MemoryStorage()
+    const store = new LocalStorageStore(storage, clock)
+    store.startOfficial(entry())
+    store.finishOfficial('2026-10-21', WIN, '2026-10-21T10:20:00.000Z')
+    storage.setItem('daily-pwt:v1:corrupt', '{')
+    store.clear()
+    expect(store.listDays()).toEqual([])
+    expect(storage.getItem(STORAGE_KEY)).toBeNull()
+    expect(storage.getItem('daily-pwt:v1:corrupt')).toBeNull()
+    expect(store.startOfficial(entry()).created).toBe(true)
+    expect(new LocalStorageStore(storage, clock).getDay('2026-10-21')?.status).toBe('inProgress')
+  })
+})
+
 describe('almacenamiento no disponible', () => {
   it('sin almacenamiento (null) funciona en memoria y avisa de que no persiste', () => {
     const store = new LocalStorageStore(null, clock)

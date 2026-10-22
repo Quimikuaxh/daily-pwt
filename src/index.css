@@ -390,6 +390,70 @@ img.sprite,
   color: #d0d0d0;
 }
 
+/* ---------- Ayuda y Ajustes ---------- */
+.help-section + .help-section,
+.settings-section + .settings-section {
+  margin-top: 14px;
+}
+
+.help-title {
+  display: inline-block;
+  margin: 0 0 6px;
+  padding: 0 12px 0 8px;
+  font-size: 18px;
+  line-height: 22px;
+  background: #b81840;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  text-shadow: 1px 1px 0 #181818;
+}
+
+.help-list {
+  margin: 0;
+  padding-left: 18px;
+  list-style: square;
+  font-size: 15px;
+  line-height: 19px;
+}
+
+.help-list li + li {
+  margin-top: 4px;
+}
+
+.help-legal,
+.settings-hint {
+  margin: 0;
+  font-size: 15px;
+  line-height: 19px;
+  color: #d0d0d0;
+}
+
+.settings-options {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.settings-option[aria-pressed="true"] {
+  --edge: #f8c830;
+  --fill: #b81840;
+  --dots: #c83058;
+}
+
+.settings-section .btn-danger {
+  margin-top: 8px;
+}
+
+.settings-status {
+  min-height: 18px;
+  margin: 6px 0 0;
+  font-size: 14px;
+}
+
+/* El hueco del icono de Ajustes toma el fondo del botón. */
+.header-action {
+  --icon-hole: var(--fill);
+}
+
 /* ---------- Compartir ---------- */
 .share {
   display: flex;
@@ -435,10 +499,11 @@ img.sprite,
 }
 
 .today-header-inner {
-  display: flex;
-  flex-wrap: wrap;
+  /* Escritorio: logo · reto y cuenta atrás · menú. Móvil: logo y menú arriba, reto y cuenta atrás debajo. */
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  grid-template-areas: "logo info menu";
   align-items: center;
-  justify-content: space-between;
   gap: 6px 16px;
   max-width: 72rem;
   margin: 0 auto;
@@ -467,7 +532,16 @@ img.sprite,
   box-shadow: 0 0 0 2px #f8f8f8;
 }
 
+.today-header-inner .logo {
+  grid-area: logo;
+}
+
+.today-header-inner .header-actions {
+  grid-area: menu;
+}
+
 .today-header-info {
+  grid-area: info;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -499,6 +573,15 @@ img.sprite,
   background: #000;
   border: 2px solid #585858;
   font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 640px) {
+  .today-header-inner {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "logo menu"
+      "info info";
+  }
 }
 
 .page-main {

@@ -7,6 +7,8 @@ import type { Challenge, GameData } from './core/types'
 import type { ReplayPlan } from './hooks/useBattle'
 import { es } from './i18n/es'
 import { LocalStorageStore } from './storage/localStorageStore'
+import { clearSettings, DEFAULT_SETTINGS, loadSettings, saveSettings, type Settings } from './storage/settings'
+import type { MenuContext } from './ui/menu/AppMenu'
 import type { BattleMode, DayRecord, GameStore, VoidReason } from './storage/gameStore'
 import { readTestHooks } from './testHooks'
 import { BattleScreen } from './ui/battle/BattleScreen'
@@ -41,12 +43,32 @@ function browserStorage(): Storage | null {
 export default function App({ data, createClient, store: injectedStore }: AppProps) {
   const [hooks] = useState(() => readTestHooks(window.location.search))
   const [store] = useState<GameStore>(() => injectedStore ?? new LocalStorageStore(browserStorage()))
+  const [settings, setSettings] = useState<Settings>(() => loadSettings(browserStorage()))
+  // Tras «Borrar datos locales» se vuelve a pintar: Hoy relee el historial (vacío) en cada render; Ajustes sigue abierto con su aviso.
+  const [, setDataGeneration] = useState(0)
   const [screen, setScreen] = useState<Screen>({ name: 'today' })
   const [battlesStarted, setBattlesStarted] = useState(0)
 
   useEffect(() => preloadBattleImages(), [])
 
   const nowIso = () => new Date().toISOString()
+
+  function changeSettings(next: Settings) {
+    setSettings(next)
+    saveSettings(browserStorage(), next)
+  }
+
+  const menu: MenuContext = {
+    store,
+    settings,
+    onSettingsChange: changeSettings,
+    onClearData: () => {
+      store.clear()
+      clearSettings(browserStorage())
+      setSettings(DEFAULT_SETTINGS)
+      setDataGeneration((generation) => generation + 1)
+    },
+  }
 
   function nextSeed(): string {
     const ordinal = battlesStarted + 1
@@ -114,6 +136,8 @@ export default function App({ data, createClient, store: injectedStore }: AppPro
         onDecision={official ? (decision) => store.recordDecision(date, decision) : undefined}
         onSettled={official ? (state) => store.recordCheckpoint(date, { ...state, decisions: store.getDay(date)?.battle?.decisions.length ?? 0 }) : undefined}
         onReplayFailed={official ? () => abandonUnresumable(store.getDay(date) as DayRecord, 'replayFailed') : undefined}
+        initialSpeed={settings.speed}
+        onSpeedChange={(speed) => changeSettings({ ...settings, speed })}
         onFinish={(ended) => {
           // El oficial cuenta para el día del reto con el que empezó, aunque termine pasada la medianoche (PRD §4.3).
           if (official) store.finishOfficial(date, ended, nowIso())
@@ -132,6 +156,7 @@ export default function App({ data, createClient, store: injectedStore }: AppPro
         mode={mode}
         store={store}
         date={challenge.date}
+        menu={menu}
         onBackToToday={() => setScreen({ name: 'today' })}
         onRematch={() => startBattle(challenge, leadIndex, 'practice')}
       />
@@ -141,6 +166,7 @@ export default function App({ data, createClient, store: injectedStore }: AppPro
   return (
     <TodayScreen
       data={data}
+      menu={menu}
       store={store}
       notice={screen.notice}
       onStart={startBattle}

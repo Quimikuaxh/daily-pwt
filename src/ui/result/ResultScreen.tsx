@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { MAX_TURNS } from '../../config'
 import type { EngineEnd } from '../../battle/protocol'
 import { TEAM_SIZE } from '../../core/constants'
@@ -6,10 +5,9 @@ import { es } from '../../i18n/es'
 import type { BattleMode, GameStore } from '../../storage/gameStore'
 import { useCountdown } from '../../hooks/useToday'
 import { computeStats } from '../../storage/playerStats'
-import { HeaderActions } from '../common/HeaderActions'
+import { AppMenu, type MenuContext } from '../menu/AppMenu'
 import { ShareButton } from '../share/ShareButton'
 import { shareTextFor } from '../share/shareText'
-import { StatsDialog } from '../stats/StatsDialog'
 import { StatsPanel } from '../stats/StatsPanel'
 
 type ResultScreenProps = {
@@ -21,6 +19,8 @@ type ResultScreenProps = {
   /** Historial y fecha del reto del combate: estadísticas actualizadas y texto para compartir del oficial. */
   store?: GameStore
   date?: string
+  /** Estadísticas, Ayuda y Ajustes. */
+  menu?: MenuContext
 }
 
 
@@ -40,19 +40,17 @@ function OfficialSummary({ store, date }: { store: GameStore; date: string }) {
   )
 }
 
-export function ResultScreen({ ended, onBackToToday, onRematch, mode, store, date }: ResultScreenProps) {
+export function ResultScreen({ ended, onBackToToday, onRematch, mode, store, date, menu }: ResultScreenProps) {
   const won = ended.result === 'win'
   const countdown = useCountdown()
-  const [statsOpen, setStatsOpen] = useState(false)
 
   return (
     <main className="result-screen">
-      {store && date && (
+      {menu && date && (
         <div className="result-toolbar">
-          <HeaderActions onOpenStats={() => setStatsOpen(true)} />
+          <AppMenu {...menu} today={date} />
         </div>
       )}
-      {statsOpen && store && date && <StatsDialog store={store} today={date} onClose={() => setStatsOpen(false)} />}
       <section className={won ? 'result-panel plate result-win' : 'result-panel plate result-loss'}>
         <h1 className="result-title">{won ? es.result.victory : es.result.defeat}</h1>
         <p className="result-lead namebox">{won ? es.result.victoryLead : defeatReason(ended)}</p>

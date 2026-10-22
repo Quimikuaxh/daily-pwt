@@ -34,6 +34,41 @@
   gap: 16px;
 }
 
+/* Marco de consola (DS sencilla, decisión de Jose): carcasa oscura redondeada, bisel alrededor de las dos pantallas y bisagra a media
+   altura que asoma por los lados. Medidas = CONSOLE_FRAME_X/Y de useStageScale (26 + 10 en horizontal, 22 + 10 en vertical). */
+.bt-console[data-frame] {
+  position: relative;
+  padding: 22px 26px;
+  border-radius: 28px;
+  background: linear-gradient(#3a3a42, #24242a);
+  box-shadow: 0 8px 0 #121216, 0 16px 36px rgb(0 0 0 / 0.5), inset 0 2px 0 #55555f;
+}
+
+.bt-console[data-frame]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% - 15px);
+  height: 30px;
+  background: linear-gradient(#1a1a1f, #2e2e35 45%, #1a1a1f);
+  border-block: 2px solid #111;
+  box-sizing: border-box;
+}
+
+.bt-console[data-frame] .bt-stage {
+  padding: 10px;
+  border-radius: 10px;
+  background: #0c0c10;
+  box-shadow: inset 0 0 0 2px #000, 0 1px 0 #4a4a52;
+  box-sizing: content-box;
+}
+
+.bt-console[data-frame] .bt-ds {
+  left: 10px;
+  top: 10px;
+}
+
 .bt-chrome {
   display: flex;
   flex-direction: column;
@@ -302,18 +337,19 @@
   top: 22px;
 }
 
+/* Nombre y género pegados al «Nv»: un nombre más largo crece hacia la izquierda (decisión de Jose). */
 .bt-databox-label {
   display: flex;
   align-items: flex-start;
-  left: 20px;
-  top: -6px;
+  right: 28px;
+  top: -8px;
 }
 
 .bt-databox-player .bt-databox-label {
-  left: 13px;
+  right: 42px;
 }
 
-/* Más pequeño que el resto del texto para todos los nombres: los de 10 letras (Kangaskhan, Ferrothorn…) con su género caben antes del «Nv». */
+/* Más pequeño que el resto del texto para todos los nombres: los de 10 letras (Kangaskhan, Ferrothorn…) con su género caben en la caja. */
 .bt-databox-name {
   font-size: 11px;
   white-space: nowrap;
@@ -323,7 +359,7 @@
 
 /* El símbolo de género va justo detrás del nombre. */
 .bt-databox-gender {
-  margin: 2px 0 0 1px;
+  margin: 4px 0 0 1px;
 }
 
 .bt-digits {
@@ -362,18 +398,6 @@
 .bt-databox-hp-max {
   left: 81px;
   top: 11px;
-}
-
-.bt-weather {
-  position: absolute;
-  top: 3px;
-  right: 3px;
-  z-index: 2;
-  margin: 0;
-  padding: 1px 4px;
-  color: #f8f8f8;
-  background: rgb(0 0 0 / 0.67);
-  border: 1px solid #a03848;
 }
 
 /* Caja de mensajes: banda translúcida oscura de ancho completo (y ≈ 147..189), línea rojiza arriba, texto blanco con sombra. */
@@ -1068,6 +1092,79 @@
   background: #d8d8e0;
 }
 
+
+.bt-touch-weather {
+  position: absolute;
+  top: 0;
+  left: 72px;
+  z-index: 3;
+  width: 112px;
+  height: 20px;
+  margin: 0;
+  pointer-events: none;
+  /* Misma forma que las teselas de movimiento: hexágono con borde negro, aro claro y dentro el dibujo del clima. */
+  background: #000;
+  clip-path: polygon(1px 10px, 8px 1px, 104px 1px, 111px 10px, 104px 19px, 8px 19px);
+}
+
+.bt-touch-weather::before,
+.bt-touch-weather::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.bt-touch-weather::before {
+  background: #f0f0f0;
+  clip-path: polygon(2px 10px, 9px 2px, 103px 2px, 110px 10px, 103px 18px, 9px 18px);
+}
+
+.bt-touch-weather::after {
+  background: var(--weather-art, #504848);
+  clip-path: polygon(4px 10px, 10px 4px, 102px 4px, 108px 10px, 102px 16px, 10px 16px);
+}
+
+.bt-touch-weather-label {
+  position: absolute;
+  inset: -1px 0 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  font-size: 11px;
+  line-height: 20px;
+  text-align: center;
+  color: #f8f8f8;
+  text-shadow: 1px 0 #181818, -1px 0 #181818, 0 1px #181818, 0 -1px #181818;
+}
+
+.bt-touch-weather-sep {
+  margin: 0 3px 0 1px;
+}
+
+.bt-touch-weather-clock {
+  position: relative;
+  top: 1px;
+  margin: 0 4px 0 0;
+  filter: drop-shadow(1px 0 #181818) drop-shadow(-1px 0 #181818) drop-shadow(0 1px #181818) drop-shadow(0 -1px #181818);
+}
+
+/* Fondos en píxel de cada clima (dibujados aquí, a la escala del lienzo). */
+.bt-touch-weather[data-weather="raindance"] {
+  --weather-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' shape-rendering='crispEdges'%3E%3Crect width='8' height='8' fill='%232850a8'/%3E%3Crect x='6' y='0' width='1' height='2' fill='%23a8c8f8'/%3E%3Crect x='5' y='2' width='1' height='1' fill='%23a8c8f8'/%3E%3Crect x='2' y='4' width='1' height='2' fill='%2388b0f0'/%3E%3Crect x='1' y='6' width='1' height='1' fill='%2388b0f0'/%3E%3C/svg%3E") 0 0 / 8px 8px;
+}
+
+.bt-touch-weather[data-weather="sunnyday"] {
+  --weather-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' shape-rendering='crispEdges'%3E%3Crect width='12' height='12' fill='%23e87818'/%3E%3Crect x='2' y='2' width='1' height='1' fill='%23f8e070'/%3E%3Crect x='1' y='3' width='3' height='1' fill='%23f8e070'/%3E%3Crect x='2' y='4' width='1' height='1' fill='%23f8e070'/%3E%3Crect x='8' y='8' width='1' height='1' fill='%23f8b830'/%3E%3Crect x='7' y='9' width='3' height='1' fill='%23f8b830'/%3E%3Crect x='8' y='10' width='1' height='1' fill='%23f8b830'/%3E%3C/svg%3E") 0 0 / 12px 12px;
+}
+
+.bt-touch-weather[data-weather="sandstorm"] {
+  --weather-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' shape-rendering='crispEdges'%3E%3Crect width='8' height='8' fill='%23b08848'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%23e0c080'/%3E%3Crect x='5' y='2' width='1' height='1' fill='%23785828'/%3E%3Crect x='3' y='5' width='1' height='1' fill='%23e0c080'/%3E%3Crect x='6' y='6' width='2' height='1' fill='%23d0a868'/%3E%3Crect x='0' y='6' width='1' height='1' fill='%23785828'/%3E%3C/svg%3E") 0 0 / 8px 8px;
+}
+
+.bt-touch-weather[data-weather="hail"] {
+  --weather-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' shape-rendering='crispEdges'%3E%3Crect width='10' height='10' fill='%235888c0'/%3E%3Crect x='2' y='1' width='1' height='3' fill='%23f8f8f8'/%3E%3Crect x='1' y='2' width='3' height='1' fill='%23f8f8f8'/%3E%3Crect x='7' y='6' width='2' height='2' fill='%23d0e8f8'/%3E%3C/svg%3E") 0 0 / 10px 10px;
+}
 
 .bt-touch-svg {
   position: absolute;

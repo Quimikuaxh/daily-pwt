@@ -64,7 +64,10 @@ function applyLine(view: BattleView, line: string): void {
       return
     case '-weather': {
       const weather = toId(fields[2] ?? '')
-      view.weather = weather === '' || weather === 'none' ? null : weather
+      const next = weather === '' || weather === 'none' ? null : weather
+      // Clima nuevo: sus turnos llegan con la instantánea del final del update.
+      if (next !== view.weather) view.weatherTurns = null
+      view.weather = next
       return
     }
     case 'switch':

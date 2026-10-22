@@ -289,3 +289,36 @@ describe('sin almacenamiento', () => {
     expect(screen.getByTestId('battle-screen')).toBeInTheDocument()
   })
 })
+
+describe('Ajustes (F3): velocidad guardada y borrar datos locales', () => {
+  beforeEach(() => window.localStorage.clear())
+
+  it('el combate empieza con la velocidad guardada y cambiarla en el combate se guarda', async () => {
+    window.localStorage.setItem('daily-pwt:settings', JSON.stringify({ version: 1, speed: 4 }))
+    const { user } = mountApp()
+    await chooseLead(user)
+    await user.click(practice())
+    expect(screen.getByRole('button', { name: /velocidad/i })).toHaveTextContent('x4')
+    await user.click(screen.getByRole('button', { name: /velocidad/i }))
+    expect(screen.getByRole('button', { name: /velocidad/i })).toHaveTextContent('x1')
+    expect(JSON.parse(window.localStorage.getItem('daily-pwt:settings') as string)).toEqual({ version: 1, speed: 1 })
+  })
+
+  it('borrar datos locales devuelve el oficial del día y los ajustes por defecto', async () => {
+    window.localStorage.setItem('daily-pwt:settings', JSON.stringify({ version: 1, speed: 2 }))
+    const { user } = mountApp()
+    await startOfficial(user)
+    lastClient().emit(mkUpdate({ request: null, ended: WIN }))
+    await settle()
+    await user.click(screen.getByRole('button', { name: 'Volver a Hoy' }))
+    expect(official()).toBeDisabled()
+    await user.click(screen.getByRole('button', { name: 'Ajustes' }))
+    await user.click(screen.getByRole('button', { name: 'Borrar datos locales' }))
+    await user.click(screen.getByRole('button', { name: 'Sí, borrar' }))
+    expect(store().listDays()).toEqual([])
+    expect(window.localStorage.getItem('daily-pwt:settings')).toBeNull()
+    expect(screen.getByRole('button', { name: 'x1' })).toHaveAttribute('aria-pressed', 'true')
+    await user.keyboard('{Escape}')
+    expect(official()).toHaveTextContent('Jugar')
+  })
+})

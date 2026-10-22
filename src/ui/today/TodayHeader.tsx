@@ -1,9 +1,9 @@
 import { es } from '../../i18n/es'
-import { HeaderActions } from '../common/HeaderActions'
+import { AppMenu, type MenuContext } from '../menu/AppMenu'
 
-type TodayHeaderProps = { challengeNumber: number | null; countdown: string; onOpenStats?: () => void }
+type TodayHeaderProps = { challengeNumber: number | null; countdown: string; menu?: MenuContext; date?: string }
 
-export function TodayHeader({ challengeNumber, countdown, onOpenStats }: TodayHeaderProps) {
+export function TodayHeader({ challengeNumber, countdown, menu, date }: TodayHeaderProps) {
   return (
     <header className="today-header">
       <div className="today-header-inner">
@@ -17,8 +17,8 @@ export function TodayHeader({ challengeNumber, countdown, onOpenStats }: TodayHe
             <span className="countdown-label">{es.today.nextChallengeIn}</span>{' '}
             <time className="countdown-value">{countdown}</time>
           </p>
-          {onOpenStats && <HeaderActions onOpenStats={onOpenStats} />}
         </div>
+        {menu && date && <AppMenu {...menu} today={date} />}
       </div>
     </header>
   )

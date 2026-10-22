@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { TodayScreen } from './TodayScreen'
 import { getDailyChallenge } from '../../core/challenge'
 import { makeGameData } from '../../test-utils/fixtures'
-import { setLocalTime } from '../../test-utils/ui'
+import { setLocalTime, testMenu } from '../../test-utils/ui'
 import { LAUNCH } from '../../test-utils/dates'
 import { MemoryStorage } from '../../test-utils/memoryStorage'
 import { LocalStorageStore } from '../../storage/localStorageStore'
@@ -32,7 +32,7 @@ function mount(store?: LocalStorageStore, over: { onStart?: any; onResume?: any;
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
   const onStart = over.onStart ?? vi.fn()
   const onResume = over.onResume ?? vi.fn()
-  render(<TodayScreen data={data} store={store} onStart={onStart} onResume={onResume} notice={over.notice} />)
+  render(<TodayScreen data={data} store={store} menu={store ? testMenu(store) : undefined} onStart={onStart} onResume={onResume} notice={over.notice} />)
   return { user, onStart, onResume }
 }
 const official = () => screen.getByRole('button', { name: /^combate oficial/i })

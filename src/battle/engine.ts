@@ -116,6 +116,7 @@ export function createBattleEngine(init: EngineInit): BattleEngine {
     return {
       turn: battle.turn,
       weather: battle.field.weather || null,
+      weatherTurns: battle.field.weather ? battle.field.weatherState.duration || null : null,
       player: sideView(playerSide, playerRoster, playerSpecies, true),
       rival: sideView(rivalSide, rivalRoster, rivalSpecies, false),
     }

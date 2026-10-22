@@ -216,4 +216,19 @@ export class LocalStorageStore implements GameStore {
     record.battle = null
     this.save()
   }
+
+  clear(): void {
+    this.file = emptyFile()
+    if (this.storage === null) return
+    try {
+      this.storage.removeItem(STORAGE_KEY)
+      this.storage.removeItem(CORRUPT_BACKUP_KEY)
+      // Un archivo de otra versión dejaba el almacenamiento en solo lectura; borrado, se vuelve a poder guardar.
+      this.usable = true
+      this.persistent = true
+    } catch {
+      this.usable = false
+      this.persistent = false
+    }
+  }
 }

@@ -28,7 +28,7 @@ describe('stageScaleFor', () => {
   })
 
   it('desde x2 solo usa enteros (1280x800 vale 2)', () => {
-    expect(stageScaleFor(1280, 800)).toEqual({ scale: 2, wide: true })
+    expect(stageScaleFor(1280, 800)).toEqual({ scale: 2, wide: true, frame: false })
     for (const [width, height] of [[600, 1000], [1024, 1100], [1920, 1200]]) {
       const { scale } = stageScaleFor(width, height)
       if (scale >= 2) expect(Number.isInteger(scale), `${width}x${height}`).toBe(true)
@@ -43,5 +43,12 @@ describe('stageScaleFor', () => {
   it('con la ventana ancha los controles van a un lado', () => {
     expect(stageScaleFor(1280, 800).wide).toBe(true)
     expect(stageScaleFor(360, 740).wide).toBe(false)
+  })
+
+  it('marco de consola: solo en el diseño ancho y si cabe sin bajar la escala', () => {
+    expect(stageScaleFor(1280, 800), 'a 1280x800 la pantalla ocupa todo el alto: sin marco').toMatchObject({ scale: 2, frame: false })
+    expect(stageScaleFor(1440, 900)).toEqual({ scale: 2, wide: true, frame: true })
+    expect(stageScaleFor(1920, 1080)).toEqual({ scale: 2, wide: true, frame: true })
+    expect(stageScaleFor(360, 740).frame, 'móvil: nunca').toBe(false)
   })
 })

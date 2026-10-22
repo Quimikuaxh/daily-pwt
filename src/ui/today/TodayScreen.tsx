@@ -8,7 +8,7 @@ import { usePreloadChallengeSprites } from '../battle/preloadAssets'
 import { RivalSection } from './RivalSection'
 import { TodayFooter } from './TodayFooter'
 import { TodayHeader } from './TodayHeader'
-import { StatsDialog } from '../stats/StatsDialog'
+import type { MenuContext } from '../menu/AppMenu'
 
 type TodayScreenProps = {
   data: GameData | null
@@ -19,6 +19,8 @@ type TodayScreenProps = {
   store?: GameStore
   /** Aviso en español que deja la pantalla anterior (p. ej. un oficial que no se pudo reanudar). */
   notice?: string | null
+  /** Estadísticas, Ayuda y Ajustes de la cabecera. */
+  menu?: MenuContext
   /** Solo con los ganchos de prueba (?date=). */
   dateOverride?: string
   /** Solo con los ganchos de prueba (?trainer=&variant=). */
@@ -121,15 +123,12 @@ function TodayContent({ challenge, data, onStart, onResume, store }: TodayConten
   )
 }
 
-export function TodayScreen({ data, onStart, onResume, store, notice, dateOverride, rivalOverride }: TodayScreenProps) {
+export function TodayScreen({ data, onStart, onResume, store, notice, menu, dateOverride, rivalOverride }: TodayScreenProps) {
   const { challenge, countdown, error } = useToday(data, dateOverride, rivalOverride)
-  const [statsOpen, setStatsOpen] = useState(false)
-
   return (
     <div className="page">
       <a href="#main" className="skip-link">{es.app.skipToContent}</a>
-      <TodayHeader challengeNumber={challenge?.number ?? null} countdown={countdown} onOpenStats={store && challenge ? () => setStatsOpen(true) : undefined} />
-      {statsOpen && store && challenge && <StatsDialog store={store} today={challenge.date} onClose={() => setStatsOpen(false)} />}
+      <TodayHeader challengeNumber={challenge?.number ?? null} countdown={countdown} menu={menu} date={challenge?.date} />
       <main id="main" tabIndex={-1} className="page-main">
         {notice && <p role="alert" className="alert">{notice}</p>}
         {challenge && data ? (

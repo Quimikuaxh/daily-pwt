@@ -5,11 +5,10 @@ import type { Checkpoint, Decision } from '../storage/gameStore'
 import { introLines, translateLine, type TranslateContext } from '../battle/translate'
 import { deferFaintUntilFaintLine } from '../battle/faintOrder'
 import { deferHitMessages } from '../battle/messageOrder'
+import { SPEEDS, type BattleSpeed } from '../storage/settings'
 import { viewReducer } from '../battle/viewReducer'
 
-export type BattleSpeed = 1 | 2 | 4
-
-const SPEEDS: BattleSpeed[] = [1, 2, 4]
+export type { BattleSpeed }
 /** Cada mensaje se queda en la caja de texto este tiempo (a x1) y avanza solo; un toque o tecla lo adelanta. */
 const TEXT_PAUSE_MS = 1100
 const VISUAL_PAUSE_MS = 400
@@ -61,6 +60,9 @@ export type BattleParams = {
   onSettled?: (state: Pick<Checkpoint, 'turn' | 'playerRemaining' | 'rivalRemaining'>) => void
   /** La reproducción no llegó al estado guardado (o el motor falló): el combate no se puede reanudar. */
   onReplayFailed?: () => void
+  /** Velocidad guardada en Ajustes (por defecto x1) y aviso al cambiarla desde el combate, para guardarla. */
+  initialSpeed?: BattleSpeed
+  onSpeedChange?: (speed: BattleSpeed) => void
 }
 
 export type BattleController = {
@@ -132,7 +134,7 @@ export function useBattle(params: BattleParams): BattleController {
   const [locked, setLocked] = useState(true)
   const [failed, setFailed] = useState(false)
   const [ended, setEnded] = useState<EngineEnd | null>(null)
-  const [speed, setSpeed] = useState<BattleSpeed>(1)
+  const [speed, setSpeed] = useState<BattleSpeed>(params.initialSpeed ?? 1)
   const [message, setMessage] = useState(null as string | null)
   const [introPhase, setIntroPhase] = useState((params.replay ? 'done' : 'loading') as IntroPhase)
   const [switchAnim, setSwitchAnim] = useState(null as SwitchAnimation | null)
@@ -328,7 +330,10 @@ export function useBattle(params: BattleParams): BattleController {
   }, [])
 
   const cycleSpeed = useCallback(() => {
-    setSpeed((current) => SPEEDS[(SPEEDS.indexOf(current) + 1) % SPEEDS.length])
+    const next = SPEEDS[(SPEEDS.indexOf(speedRef.current) + 1) % SPEEDS.length]
+    speedRef.current = next
+    setSpeed(next)
+    paramsRef.current.onSpeedChange?.(next)
   }, [])
 
   return { view, log, message, introPhase, switchAnim, advance, request, lastChoiceRequest, canAct: !locked && !failed && ended === null, failed, ended, speed, cycleSpeed, choose, forfeit }

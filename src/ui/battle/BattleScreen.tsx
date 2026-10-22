@@ -34,6 +34,9 @@ type BattleScreenProps = {
   onDecision?: BattleParams['onDecision']
   onSettled?: BattleParams['onSettled']
   onReplayFailed?: BattleParams['onReplayFailed']
+  /** Velocidad de Ajustes; al cambiarla con el botón del combate se avisa para guardarla. */
+  initialSpeed?: BattleParams['initialSpeed']
+  onSpeedChange?: BattleParams['onSpeedChange']
   onFinish: (ended: EngineEnd) => void
   onExit: () => void
 }
@@ -45,7 +48,7 @@ type TouchChoice = { request: BattleRequest | null; mode: TouchMode }
 
 const isInteractive = (target: EventTarget | null): boolean => target instanceof HTMLElement && target.closest('button, a, input, select, textarea, [role="dialog"]') !== null
 
-export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', replay, onDecision, onSettled, onReplayFailed, onFinish, onExit }: BattleScreenProps) {
+export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', replay, onDecision, onSettled, onReplayFailed, initialSpeed, onSpeedChange, onFinish, onExit }: BattleScreenProps) {
   const { trainer, rivalTeam, playerTeam } = challenge
   const speciesName = (speciesId: string, fallback: string): string => data.names.species[speciesId] ?? fallback
 
@@ -62,11 +65,13 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
     onDecision,
     onSettled,
     onReplayFailed,
+    initialSpeed,
+    onSpeedChange,
   })
 
   const reducedMotion = usePrefersReducedMotion()
   const layoutRef = useRef(null as HTMLDivElement | null)
-  const { scale, wide } = useStageScale(layoutRef)
+  const { scale, wide, frame } = useStageScale(layoutRef)
   const avatar = useMemo(() => avatarForSeed(battleSeed), [battleSeed])
   const [touchChoice, setTouchChoice] = useState({ request: null, mode: 'main' } as TouchChoice)
   const [dialog, setDialog] = useState(null as PendingDialog)
@@ -150,6 +155,8 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
             )}
           </div>
 
+          {/* Marco de consola (DS sencilla) en escritorio, solo si cabe sin bajar la escala: carcasa, bisel y bisagra a los lados. */}
+          <div className="bt-console" data-frame={frame || undefined}>
           <div className="bt-stage" style={stageStyle}>
             <div className="bt-ds" style={{ width: SCREEN_WIDTH, height: STAGE_HEIGHT }}>
               <span data-testid="battle-mode" data-mode={mode} className={`bt-mode bt-mode-${mode}`} role="img" aria-label={es.battle.modeLabel(mode === 'official')}>
@@ -183,10 +190,13 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                     onChooseMove={chooseMove}
                     onForfeit={() => setDialog('forfeit')}
                     onBag={() => setBagNoticeRequest(menuRequest)}
+                    weather={battle.view?.weather ?? null}
+                    weatherTurns={battle.view?.weatherTurns ?? null}
                   />
                 )}
               </div>
             </div>
+          </div>
           </div>
         </div>
       </main>

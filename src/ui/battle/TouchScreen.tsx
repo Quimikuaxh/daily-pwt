@@ -38,7 +38,13 @@ type TouchScreenProps = {
   onForfeit: () => void
   /** La Mochila no se puede usar en el PWT: solo avisa. */
   onBag: () => void
+  /** Clima activo (id del simulador) o null, y los turnos que le quedan (null si es permanente). */
+  weather?: string | null
+  weatherTurns?: number | null
 }
+
+const WEATHER_LABELS: { [id: string]: string | undefined } = es.battle.weather
+const weatherLabel = (weather: string): string => WEATHER_LABELS[weather] ?? es.battle.weatherUnknown
 
 /** Pantalla táctil (256x192): menú principal Luchar / Cambiar / Rendirse y movimientos. El equipo (Cambiar) es la pantalla de equipo, que ocupa las dos pantallas. */
 export function TouchScreen(props: TouchScreenProps) {
@@ -58,6 +64,25 @@ export function TouchScreen(props: TouchScreenProps) {
     <section className="bt-touch" data-mode={mode} aria-label={es.battle.controlsLabel}>
       <TouchBackground />
       {!canAct && <p className="sr-only">{es.battle.waitingTurn}</p>}
+      {/* Como en el juego: el clima, con su color de fondo, en el hueco central de arriba de la pantalla táctil. */}
+      {props.weather && (
+        <p data-testid="weather" className="bt-touch-weather" data-weather={props.weather}>
+          <span className="bt-touch-weather-label">
+            <span>{weatherLabel(props.weather)}</span>
+            {props.weatherTurns ? (
+              <>
+                <span className="bt-touch-weather-sep" aria-hidden="true">·</span>
+                {/* Reloj: los turnos que le quedan al clima. */}
+                <svg className="bt-touch-weather-clock" viewBox="0 0 7 7" width="7" height="7" aria-hidden="true" shapeRendering="crispEdges">
+                  <path d="M2 0h3v1H2zM1 1h1v1H1zM3 1h1v1H3zM5 1h1v1H5zM0 2h1v1H0zM3 2h1v1H3zM6 2h1v1H6zM0 3h1v1H0zM3 3h2v1H3zM6 3h1v1H6zM0 4h1v1H0zM6 4h1v1H6zM1 5h1v1H1zM5 5h1v1H5zM2 6h3v1H2z" fill="currentColor" />
+                </svg>
+                <span aria-hidden="true">{props.weatherTurns}</span>
+                <span className="sr-only">{es.battle.weatherTurnsLeft(props.weatherTurns)}</span>
+              </>
+            ) : null}
+          </span>
+        </p>
+      )}
       {canAct && mode === 'moves' && <MoveMenu moves={props.moves} enabled={canAct} onChoose={props.onChooseMove} onBack={() => props.onMode('main')} />}
       {canAct && mode !== 'moves' && (
         <div className="bt-main">

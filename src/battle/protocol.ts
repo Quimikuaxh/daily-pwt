@@ -59,7 +59,14 @@ export type MonView = {
 /** `active` es un índice en `team`. */
 export type SideView = { remaining: number; active: number | null; team: MonView[] }
 
-export type BattleView = { turn: number; weather: string | null; player: SideView; rival: SideView }
+export type BattleView = {
+  turn: number
+  weather: string | null
+  /** Turnos que le quedan al clima; `null` si es permanente (habilidad, 5.ª gen.) o no se sabe aún (llega con la instantánea). */
+  weatherTurns?: number | null
+  player: SideView
+  rival: SideView
+}
 
 /** La vista que construye el motor: en 1v1 cada bando siempre tiene un activo. */
 export type EngineBattleView = BattleView & { player: SideView & { active: number }; rival: SideView & { active: number } }

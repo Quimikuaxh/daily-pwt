@@ -14,13 +14,18 @@ const WIDE_LAYOUT_MIN_WIDTH = 700
 const SIDE_COLUMN_WIDTH = 304
 const STACKED_CHROME_HEIGHT = 84
 const OUTER_MARGIN = 16
+/** Marco de consola (DS sencilla) en escritorio: carcasa más bisel a cada lado, en píxeles de pantalla. */
+export const CONSOLE_FRAME_X = 36
+export const CONSOLE_FRAME_Y = 32
 
-export type StageScale = { scale: number; wide: boolean }
+/** `frame`: hay sitio para el marco de consola sin bajar la escala del lienzo (solo en el diseño ancho). */
+export type StageScale = { scale: number; wide: boolean; frame: boolean }
 
 /**
  * Escala del lienzo 256x384 (RNF-06, PRD §0 "Escala del combate en móvil"). Por debajo de x2 el lienzo ocupa todo el ancho disponible con escala
  * fraccionaria (el pixel art se ve sin suavizar: `image-rendering: pixelated`); a partir de x2 solo múltiplos enteros, que no deforman los píxeles.
- * Nunca baja de 1 y no crece por encima de MAX_SCALE. Siempre cabe entero (ancho y alto) en la ventana.
+ * Nunca baja de 1 y no crece por encima de MAX_SCALE. Siempre cabe entero (ancho y alto) en la ventana. El marco de consola solo se pone si
+ * cabe alrededor sin cambiar la escala (decisión de Jose, 22/10/2026: la nitidez manda sobre el marco).
  */
 export function stageScaleFor(containerWidth: number, viewportHeight: number): StageScale {
   const wide = containerWidth >= WIDE_LAYOUT_MIN_WIDTH
@@ -28,18 +33,19 @@ export function stageScaleFor(containerWidth: number, viewportHeight: number): S
   const availableHeight = viewportHeight - (wide ? OUTER_MARGIN : STACKED_CHROME_HEIGHT + OUTER_MARGIN)
   const fits = Math.min(availableWidth / SCREEN_WIDTH, availableHeight / STAGE_HEIGHT)
   const scale = fits >= INTEGER_FROM_SCALE ? Math.min(MAX_SCALE, Math.floor(fits)) : Math.max(1, Math.floor(fits * SCALE_PRECISION) / SCALE_PRECISION)
-  return { scale, wide }
+  const frame = wide && availableWidth - SCREEN_WIDTH * scale >= 2 * CONSOLE_FRAME_X && availableHeight - STAGE_HEIGHT * scale >= 2 * CONSOLE_FRAME_Y
+  return { scale, wide, frame }
 }
 
 export function useStageScale(containerRef: RefObject<HTMLElement | null>): StageScale {
-  const [stage, setStage] = useState({ scale: 1, wide: false } as StageScale)
+  const [stage, setStage] = useState({ scale: 1, wide: false, frame: false } as StageScale)
 
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
     const update = () => {
       const next = stageScaleFor(container.clientWidth, window.innerHeight)
-      setStage((previous) => (previous.scale === next.scale && previous.wide === next.wide ? previous : next))
+      setStage((previous) => (previous.scale === next.scale && previous.wide === next.wide && previous.frame === next.frame ? previous : next))
     }
     update()
     window.addEventListener('resize', update)

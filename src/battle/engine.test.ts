@@ -422,6 +422,17 @@ describe('fin del combate (INT-09, INT-10, INT-11, UT-50)', () => {
     expect([g.last.ended?.result, g.last.ended?.playerAlive]).toEqual(['loss', 0])
   })
 
+  it('turnos de clima: Danza Lluvia da 5 y van bajando; el de una habilidad (Llovizna) es permanente (null)', () => {
+    const dancer = mon('politoed', ['raindance', 'splash', 'tackle', 'recover'], { ability: 'waterabsorb' })
+    const e = make({ player: [dancer, ...harmlessTeam().slice(1)], ai: 'trivial' })
+    e.start()
+    const afterDance = e.choose(moveOf(1))
+    expect([afterDance.view.weather, afterDance.view.weatherTurns]).toEqual(['raindance', 4])
+    expect(e.choose(moveOf(2)).view.weatherTurns).toBe(3)
+    const drizzle = make({ player: [mon('politoed', ['splash', 'tackle', 'recover', 'rest'], { ability: 'drizzle' }), ...harmlessTeam().slice(1)], ai: 'trivial' }).start()
+    expect([drizzle.view.weather, drizzle.view.weatherTurns]).toEqual(['raindance', null])
+  })
+
   it('playerFainted va en el orden del equipo del reto, no en el del simulador (inicial delante)', () => {
     const killer = mon('garchomp', ['earthquake', 'outrage', 'stoneedge', 'swordsdance'], { ability: 'roughskin' })
     const team = ['snorlax', 'blissey', 'chansey', 'magikarp', 'lapras', 'vaporeon'].map((s) => filler(s))
