@@ -379,7 +379,7 @@ describe('una sola acción por turno (CMP-16)', () => {
   })
 
   it('con el combate terminado no se pueden elegir movimientos', async () => {
-    await ready({ request: null, ended: { result: 'win', reason: 'faint', turns: 9, playerAlive: 3, rivalFainted: 6 } })
+    await ready({ request: null, ended: { result: 'win', reason: 'faint', turns: 9, playerAlive: 3, rivalFainted: 6, playerFainted: [true, false, true, false, true, false] } })
     expect(screen.queryAllByRole('button', { name: new RegExp(mv('earthquake')) }).filter((b) => !(b as HTMLButtonElement).disabled)).toHaveLength(0)
   })
 })
@@ -536,7 +536,7 @@ describe('Rendirse (CMP-19, RF-54)', () => {
   it('al llegar el fin por rendición se llama a onFinish con derrota', async () => {
     const { user, client, onFinish } = await open()
     await user.click(within(screen.getByRole('dialog')).getByRole('button', { name: /confirmar|s[ií]/i }))
-    const ended = { result: 'loss', reason: 'forfeit', turns: 1, playerAlive: 6, rivalFainted: 0 }
+    const ended = { result: 'loss', reason: 'forfeit', turns: 1, playerAlive: 6, rivalFainted: 0, playerFainted: [false, false, false, false, false, false] }
     client.emit(mkUpdate({ request: null, ended }))
     await settle()
     expect(onFinish).toHaveBeenCalledWith(ended)
@@ -544,7 +544,7 @@ describe('Rendirse (CMP-19, RF-54)', () => {
 
   it('un fin normal (victoria) también llama a onFinish una sola vez', async () => {
     const { client, onFinish } = await ready()
-    const ended = { result: 'win', reason: 'faint', turns: 12, playerAlive: 2, rivalFainted: 6 }
+    const ended = { result: 'win', reason: 'faint', turns: 12, playerAlive: 2, rivalFainted: 6, playerFainted: [true, true, false, true, false, true] }
     client.emit(mkUpdate({ request: null, ended }))
     await settle()
     await settle()

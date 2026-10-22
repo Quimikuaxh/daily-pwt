@@ -10,7 +10,7 @@ export type EndSnapshot = {
 }
 
 /** Resultado del combate, o null si sigue. Rendición, empate y límite de turnos cuentan como derrota (DEC-14). */
-export function evaluateEnd(snapshot: EndSnapshot, maxTurns: number): EngineEnd | null {
+export function evaluateEnd(snapshot: EndSnapshot, maxTurns: number): Omit<EngineEnd, 'playerFainted'> | null {
   const counts = { turns: snapshot.turn, playerAlive: snapshot.playerAlive, rivalFainted: snapshot.rivalFainted }
 
   if (snapshot.ended) {

@@ -123,6 +123,7 @@ export const es = {
   app: {
     name: 'Daily PWT',
     skipToContent: 'Saltar al contenido',
+    headerActions: 'Menú',
   },
 
   errors: {
@@ -325,6 +326,32 @@ export const es = {
     rematch: 'Otro combate',
     officialRecorded: 'Combate oficial registrado. «Otro combate» es una práctica: no cuenta para nada.',
     practiceNote: 'Práctica: no cuenta para nada.',
+  },
+
+  stats: {
+    title: 'Estadísticas',
+    open: 'Estadísticas',
+    close: 'Cerrar',
+    played: 'Jugados',
+    winPercent: '% victorias',
+    winStreak: 'Racha de victorias',
+    dayStreak: 'Racha de días',
+    current: 'Actual',
+    max: 'Máxima',
+    empty: 'Aún no has terminado ningún combate oficial. Las prácticas no cuentan.',
+    note: 'Solo cuentan los combates oficiales. Se guardan en este navegador.',
+  },
+
+  share: {
+    button: 'Compartir',
+    copied: 'Resultado copiado al portapapeles.',
+    failed: 'No se ha podido copiar. Selecciona el texto y cópialo a mano.',
+    title: (number: number) => `Daily PWT #${number}`,
+    victory: (turns: number) => `✅ Victoria en ${turns} turnos`,
+    defeat: (rivalFainted: number, total: number) => `❌ Derrota (${rivalFainted}/${total} rivales debilitados)`,
+    streak: (streak: number) => `🔥 Racha: ${streak}`,
+    alive: '🟩',
+    fainted: '🟥',
   },
 
   log: {

@@ -130,6 +130,8 @@ export default function App({ data, createClient, store: injectedStore }: AppPro
       <ResultScreen
         ended={ended}
         mode={mode}
+        store={store}
+        date={challenge.date}
         onBackToToday={() => setScreen({ name: 'today' })}
         onRematch={() => startBattle(challenge, leadIndex, 'practice')}
       />

@@ -72,6 +72,8 @@ export type EngineEnd = {
   turns: number
   playerAlive: number
   rivalFainted: number
+  /** Debilitado o no cada Pokémon del jugador, en el orden del equipo del reto (no el del simulador, que pone el inicial delante). */
+  playerFainted: boolean[]
 }
 
 export type EngineUpdate = {

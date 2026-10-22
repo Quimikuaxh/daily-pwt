@@ -11,8 +11,8 @@ const entry = (date = '2026-10-21'): NewOfficial => ({
   date, challengeNumber: 3, trainerId: 'misty', variantId: 'misty-1', dataVersion: 'v1', startedAt: NOW.toISOString(),
   battle: { seed: 'seed-1', ai: 'heuristic', leadIndex: 2 },
 })
-const WIN: EngineEnd = { result: 'win', reason: 'faint', turns: 12, playerAlive: 4, rivalFainted: 6 }
-const LOSS: EngineEnd = { result: 'loss', reason: 'forfeit', turns: 5, playerAlive: 6, rivalFainted: 0 }
+const WIN: EngineEnd = { result: 'win', reason: 'faint', turns: 12, playerAlive: 4, rivalFainted: 6, playerFainted: [false, true, false, false, true, false] }
+const LOSS: EngineEnd = { result: 'loss', reason: 'forfeit', turns: 5, playerAlive: 6, rivalFainted: 0, playerFainted: [false, false, false, false, false, false] }
 const stored = (storage: MemoryStorage) => JSON.parse(storage.getItem(STORAGE_KEY) as string)
 
 describe('un oficial por día', () => {
@@ -39,6 +39,7 @@ describe('un oficial por día', () => {
     store.startOfficial(entry())
     store.finishOfficial('2026-10-21', WIN, '2026-10-21T10:20:00.000Z')
     expect(store.getDay('2026-10-21')).toMatchObject({ status: 'won', turns: 12, survivors: 4, rivalFainted: 6, endReason: 'faint', finishedAt: '2026-10-21T10:20:00.000Z', battle: null })
+    expect(store.getDay('2026-10-21')?.playerFainted).toEqual(WIN.playerFainted)
   })
 
   it('rendirse (derrota) queda como derrota con motivo forfeit', () => {
@@ -156,6 +157,25 @@ describe('versión y corrupción', () => {
     const store = new LocalStorageStore(storage, clock)
     expect(store.getDay('2026-10-21')).toMatchObject({ status: 'void', voidReason: 'corrupt' })
     expect(store.startOfficial(entry()).created).toBe(false)
+  })
+
+  it('un día guardado antes de F3 (sin playerFainted) se lee con playerFainted null, no como roto', () => {
+    const storage = new MemoryStorage()
+    const old = new LocalStorageStore(new MemoryStorage(), clock)
+    old.startOfficial(entry())
+    old.finishOfficial('2026-10-21', WIN, '2026-10-21T10:20:00.000Z')
+    const { playerFainted: _dropped, ...withoutField } = old.getDay('2026-10-21') as unknown as Record<string, unknown>
+    storage.setItem(STORAGE_KEY, JSON.stringify({ version: 1, days: { '2026-10-21': withoutField } }))
+    expect(new LocalStorageStore(storage, clock).getDay('2026-10-21')).toMatchObject({ status: 'won', playerFainted: null })
+  })
+
+  it('un playerFainted mal formado cuenta como registro roto', () => {
+    const storage = new MemoryStorage()
+    const good = new LocalStorageStore(new MemoryStorage(), clock)
+    good.startOfficial(entry())
+    good.finishOfficial('2026-10-21', WIN, '2026-10-21T10:20:00.000Z')
+    storage.setItem(STORAGE_KEY, JSON.stringify({ version: 1, days: { '2026-10-21': { ...good.getDay('2026-10-21'), playerFainted: ['sí'] } } }))
+    expect(new LocalStorageStore(storage, clock).getDay('2026-10-21')).toMatchObject({ status: 'void', voidReason: 'corrupt' })
   })
 
   it('un día bueno junto a uno roto se conserva', () => {

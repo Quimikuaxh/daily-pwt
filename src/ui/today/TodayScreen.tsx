@@ -8,6 +8,7 @@ import { usePreloadChallengeSprites } from '../battle/preloadAssets'
 import { RivalSection } from './RivalSection'
 import { TodayFooter } from './TodayFooter'
 import { TodayHeader } from './TodayHeader'
+import { StatsDialog } from '../stats/StatsDialog'
 
 type TodayScreenProps = {
   data: GameData | null
@@ -122,11 +123,13 @@ function TodayContent({ challenge, data, onStart, onResume, store }: TodayConten
 
 export function TodayScreen({ data, onStart, onResume, store, notice, dateOverride, rivalOverride }: TodayScreenProps) {
   const { challenge, countdown, error } = useToday(data, dateOverride, rivalOverride)
+  const [statsOpen, setStatsOpen] = useState(false)
 
   return (
     <div className="page">
       <a href="#main" className="skip-link">{es.app.skipToContent}</a>
-      <TodayHeader challengeNumber={challenge?.number ?? null} countdown={countdown} />
+      <TodayHeader challengeNumber={challenge?.number ?? null} countdown={countdown} onOpenStats={store && challenge ? () => setStatsOpen(true) : undefined} />
+      {statsOpen && store && challenge && <StatsDialog store={store} today={challenge.date} onClose={() => setStatsOpen(false)} />}
       <main id="main" tabIndex={-1} className="page-main">
         {notice && <p role="alert" className="alert">{notice}</p>}
         {challenge && data ? (

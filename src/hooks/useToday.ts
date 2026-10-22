@@ -66,3 +66,8 @@ export function useToday(data: GameData | null, dateOverride?: string, rivalOver
   )
   return { challenge, countdown: formatCountdown(msUntilNextLocalMidnight(now)), error }
 }
+
+/** Solo la cuenta atrás hasta la próxima medianoche local (Resultado, PRD §10.3). */
+export function useCountdown(): string {
+  return formatCountdown(msUntilNextLocalMidnight(useNow()))
+}

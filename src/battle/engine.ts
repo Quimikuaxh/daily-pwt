@@ -130,9 +130,19 @@ export function createBattleEngine(init: EngineInit): BattleEngine {
     return rivalRoster.filter((pokemon) => pokemon.hp <= 0).length
   }
 
+  /** `playerRoster` va con el inicial delante: se devuelve al orden del equipo del reto. */
+  function playerFaintedInTeamOrder(): boolean[] {
+    const teamIndexes = [playerLead, ...init.player.map((_, index) => index).filter((index) => index !== playerLead)]
+    const fainted = init.player.map(() => false)
+    playerRoster.forEach((pokemon, rosterIndex) => {
+      fainted[teamIndexes[rosterIndex]] = pokemon.hp <= 0
+    })
+    return fainted
+  }
+
   function currentEnd(): EngineEnd | null {
     const winner = battle.winner === PLAYER_NAME ? 'player' : battle.winner === RIVAL_NAME ? 'rival' : 'tie'
-    return evaluateEnd(
+    const ended = evaluateEnd(
       {
         ended: battle.ended,
         winner: battle.ended ? winner : null,
@@ -143,6 +153,7 @@ export function createBattleEngine(init: EngineInit): BattleEngine {
       },
       init.maxTurns,
     )
+    return ended ? { ...ended, playerFainted: playerFaintedInTeamOrder() } : null
   }
 
   function snapshotUpdate(): EngineUpdate {

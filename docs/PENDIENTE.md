@@ -17,7 +17,9 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 4. **Fases futuras**: modo PWT, logros con login; las animaciones de movimientos, lo último.
 
 ## Para F3
-- Estadísticas y rachas (sobre el historial por día de `GameStore`, DEC-43), compartir, Ayuda (con los créditos de fuentes y gráficos) y Ajustes con «Borrar datos locales» (hoy se borran a mano, ver README).
+- **Hecho** (rama `feature/f3-estadisticas`, DEC-47): estadísticas y rachas, compartir.
+- **Siguiente** (`feature/f3-ayuda-ajustes`): Ayuda (con los créditos de fuentes y gráficos y el aviso legal) y Ajustes con «Borrar datos locales» (hoy se borran a mano, ver README); sin tema claro/oscuro; en escritorio, el juego enmarcado (estilo consola). La velocidad del combate pasa también a Ajustes y se guarda entre sesiones (decisión de Jose).
+- **Después** (`feature/f3-sonido`): música y efectos de sonido.
 
 ## Fases futuras (tras F3; PRD §0)
 - **Modo PWT:** 7 entrenadores aleatorios seguidos con el mismo equipo. Libre y repetible sin límite (no es diario). Por definir: curación entre combates, si cuenta para estadísticas.

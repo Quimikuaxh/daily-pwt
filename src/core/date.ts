@@ -27,3 +27,8 @@ export function msUntilNextLocalMidnight(now: Date): number {
   const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
   return nextMidnight.getTime() - now.getTime()
 }
+
+/** Suma (o resta) días a 'YYYY-MM-DD' sin depender de la zona horaria. */
+export function addDays(date: string, days: number): string {
+  return new Date(utcDay(date) + days * MS_PER_DAY).toISOString().slice(0, 10)
+}

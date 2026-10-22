@@ -13,8 +13,8 @@ import type { EngineEnd } from '../../battle/protocol'
 // DEC-43 · PRD §10.1: «Combate oficial» (Jugar / Reanudar / resultado) y «Práctica».
 const data = makeGameData()
 const challenge = getDailyChallenge(LAUNCH, data)
-const WIN: EngineEnd = { result: 'win', reason: 'faint', turns: 23, playerAlive: 4, rivalFainted: 6 }
-const LOSS: EngineEnd = { result: 'loss', reason: 'forfeit', turns: 5, playerAlive: 6, rivalFainted: 0 }
+const WIN: EngineEnd = { result: 'win', reason: 'faint', turns: 23, playerAlive: 4, rivalFainted: 6, playerFainted: [false, true, false, false, true, false] }
+const LOSS: EngineEnd = { result: 'loss', reason: 'forfeit', turns: 5, playerAlive: 6, rivalFainted: 0, playerFainted: [false, false, false, false, false, false] }
 
 beforeEach(() => {
   vi.useFakeTimers()
@@ -143,5 +143,25 @@ describe('avisos', () => {
   it('con almacenamiento no hay aviso', () => {
     mount(new LocalStorageStore(new MemoryStorage()))
     expect(screen.queryByText(/no deja guardar datos/i)).toBeNull()
+  })
+})
+
+describe('Estadísticas desde Hoy (F3)', () => {
+  it('el botón de la cabecera abre Estadísticas con el historial y, si el oficial de hoy terminó, Compartir', async () => {
+    const store = savedStore()
+    store.finishOfficial(LAUNCH, WIN, new Date().toISOString())
+    const { user } = mount(store)
+    await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
+    const dialog = screen.getByRole('dialog', { name: 'Estadísticas' })
+    expect(dialog).toHaveTextContent(/Jugados\s*1/)
+    expect(screen.getByTestId('stats-win-percent')).toHaveTextContent('100')
+    expect(screen.getByRole('button', { name: 'Compartir' })).toBeInTheDocument()
+  })
+
+  it('sin oficiales terminados: mensaje de vacío y sin Compartir', async () => {
+    const { user } = mount(new LocalStorageStore(new MemoryStorage()))
+    await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
+    expect(screen.getByRole('dialog')).toHaveTextContent(/Aún no has terminado ningún combate oficial/)
+    expect(screen.queryByRole('button', { name: 'Compartir' })).toBeNull()
   })
 })

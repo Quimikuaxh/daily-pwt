@@ -19,6 +19,8 @@ test.describe('Accesibilidad (axe, WCAG 2 A/AA, incluye contraste)', () => {
     await today.rivalToggle.click()
     await today.chooseLead(1)
     expect(await seriousViolations(page), 'Hoy con paneles y selección').toEqual([])
+    await page.getByRole('button', { name: 'Estadísticas' }).click()
+    expect(await seriousViolations(page), 'Estadísticas').toEqual([])
   })
 
   test('E2E-11 Combate, diálogo y Resultado', async ({ page }) => {

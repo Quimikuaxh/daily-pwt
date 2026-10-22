@@ -422,6 +422,16 @@ describe('fin del combate (INT-09, INT-10, INT-11, UT-50)', () => {
     expect([g.last.ended?.result, g.last.ended?.playerAlive]).toEqual(['loss', 0])
   })
 
+  it('playerFainted va en el orden del equipo del reto, no en el del simulador (inicial delante)', () => {
+    const killer = mon('garchomp', ['earthquake', 'outrage', 'stoneedge', 'swordsdance'], { ability: 'roughskin' })
+    const team = ['snorlax', 'blissey', 'chansey', 'magikarp', 'lapras', 'vaporeon'].map((s) => filler(s))
+    const e = make({ player: team, playerLead: 3, rival: withLead(killer), ai: 'trivial' })
+    e.start()
+    const afterHit = e.choose(moveOf(1))
+    expect(afterHit.view.player.team[0]).toMatchObject({ species: 'magikarp', fainted: true })
+    expect(e.forfeit().ended?.playerFainted).toEqual([false, false, false, true, false, false])
+  })
+
   it('el límite de turnos con maxTurns=3: los turnos 1 a 3 siguen y tras resolver el tercero termina', () => {
     const e = stall({ maxTurns: 3 })
     e.start()

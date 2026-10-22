@@ -41,13 +41,17 @@ function isDayRecord(value: unknown, date: string): value is DayRecord {
   if (!STATUSES.includes(value.status as DayStatus)) return false
   if (!(value.finishedAt === null || isText(value.finishedAt)) || !isNullableCount(value.turns) || !isNullableCount(value.survivors) || !isNullableCount(value.rivalFainted)) return false
   if (!(value.endReason === null || isText(value.endReason)) || !(value.voidReason === null || isText(value.voidReason))) return false
+  if (!(value.playerFainted === undefined || value.playerFainted === null || (Array.isArray(value.playerFainted) && value.playerFainted.every((item) => typeof item === 'boolean')))) return false
   const inProgress = value.status === 'inProgress'
   return inProgress ? isSavedBattle(value.battle) : value.battle === null
 }
 
+/** Los días guardados antes de F3 no traen `playerFainted`: se leen como `null` (sin casillas al compartir). */
+const withDefaults = (record: DayRecord): DayRecord => ({ ...record, playerFainted: record.playerFainted ?? null })
+
 /** Un día cuyo registro no se puede leer: el intento queda gastado (no se regala otro) pero sin resultado inventado. */
 function corruptDay(date: string, nowIso: string): DayRecord {
-  return { date, challengeNumber: 0, trainerId: '', variantId: '', dataVersion: '', status: 'void', startedAt: nowIso, finishedAt: nowIso, turns: null, survivors: null, rivalFainted: null, endReason: null, voidReason: 'corrupt', battle: null }
+  return { date, challengeNumber: 0, trainerId: '', variantId: '', dataVersion: '', status: 'void', startedAt: nowIso, finishedAt: nowIso, turns: null, survivors: null, playerFainted: null, rivalFainted: null, endReason: null, voidReason: 'corrupt', battle: null }
 }
 
 const emptyFile = (): StoredFile => ({ version: SCHEMA_VERSION, days: {} })
@@ -103,7 +107,7 @@ export class LocalStorageStore implements GameStore {
     const nowIso = this.now().toISOString()
     for (const [date, entry] of Object.entries(parsed.days)) {
       if (!DATE_PATTERN.test(date)) continue
-      this.file.days[date] = isDayRecord(entry, date) ? entry : corruptDay(date, nowIso)
+      this.file.days[date] = isDayRecord(entry, date) ? withDefaults(entry) : corruptDay(date, nowIso)
     }
   }
 
@@ -159,6 +163,7 @@ export class LocalStorageStore implements GameStore {
       finishedAt: null,
       turns: null,
       survivors: null,
+      playerFainted: null,
       rivalFainted: null,
       endReason: null,
       voidReason: null,
@@ -195,6 +200,7 @@ export class LocalStorageStore implements GameStore {
     record.finishedAt = finishedAt
     record.turns = ended.turns
     record.survivors = ended.playerAlive
+    record.playerFainted = [...ended.playerFainted]
     record.rivalFainted = ended.rivalFainted
     record.endReason = ended.reason
     record.battle = null

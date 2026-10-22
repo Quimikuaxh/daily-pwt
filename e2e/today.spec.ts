@@ -27,8 +27,9 @@ test.describe('Pantalla Hoy', () => {
     }
     await expect(footer).toContainText('no oficial')
 
-    // Sin iconos de Estadísticas/Ayuda/Ajustes (F3); los botones de combate son el oficial y la práctica.
-    await expect(page.getByRole('button', { name: /Estadísticas|Ayuda|Ajustes/ })).toHaveCount(0)
+    // F3 (DEC-47): acceso a Estadísticas en la cabecera; Ayuda y Ajustes llegan en su rama. Los botones de combate son el oficial y la práctica.
+    await expect(page.getByRole('banner').getByRole('button', { name: 'Estadísticas' })).toHaveCount(1)
+    await expect(page.getByRole('button', { name: /Ayuda|Ajustes/ })).toHaveCount(0)
     await expect(page.getByRole('button', { name: /^(Combate oficial|Práctica)/ }), 'botones de combate: oficial y práctica').toHaveCount(2)
 
     // Todas las imágenes cargan (sprites del repo).

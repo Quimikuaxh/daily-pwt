@@ -38,6 +38,8 @@ export type DayRecord = {
   turns: number | null
   /** Pokémon del jugador en pie al terminar. */
   survivors: number | null
+  /** Debilitado o no cada Pokémon del jugador al terminar, en el orden del equipo (casillas de compartir). `null` en los días guardados antes de F3. */
+  playerFainted: boolean[] | null
   rivalFainted: number | null
   endReason: EndReason | null
   voidReason: VoidReason | null

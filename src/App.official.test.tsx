@@ -17,8 +17,8 @@ vi.mock('./battle/seed', () => {
 })
 
 const data = makeGameData()
-const WIN = { result: 'win', reason: 'faint', turns: 10, playerAlive: 3, rivalFainted: 6 }
-const LOSS_FORFEIT = { result: 'loss', reason: 'forfeit', turns: 2, playerAlive: 3, rivalFainted: 0 }
+const WIN = { result: 'win', reason: 'faint', turns: 10, playerAlive: 3, rivalFainted: 6, playerFainted: [true, false, true, false, true, false] }
+const LOSS_FORFEIT = { result: 'loss', reason: 'forfeit', turns: 2, playerAlive: 3, rivalFainted: 0, playerFainted: [true, true, true, false, false, false] }
 let clients: MockClient[] = []
 let storage: MemoryStorage
 
@@ -181,7 +181,7 @@ describe('prácticas', () => {
     await user.click(screen.getByRole('button', { name: /volver a hoy/i }))
     await chooseLead(user, 0)
     await user.click(practice())
-    clients[1].emit(mkUpdate({ request: null, ended: { ...WIN, result: 'loss', playerAlive: 0 } }))
+    clients[1].emit(mkUpdate({ request: null, ended: { ...WIN, result: 'loss', playerAlive: 0, playerFainted: [true, true, true, true, true, true] } }))
     await settle()
     expect(JSON.stringify(store().listDays())).toBe(before)
   })

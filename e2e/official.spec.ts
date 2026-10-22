@@ -118,6 +118,32 @@ test.describe('Combate oficial: un intento por día', () => {
     expect(await storedDays(page), 'las prácticas no tocan lo guardado').toEqual(saved)
   })
 
+  test('E2E-60 tras el oficial: estadísticas actualizadas y Compartir copia el texto sin spoilers; Estadísticas también desde Hoy', async ({ page, context, browserName }) => {
+    const { battle, today } = await startBattle(page, { seed: 'a' })
+    await battle.maxSpeed()
+    await battle.waitForActionOrResult()
+    await forfeit(page, battle)
+    await expect(page.getByTestId('stats-played')).toHaveText('1')
+    await expect(page.getByTestId('stats-win-percent')).toHaveText('0')
+    await expect(page.getByTestId('stats-day-streak')).toHaveText('1')
+    // Sin Web Share API en escritorio: va al portapapeles (permiso solo concedible en Chromium).
+    if (browserName === 'chromium') {
+      await context.grantPermissions(['clipboard-read', 'clipboard-write'])
+      await page.getByRole('button', { name: 'Compartir' }).click()
+      await expect(page.getByRole('status').filter({ hasText: /copiado/i })).toBeVisible()
+      const copied = await page.evaluate(() => navigator.clipboard.readText())
+      expect(copied).toMatch(/^Daily PWT #\d+\n❌ Derrota \(\d\/6 rivales debilitados\)\n[🟩🟥]{6}\n🔥 Racha: 0\nhttps:\/\/quimikuaxh\.github\.io\/daily-pwt\/$/u)
+      expect(copied, 'sin el nombre del rival').not.toMatch(new RegExp(DEFAULT_SCENARIO.trainer, 'i'))
+    }
+    await page.getByRole('button', { name: 'Volver a Hoy' }).click()
+    await today.challengeNumber.waitFor()
+    await page.getByRole('button', { name: 'Estadísticas' }).click()
+    await expect(page.getByRole('dialog', { name: 'Estadísticas' })).toBeVisible()
+    await expect(page.getByTestId('stats-played')).toHaveText('1')
+    await page.keyboard.press('Escape')
+    await expect(page.getByRole('dialog')).toHaveCount(0)
+  })
+
   test('E2E-55 una práctica antes del oficial no lo gasta ni se reanuda al recargar', async ({ page }) => {
     const today = new TodayPage(page)
     await today.goto(DEFAULT_SCENARIO, 'seed=a&ai=trivial')

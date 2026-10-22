@@ -18,7 +18,7 @@ vi.mock('./battle/seed', () => {
 })
 
 const data = makeGameData()
-const WIN = { result: 'win', reason: 'faint', turns: 10, playerAlive: 3, rivalFainted: 6 }
+const WIN = { result: 'win', reason: 'faint', turns: 10, playerAlive: 3, rivalFainted: 6, playerFainted: [true, false, true, false, true, false] }
 let clients: MockClient[] = []
 
 beforeEach(() => {
