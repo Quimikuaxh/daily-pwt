@@ -183,7 +183,7 @@ test.describe('Combate', () => {
   })
 
   // Cambio de requisito (22/10/2026): el hueco de la Mochila es RIVAL y abre el equipo rival solo para consultarlo.
-  test('E2E-23 RIVAL abre el equipo del rival: 6 placas con PS en %, Datos sí, Cambiar no, y Datos enseña solo los PP máximos', async ({ page }) => {
+  test('E2E-23 RIVAL abre el equipo del rival: 6 placas con PS en %, Datos sí, Cambiar no, y Datos enseña los PP que le quedan (x/y)', async ({ page }) => {
     const { battle } = await startBattle(page, { seed: 'a' })
     await battle.waitForActionOrResult()
     await page.getByRole('button', { name: 'Ver el equipo rival' }).click()
@@ -197,7 +197,7 @@ test.describe('Combate', () => {
     await page.locator('.bt-summary:not([data-loading])').waitFor()
     await page.keyboard.press('ArrowRight')
     await page.keyboard.press('ArrowRight')
-    await expect(page.locator('.bt-sum-slot-pp-value').first()).toHaveText(/^\d+$/)
+    await expect(page.locator('.bt-sum-slot-pp-value').first()).toHaveText(/^\d+\/\d+$/)
     // Escape: de Movimientos a Habilidades, cierra Datos y cierra el equipo rival.
     await page.keyboard.press('Escape')
     await page.keyboard.press('Escape')

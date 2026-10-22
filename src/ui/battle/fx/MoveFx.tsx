@@ -57,8 +57,8 @@ export function MoveFx({ event, type, points, speed, fieldRef }: MoveFxProps) {
     const context = canvas?.getContext('2d')
     if (!event || !canvas || !context) return
     const kind = kindOf(event.moveId)
-    const effect = effectFor(event.moveId, kind)
     const { points: at, speed: rate, type: moveType } = latest.current
+    const effect = effectFor(event.moveId, kind, moveType ?? undefined)
     const opponent = event.user === 'player' ? 'rival' : 'player'
     const user = at[event.user]
     const target = SELF_KINDS.has(kind) ? at[event.user] : at[opponent]

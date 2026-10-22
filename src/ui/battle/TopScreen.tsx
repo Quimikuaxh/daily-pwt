@@ -1,4 +1,4 @@
-import { useRef, type CSSProperties } from 'react'
+import { Suspense, lazy, useRef, type CSSProperties } from 'react'
 import type { BattleView, MonView } from '../../battle/protocol'
 import type { Challenge, GameData } from '../../core/types'
 import type { IntroPhase, SwitchAnimation } from '../../hooks/useBattle'
@@ -9,11 +9,14 @@ import { DataBox } from './DataBox'
 import { IntroLayer, IrisWipe } from './IntroLayer'
 import { MessageBox } from './MessageBox'
 import { resolveHiddenPowerId } from '../../core/hiddenPower'
-import { MoveFx, type MoveFxEvent } from './fx/MoveFx'
+import type { MoveFxEvent } from './fx/MoveFx'
 import { genderOfSpecies, speciesLabel } from './battleModel'
 import { uiAsset, type Avatar } from './introAssets'
 import { backSpriteHeight, PLAYER_SPRITE_SCALE, playerSpriteBottom, playerSpriteScale } from './playerSpriteAnchor'
 import { playerHandPoint, playerLandingPoint, rivalHandPoint, rivalLandingPoint } from './throwGeometry'
+
+// Las animaciones de movimientos (DEC-53) van en su propio trozo: no pesan en la ruta crítica de Hoy (E2E-21) y se cargan durante la intro.
+const MoveFx = lazy(() => import('./fx/MoveFx').then((module) => ({ default: module.MoveFx })))
 
 type TopScreenProps = {
   view: BattleView | null
@@ -84,13 +87,15 @@ export function TopScreen({ view, data, challenge, introPhase, switchAnim, avata
       {rivalMon && <DataBox side="rival" mon={rivalMon} name={speciesLabel(data.names, rivalMon.species)} testId="rival-hp" gender={genderOfSpecies(challenge.rivalTeam, rivalMon.species)} speed={speed} reducedMotion={reducedMotion} />}
       {playerMon && <DataBox side="player" mon={playerMon} name={speciesLabel(data.names, playerMon.species)} testId="player-hp" gender={genderOfSpecies(challenge.playerTeam, playerMon.species)} speed={speed} reducedMotion={reducedMotion} />}
 
-      <MoveFx
-        event={moveFx}
-        type={moveFx ? moveFxType(moveFx, moveFx.user === 'player' ? playerMon : rivalMon, moveFx.user === 'player' ? challenge.playerTeam : challenge.rivalTeam, data) : null}
-        points={{ player: playerLandingPoint(playerSpriteId), rival: rivalLandingPoint(rivalSpriteId) }}
-        speed={speed ?? 1}
-        fieldRef={fieldRef}
-      />
+      <Suspense fallback={null}>
+        <MoveFx
+          event={moveFx}
+          type={moveFx ? moveFxType(moveFx, moveFx.user === 'player' ? playerMon : rivalMon, moveFx.user === 'player' ? challenge.playerTeam : challenge.rivalTeam, data) : null}
+          points={{ player: playerLandingPoint(playerSpriteId), rival: rivalLandingPoint(rivalSpriteId) }}
+          speed={speed ?? 1}
+          fieldRef={fieldRef}
+        />
+      </Suspense>
       <MessageBox text={message} onAdvance={onAdvance} />
       {(introPhase === 'loading' || introPhase === 'iris') && <IrisWipe />}
     </section>

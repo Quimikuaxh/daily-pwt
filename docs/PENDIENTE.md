@@ -48,8 +48,8 @@ Pistas del PWT disponibles para otras pantallas: "PWT - Final Round!" (`70ebcCUX
 Golpe supereficaz, poco eficaz y neutro al atacar, y los básicos del combate (lanzar y abrir Poké Ball, debilitado). Ripeados de N2/B2 (p. ej. The Sounds Resource), con script reproducible y créditos. Mismo control de silencio y volumen que la música, y nada suena hasta la primera interacción del usuario.
 
 ## Animaciones de movimientos (PRD §0, DEC-53)
-- **Hecho** (rama `feature/animaciones`): genéricas por tipo y clase y 20 propias, por código en píxel, con interruptor en Ajustes.
-- **Siguiente tanda:** más animaciones propias por orden de uso (los 40 más usados cubren ~la mitad de los usos; lista en ARQUITECTURA DEC-53). Revisar con Jose el aspecto de las actuales en partidas reales.
+- **Hecho** (rama `feature/animaciones`): genéricas por tipo y clase y 20 propias, por código en píxel, con interruptor en Ajustes. Mejora (22/10/2026): físicos según cómo golpean (mordisco, puñetazo, patada, corte, golpe) y especiales con un efecto distinto por tipo (chorro de llamas, zigzag eléctrico, hojas, cristales…).
+- **Segunda tanda hecha:** 20 propias más (Enfado, Triturar, A Bocajarro, Tierra Viva, Ventisca, Respiro, Escaldar, Paz Mental, Gigadrenado, Retribución, Tijera X, Corpulencia, Rayo Señal, Fuego Fatuo, Megacuerno, Voltio Cruel, Acróbata, Onda Trueno, Tajo Aéreo y Cascada); 40 en total. Revisar con Jose el aspecto en partidas reales; más tandas, por orden de uso, si él quiere.
 
 ## Pantalla de equipo y de datos
 - **Poder Oculto y los IV del jugador:** como los IV del jugador son iguales en las seis características, su Poder Oculto es siempre Lucha 30, Siniestro 30 o Lucha 70 (DEC-54), aunque el set de Smogon pensara en otro tipo. Si se quiere respetar el tipo previsto habría que darle IV distintos (decisión de producto, ver PRD §0 «IVs, EVs y naturaleza del jugador»).

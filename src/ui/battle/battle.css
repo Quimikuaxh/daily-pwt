@@ -378,8 +378,9 @@
   left: 82px;
 }
 
+/* A la altura de la barra de PS (barra en y 8..13, icono de 6 px en y 8..14), en su columna fija (decisión de Jose). */
 .bt-databox-status {
-  top: 10px;
+  top: 8px;
 }
 
 .bt-databox-rival .bt-databox-status {

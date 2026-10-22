@@ -596,12 +596,51 @@ img.sprite,
   font-variant-numeric: tabular-nums;
 }
 
+/*
+ * Móvil: todo en una fila (decisión de Jose, 22/10/2026). El logo queda en la bola y la cuenta atrás sin «Próximo reto en»; los dos textos
+ * siguen para lectores de pantalla. Iconos de 44 px de ancho (el mínimo táctil), sin relleno de sobra.
+ */
 @media (max-width: 640px) {
   .today-header-inner {
-    grid-template-columns: 1fr auto;
-    grid-template-areas:
-      "logo menu"
-      "info info";
+    grid-template-columns: auto 1fr auto;
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .today-header-inner .logo-text,
+  .today-header-info .countdown-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .today-header-inner .logo-ball {
+    top: 0;
+  }
+
+  .today-header-info {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .today-header-inner .challenge-number {
+    padding: 0 12px;
+  }
+
+  .today-header-inner .countdown-value {
+    padding: 0 8px;
+    font-size: 16px;
+  }
+
+  .today-header-inner .header-actions {
+    gap: 6px;
+  }
+
+  .today-header-inner .header-action {
+    padding: 0;
   }
 }
 

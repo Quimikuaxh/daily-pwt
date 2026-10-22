@@ -27,6 +27,25 @@ test.describe('360 px táctil', () => {
     expect(await smallTargets(page), 'botones menores de 44 px en Hoy').toEqual([])
   })
 
+  test('E2E-67 la cabecera de Hoy cabe en una fila: logo (bola), #N, cuenta atrás e iconos, sin solaparse', async ({ page }) => {
+    const today = new TodayPage(page)
+    await today.goto()
+    const boxes = await page.locator('.today-header-inner .logo-ball, .challenge-number, .countdown-value, .header-action').evaluateAll((elements) =>
+      elements.map((element) => {
+        const box = element.getBoundingClientRect()
+        return { name: element.className, left: box.left, right: box.right, top: box.top, bottom: box.bottom }
+      }),
+    )
+    expect(boxes).toHaveLength(6)
+    const middle = (box: { top: number; bottom: number }) => (box.top + box.bottom) / 2
+    for (const box of boxes) expect(Math.abs(middle(box) - middle(boxes[0])), `${box.name} en la misma fila`).toBeLessThanOrEqual(4)
+    for (let i = 1; i < boxes.length; i += 1) expect(boxes[i].left, `${boxes[i].name} no pisa a ${boxes[i - 1].name}`).toBeGreaterThanOrEqual(boxes[i - 1].right)
+    expect(boxes[boxes.length - 1].right).toBeLessThanOrEqual(360)
+    // Los textos ocultos a la vista siguen para lectores de pantalla.
+    await expect(page.getByRole('heading', { level: 1, name: 'Daily PWT' })).toBeAttached()
+    await expect(page.locator('.today-header .countdown')).toContainText('Próximo reto en')
+  })
+
   test('E2E-12 jugable con tap: combate completo, menús y diálogo', async ({ page }) => {
     const { battle } = await startBattle(page, { seed: 'a', tap: true })
     await battle.waitForActionOrResult()

@@ -1,4 +1,4 @@
-import type { BattleRequest, BattleView, RequestPokemon } from '../../../battle/protocol'
+import type { BattleRequest, BattleView, MonView, RequestPokemon } from '../../../battle/protocol'
 import { isFaintedCondition } from '../../../battle/condition'
 import { calcStats, natureEffect } from '../../../core/stats'
 import { toId } from '../../../core/id'
@@ -65,8 +65,8 @@ function partyMove(moveId: string, data: GameData, ivs: StatsTable | undefined):
   return { ...model, pp: fullPp, maxPp: fullPp, basePower: Number(model.power) || 0, category: dexMove?.category ?? null }
 }
 
-function partyMoves(moveIds: readonly string[], data: GameData, view: BattleView | null, speciesId: string, ivs: StatsTable | undefined): PartyMove[] {
-  const viewMon = view?.player.team.find((mon) => mon.species === speciesId)
+/** Movimientos con los PP que le quedan según la vista del combate (llenos si aún no hay vista). */
+function partyMoves(moveIds: readonly string[], data: GameData, viewMon: MonView | undefined, ivs: StatsTable | undefined): PartyMove[] {
   return moveIds.map((moveId, index) => {
     const slot = viewMon?.moves?.[index]
     const full = partyMove(moveId, data, ivs)
@@ -124,7 +124,7 @@ export function partyMembers(request: BattleRequest | null, view: BattleView | n
         natureUp: natureEffects?.up ?? null,
         natureDown: natureEffects?.down ?? null,
         stats,
-        moves: partyMoves(set?.moves ?? member.moves ?? [], data, view, speciesId, set?.ivs),
+        moves: partyMoves(set?.moves ?? member.moves ?? [], data, view?.player.team.find((mon) => mon.species === speciesId), set?.ivs),
       },
     ]
   })
@@ -132,7 +132,7 @@ export function partyMembers(request: BattleRequest | null, view: BattleView | n
 
 /**
  * Equipo del rival para consultarlo (botón RIVAL; decisiones de Jose del 22/10/2026): los 6 en el orden del motor, con su set completo
- * (Hoy ya lo enseña), PS en porcentaje y solo los PP máximos de cada movimiento (no cuántos ha gastado).
+ * (Hoy ya lo enseña), PS en porcentaje y los PP que le quedan a cada movimiento.
  */
 export function rivalMembers(view: BattleView | null, data: GameData, team: readonly ResolvedSet[]): PartyMember[] {
   return team.flatMap((set, index) => {
@@ -166,7 +166,7 @@ export function rivalMembers(view: BattleView | null, data: GameData, team: read
         natureUp: natureEffects?.up ?? null,
         natureDown: natureEffects?.down ?? null,
         stats: calcStats(species.baseStats, set.ivs, set.evs, set.nature, set.level),
-        moves: set.moves.map((moveId) => ({ ...partyMove(moveId, data, set.ivs), pp: null })),
+        moves: partyMoves(set.moves, data, mon, set.ivs),
       },
     ]
   })

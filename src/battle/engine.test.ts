@@ -67,12 +67,13 @@ describe('formato de salida (INT-04, INT-16)', () => {
     expect(m.maxHp).toBeGreaterThan(100)
   })
 
-  it('la vista del jugador trae los PP de sus movimientos y la del rival no trae ninguno (pantalla de datos)', () => {
+  it('las vistas de los dos bandos traen los PP de sus movimientos (pantalla de datos y botón RIVAL)', () => {
     const view = game.updates[0].view
     const playerMon = view.player.team[0]
     expect(playerMon.moves).toHaveLength(4)
     for (const move of playerMon.moves ?? []) expect(move.maxPp).toBeGreaterThan(0)
-    expect(view.rival.team.some((mon: any) => 'moves' in mon)).toBe(false)
+    // Cambio de requisito (22/10/2026, Jose): el botón RIVAL enseña los PP que le quedan al rival.
+    for (const mon of view.rival.team) expect(mon.moves).toHaveLength(4)
   })
 
   it('los PP actuales bajan al usar un movimiento', () => {

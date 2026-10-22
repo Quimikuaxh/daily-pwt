@@ -105,8 +105,9 @@ export function createBattleEngine(init: EngineInit): BattleEngine {
       if (exact) {
         view.hp = pokemon.hp
         view.maxHp = pokemon.maxhp
-        view.moves = pokemon.moveSlots.map((slot) => ({ id: slot.id, pp: slot.pp, maxPp: slot.maxpp }))
       }
+      // PP de los dos bandos (los del rival, para el botón RIVAL: decisión de Jose). Los del simulador ya cuentan Presión.
+      view.moves = pokemon.moveSlots.map((slot) => ({ id: slot.id, pp: slot.pp, maxPp: slot.maxpp }))
       return view
     })
     return { remaining: team.filter((mon) => !mon.fainted).length, active: roster.indexOf(side.active[0]), team }

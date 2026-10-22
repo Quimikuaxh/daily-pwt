@@ -9,7 +9,7 @@ export function TodayHeader({ challengeNumber, countdown, menu, date }: TodayHea
       <div className="today-header-inner">
         <h1 className="logo" translate="no">
           <span className="logo-ball" aria-hidden="true" />
-          {es.app.name}
+          <span className="logo-text">{es.app.name}</span>
         </h1>
         <div className="today-header-info">
           {challengeNumber !== null && <p className="challenge-number">{es.today.challengeNumber(challengeNumber)}</p>}

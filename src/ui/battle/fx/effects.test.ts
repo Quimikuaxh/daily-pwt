@@ -1,12 +1,17 @@
 import { describe, expect, it } from 'vitest'
 import moveFxKinds from '../../../generated/move-fx.json'
 import { Prng } from '../../../core/prng'
-import { CUSTOM_EFFECTS, effectFor, GENERIC_EFFECTS, type Effect, type FxKind } from './effects'
+import { CUSTOM_EFFECTS, effectFor, GENERIC_EFFECTS, SPECIAL_BY_TYPE, type Effect, type FxKind } from './effects'
 import { fxColorsFor } from './fxColors'
 
 // UT-69 · Animaciones de movimientos (DEC-53).
 const TEXT_PAUSE_MS = 1100
-const all: [string, Effect][] = [...Object.entries(GENERIC_EFFECTS), ...Object.entries(CUSTOM_EFFECTS)]
+const TYPES = ['Normal', 'Fire', 'Water', 'Grass', 'Electric', 'Ice', 'Fighting', 'Poison', 'Ground', 'Flying', 'Psychic', 'Bug', 'Rock', 'Ghost', 'Dragon', 'Dark', 'Steel']
+const all: [string, Effect][] = [
+  ...Object.entries(GENERIC_EFFECTS),
+  ...Object.entries(SPECIAL_BY_TYPE).map(([type, effect]): [string, Effect] => [`especial ${type}`, effect]),
+  ...Object.entries(CUSTOM_EFFECTS),
+]
 
 function drawn(effect: Effect, progress: number, seed = 'x') {
   const dots: { x: number; y: number; size: number }[] = []
@@ -56,17 +61,30 @@ describe('efectos de movimientos', () => {
     }
   })
 
-  it('20 movimientos con animación propia; el resto usa la genérica de su clase (Poder Oculto de cualquier tipo, la suya)', () => {
-    expect(Object.keys(CUSTOM_EFFECTS)).toHaveLength(20)
+  it('40 movimientos con animación propia (dos tandas de 20); el resto usa la genérica de su clase (Poder Oculto de cualquier tipo, la suya)', () => {
+    expect(Object.keys(CUSTOM_EFFECTS)).toHaveLength(40)
+    expect(effectFor('crunch', 'bite', 'Dark')).toBe(CUSTOM_EFFECTS.crunch)
     expect(effectFor('earthquake', 'hit')).toBe(CUSTOM_EFFECTS.earthquake)
     expect(effectFor('hiddenpowerfire', 'shot')).toBe(CUSTOM_EFFECTS.hiddenpower)
     expect(effectFor('tackle', 'hit')).toBe(GENERIC_EFFECTS.hit)
-    expect(effectFor('calmmind', 'boost')).toBe(GENERIC_EFFECTS.boost)
+    expect(effectFor('nastyplot', 'boost')).toBe(GENERIC_EFFECTS.boost)
+    expect(effectFor('firefang', 'bite', 'Fire')).toBe(GENERIC_EFFECTS.bite)
+  })
+
+  it('los ataques especiales sin animación propia usan la de su tipo (cada tipo, la suya; Lanzallamas no son bolas)', () => {
+    expect(Object.keys(SPECIAL_BY_TYPE).sort()).toEqual([...TYPES].sort())
+    expect(new Set(Object.values(SPECIAL_BY_TYPE)).size).toBe(TYPES.length)
+    expect(effectFor('flamethrower', 'shot', 'Fire')).toBe(SPECIAL_BY_TYPE.Fire)
+    expect(effectFor('surf', 'shot', 'Water')).toBe(SPECIAL_BY_TYPE.Water)
+    expect(effectFor('icebeam', 'shot', 'Ice')).toBe(CUSTOM_EFFECTS.icebeam)
+    expect(effectFor('flamethrower', 'shot')).toBe(GENERIC_EFFECTS.shot)
   })
 
   it('move-fx.json: cada movimiento tiene una clase conocida y los de estado están bien clasificados', () => {
     const kinds = moveFxKinds as Record<string, FxKind>
     for (const kind of Object.values(kinds)) expect(Object.keys(GENERIC_EFFECTS)).toContain(kind)
     expect(kinds).toMatchObject({ earthquake: 'hit', icebeam: 'shot', swordsdance: 'boost', toxic: 'status', recover: 'heal', protect: 'protect', substitute: 'substitute', raindance: 'weather', stealthrock: 'hazard', reflect: 'screen' })
+    // Físicos según cómo golpean: muerden, puñetazo, patada, corte; el resto, golpe.
+    expect(kinds).toMatchObject({ crunch: 'bite', icepunch: 'punch', highjumpkick: 'kick', xscissor: 'slash', closecombat: 'hit', flamethrower: 'shot' })
   })
 })

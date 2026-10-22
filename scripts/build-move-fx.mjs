@@ -9,11 +9,19 @@ const HEALING = new Set(['recover', 'roost', 'softboiled', 'milkdrink', 'moonlig
 const SELF_TARGETS = new Set(['self', 'allySide', 'allyTeam', 'adjacentAllyOrSelf'])
 
 /**
- * Animación genérica de cada movimiento de estado según lo que hace (los de daño se animan por categoría: golpe físico o disparo especial).
+ * Animación genérica de cada movimiento según lo que hace: los físicos por cómo golpean (mordisco, puñetazo, corte, patada u otro golpe),
+ * los especiales por su tipo (en el cliente) y los de estado por su efecto.
  * Solo los movimientos que pueden salir en el juego (rivales del PWT y pool del jugador): el fichero va con el combate, no con Hoy.
  */
 export function fxKindOf(move) {
-  if (move.category === 'Physical') return 'hit'
+  if (move.category === 'Physical') {
+    if (move.flags?.bite) return 'bite'
+    if (move.flags?.punch) return 'punch'
+    if (move.flags?.slicing) return 'slash'
+    // Las patadas no llevan marca en los datos: por el nombre (Patada Ígnea, Patada Salto…).
+    if (/kick/i.test(move.name)) return 'kick'
+    return 'hit'
+  }
   if (move.category === 'Special') return 'shot'
   if (move.weather) return 'weather'
   if (move.stallingMove) return 'protect'

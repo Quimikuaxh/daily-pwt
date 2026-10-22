@@ -111,7 +111,13 @@ describe('rivalMembers', () => {
       rival: {
         remaining: 5,
         active: 1,
-        team: rivalTeam.map((set, index) => ({ species: set.species, hpPercent: index === 0 ? 0 : index === 1 ? 64 : 100, status: index === 2 ? 'par' : null, fainted: index === 0 })),
+        team: rivalTeam.map((set, index) => ({
+          species: set.species,
+          hpPercent: index === 0 ? 0 : index === 1 ? 64 : 100,
+          status: index === 2 ? 'par' : null,
+          fainted: index === 0,
+          moves: index === 1 ? set.moves.map((id, slot) => ({ id, pp: 10 - slot, maxPp: 16 })) : undefined,
+        })),
       },
     }
   }
@@ -136,12 +142,13 @@ describe('rivalMembers', () => {
     expect(third.status).toBe('par')
   })
 
-  it('solo los PP máximos: no se revela cuántos ha gastado', () => {
-    for (const member of rivalMembers(view(), realData, rivalTeam)) {
-      for (const move of member.moves) {
-        expect(move.pp).toBeNull()
-        expect(move.maxPp).toBeGreaterThan(0)
-      }
+  // Cambio de requisito (22/10/2026, Jose): antes solo los PP máximos; ahora los que le quedan.
+  it('los PP que le quedan, desde la vista del combate; llenos si la vista no los trae', () => {
+    const [first, second] = rivalMembers(view(), realData, rivalTeam)
+    expect(second.moves.map((move) => [move.pp, move.maxPp])).toEqual(second.moves.map((_, slot) => [10 - slot, 16]))
+    for (const move of first.moves) {
+      expect(move.maxPp).toBeGreaterThan(0)
+      expect(move.pp).toBe(move.maxPp)
     }
   })
 })

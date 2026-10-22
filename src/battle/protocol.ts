@@ -52,7 +52,7 @@ export type MonView = {
   /** Solo el bando del jugador conoce los PS reales. */
   hp?: number
   maxHp?: number
-  /** Solo el jugador: PP actuales y máximos de sus movimientos, en el orden del set (pantalla de datos). */
+  /** PP actuales y máximos de sus movimientos, en el orden del set (pantalla de datos; los del rival, en el botón RIVAL). */
   moves?: { id: string; pp: number; maxPp: number }[]
 }
 
