@@ -1,0 +1,46 @@
+{
+  "en": {
+    "moves": {
+      "Hi Jump Kick": "highjumpkick",
+      "Thunderpunc": "thunderpunch",
+      "Wood Hamme": "woodhammer"
+    }
+  },
+  "es": {
+    "abilities": {
+      "Foco interno": "innerfocus",
+      "Resquicio": "aftermath",
+      "Rastro": "trace"
+    },
+    "items": {
+      "Cinta elegida": "choiceband",
+      "Cinta xperto": "expertbelt",
+      "Gafas elegid": "choicespecs",
+      "Pañuelo elegido": "choicescarf",
+      "Gema eléctrico": "electricgem",
+      "Gema eléctrico]": "electricgem",
+      "Gema psíquico": "psychicgem",
+      "Gema siniestro": "darkgem",
+      "Gema volador": "flyinggem"
+    },
+    "moves": {
+      "Amortiguador": "softboiled",
+      "Cabezahierro": "ironhead",
+      "Canto helado": "iceshard",
+      "Contador": "counter",
+      "Contoneo": "swagger",
+      "Desenrollar": "rollout",
+      "Doble rayo": "signalbeam",
+      "Foco resplandor": "flashcannon",
+      "Golpe": "thrash",
+      "Imagen": "facade",
+      "Rapidez": "swift",
+      "Recurrente": "bulletseed",
+      "Retroceso": "return",
+      "Rodillo púas": "steamroller",
+      "Síntesis": "synthesis",
+      "Torbellino/Remolino": "whirlwind",
+      "Tormenta arena": "sandstorm"
+    }
+  }
+}

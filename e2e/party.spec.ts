@@ -1,13 +1,13 @@
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
-import { D0, openParty, openSummary, stageScale, startBattle } from './support'
+import { MISTY, openParty, openSummary, stageScale, startBattle } from './support'
 
 // RF-70 / RF-71: menú de equipo y pantalla de datos del Pokémon (en combate).
 const optionsGroup = (page: import('@playwright/test').Page) => page.getByRole('group', { name: /Qué hacer con/ })
 
 test.describe('Menú de equipo y datos', () => {
   test('E2E-25 abrir el equipo desde el combate: 6 placas con nombre, nivel, PS y estado; Volver regresa', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.waitForActionOrResult()
     await openParty(page)
     const panels = page.locator('.bt-party-panel')
@@ -22,7 +22,7 @@ test.describe('Menú de equipo y datos', () => {
   })
 
   test('E2E-25 elegir Pokémon: Cambiar / Datos / Cancelar, y cambiar desde el menú envía el cambio', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.maxSpeed()
     await battle.waitForActionOrResult()
     const leadName = await page.getByTestId('player-hp').locator('.bt-databox-name').textContent()
@@ -37,7 +37,7 @@ test.describe('Menú de equipo y datos', () => {
   })
 
   test('E2E-26 Datos: tres páginas con navegación por botones y teclado, Volver y Cerrar', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.waitForActionOrResult()
     await openParty(page)
     await openSummary(page, 1)
@@ -71,8 +71,8 @@ test.describe('Menú de equipo y datos', () => {
   })
 
   test('E2E-26 los PS actuales y los PP de Datos reflejan el combate', async ({ page }) => {
-    // 2026-10-20: tras el primer movimiento no hay cambio forzado (en D0 sí, y la pantalla de equipo ya estaría abierta).
-    const { battle } = await startBattle(page, { date: '2026-10-20', seed: 'a' })
+    // Misty: tras el primer movimiento no hay cambio forzado (contra Plubio, el escenario por defecto, sí, y la pantalla de equipo ya estaría abierta).
+    const { battle } = await startBattle(page, { scenario: MISTY, seed: 'a' })
     await battle.maxSpeed()
     await battle.waitForActionOrResult()
     await battle.chooseFirstMove()
@@ -90,7 +90,7 @@ test.describe('Menú de equipo y datos', () => {
   })
 
   test('E2E-27 cambio forzado: sin cancelar, con Datos disponible', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.maxSpeed()
     for (let guard = 0; guard < 60; guard += 1) {
       const state = await battle.waitForActionOrResult()
@@ -112,7 +112,7 @@ test.describe('Menú de equipo y datos', () => {
   })
 
   test('E2E-28 accesibilidad (axe) del equipo, del menú y de las tres páginas de datos', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.waitForActionOrResult()
     await openParty(page)
     const violations = async (where: string) => {
@@ -131,7 +131,7 @@ test.describe('Menú de equipo y datos', () => {
   })
 
   test('E2E-29 teclado: Tab llega a las placas, Enter abre el menú y Escape lo cierra devolviendo el foco', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.waitForActionOrResult()
     await openParty(page)
     const panel = page.locator('.bt-party-panel').nth(2)
@@ -146,7 +146,7 @@ test.describe('Menú de equipo y datos', () => {
   })
 
   test('el lienzo del combate usa escala entera desde x2 y las pantallas de equipo y datos escalan con él', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.waitForActionOrResult()
     const scale = await stageScale(page)
     expect(scale).toBeGreaterThanOrEqual(1)
@@ -162,7 +162,7 @@ test.describe('Menú de equipo y datos', () => {
 
 test.describe('Cambio animado', () => {
   test('E2E-35 el cambio voluntario muestra al entrenador, la bola y el rayo y no bloquea el turno', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.waitForActionOrResult()
     await openParty(page)
     await battle.chooseSubstitute()
@@ -186,7 +186,7 @@ test.describe('Cambio animado con movimiento reducido', () => {
   test.use({ reducedMotion: 'reduce' })
 
   test('E2E-35 con prefers-reduced-motion no se dibujan ni entrenador ni bola', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.waitForActionOrResult()
     await openParty(page)
     await battle.chooseSubstitute()
@@ -197,7 +197,7 @@ test.describe('Cambio animado con movimiento reducido', () => {
 
 test.describe('Equipo: texto centrado en la placa', () => {
   test('E2E-43 las mayúsculas del nombre, el nivel y los PS quedan centradas en su franja de la placa (≤ 1 px nativo)', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.waitForActionOrResult()
     await openParty(page)
     const measured = await page.locator('.bt-party-panel').first().evaluate(async (panelElement) => {

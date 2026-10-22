@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { BATTLE_DATABOX_IMAGES, BATTLE_UI_IMAGES, PARTY_SCREEN_IMAGES, SUMMARY_SCREEN_IMAGES, challengeSpriteUrls, imagesReady, preloadBattleImages } from './preloadAssets'
-import { getDailyChallenge } from '../../core/challenge'
+import { challengeFor } from '../../core/challenge'
 import { loadGameData } from '../../data/gameData'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
@@ -21,7 +21,7 @@ describe('precarga de imágenes de la caja de datos', () => {
 
 describe('precarga de la interfaz y de los sprites del reto', () => {
   const data = loadGameData()
-  const challenge = getDailyChallenge('2026-10-21', data)
+  const challenge = challengeFor({ trainerId: 'maximo', date: '2026-10-21' }, data)
 
   it('los sprites precargados son solo los del reto: frente y espalda de los 6 rivales y los 6 propios, y el entrenador', () => {
     const urls = challengeSpriteUrls(challenge, data)

@@ -6,7 +6,8 @@ import { Prng, deriveSeed } from './prng'
 import { LAUNCH_DATE } from '../config'
 import { dates } from '../test-utils/dates'
 import { fewTypesData, impossibleRf14Data, makeGameData, mkResolved, mkSet, poolSets, trainerAlpha, trainerBeta } from '../test-utils/fixtures'
-import { distinctTypes, isForbidden, teamViolations } from '../test-utils/rules'
+import { baseStatTotal, distinctTypes, isForbidden, maxSharingAType, teamViolations } from '../test-utils/rules'
+import { loadGameData } from '../data/gameData'
 import type { ResolvedSet } from '../test-utils/types'
 
 // UT-19..26 · RF-10..16 · DEC-05.
@@ -299,5 +300,67 @@ describe('getDailyChallenge: equipo del jugador en un ciclo (UT-19/20/21/26)', (
     const allowed = new Set(otherPool.map((s) => s.species))
     const bad = dates(40).flatMap((d) => getDailyChallenge(d, d2).playerTeam.filter((p) => !allowed.has(p.species)).map((p) => p.species))
     expect(bad).toEqual([])
+  })
+})
+
+// RF-13b (suma de estadísticas base >= 2800) y RF-13c (como máximo 3 Pokémon de un mismo tipo): PRD §0 «Equilibrio del equipo del jugador».
+describe('buildPlayerTeam: suma de estadísticas base y tipos repetidos (RF-13b, RF-13c)', () => {
+  const rival = rivalOf()
+  const item = (index: number) => ['leftovers', 'lifeorb', 'sitrusberry', 'chestoberry', 'shedshell', 'expertbelt', 'metronome', 'yacheberry'][index]
+  // Ocho finales de evolución flacos y de tipos variados: ningún equipo de 6 llega a 2800.
+  const weakPool = ['delibird', 'plusle', 'sudowoodo', 'shuckle', 'wobbuffet', 'dunsparce', 'smeargle', 'kecleon']
+    .map((species, index) => mkSet(species, item(index), ['pressure'], ['thunderbolt', 'surf', 'toxic', 'protect']))
+  const weakData = makeGameData({ playerSets: weakPool })
+  // Seis Agua y dos más: cualquier equipo de 6 lleva al menos 4 Pokémon de tipo Agua.
+  const waterPool = ['milotic', 'vaporeon', 'golduck', 'politoed', 'blastoise', 'feraligatr']
+    .map((species, index) => mkSet(species, item(index), ['pressure'], ['surf', 'icebeam', 'thunderbolt', 'toxic']))
+    .concat([mkSet('garchomp', item(6), ['roughskin'], ['earthquake', 'outrage', 'stoneedge', 'swordsdance']), mkSet('gengar', item(7), ['levitate'], ['shadowball', 'sludgebomb', 'thunderbolt', 'focusblast'])])
+  const waterData = makeGameData({ playerSets: waterPool })
+
+  it('sin suma posible: 1000 intentos y se relaja RF-13b (con RF-14 solo si el equipo no tiene movimiento x2)', () => {
+    const result = buildPlayerTeam(weakPool, rival, rng('weak'), weakData.dex)
+    expect(result.attempts).toBe(1000)
+    expect(result.relaxed.includes('RF-13b')).toBe(true)
+    expect([['RF-13b'], ['RF-14', 'RF-13b']]).toContainEqual(result.relaxed)
+    expect(teamViolations(weakData.dex, result.team, rival, result.relaxed)).toEqual([])
+  })
+
+  it('la relajación es determinista y se registra en meta.relaxedRules', () => {
+    const first = buildPlayerTeam(weakPool, rival, rng('weak'), weakData.dex)
+    expect(buildPlayerTeam(weakPool, rival, rng('weak'), weakData.dex)).toEqual(first)
+    const challenge = getDailyChallenge(LAUNCH_DATE, makeGameData({ playerSets: weakPool }))
+    expect(challenge.meta.relaxedRules).toContain('RF-13b')
+  })
+
+  it('RF-13c no se relaja nunca: sin equipo con <= 3 del mismo tipo lanza DataError en español', () => {
+    expect(() => buildPlayerTeam(waterPool, rival, rng('water'), waterData.dex)).toThrow(DataError)
+    let message = ''
+    try { buildPlayerTeam(waterPool, rival, rng('water'), waterData.dex) } catch (error) { message = (error as Error).message }
+    expect(message).toMatch(/como máximo 3 Pokémon de un mismo tipo/)
+  })
+
+  it('con pool normal nunca se devuelve un equipo con 4 o más del mismo tipo ni suma < 2800 (500 semillas)', () => {
+    const bad = Array.from({ length: 500 }, (_, i) => buildPlayerTeam(poolSets, rival, rng('bal' + i), data.dex))
+      .filter((r) => r.relaxed.length === 0 && (baseStatTotal(data.dex, r.team) < 2800 || maxSharingAType(data.dex, r.team) > 3))
+    expect(bad).toEqual([])
+  })
+})
+
+describe('getDailyChallenge con los datos reales: RF-13b y RF-13c en un ciclo y en 365 días', () => {
+  const real = loadGameData()
+  const check = (date: string): string | null => {
+    const challenge = getDailyChallenge(date, real)
+    const total = baseStatTotal(real.dex, challenge.playerTeam)
+    const sharing = maxSharingAType(real.dex, challenge.playerTeam)
+    return challenge.meta.relaxedRules.length === 0 && total >= 2800 && sharing <= 3 ? null : `${date}: suma ${total}, máx. por tipo ${sharing}, relaxed ${challenge.meta.relaxedRules}`
+  }
+
+  it('los 3 primeros días (un ciclo de prueba) cumplen ambas reglas sin relajar', () => {
+    expect(dates(3).map(check).filter(Boolean)).toEqual([])
+  })
+
+  it('365 días: suma >= 2800, <= 3 por tipo, sin relajar y con pocos intentos', () => {
+    expect(dates(365).map(check).filter(Boolean)).toEqual([])
+    expect(Math.max(...dates(365).map((d) => getDailyChallenge(d, real).meta.teamAttempts))).toBeLessThanOrEqual(20)
   })
 })

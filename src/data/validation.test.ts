@@ -19,8 +19,26 @@ const allRivalSets = trainers.flatMap((t) => t.variants.flatMap((v) => v.team))
 const REGIONS = ['kanto', 'johto', 'hoenn', 'sinnoh', 'unova', null]
 
 describe('estructura (UT-27)', () => {
-  it('hay 6 entrenadores de F1', () => {
-    expect(trainers.map((t) => t.id).sort()).toEqual(['brock', 'camila', 'maximo', 'misty', 'plubio', 'rojo'])
+  it('hay 53 entrenadores (46 líderes y 7 campeones, PRD §7.3), incluidos los 6 de F1', () => {
+    expect(trainers).toHaveLength(53)
+    expect(trainers.filter((t) => t.category === 'leader')).toHaveLength(46)
+    expect(trainers.filter((t) => t.category === 'champion')).toHaveLength(7)
+    expect(trainers.map((t) => t.id)).toEqual(expect.arrayContaining(['brock', 'camila', 'maximo', 'misty', 'plubio', 'rojo']))
+  })
+
+  it('todos los entrenadores tienen al menos 1 variante y los líderes 2 (regional y Mundial)', () => {
+    expect(trainers.filter((t) => t.variants.length < 1).map((t) => t.id)).toEqual([])
+    expect(trainers.filter((t) => t.category === 'leader' && t.variants.length < 2).map((t) => t.id)).toEqual([])
+  })
+
+  it('Acerón (Byron) y Teniente Surge llevan su nombre oficial en español', () => {
+    expect(trainers.find((t) => t.id === 'aceron')!.nameEs).toBe('Acerón')
+    expect(trainers.find((t) => t.id === 'teniente-surge')!.nameEs).toBe('Teniente Surge')
+  })
+
+  it('el calendario incluye a los 53 entrenadores en la última entrada', () => {
+    const schedule = trainersFile.rosterSchedule as { trainerIds: string[] }[]
+    expect([...schedule[schedule.length - 1].trainerIds].sort()).toEqual(trainers.map((t) => t.id).sort())
   })
 
   it('Brock tiene 2 variantes (Kanto y Mundial)', () => {

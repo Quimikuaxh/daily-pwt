@@ -26,7 +26,16 @@ export function distinctTypes(dex: DexData, team: ResolvedSet[]): string[] {
   return [...new Set(team.flatMap((p) => dex.species[p.species].types))]
 }
 
-/** Devuelve la lista de reglas RF-12/13/14/16 incumplidas por un equipo del jugador (RF-16: los IV son los del rival del día). */
+export const baseStatTotal = (dex: DexData, team: ResolvedSet[]): number =>
+  team.reduce((total, p) => total + Object.values(dex.species[p.species].baseStats).reduce((sum, stat) => sum + stat, 0), 0)
+
+export const maxSharingAType = (dex: DexData, team: ResolvedSet[]): number => {
+  const counts = new Map<string, number>()
+  for (const p of team) for (const t of dex.species[p.species].types) counts.set(t, (counts.get(t) ?? 0) + 1)
+  return Math.max(...counts.values())
+}
+
+/** Devuelve la lista de reglas RF-12/13/13b/13c/14/16 incumplidas por un equipo del jugador (RF-16: los IV son los del rival del día). */
 export function teamViolations(dex: DexData, team: ResolvedSet[], rival: ResolvedSet[], relaxed: string[] = []): string[] {
   const out: string[] = []
   if (team.length !== 6) out.push(`tamaño ${team.length}`)
@@ -35,6 +44,8 @@ export function teamViolations(dex: DexData, team: ResolvedSet[], rival: Resolve
   if (new Set(team.map((p) => p.item)).size !== team.length) out.push('RF-12 objeto repetido')
   if (team.some((p) => isForbidden(p.species))) out.push('RF-12 prohibido')
   if (distinctTypes(dex, team).length < 4) out.push('RF-13 <4 tipos')
+  if (!relaxed.includes('RF-13b') && baseStatTotal(dex, team) < 2800) out.push('RF-13b suma < 2800')
+  if (maxSharingAType(dex, team) > 3) out.push('RF-13c >3 del mismo tipo')
   if (!relaxed.includes('RF-14') && !hasSuperEffectiveMove(dex, team, rival)) out.push('RF-14 sin x2')
   if (team.some((p) => p.level !== 50)) out.push('RF-16 nivel')
   const rivalIv = rival[0]?.ivs.hp

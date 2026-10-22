@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { BattleClient, ClientMessage } from '../battle/client'
 import type { BattleRequest, BattleView, Choice, EngineBattleView, EngineEnd, EngineInit } from '../battle/protocol'
+import type { Checkpoint, Decision } from '../storage/gameStore'
 import { introLines, translateLine, type TranslateContext } from '../battle/translate'
+import { deferFaintUntilFaintLine } from '../battle/faintOrder'
 import { viewReducer } from '../battle/viewReducer'
 
 export type BattleSpeed = 1 | 2 | 4
@@ -10,6 +12,12 @@ const SPEEDS: BattleSpeed[] = [1, 2, 4]
 /** Cada mensaje se queda en la caja de texto este tiempo (a x1) y avanza solo; un toque o tecla lo adelanta. */
 const TEXT_PAUSE_MS = 1100
 const BAR_PAUSE_MS = 400
+/** Lo que tarda en bajar la barra de PS (y el número) a x1: DataBox la anima con esta duración. */
+export const HP_BAR_ANIMATION_MS = 700
+/** Tras un golpe letal se espera a que la barra llegue a 0 antes de nada más (DEC-42). */
+const LETHAL_BAR_PAUSE_MS = HP_BAR_ANIMATION_MS + 100
+/** Con el mensaje «se ha debilitado» ya en pantalla, el sprite espera este tiempo antes de caer. */
+const FAINT_MESSAGE_LEAD_MS = 400
 const FINISH_PAUSE_MS = 1500
 
 /**
@@ -17,7 +25,7 @@ const FINISH_PAUSE_MS = 1500
  * durar lo mismo: el tiempo de cada fase lo marca este guion y el CSS solo lo dibuja. Total: 4,9 s.
  */
 export type IntroPhase = 'loading' | 'iris' | 'enter' | 'challenge' | 'rivalSend' | 'playerSend' | 'done'
-export const INTRO_DURATIONS_MS = { iris: 500, enter: 500, challenge: 1100, rivalSend: 1300, playerSend: 1500 } as const
+export const INTRO_DURATIONS_MS = { iris: 500, enter: 700, challenge: 900, rivalSend: 1300, playerSend: 1500 } as const
 
 /**
  * Cambio de Pokémon (retirada y envío): el entrenador aparece, recoge al Pokémon con el rayo rojo (recall) y lanza la bola del nuevo (send).
@@ -32,12 +40,25 @@ const VISUAL_LINE_TYPES = new Set(['-damage', '-heal', '-sethp', 'faint', 'switc
 
 type Update = Extract<ClientMessage, { type: 'update' }>
 
+/**
+ * Reanudar un combate oficial (DEC-43): se reproducen las decisiones guardadas sobre el motor, que es determinista dado `battleSeed`,
+ * sin intro, sin pausas ni animaciones. `expected` es el estado esperado al terminar (null si no se pudo guardar tras la última decisión).
+ */
+export type ReplayPlan = { decisions: Decision[]; expected: Pick<Checkpoint, 'turn' | 'playerRemaining' | 'rivalRemaining'> | null }
+
 export type BattleParams = {
   client: BattleClient
   init: EngineInit
   translateContext: TranslateContext
   intro: { rivalLead: string; playerLead: string }
   onFinish: (ended: EngineEnd) => void
+  replay?: ReplayPlan
+  /** Cada decisión del jugador que se envía al motor (no las de la reproducción). */
+  onDecision?: (decision: Decision) => void
+  /** Estado del combate tras presentar cada update que no es el final (no durante la reproducción). */
+  onSettled?: (state: Pick<Checkpoint, 'turn' | 'playerRemaining' | 'rivalRemaining'>) => void
+  /** La reproducción no llegó al estado guardado (o el motor falló): el combate no se puede reanudar. */
+  onReplayFailed?: () => void
 }
 
 export type BattleController = {
@@ -111,12 +132,12 @@ export function useBattle(params: BattleParams): BattleController {
   const [ended, setEnded] = useState<EngineEnd | null>(null)
   const [speed, setSpeed] = useState<BattleSpeed>(1)
   const [message, setMessage] = useState(null as string | null)
-  const [introPhase, setIntroPhase] = useState('loading' as IntroPhase)
+  const [introPhase, setIntroPhase] = useState((params.replay ? 'done' : 'loading') as IntroPhase)
   const [switchAnim, setSwitchAnim] = useState(null as SwitchAnimation | null)
 
   const wakeRef = useRef(null as (() => void) | null)
   const skipIntroRef = useRef(false)
-  const introRunningRef = useRef(true)
+  const introRunningRef = useRef(params.replay === undefined)
   const paramsRef = useRef(params)
   const speedRef = useRef(speed)
   const lockedRef = useRef(true)
@@ -135,10 +156,26 @@ export function useBattle(params: BattleParams): BattleController {
     let presenting = false
     let isFirstUpdate = true
     let shownView: EngineBattleView | null = null
+    const replayPlan = paramsRef.current.replay ?? null
+    let replayIndex = 0
+    let replaying = replayPlan !== null
+    if (replaying) skipIntroRef.current = true
+
+    const sendDecision = (decision: Decision) => {
+      if (decision.type === 'forfeit') client.forfeit()
+      else client.choose({ type: decision.type, slot: decision.slot })
+    }
+
+    function failReplay() {
+      replaying = false
+      cancelled = true
+      timers.forEach(clearTimeout)
+      paramsRef.current.onReplayFailed?.()
+    }
 
     const pause = (milliseconds: number, isIntro = false, skippable = true) =>
       new Promise<void>((resolve) => {
-        if (isIntro && skipIntroRef.current) return resolve()
+        if (replaying || (isIntro && skipIntroRef.current)) return resolve()
         const finish = () => {
           clearTimeout(timer)
           timers.delete(timer)
@@ -162,15 +199,31 @@ export function useBattle(params: BattleParams): BattleController {
           setIntroPhase(skipIntroRef.current ? 'done' : step.phase)
           if (step.phase === 'done') introRunningRef.current = false
         }
-        const switching = step.line !== null && !step.phase ? switchAnimationFor(step.line, shown) : null
+        const switching = !replaying && step.line !== null && !step.phase ? switchAnimationFor(step.line, shown) : null
         if (switching) {
           setSwitchAnim(switching)
           if (!switching.endsWith('-send')) await pause(SWITCH_DURATIONS_MS.recall, false, false)
           if (cancelled) return
         }
-        if (step.line !== null) {
-          shown = viewReducer(shown, { type: 'lines', lines: [step.line] })
+        let lethalHit = false
+        const isFaintLine = step.line !== null && lineType(step.line) === 'faint' && step.text !== null
+        if (step.line !== null && !isFaintLine) {
+          const reduced = viewReducer(shown, { type: 'lines', lines: [step.line] })
+          shown = deferFaintUntilFaintLine(shown, reduced, step.line)
+          lethalHit = shown !== reduced
           setView(shown)
+        }
+        if (isFaintLine && step.text !== null) {
+          // Orden del juego: la barra ya llegó a 0 -> mensaje -> el sprite cae.
+          const text = step.text
+          setLog((previous) => [...previous, text])
+          setMessage(text)
+          await pause(FAINT_MESSAGE_LEAD_MS)
+          if (cancelled) return
+          shown = viewReducer(shown, { type: 'lines', lines: [step.line as string] })
+          setView(shown)
+          await pause(TEXT_PAUSE_MS - FAINT_MESSAGE_LEAD_MS)
+          continue
         }
         if (step.text !== null && step.line !== null && lineType(step.line) === 'turn') {
           // «Turno N» solo va al historial: el juego no lo enseña en la caja de mensajes.
@@ -186,16 +239,34 @@ export function useBattle(params: BattleParams): BattleController {
         } else if (switching) {
           await pause(SWITCH_DURATIONS_MS.send)
         } else if (step.line !== null && VISUAL_LINE_TYPES.has(lineType(step.line))) {
-          await pause(BAR_PAUSE_MS)
+          await pause(lethalHit ? LETHAL_BAR_PAUSE_MS : BAR_PAUSE_MS)
         }
         if (switching) setSwitchAnim(null)
       }
       if (cancelled) return
 
+      if (replaying && replayPlan) {
+        const isLastDecision = replayIndex >= replayPlan.decisions.length
+        if (update.ended && !isLastDecision) return failReplay()
+        if (!update.ended && !isLastDecision) {
+          shownView = update.view
+          setView(update.view)
+          sendDecision(replayPlan.decisions[replayIndex])
+          replayIndex += 1
+          return
+        }
+        replaying = false
+        const expected = replayPlan.expected
+        const reached = { turn: update.view.turn, playerRemaining: update.view.player.remaining, rivalRemaining: update.view.rival.remaining }
+        const matches = expected === null || (expected.turn === reached.turn && expected.playerRemaining === reached.playerRemaining && expected.rivalRemaining === reached.rivalRemaining)
+        if (!matches) return failReplay()
+      }
+
       shownView = update.view
       setView(update.view)
       setRequest(update.request)
       if (update.request?.active || update.request?.forceSwitch) setLastChoiceRequest(update.request)
+      if (!update.ended) paramsRef.current.onSettled?.({ turn: update.view.turn, playerRemaining: update.view.player.remaining, rivalRemaining: update.view.rival.remaining })
       if (update.ended) {
         setEnded(update.ended)
         await pause(FINISH_PAUSE_MS)
@@ -215,7 +286,8 @@ export function useBattle(params: BattleParams): BattleController {
 
     const unsubscribe = client.subscribe((message) => {
       if (message.type === 'error') {
-        setFailed(true)
+        if (replaying) failReplay()
+        else setFailed(true)
         return
       }
       lockedRef.current = true
@@ -237,6 +309,7 @@ export function useBattle(params: BattleParams): BattleController {
     if (lockedRef.current) return
     lockedRef.current = true
     setLocked(true)
+    paramsRef.current.onDecision?.({ type: choice.type, slot: choice.slot })
     paramsRef.current.client.choose(choice)
   }, [])
 
@@ -245,6 +318,7 @@ export function useBattle(params: BattleParams): BattleController {
     forfeitSentRef.current = true
     lockedRef.current = true
     setLocked(true)
+    paramsRef.current.onDecision?.({ type: 'forfeit' })
     paramsRef.current.client.forfeit()
   }, [])
 

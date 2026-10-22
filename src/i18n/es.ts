@@ -168,6 +168,22 @@ export const es = {
 
     fight: 'Combatir',
     fightHint: 'Elige tu Pokémon inicial para poder combatir.',
+    officialFight: 'Combate oficial',
+    practiceFight: 'Práctica',
+    practiceHint: 'La práctica es ilimitada, no cuenta para nada y no se guarda.',
+    official: {
+      play: 'Jugar',
+      resume: 'Reanudar',
+      won: (turns: number, alive: number) => `Victoria · ${turns} ${turns === 1 ? 'turno' : 'turnos'} · ${alive}/6 en pie`,
+      lost: (turns: number, alive: number) => `Derrota · ${turns} ${turns === 1 ? 'turno' : 'turnos'} · ${alive}/6 en pie`,
+      void: 'Anulado: no se pudo reanudar',
+      doneHint: 'Ya has jugado el combate oficial de hoy. Mañana, uno nuevo; mientras, puedes practicar.',
+      resumeHint: 'Tu combate oficial de hoy sigue en curso: retómalo donde lo dejaste.',
+      earlierResume: (number: number) => `Tienes sin terminar el combate oficial del reto #${number}.`,
+      earlierResumeButton: (number: number) => `Reanudar el combate oficial del reto #${number}`,
+      notSaved: 'Este navegador no deja guardar datos: el combate oficial no se podrá reanudar si recargas ni se recordará mañana.',
+      resumeFailed: 'No se ha podido reanudar tu combate oficial (los datos del reto o el guardado no coinciden). Cuenta como jugado, sin victoria ni derrota, y no se puede repetir hoy. Puedes practicar.',
+    },
 
     fanNotice:
       'Daily PWT es un proyecto de fans, no oficial y sin ánimo de lucro. Pokémon y sus nombres son marcas de Nintendo, Creatures Inc., GAME FREAK inc. y The Pokémon Company. Este sitio no está afiliado a ninguna de ellas.',
@@ -280,6 +296,11 @@ export const es = {
     forfeitConfirm: 'Sí, rendirme',
     exitTitle: '¿Salir del combate?',
     exitBody: 'Se descartará la partida y no podrás recuperarla.',
+    exitBodyOfficial: 'El combate oficial queda guardado: podrás reanudarlo desde Hoy. No cuenta como otro intento.',
+    forfeitBodyOfficial: 'Si te rindes, el combate oficial cuenta como derrota y hoy no podrás repetirlo.',
+    modeOfficial: 'OFICIAL',
+    modePractice: 'PRÁCTICA',
+    modeLabel: (official: boolean) => (official ? 'Combate oficial' : 'Combate de práctica'),
     exitConfirm: 'Sí, salir',
     cancel: 'Cancelar',
 
@@ -302,6 +323,8 @@ export const es = {
     rivalFainted: (fainted: number, total: number) => `Rivales debilitados: ${fainted}/${total}`,
     backToToday: 'Volver a Hoy',
     rematch: 'Otro combate',
+    officialRecorded: 'Combate oficial registrado. «Otro combate» es una práctica: no cuenta para nada.',
+    practiceNote: 'Práctica: no cuenta para nada.',
   },
 
   log: {
@@ -364,8 +387,14 @@ export const es = {
     abilityActivated: (mon: string, ability: string) => `¡${mon} activa su habilidad ${ability}!`,
     abilityBlocks: (mon: string, ability: string) => `¡${ability} de ${mon} ha bloqueado el efecto!`,
     itemObtained: (mon: string, item: string) => `¡${mon} ha obtenido ${item}!`,
-    itemConsumed: (mon: string, item: string) => `¡${mon} ha consumido ${item}!`,
     itemLost: (mon: string, item: string) => `¡${mon} ha perdido ${item}!`,
+    itemSpent: (mon: string, item: string) => `¡${item} de ${mon} se ha gastado!`,
+    itemWeakenedHit: (mon: string, item: string) => `¡${item} ha reducido el daño que iba a recibir ${mon}!`,
+    gemBoosted: (mon: string, item: string) => `¡${item} ha potenciado el movimiento de ${mon}!`,
+    focusSashHeld: (mon: string, item: string) => `¡${mon} ha aguantado el golpe con ${item}!`,
+    whiteHerbRestored: (mon: string, item: string) => `¡${item} ha restaurado las características de ${mon}!`,
+    powerHerbCharged: (mon: string, item: string) => `¡${mon} ha usado ${item} y ataca sin esperar!`,
+    airBalloonPopped: (mon: string, item: string) => `¡${item} de ${mon} ha explotado!`,
 
     cantMove: CANT_MOVE_REASONS,
     cantMoveFallback: (mon: string) => `¡${mon} no puede moverse!`,

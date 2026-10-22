@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright'
 import { test, expect, type Page } from '@playwright/test'
 import { BattlePage } from './pages/BattlePage'
 import { TodayPage } from './pages/TodayPage'
-import { D0, startBattle, tabTo } from './support'
+import { startBattle, tabTo } from './support'
 
 async function seriousViolations(page: Page): Promise<string[]> {
   const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze()
@@ -14,7 +14,7 @@ async function seriousViolations(page: Page): Promise<string[]> {
 test.describe('Accesibilidad (axe, WCAG 2 A/AA, incluye contraste)', () => {
   test('E2E-11 Hoy, con paneles abiertos y con inicial elegido', async ({ page }) => {
     const today = new TodayPage(page)
-    await today.goto(D0)
+    await today.goto()
     expect(await seriousViolations(page), 'Hoy').toEqual([])
     await today.rivalToggle.click()
     await today.chooseLead(1)
@@ -22,7 +22,7 @@ test.describe('Accesibilidad (axe, WCAG 2 A/AA, incluye contraste)', () => {
   })
 
   test('E2E-11 Combate, diálogo y Resultado', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.waitForActionOrResult()
     expect(await seriousViolations(page), 'Combate').toEqual([])
 
@@ -50,7 +50,7 @@ test.describe('Teclado', () => {
   test('E2E-10 partida completa solo con teclado, con foco visible', async ({ page }) => {
     const today = new TodayPage(page)
     const battle = new BattlePage(page)
-    await today.goto(D0, 'seed=a&ai=trivial')
+    await today.goto(undefined, 'seed=a&ai=trivial')
 
     await tabTo(page, today.leadButtons.nth(0))
     expect(await focusIsVisible(page), 'foco visible en "Sacar primero"').toBe(true)
@@ -96,7 +96,7 @@ test.describe('Teclado', () => {
   })
 
   test('E2E-10 los diálogos atrapan el foco, Escape cancela y el foco vuelve', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.waitForActionOrResult()
 
     await tabTo(page, battle.forfeitButton)

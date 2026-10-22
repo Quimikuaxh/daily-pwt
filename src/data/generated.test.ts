@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest'
-import { importScript, readJson } from '../test-utils/paths'
+import { existsInRoot, importScript, readJson } from '../test-utils/paths'
+
+// Los CSV de PokeAPI (scripts/.cache/, ignorado por git) solo existen tras `npm run gen:names` con red. Sin ellos (CI, clon limpio)
+// se omiten las dos comparaciones que regeneran nombres y descripciones, con este aviso; `npm run validate:data` sigue comprobando
+// sin caché que todo nombre y descripción usado existe. En local, con la caché, se ejecutan siempre.
+const hasPokeapiCache = ['pokemon_species_names', 'move_flavor_text'].every((csv) => existsInRoot('scripts', '.cache', `${csv}.csv`))
+if (!hasPokeapiCache) console.warn('AVISO: sin scripts/.cache (CSV de PokeAPI): se omiten las regeneraciones de names-es.json y descriptions-es.json (ejecuta `npm run gen:names` con red para activarlas).')
+const itWithPokeapiCache = it.skipIf(!hasPokeapiCache)
 
 // UT-33 · DEC-07. Lo versionado en src/generated/* y data/player-sets.json debe ser igual a regenerarlo EN MEMORIA.
 // TODO-CONTRATO (scripts, sin efectos al importarlos: solo ejecutan main cuando se lanzan por CLI):
@@ -14,7 +21,7 @@ describe('datos generados al día', () => {
     expect(JSON.parse(JSON.stringify(buildDex()))).toEqual(readJson('src', 'generated', 'dex-gen5.json'))
   })
 
-  it('names-es.json es igual a su regeneración', async () => {
+  itWithPokeapiCache('names-es.json es igual a su regeneración', async () => {
     const { buildNamesEs } = await importScript('scripts/build-names-es.mjs')
     expect(JSON.parse(JSON.stringify(await buildNamesEs({ offline: true })))).toEqual(readJson('src', 'generated', 'names-es.json'))
   })
@@ -78,7 +85,7 @@ describe('datos de la pantalla de equipo y de datos', () => {
     }
   })
 
-  it('descriptions-es.json es igual a su regeneración (CSV de PokeAPI en caché)', async () => {
+  itWithPokeapiCache('descriptions-es.json es igual a su regeneración (CSV de PokeAPI en caché)', async () => {
     const { buildDescriptionsEs } = await importScript('scripts/build-descriptions-es.mjs')
     expect(JSON.parse(JSON.stringify(await buildDescriptionsEs({ offline: true })))).toEqual(readJson('src', 'generated', 'descriptions-es.json'))
   })

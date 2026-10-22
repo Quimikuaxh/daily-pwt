@@ -7,6 +7,10 @@ import type { DexData, PokemonSet, ResolvedSet, StatsTable } from './types'
 
 export const MAX_TEAM_ATTEMPTS = 1000
 const MIN_DISTINCT_TYPES = 4
+/** RF-13b: suma de estadísticas base de los 6 Pokémon. */
+export const MIN_BASE_STAT_TOTAL = 2800
+/** RF-13c: cada tipo de un Pokémon de doble tipo cuenta. */
+export const MAX_POKEMON_PER_TYPE = 3
 
 /** Legendarios prohibidos en el PWT (PRD §6). Lista explícita: los tags de @pkmn vetarían también legendarios legales. Vive en src/core/pwt-rules.json, que también lee scripts/build-player-sets.mjs. */
 const FORBIDDEN_SPECIES: readonly string[] = pwtRules.forbiddenSpecies
@@ -34,6 +38,18 @@ function pickDistinctSets(shuffled: readonly PokemonSet[]): PokemonSet[] {
 
 function distinctTypeCount(team: readonly PokemonSet[], dex: DexData): number {
   return new Set(team.flatMap((set) => dex.species[set.species].types)).size
+}
+
+export function baseStatTotalOf(team: readonly PokemonSet[], dex: DexData): number {
+  return team.reduce((total, set) => total + Object.values(dex.species[set.species].baseStats).reduce((sum, stat) => sum + stat, 0), 0)
+}
+
+function maxPokemonSharingAType(team: readonly PokemonSet[], dex: DexData): number {
+  const countByType = new Map<string, number>()
+  for (const set of team) {
+    for (const type of dex.species[set.species].types) countByType.set(type, (countByType.get(type) ?? 0) + 1)
+  }
+  return Math.max(...countByType.values())
 }
 
 function hasSuperEffectiveMove(team: readonly PokemonSet[], rivalTeam: readonly ResolvedSet[], dex: DexData): boolean {
@@ -69,7 +85,9 @@ export type PlayerTeamResult = { team: ResolvedSet[]; attempts: number; relaxed:
 /**
  * Elige 6 sets del pool con el PRNG dado (RF-10..16). Cada intento baraja de nuevo el pool con el mismo flujo.
  * Los IV del jugador son los del rival del día (20 contra líderes, 25 contra campeones, 30 contra Rojo; RF-16), EV 0 y naturaleza Seria.
- * Tras MAX_TEAM_ATTEMPTS intentos se relaja solo RF-14; si tampoco hay equipo, error de datos.
+ * Orden de relajación tras MAX_TEAM_ATTEMPTS intentos sin equipo que cumpla todo: primero RF-14 (movimiento ×2); si no hay equipo ni así,
+ * también RF-13b (suma de estadísticas base ≥ 2800; `relaxed` es `['RF-13b']` si el equipo sí tiene movimiento ×2, o `['RF-14', 'RF-13b']`). RF-12, RF-13 y RF-13c (máximo 3 Pokémon por tipo)
+ * no se relajan nunca: sin solución, error de datos.
  */
 export function buildPlayerTeam(pool: readonly PokemonSet[], rivalTeam: readonly ResolvedSet[], rng: Prng, dex: DexData): PlayerTeamResult {
   const candidates = pool.filter((set) => {
@@ -88,22 +106,33 @@ export function buildPlayerTeam(pool: readonly PokemonSet[], rivalTeam: readonly
   const playerIvs = rivalTeam[0]?.ivs
   if (!playerIvs) throw new DataError('El rival no tiene equipo: no se pueden fijar los IV del jugador.')
 
+  // Primer equipo que cumple todo salvo RF-14 y primer equipo que cumple solo las reglas no relajables (con RF-14 y RF-13b fallando o no).
   let withoutRf14: PokemonSet[] | undefined
+  let withoutRf14AndRf13b: PokemonSet[] | undefined
   for (let attempt = 1; attempt <= MAX_TEAM_ATTEMPTS; attempt++) {
     const team = pickDistinctSets(rng.shuffle(candidates))
     if (team.length < TEAM_SIZE || distinctTypeCount(team, dex) < MIN_DISTINCT_TYPES) continue
+    if (maxPokemonSharingAType(team, dex) > MAX_POKEMON_PER_TYPE) continue
+    if (baseStatTotalOf(team, dex) < MIN_BASE_STAT_TOTAL) {
+      withoutRf14AndRf13b ??= team
+      continue
+    }
     if (hasSuperEffectiveMove(team, rivalTeam, dex)) {
       return { team: team.map((set) => resolvePlayerSet(set, dex, rng, playerIvs)), attempts: attempt, relaxed: [] }
     }
     withoutRf14 ??= team
   }
 
-  if (!withoutRf14) {
-    throw new DataError(
-      `No se pudo formar un equipo del jugador válido en ${MAX_TEAM_ATTEMPTS} intentos: revisa el pool (mínimo ${MIN_DISTINCT_TYPES} tipos distintos).`,
-    )
+  if (withoutRf14) {
+    return { team: withoutRf14.map((set) => resolvePlayerSet(set, dex, rng, playerIvs)), attempts: MAX_TEAM_ATTEMPTS, relaxed: ['RF-14'] }
   }
-  return { team: withoutRf14.map((set) => resolvePlayerSet(set, dex, rng, playerIvs)), attempts: MAX_TEAM_ATTEMPTS, relaxed: ['RF-14'] }
+  if (withoutRf14AndRf13b) {
+    const relaxed = hasSuperEffectiveMove(withoutRf14AndRf13b, rivalTeam, dex) ? ['RF-13b'] : ['RF-14', 'RF-13b']
+    return { team: withoutRf14AndRf13b.map((set) => resolvePlayerSet(set, dex, rng, playerIvs)), attempts: MAX_TEAM_ATTEMPTS, relaxed }
+  }
+  throw new DataError(
+    `No se pudo formar un equipo del jugador válido en ${MAX_TEAM_ATTEMPTS} intentos: revisa el pool (mínimo ${MIN_DISTINCT_TYPES} tipos distintos y como máximo ${MAX_POKEMON_PER_TYPE} Pokémon de un mismo tipo).`,
+  )
 }
 
 export const sourceTagOf = (trainerId: string): string => `source:${trainerId}`

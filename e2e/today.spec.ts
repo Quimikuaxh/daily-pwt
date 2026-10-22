@@ -1,13 +1,13 @@
 import { test, expect } from '@playwright/test'
 import { TodayPage } from './pages/TodayPage'
 import { BattlePage } from './pages/BattlePage'
-import { collectProblems, D0 } from './support'
+import { DEFAULT_SCENARIO, LAUNCH_DATE, collectProblems } from './support'
 
 test.describe('Pantalla Hoy', () => {
-  test('E2E-01 Hoy completo con ?date=2026-10-19', async ({ page }) => {
+  test('E2E-01 Hoy completo en el día de lanzamiento', async ({ page }) => {
     const problems = collectProblems(page)
     const today = new TodayPage(page)
-    await today.goto(D0)
+    await today.goto({ ...DEFAULT_SCENARIO, date: LAUNCH_DATE })
 
     await expect(today.challengeNumber, '#1 en el día de lanzamiento').toHaveText('#1')
     await expect(today.countdown, 'cuenta atrás hh:mm:ss').toHaveText(/^\d{2}:\d{2}:\d{2}$/)
@@ -27,8 +27,9 @@ test.describe('Pantalla Hoy', () => {
     }
     await expect(footer).toContainText('no oficial')
 
-    // Sin iconos de Estadísticas/Ayuda/Ajustes ni botón de práctica (requisitos §1).
-    await expect(page.getByRole('button', { name: /Estadísticas|Ayuda|Ajustes|Práctica/ })).toHaveCount(0)
+    // Sin iconos de Estadísticas/Ayuda/Ajustes (F3); los botones de combate son el oficial y la práctica.
+    await expect(page.getByRole('button', { name: /Estadísticas|Ayuda|Ajustes/ })).toHaveCount(0)
+    await expect(page.getByRole('button', { name: /^(Combate oficial|Práctica)/ }), 'botones de combate: oficial y práctica').toHaveCount(2)
 
     // Todas las imágenes cargan (sprites del repo).
     await page.waitForLoadState('networkidle')
@@ -43,7 +44,7 @@ test.describe('Pantalla Hoy', () => {
       const context = await browser.newContext({ baseURL, timezoneId, locale: 'es-ES' })
       const page = await context.newPage()
       const today = new TodayPage(page)
-      await today.goto('2026-10-19')
+      await today.goto()
       const team = await page.locator('.player-name').allTextContents()
       snapshots.push(JSON.stringify({ number: await today.challengeNumber.textContent(), rival: await today.rivalName(), species: await today.rivalSpecies(), team }))
       await context.close()
@@ -53,7 +54,7 @@ test.describe('Pantalla Hoy', () => {
 
   test('E2E-09 toggle de movimientos y objetos del rival: oculto por defecto', async ({ page }) => {
     const today = new TodayPage(page)
-    await today.goto(D0)
+    await today.goto()
     const rivalTeam = page.locator('ul.rival-team')
 
     await expect(today.rivalToggle).toHaveAttribute('aria-expanded', 'false')
@@ -74,8 +75,8 @@ test.describe('Pantalla Hoy', () => {
 })
 
 test.describe('Cambio de día (page.clock)', () => {
-  test('E2E-03 23:59:55 + 10 s: #1 pasa a #2 sin recargar', async ({ page }) => {
-    await page.clock.install({ time: new Date('2026-10-19T23:59:55+02:00') })
+  test('E2E-03 23:59:55 + 10 s: #1 pasa a #2 sin recargar @timing', async ({ page }) => {
+    await page.clock.install({ time: new Date(`${LAUNCH_DATE}T23:59:55+02:00`) })
     const today = new TodayPage(page)
     await page.goto('./')
     await today.challengeNumber.waitFor()
@@ -84,7 +85,7 @@ test.describe('Cambio de día (page.clock)', () => {
     const before = { rival: await today.rivalName(), team: await page.locator('.player-name').allTextContents() }
     // Con el reloj simulado, WebKit bajo carga a veces descarta el primer clic: se reintenta hasta que quede marcado.
     await expect(async () => {
-      await today.chooseLead(2)
+      if ((await today.leadButtons.nth(2).getAttribute('aria-pressed')) !== 'true') await today.chooseLead(2)
       await expect(today.leadButtons.nth(2)).toHaveAttribute('aria-pressed', 'true', { timeout: 2000 })
     }).toPass({ timeout: 15_000 })
     const marker = await page.evaluate(() => { (window as any).__noReload = true; return true })
@@ -128,7 +129,7 @@ test.describe('Cambio de día (page.clock)', () => {
 test.describe('Precarga de la caja de datos', () => {
   test('E2E-44 Hoy precarga los dígitos de PS y las barras antes del combate (sin parpadeo de dígitos viejos)', async ({ page }) => {
     const today = new TodayPage(page)
-    await today.goto(D0)
+    await today.goto()
     const wanted = [...Array(10).keys()].map((digit) => `digits/hp-${digit}.png`).concat(['hp/fill-green.png', 'hp/fill-yellow.png', 'hp/fill-red.png'])
     await expect
       .poll(() => page.evaluate((names) => {
@@ -144,7 +145,7 @@ test.describe('Ver/ocultar los sets del rival', () => {
     test(`E2E-45 al ocultar, el panel del rival vuelve a la vista (${viewport.width} px)`, async ({ page }) => {
       await page.setViewportSize(viewport)
       const today = new TodayPage(page)
-      await today.goto(D0)
+      await today.goto()
       const panel = page.getByRole('region', { name: /rival/i })
       await expect(today.rivalToggle).toHaveText('Ver movimientos y objetos del rival')
 
@@ -171,7 +172,7 @@ test.describe('Ver/ocultar los sets del rival', () => {
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.setViewportSize({ width: 360, height: 740 })
     const today = new TodayPage(page)
-    await today.goto(D0)
+    await today.goto()
     await today.rivalToggle.click()
     await today.rivalToggle.scrollIntoViewIfNeeded()
     await today.rivalToggle.click()
@@ -184,14 +185,14 @@ test.describe('Ver/ocultar los sets del rival', () => {
 })
 
 test.describe('Precarga de la interfaz y de los sprites del reto', () => {
-  test('E2E-48 Hoy solo pide sprites del reto de hoy (12 Pokémon, frente y espalda, y el entrenador), no los del resto del pool', async ({ page }) => {
+  test('E2E-48 Hoy solo pide sprites del reto de hoy (12 Pokémon, frente y espalda, y el entrenador), no los del resto del pool @timing', async ({ page }) => {
     const spriteRequests = new Set<string>()
     page.on('request', (request) => {
       const match = /\/sprites\/(pokemon\/(?:front|back)|trainers)\/([a-z0-9-]+)\.gif$/.exec(new URL(request.url()).pathname)
       if (match) spriteRequests.add(`${match[1]}/${match[2]}`)
     })
     const today = new TodayPage(page)
-    await today.goto(D0)
+    await today.goto()
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(2500)
     const pokemon = [...spriteRequests].filter((request) => request.startsWith('pokemon/'))
@@ -204,13 +205,13 @@ test.describe('Precarga de la interfaz y de los sprites del reto', () => {
     expect([...spriteRequests].filter((request) => request.startsWith('trainers/')), 'solo el entrenador rival').toHaveLength(1)
   })
 
-  test('E2E-49 con la red lenta, Equipo y Datos no se enseñan a medio cargar (todas las imágenes visibles ya cargadas en el primer fotograma)', async ({ page }) => {
+  test('E2E-49 con la red lenta, Equipo y Datos no se enseñan a medio cargar (todas las imágenes visibles ya cargadas en el primer fotograma) @timing', async ({ page }) => {
     await page.route(/\/ui\/battle\/.*\.png$/, async (route) => {
       await new Promise((resolve) => setTimeout(resolve, 350))
       await route.continue()
     })
     const today = new TodayPage(page)
-    await today.goto(D0, 'seed=a&ai=trivial')
+    await today.goto(undefined, 'seed=a&ai=trivial')
     await page.waitForLoadState('networkidle')
     await today.chooseLead(0)
     await today.fightButton.click()

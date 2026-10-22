@@ -1,0 +1,250 @@
+{
+  "skippedVariants": [],
+  "deduplicated": [
+    {
+      "trainerId": "brock",
+      "tournament": "type-expert:rock",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "misty",
+      "tournament": "type-expert:water",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "teniente-surge",
+      "tournament": "type-expert:electric",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "erika",
+      "tournament": "type-expert:grass",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "sachiko",
+      "tournament": "type-expert:poison",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "sabrina",
+      "tournament": "type-expert:psychic",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "blaine",
+      "tournament": "type-expert:fire",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "giovanni",
+      "tournament": "type-expert:ground",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "pegaso",
+      "tournament": "type-expert:flying",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "anton",
+      "tournament": "type-expert:bug",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "blanca",
+      "tournament": "type-expert:normal",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "morti",
+      "tournament": "type-expert:ghost",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "anibal",
+      "tournament": "type-expert:fighting",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "yasmina",
+      "tournament": "type-expert:steel",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "fredo",
+      "tournament": "type-expert:ice",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "debora",
+      "tournament": "type-expert:dragon",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "petra",
+      "tournament": "type-expert:rock",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "marcial",
+      "tournament": "type-expert:fighting",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "erico",
+      "tournament": "type-expert:electric",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "candela",
+      "tournament": "type-expert:fire",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "norman",
+      "tournament": "type-expert:normal",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "alana",
+      "tournament": "type-expert:flying",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "vito",
+      "tournament": "type-expert:psychic",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "leti",
+      "tournament": "type-expert:psychic",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "galano",
+      "tournament": "type-expert:water",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "roco",
+      "tournament": "type-expert:rock",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "gardenia",
+      "tournament": "type-expert:grass",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "brega",
+      "tournament": "type-expert:fighting",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "mananti",
+      "tournament": "type-expert:water",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "fantina",
+      "tournament": "type-expert:ghost",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "aceron",
+      "tournament": "type-expert:steel",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "inverna",
+      "tournament": "type-expert:ice",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "lectro",
+      "tournament": "type-expert:electric",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "millo",
+      "tournament": "type-expert:grass",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "zeo",
+      "tournament": "type-expert:fire",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "maiz",
+      "tournament": "type-expert:water",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "aloe",
+      "tournament": "type-expert:normal",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "camus",
+      "tournament": "type-expert:bug",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "camila",
+      "tournament": "type-expert:electric",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "yakon",
+      "tournament": "type-expert:ground",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "gerania",
+      "tournament": "type-expert:flying",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "junco",
+      "tournament": "type-expert:ice",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "lirio",
+      "tournament": "type-expert:dragon",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "cheren",
+      "tournament": "type-expert:normal",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "hiedra",
+      "tournament": "type-expert:poison",
+      "sameAs": "world-leaders"
+    },
+    {
+      "trainerId": "ciprian",
+      "tournament": "type-expert:water",
+      "sameAs": "world-leaders"
+    }
+  ],
+  "specialtyTypeProblems": [],
+  "alwaysLeadsWithProblems": [],
+  "trainersWithoutVariants": [],
+  "missingSpanishNames": [],
+  "regression": {
+    "trainersCompared": [
+      "brock",
+      "misty",
+      "camila",
+      "plubio",
+      "rojo",
+      "maximo"
+    ],
+    "differences": []
+  }
+}

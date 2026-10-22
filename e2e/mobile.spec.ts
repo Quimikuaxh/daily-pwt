@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 import { TodayPage } from './pages/TodayPage'
-import { D0, startBattle } from './support'
+import { startBattle } from './support'
 
 /** RNF-03: 360x740 táctil. Solo corre en el proyecto mobile-360. */
 const noHorizontalScroll = async (page: Page, where: string) => {
@@ -20,7 +20,7 @@ const smallTargets = (page: Page) =>
 test.describe('360 px táctil', () => {
   test('E2E-12 Hoy sin scroll horizontal y objetivos >= 44 px', async ({ page }) => {
     const today = new TodayPage(page)
-    await today.goto(D0)
+    await today.goto()
     await noHorizontalScroll(page, 'Hoy')
     await today.rivalToggle.tap()
     await noHorizontalScroll(page, 'Hoy con paneles abiertos')
@@ -28,7 +28,7 @@ test.describe('360 px táctil', () => {
   })
 
   test('E2E-12 jugable con tap: combate completo, menús y diálogo', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a', tap: true })
+    const { battle } = await startBattle(page, { seed: 'a', tap: true })
     await battle.waitForActionOrResult()
     await noHorizontalScroll(page, 'Combate')
     expect(await smallTargets(page), 'botones menores de 44 px en combate').toEqual([])

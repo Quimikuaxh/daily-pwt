@@ -2,15 +2,26 @@
 
 Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
-## Para F2
-- **Desacoplar los tests de `LAUNCH_DATE`.** Los tests unitarios y E2E eligen escenario con fechas fijas, y el rival de una fecha depende de los días transcurridos desde `LAUNCH_DATE`; cambiar la fecha obliga a reajustar fechas, snapshot y expectativas y a relanzar toda la batería. Hacer que los tests elijan rival y variante por id (gancho de prueba, p. ej. `?trainer=<id>&variant=<id>` con `VITE_TEST_HOOKS=1`, o fixtures con calendario propio) y dejar solo el snapshot del generador y sus tests ligados a fechas reales. Hacerlo antes o junto a fijar la fecha definitiva.
-- **Fijar `LAUNCH_DATE`** (`src/core/launch.ts`, provisional 2026-10-19) y regenerar el snapshot `src/core/__snapshots__/challenge.reference.json`. Hay referencias fijas a la fecha en `src/test-utils/dates.ts`, `e2e/support.ts` y `e2e/build.spec.ts` (ver README, "Lanzamiento"). **La fecha actual es un apaño:** se ajustó (de 2026-10-17 a 2026-10-19) para que, con Máximo añadido al roster base (6 entrenadores, bolsa rebarajada desde el inicio, sin entrada nueva de `rosterSchedule`), el 2026-10-21 tocase Máximo. Es la fecha más cercana a 2026-10-17 que lo cumple sin ser posterior a 2026-10-21 (con 2026-10-17 tocaba Camila; con 2026-10-18 tocaba Máximo el 20). Orden de la bolsa desde #1: Plubio, Misty, Máximo, Camila, Rojo, Brock. Cambia el rival de todas las fechas respecto a la 2026-10-17; se fija de verdad en F2.
-- **Calibrar la dificultad** (PRD §14, criterio 19). Resultado preliminar (INT-14) con el jugador de prueba "mejor daño" y los IV del jugador iguales a los del rival (RF-16): Brock 100 %, Misty 70 %, Camila 70 %, Plubio 50 %, Rojo 0 %. Brock y Rojo siguen fuera del rango 40-80 %; con IV 31 eran Brock 100 %, Misty 90 %, Plubio 60 %, Camila 50 %, Rojo 0 %.
-- **Discrepancia de datos:** Stunfisk de Camila (Mundial) lleva Juego Sucio según Bulbapedia y Serebii, Impresionar según WikiDex. Se usa Juego Sucio; confirmar al cargar el roster completo.
-- **Sprites de entrenadores:** el CDN de WikiDex no respondió y los de F1 se obtuvieron de Internet Archive. `scripts/fetch-sprites.mjs` intenta WikiDex primero; comprobar al descargar los 53.
+## Para F2 (resto)
+- **Fijar `LAUNCH_DATE` el día del lanzamiento real** (`src/core/launch.ts`, provisional 2026-10-19; decisión de Jose: se cambia a la fecha real cuando se lance la aplicación, no antes) y regenerar el snapshot `src/core/__snapshots__/challenge.reference.json` (README, «Lanzamiento»). Con los 53 barajados juntos, la secuencia depende solo del índice de día: con la fecha actual los días 19 a 21 de octubre son Hiedra, Fredo y Antón (con 6 fueron Plubio, Misty y Máximo) y Máximo toca el día #39 (2026-11-26, `D + 38`). Cambiar fecha o roster cambia lo ya publicado (rival, variante, equipo, `#N`). Propuesta y alternativas descartadas en `docs/F2-DATOS.md`, «Calendario». Queda `scripts/capture-vis.mjs`, que usa fechas literales (capturas visuales, no es un test): pasarlo a `?trainer=`.
+- **Calibrar la dificultad** (PRD §14, criterio 19) con el roster completo. Resultado preliminar (INT-14, solo los 5 de F1) con el jugador de prueba "mejor daño" y los IV del jugador iguales a los del rival (RF-16): Brock 100 %, Misty 70 %, Camila 70 %, Plubio 50 %, Rojo 0 %. Brock y Rojo siguen fuera del rango 40-80 %.
+- **Stunfisk de Camila (Mundial):** Juego Sucio según Bulbapedia y Serebii, Impresionar según WikiDex; se usa Juego Sucio (resolución manual en `data/pwt-raw/resolutions.json`).
+- **Ruta crítica 230 KB gzip (decidido: se deja así).** Con el roster de 53 el chunk principal pasa a 208 KB (era 182) y la carga sigue < 3 s en 4G (2,1-2,5 s). Optimización futura, solo si hace falta: carga por entrenador (JSON por entrenador, `GameData` asíncrono) o recortar dex/names.
+- **Iconos `-mini.png` ausentes (11):** Millo, Zeo, Maíz, Aloe, Camus, Yakón, Gerania, Junco, Lirio, Cintia y Mirto; la API de WikiDex daba 503 y sus páginas en caché no los enlazan. La app no los usa; `TRAINER_MINIS_MISSING_ALLOWED` (`scripts/validate-data.mjs`) los admite. Reintentar con `npm run gen:sprites` y vaciar la lista.
+- **E2E en CI:** valorar un subconjunto de humo de Playwright (hoy solo local, ver README).
+
+## Orden de trabajo
+1. **F3** (sección «Para F3»): estadísticas y rachas (el almacenamiento `daily-pwt:v1` ya guarda el historial por día), compartir, Ayuda (créditos y aviso legal) y Ajustes; después música y efectos de sonido.
+2. **Resto de F2** que no depende de Jose: minis de entrenador, E2E en CI, `scripts/capture-vis.mjs` con `?trainer=`.
+3. **Necesitan a Jose**: calibrar la dificultad (partidas de prueba), verificar en Windows y Safari iOS reales, fijar `LAUNCH_DATE` al lanzar.
+4. **Fases futuras**: modo PWT, logros con login; las animaciones de movimientos, lo último.
 
 ## Para F3
-- Etiqueta OFICIAL/PRÁCTICA, reanudar, estadísticas, compartir, Ayuda (con los créditos de fuentes y gráficos) y Ajustes.
+- Estadísticas y rachas (sobre el historial por día de `GameStore`, DEC-43), compartir, Ayuda (con los créditos de fuentes y gráficos) y Ajustes con «Borrar datos locales» (hoy se borran a mano, ver README).
+
+## Fases futuras (tras F3; PRD §0)
+- **Modo PWT:** 7 entrenadores aleatorios seguidos con el mismo equipo. Libre y repetible sin límite (no es diario). Por definir: curación entre combates, si cuenta para estadísticas.
+- **Logros con login opcional:** requiere backend (cuentas y almacenamiento); el daily sigue sin cuenta. Con sesión, racha diaria y logros en la cuenta; sin sesión, racha en local. Por definir: servicio, qué logros, migración de las estadísticas locales.
 
 ## Música de combate (F3, PRD §0)
 Fuente: catálogo de `../pokemon-heardle/scripts/catalog/data/catalog.json` (OST de N2/B2 en YouTube). Descargar, recortar el silencio inicial, comprimir (Opus/AAC) y guardar en `public/` con script reproducible y créditos.
@@ -35,9 +46,6 @@ Golpe supereficaz, poco eficaz y neutro al atacar, y los básicos del combate (l
 
 ## Animaciones de movimientos (al final, después de F3; PRD §0)
 Propias, en pixel art a la escala del lienzo. No usar las de Pokémon Showdown ni intentar extraer las de la ROM. Definir antes el alcance: animación por movimiento para los más usados en el roster y en el pool del jugador, y una genérica por tipo y categoría (físico, especial, estado) para el resto.
-
-## Despliegue
-- **GitHub Pages** (PRD §0). Configurar `base` en `vite.config.ts` con la ruta del repositorio (`/daily-pwt/`), comprobar que sprites, fuentes, assets de `public/` y el Web Worker cargan bajo esa ruta, y añadir el workflow de GitHub Actions que construye y publica `dist/`. Requiere repo remoto en GitHub.
 
 ## Pantalla de equipo y de datos
 - **Fondo de la pantalla de datos de N2/B2:** el actual es el de Negro/Blanco (limpiado por script de capturas de Bulbagarden Archives). Si aparece un rip limpio de N2/B2, sustituir las URLs de `battle/summary/*` en `data/ui-assets.json` y quitar sus `cleanups`.

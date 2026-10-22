@@ -2,10 +2,11 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { TodayScreen } from './TodayScreen'
-import { getDailyChallenge } from '../../core/challenge'
+import { challengeFor, getDailyChallenge } from '../../core/challenge'
 import { calcStats } from '../../core/stats'
 import { fewTypesData, makeGameData } from '../../test-utils/fixtures'
-import { dateForTrainer, setLocalTime } from '../../test-utils/ui'
+import { setLocalTime } from '../../test-utils/ui'
+import { LAUNCH, addDays } from '../../test-utils/dates'
 import type { ResolvedSet } from '../../test-utils/types'
 
 // CMP-01, 03..10 · RF-30, RF-32..39. Pantalla Hoy con datos sintéticos (3 entrenadores) y relojes falsos.
@@ -14,17 +15,17 @@ import type { ResolvedSet } from '../../test-utils/types'
 //   El día sale de new Date() (reloj del sistema).
 //   Estructura accesible: <header>, regiones con nombre (/rival/i, /tu equipo/i), cada tarjeta del jugador es un
 //   role="article"; <footer> (contentinfo) con el aviso fan.
-//   Botones: "Combatir", "Sacar primero" (aria-pressed), toggle con aria-expanded: /Ver movimientos y objetos del rival/.
+//   Botones: "Combate oficial", "Práctica", "Sacar primero" (aria-pressed), toggle con aria-expanded: /Ver movimientos y objetos del rival/.
 const data = makeGameData()
-const NOW = '2026-10-19'
+const NOW = LAUNCH
 const challengeOf = (date = NOW) => getDailyChallenge(date, data)
 const name = (kind: 'species' | 'moves' | 'abilities' | 'items' | 'types', id: string) => (data.names as any)[kind][id] as string
 
-function renderToday(over: { date?: string; data?: any; onStart?: any; h?: number; mi?: number; s?: number } = {}) {
+function renderToday(over: { date?: string; trainerId?: string; data?: any; onStart?: any; h?: number; mi?: number; s?: number } = {}) {
   setLocalTime(over.date ?? NOW, over.h ?? 12, over.mi ?? 0, over.s ?? 0)
   const onStart = over.onStart ?? vi.fn()
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-  const utils = render(<TodayScreen data={over.data ?? data} onStart={onStart} />)
+  const utils = render(<TodayScreen data={over.data ?? data} onStart={onStart} rivalOverride={over.trainerId ? { trainerId: over.trainerId } : undefined} />)
   return { ...utils, onStart, user }
 }
 const rivalRegion = () => screen.getByRole('region', { name: /rival/i })
@@ -40,7 +41,7 @@ describe('cabecera (CMP-01)', () => {
   })
 
   it('el número crece con la fecha (#3 dos días después del lanzamiento)', () => {
-    renderToday({ date: '2026-10-21' })
+    renderToday({ date: addDays(LAUNCH, 2) })
     expect(screen.getByRole('banner')).toHaveTextContent('#3')
   })
 
@@ -73,9 +74,8 @@ describe('cabecera (CMP-01)', () => {
 
 describe('tarjeta del rival (CMP-03, RF-32)', () => {
   it('muestra sprite, nombre, categoría y región, y ya no el torneo de origen (Líder de Kanto con especialidad)', () => {
-    const date = dateForTrainer('alpha', data)
-    renderToday({ date })
-    const c = challengeOf(date)
+    renderToday({ trainerId: 'alpha' })
+    const c = challengeFor({ trainerId: 'alpha', date: NOW }, data)
     const region = rivalRegion()
     expect(within(region).getByRole('img', { name: c.trainer.nameEs })).toBeInTheDocument()
     expect(region).toHaveTextContent(c.trainer.nameEs)
@@ -86,20 +86,17 @@ describe('tarjeta del rival (CMP-03, RF-32)', () => {
   })
 
   it('muestra el tipo de especialidad si existe', () => {
-    const date = dateForTrainer('alpha', data)
-    renderToday({ date })
+    renderToday({ trainerId: 'alpha' })
     expect(rivalRegion()).toHaveTextContent(name('types', 'Rock'))
   })
 
   it('no muestra especialidad si el entrenador no la tiene (campeón)', () => {
-    const date = dateForTrainer('gamma', data)
-    renderToday({ date })
+    renderToday({ trainerId: 'gamma' })
     expect(rivalRegion()).not.toHaveTextContent(/especialidad/i)
   })
 
   it('un campeón sin región no muestra región', () => {
-    const date = dateForTrainer('gamma', data)
-    renderToday({ date })
+    renderToday({ trainerId: 'gamma' })
     expect(rivalRegion()).toHaveTextContent(/Campe[oó]n/)
     expect(rivalRegion()).not.toHaveTextContent(/Kanto|Johto|Hoenn|Sinnoh|Teselia/i)
   })
@@ -307,8 +304,8 @@ describe('Sacar primero (CMP-06, RF-36)', () => {
   })
 })
 
-describe('botón Combatir (CMP-07, RF-38)', () => {
-  const fight = () => screen.getByRole('button', { name: /combatir/i })
+describe('botón de combate oficial (CMP-07, RF-38)', () => {
+  const fight = () => screen.getByRole('button', { name: /combate oficial/i })
 
   it('está desactivado sin inicial', () => {
     renderToday()
@@ -335,7 +332,7 @@ describe('botón Combatir (CMP-07, RF-38)', () => {
     const { user, onStart } = renderToday()
     await user.click(screen.getAllByRole('button', { name: /primero/i })[4])
     await user.click(fight())
-    expect(onStart).toHaveBeenCalledWith(expect.objectContaining({ number: 1, date: NOW }), 4)
+    expect(onStart).toHaveBeenCalledWith(expect.objectContaining({ number: 1, date: NOW }), 4, 'official')
   })
 
   it('desactivado, un clic no llama a onStart', async () => {
@@ -344,10 +341,9 @@ describe('botón Combatir (CMP-07, RF-38)', () => {
     expect(onStart).not.toHaveBeenCalled()
   })
 
-  it('es el único botón de combate: no hay "Práctica" ni "Oficial"', () => {
+  it('hay dos botones de combate: el oficial y la práctica', () => {
     renderToday()
-    expect(screen.queryByRole('button', { name: /pr[aá]ctica|oficial/i })).toBeNull()
-    expect(screen.getAllByRole('button', { name: /combatir/i })).toHaveLength(1)
+    expect(screen.getAllByRole('button', { name: /combate oficial|^pr[aá]ctica$/i })).toHaveLength(2)
   })
 })
 
@@ -380,9 +376,9 @@ describe('pie y errores (CMP-09, CMP-10)', () => {
     expect(screen.getByRole('alert')).toHaveTextContent(/datos|equipo/i)
   })
 
-  it('en error no se ofrece Combatir', () => {
+  it('en error no se ofrece combatir', () => {
     renderToday({ data: { ...data, trainers: undefined } })
-    expect(screen.queryByRole('button', { name: /combatir/i })).toBeNull()
+    expect(screen.queryByRole('button', { name: /combate oficial|pr[aá]ctica/i })).toBeNull()
   })
 
   it('el error no usa console.error de React por excepción no capturada', () => {

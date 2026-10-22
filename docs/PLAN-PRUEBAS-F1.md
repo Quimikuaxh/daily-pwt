@@ -5,7 +5,7 @@ Base: [REQUISITOS-F1](REQUISITOS-F1.md), [ARQUITECTURA](ARQUITECTURA.md) §9.
 ## 0. Convenciones
 - Niveles: **UT** (Vitest, Node), **CMP** (RTL + jsdom, user-event, fake timers), **INT** (motor en Node sobre `Battle` síncrono), **E2E** (Playwright sobre `vite preview` con `VITE_TEST_HOOKS=1`; chromium y webkit), **VIS** (capturas a 360×740 y 1280×800 con playwright-cli, revisadas con web-design-guidelines).
 - Roster F1: `brock` (variantes `brock-kanto-leaders`, `brock-world-leaders`), `misty`, `camila`, `plubio`, `rojo`. Ciclo de la bolsa = 5 días.
-- Fechas de referencia (`LAUNCH_DATE=2026-10-19`, roster de 6 entrenadores y ciclo de 6 días): D-1 2026-10-18; D0 2026-10-19; D+1..D+4 2026-10-20..23; D+5 2026-10-24 (último día del ciclo 1; el ciclo 2 empieza en D+6); D+365 2027-10-19; cambios de hora 2027 (Europe/Madrid) 03-27/28/29 y 10-30/31, 11-01.
+- Fechas de referencia, **solo para el snapshot UT-17 y los tests de bolsa/ciclo** (`LAUNCH_DATE=2026-10-19`; desde F2 roster de 53 entrenadores y ciclo de 53 días, antes 6): D-1 2026-10-18; D0 2026-10-19; D+1..D+4 2026-10-20..23; D+5 2026-10-24; el ciclo 2 empieza en D+53 (antes D+6); D+365 2027-10-19; cambios de hora 2027 (Europe/Madrid) 03-27/28/29 y 10-30/31, 11-01.
 - Fixtures: `GameData` sintético mínimo y real; `AiState` manual; semillas de combate fijas; pools imposibles; JSON corrupto.
 - Criterios fijados: fecha anterior a `LAUNCH_DATE` = `#1` (prevalece sobre la fórmula literal de RF-09); "Sacar primero" sobre el ya elegido no lo deselecciona (siempre hay uno).
 - Ningún test hace peticiones de red; los scripts de descarga no se ejecutan en tests.
@@ -32,6 +32,7 @@ Base: [REQUISITOS-F1](REQUISITOS-F1.md), [ARQUITECTURA](ARQUITECTURA.md) §9.
 - UT-15 Habilidad doble: siempre de la lista del set, ambas aparecen en 200 fechas, repetible por fecha; habilidad única se respeta. (RF-07)
 - UT-16 `alwaysLeadsWith`: Misty→Starmie, Plubio→Milotic, Brock→Onix; sin regla (Rojo) el primero varía y es reproducible; regla con especie ausente → error de datos. (RF-08)
 - UT-17 Snapshot de `getDailyChallenge` con las fechas de referencia y datos reales (incluye `number`, trainer, variant, rivalTeam con habilidades, playerTeam, `meta`); cambiar un dato lo rompe. Regenerar al fijar `LAUNCH_DATE` en F2. (RF-04)
+- Criterio transversal (DEC-35): los demás tests (unitarios, de componente y E2E) eligen rival y variante por id (`challengeFor`, `?trainer=&variant=`) y cuentan días desde `LAUNCH`/`LAUNCH_DATE` sin fijar su valor; cambiar `LAUNCH_DATE` solo debe romper UT-17.
 - UT-18 Mismo string de fecha con distinto `TZ` → mismo reto.
 
 **Equipo del jugador**
@@ -39,19 +40,22 @@ Base: [REQUISITOS-F1](REQUISITOS-F1.md), [ARQUITECTURA](ARQUITECTURA.md) §9.
 - UT-20 Igual en 365 días (también IV del jugador = IV del rival, `playerIvs.test.ts`: contra líder 20, campeón 25 y Rojo 30; el snapshot del reto solo cambia en `playerTeam[].ivs`); RF-14 solo relajado si consta en `meta.relaxedRules`; ningún día lanza error; `teamAttempts` ≤ 1000.
 - UT-21 Ningún set con tag `source:<rivalDelDía>`; misma especie de otro rival puede entrar, solo una. (RF-11)
 - UT-22 Onix (nfe) aparece en el rival; ninguna nfe en `player-sets.json` ni elegida; un pool contaminado no la devuelve.
+- UT-19b/UT-20b (RF-13b, RF-13c; `team.test.ts`) Suma de estadísticas base >= 2800 y <= 3 del mismo tipo con los datos reales en un ciclo y en 365 días (sin relajar, <= 20 intentos); pool sin suma posible → 1000 intentos y `relaxed` con RF-13b (y RF-14 solo si no hay movimiento x2); pool con >= 4 Pokémon forzosos de un mismo tipo → DataError (RF-13c no se relaja).
 - UT-23 Tirada que incumple RF-13 → reintento (`attempts>1`), equipo válido y determinista. (RF-15)
 - UT-24 Pool sin solución para RF-14 → 1000 intentos, `relaxed=['RF-14']`; pool sin solución para RF-12/13 → error de datos tipado en español. (regla 7)
 - UT-25 Sin `nature` → `Serious` y marcado; con naturaleza se respeta. (regla 4)
 - UT-26 Sustituir `player-sets.json` por otro fixture funciona sin tocar código.
 
 **Validación de datos**
-- UT-27 Estructura: 6 sets por variante, nivel 50, `sourceTournament`/`sourceUrl` válidos, ids únicos, categoría y región válidas, 4 movimientos; 6 entrenadores (con Máximo), Brock con 2 variantes.
+- UT-27 Estructura: 6 sets por variante, nivel 50, `sourceTournament`/`sourceUrl` válidos, ids únicos, categoría y región válidas, 4 movimientos; 53 entrenadores (46 líderes y 7 campeones) con ≥ 1 variante y los líderes con 2 (F2), Brock con 2 variantes, nombres de Acerón y Teniente Surge, calendario con los 53 en la última entrada.
 - UT-28 Legalidad Gen 5: especie, objeto, habilidad (de la especie) y movimientos existen en Gen 5; nada prohibido por el PWT; validador de `@pkmn/sim` gen5; un set de Gen 6 se rechaza.
 - UT-29 Todos `verified: true`.
 - UT-30 IV por categoría: líderes 20, campeones 25, Rojo 30.
 - UT-31 EV ausentes → 0 y marcados; presentes → usados.
 - UT-32 Todo nombre resuelve en `names-es.json`; ninguno igual a su id; overrides mandan; Hidden Power y Vise Grip resuelven.
 - UT-33 `dex-gen5.json`, `names-es.json`, `player-sets.json` iguales a su regeneración en memoria.
+- UT-33 (F2): las comparaciones de `names-es.json` y `descriptions-es.json` con su regeneración necesitan `scripts/.cache/` y se omiten con aviso si falta (CI); la cobertura sin caché la da UT-60.
+- UT-60 (F2) `scripts/validate-data.test.ts`: el validador de datos (`npm run validate:data`, PRD §8.3) acepta los datos reales (53 entrenadores, 0 problemas) y rechaza especie inexistente, legendario prohibido, objeto/movimiento prohibido (Rocío Bondad, Caída Libre), movimiento de Gen 6 o no aprendible, habilidad ajena, 3 movimientos o repetidos, nivel, nombre en español ausente, líder con 1 variante o sin variantes, IV incorrectos, equipo de 5, `alwaysLeadsWith` ausente y calendario con entrenador desconocido o fuera de frontera de ciclo.
 - UT-34 Sprites existen (Pokémon front/back por `spriteId`; entrenador `.gif` y `-mini.png`) con cabecera GIF/PNG válida.
 - UT-35 Pool: solo evolucionados completos, deduplicados, con tags `source:<idEntrenador>` o `source:smogon-<tier>`, ≥500 sets y ≥200 especies, todos los tiers presentes, sin Caída Libre ni Rocío Bondad, sets de Smogon sin EVs ni naturaleza y con habilidad de la especie; UT-28 valida la legalidad Gen 5 de todo el pool (Smeargle/Sketch aparte) y UT-33 la regeneración de `player-sets.json` y `battle-ui-images.json`; UT-34 existencia de los sprites de todas las especies del pool.
 
@@ -68,6 +72,7 @@ Base: [REQUISITOS-F1](REQUISITOS-F1.md), [ARQUITECTURA](ARQUITECTURA.md) §9.
 
 **Registro**
 - UT-45 Una línea de cada uno de ~30 tipos → español sin ids; descartes de `-message`, `-hint`, `raw`, `debug`; tipo desconocido → texto genérico en español.
+- UT-45b (DEC-36) `translate.items.test.ts`: secuencias `-enditem` capturadas del motor (`[eat]`, `[silent]`, `[weaken]`, gema, Sash, Hierba Blanca, Globo Helio, `[from]` move/stealeat) → un solo mensaje por uso, sin perder objetos quitados (Golpe Bajo, Calcinación) ni efectos propios (Restos, Vidasfera); mismos casos contra el motor real (Baya Zidra/Aranja/Safre/Anti-X, Ladrón, Truco, Bulbo Absorbente...) y 10 partidas con objetos donde ningún `[eat]`/`[silent]` da texto. (RF-51)
 - UT-46 Sobre los logs de INT-01: sin `|`, ids, ni palabras inglesas (`used`, `fainted`, `sent out`, `super effective`, `The opposing`…). (RF-51)
 - UT-47 Intro: "¡La Líder Camila te desafía!", "¡El Campeón Rojo te desafía!", "¡Camila saca a [Pokémon]!" y envío del inicial. (RF-53)
 - UT-48 Sin literales de interfaz en `src/ui/**` fuera de `i18n/es.ts`.
@@ -131,7 +136,9 @@ Base: [REQUISITOS-F1](REQUISITOS-F1.md), [ARQUITECTURA](ARQUITECTURA.md) §9.
 - INT-15 Turno completo (jugador + IA + traducción) < 300 ms (mediana y p95 en 200 turnos).
 - INT-16 Sin `debug`/`raw` en las líneas a la UI; un nombre con HTML se renderiza como texto.
 
-## 4. E2E (chromium + webkit; ganchos `?date=`, `?seed=`, `?ai=trivial`; `page.clock`)
+## 4. E2E (los casos sensibles al tiempo llevan `@timing` en el título —E2E-03 de las 23:59:55, E2E-21, E2E-47, E2E-48, E2E-49, E2E-50, E2E-51—: `npm run test:e2e` los excluye de la tanda principal y los ejecuta después con `--workers=1`, `npm run test:e2e:timing`; chromium + webkit; ganchos `?date=`, `?trainer=`, `?variant=`, `?seed=`, `?ai=trivial`; `page.clock`)
+
+Las fechas "D0", "3 fechas" y "5 fechas" de abajo son, desde DEC-35, escenarios por rival (`e2e/support.ts`: Plubio, Misty, Máximo, Camila, Rojo, Brock); la fecha de cada escenario es un literal que solo siembra el equipo del jugador.
 - E2E-01 Hoy completo con `?date=2026-10-19`: `#1`, cuenta atrás, rival, 6 especies, 6 tarjetas, "Combatir" desactivado con motivo, aviso fan, consola limpia.
 - E2E-02 Dos contextos (distinto `timezoneId`) con la misma fecha → mismo reto.
 - E2E-03 `page.clock` 23:59:55 + 10 s: `#1`→`#2`, cambia el reto, reinicia la cuenta atrás, sin recarga; variante 2027-03-27 (~23 h).
@@ -147,7 +154,17 @@ Base: [REQUISITOS-F1](REQUISITOS-F1.md), [ARQUITECTURA](ARQUITECTURA.md) §9.
 - E2E-48 Hoy solo pide sprites del reto de hoy (≤12 especies con frente y espalda y 1 entrenador). (RF-11b)
 - E2E-49 Con la red lenta (retardo en `/ui/battle/*.png`), Equipo y Datos no se enseñan a medio cargar: todas las `<img>` ya cargadas en el primer fotograma. Falla sin la precarga y la espera. (RF-11b)
 - E2E-50 Los PS numéricos del jugador bajan monótonos, con valores intermedios y a la par de la barra (≤1 px), y terminan en el PS exacto. Unitarios: `DataBox.hpAnimation.test.tsx` (bajada, curación, varios golpes, x2/x4, `prefers-reduced-motion`, cambio de Pokémon). (RF-11c)
-- E2E-47 Intro: los dos entrenadores entran deslizándose opacos desde fuera del lienzo (muestreo por fotograma de la fase `enter`). (PRD §10.2.1)
+- E2E-51 Orden del debilitado (`e2e/faint-order.spec.ts`, chromium y webkit, x1/x2/x4, tiempo real, sin `page.clock`): muestreo cada 50 ms de la anchura del relleno de la barra (`--fill`), el atributo `data-fainted`, la opacidad del sprite y el mensaje; en cada paso a debilitado (jugador y rival) el relleno ya es 0, el mensaje «se ha debilitado» ya se ve y el sprite seguía opaco justo antes. Falla con la vista marcando debilitado en el golpe (relleno 11-12 px al pasar a debilitado). Unitarios: `faintOrder.test.ts` (vista del golpe letal) y `BattleScreen.faint.test.tsx` (con reloj simulado: barra -> mensaje -> sprite, jugador y rival). (DEC-42)
+- E2E-52 Recargar a mitad del oficial (`e2e/official.spec.ts`, chromium y webkit): tras tres decisiones, recargar y Reanudar deja el mismo Registro, PS y contadores, no recorre ninguna fase de intro y no duplica decisiones guardadas; se puede seguir jugando. (PRD §14.7 y §14.17, DEC-43)
+- E2E-53 Salir y volver a Hoy: el oficial pasa a Reanudar, habilitado sin elegir inicial, y retoma el mismo estado. (PRD §4.3)
+- E2E-54 Rendirse en el oficial es derrota; el botón queda deshabilitado con «Derrota · N turnos · X/6 en pie», también tras recargar; una práctica posterior (a medias o terminada) no cambia lo guardado. (PRD §14.8, §14.9, §14.10)
+- E2E-55 Una práctica antes del oficial no lo gasta, no escribe en `localStorage` y no se reanuda al recargar.
+- E2E-56 `@timing` (`page.clock`): un oficial empezado a las 23:59:30 y terminado pasada la medianoche se registra en el día de inicio; Hoy muestra el reto nuevo (#N+1) con el oficial libre. (PRD §4.3)
+- E2E-57 `localStorage` bloqueado (lanza): el sitio funciona, avisa de que no se guarda, el oficial queda gastado en memoria y la consola queda limpia.
+- E2E-58 Registro guardado irreproducible (versión de datos y variante que ya no existen): aviso en español, oficial «Anulado» y deshabilitado, también tras recargar, y la práctica sigue disponible. (política de DEC-43)
+- E2E-59 JSON corrupto en `daily-pwt:v1`: Hoy carga sin errores y el oficial está libre.
+- UT del progreso guardado (DEC-43): `src/storage/localStorageStore.test.ts` (un oficial por día, dos pestañas, versión del esquema, JSON y días corruptos, almacenamiento nulo/bloqueado/cuota llena y su recuperación); `src/hooks/useBattle.replay.test.tsx` (reproducción con el motor real: mismo estado, petición e historial que en vivo, sin intro, sin notificar decisiones reproducidas, fallos por checkpoint, decisión rechazada y fin anticipado, rendición como última decisión); `src/App.official.test.tsx` (un intento, reanudar, resultado, rendirse, prácticas sin efecto, regla del día de inicio, día anterior sin terminar, política de reproducción fallida, sin almacenamiento); `src/ui/today/TodayScreen.official.test.tsx` (estados Jugar / Reanudar / Victoria / Derrota / Anulado, práctica, avisos); `src/ui/battle/BattleScreen.mode.test.tsx` (etiqueta y diálogos).
+- E2E-47 Intro (`e2e/intro-slide.spec.ts`, chromium y webkit, tiempo real: sin `page.clock` ni saltar la transición): muestreo cada 50 ms con `getBoundingClientRect`; cada entrenador presenta >= 3 posiciones x intermedias distintas dentro del lienzo durante >= 400 ms en total, parte del borde, y la fase `enter` empieza con el iris ya revelado (opacidad < 5 %). Con el código anterior falla (iris a ~30 % al empezar la entrada). (PRD §10.2.1, DEC-30)
 - E2E-10 Teclado completo: partida jugable sin ratón, foco visible, diálogos devuelven el foco.
 - E2E-11 `@axe-core/playwright` sin violaciones serias/críticas en Hoy, Combate, Resultado y diálogo; contraste AA.
 - E2E-12 360 px táctil: `scrollWidth ≤ 360`, objetivos ≥ 44 px, jugable con `tap`.
@@ -159,7 +176,7 @@ Base: [REQUISITOS-F1](REQUISITOS-F1.md), [ARQUITECTURA](ARQUITECTURA.md) §9.
 - E2E-18 Táctil en espera durante animación y turno rival; cinco clics = una decisión; «Turno N» no sale en pantalla. (RF-77, RF-78)
 - E2E-19 Solo peticiones del mismo origen; fuente local.
 - E2E-20 Resultado mínimo (RF-60/61).
-- E2E-21 Throttling 4G + CPU ×4: Hoy < 3 s; ruta crítica < 200 KB gzip; sim y `@smogon/calc` fuera de ella.
+- E2E-21 Throttling 4G + CPU ×4: Hoy < 3 s; ruta crítica < 230 KB gzip (provisional, DEC-40); sim y `@smogon/calc` fuera de ella.
 - E2E-22 E2E-01, 05, 07, 10 y 12 pasan en chromium y webkit; Firefox si el entorno lo permite.
 - E2E-23 Mochila atenuada: `aria-disabled`, motivo accesible y aviso en la caja de texto. (RF-73)
 - E2E-24 El sprite del jugador asoma sobre la caja de mensajes. (RF-44)

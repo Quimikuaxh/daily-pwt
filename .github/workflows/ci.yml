@@ -1,0 +1,37 @@
+# Validación previa: datos (PRD §8.3), tests unitarios, tipos, lint y build. Se ejecuta en pull requests, en pushes a cualquier rama
+# que no sea main y, vía workflow_call, como paso previo obligatorio del despliegue (deploy.yml).
+# Sin red hacia fuentes externas y sin scripts/.cache: los tests que comparan con una regeneración que necesita los CSV de PokeAPI
+# se omiten con aviso (src/data/generated.test.ts); `npm run validate:data` cubre esos nombres sin la caché.
+# Playwright no se ejecuta aquí: ver «Tests e2e» en el README (~7 min con 4 workers en local; con los 2 workers de CI y la instalación de
+# navegadores superaría el presupuesto de 10 min y es sensible a la carga). Se lanza en local antes de hacer merge.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches-ignore: [main]
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run validate:data
+      - run: npm test
+      - run: npx tsc -b
+      - run: npm run lint
+      - run: npm run build

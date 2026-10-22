@@ -33,7 +33,7 @@ Lo marcado **[F1, se amplía]** es alcance de F1 y crece en F2/F3. Lo marcado **
 4. **[regla]** Naturaleza neutra (Seria) si el set no la indica; se marca en los datos.
 5. Validación de datos en F1 como test unitario.
 6. **[regla]** Aviso fan no oficial en el pie de Hoy; en F3 también en Ayuda.
-7. **[regla]** Equipo del jugador sin solución: máximo 1000 intentos; después se relaja solo RF-14; si sigue sin solución, error de datos.
+7. **[regla]** Equipo del jugador sin solución: máximo 1000 intentos; después se relaja primero RF-14 y, si aun así no hay equipo, RF-13b (`meta.relaxedRules` lo registra); RF-12, RF-13 y RF-13c no se relajan nunca: sin solución, error de datos.
 8. **[regla]** "Ataque eficaz ×2" solo por tipos, sin habilidades. (El panel de emparejamientos que mostraba el rango mín–máx se eliminó, RF-37.)
 9. Dificultad: comprobación preliminar con los rivales de F1; calibración con 20 partidas en F2.
 10. Hoy con botón único "Combatir", sin iconos de cabecera y un solo tema. Salir del combate pide confirmación y descarta la partida.
@@ -62,6 +62,8 @@ Lo marcado **[F1, se amplía]** es alcance de F1 y crece en F2/F3. Lo marcado **
 - RF-11c Los PS numéricos del jugador bajan o suben a la par de la barra (lineal, 700 ms a x1, enteros en cada fotograma, sin animación con `prefers-reduced-motion`) y terminan en el PS exacto (DEC-34).
 - RF-12 Sin Pokémon evolucionables, especies repetidas, objetos repetidos ni legendarios prohibidos (lista de PRD §6).
 - RF-13 Al menos 4 tipos distintos.
+- RF-13b (F2, PRD §0) Suma de estadísticas base (`baseStats` del dex, como el total de las tarjetas de Hoy) de los 6 Pokémon >= 2800.
+- RF-13c (F2, PRD §0) Como máximo 3 Pokémon que compartan un mismo tipo (cada tipo de un Pokémon de doble tipo cuenta).
 - RF-14 Al menos un movimiento de daño ×2 o más por tipos contra algún Pokémon del rival.
 - RF-15 Si la tirada incumple, se repite con el siguiente valor del PRNG (regla 7 de §2).
 - RF-16 IV iguales a los del rival del día (20 contra líderes, 25 contra campeones, 30 contra Rojo; `buildPlayerTeam` los toma de `rivalTeam[0].ivs`, función pura), EV 0, Nv. 50 y naturaleza Seria (regla 4). Hoy (tarjetas), la pantalla de datos y el motor usan estos IV a través del `ResolvedSet` del jugador.
@@ -154,7 +156,7 @@ Lo marcado **[F1, se amplía]** es alcance de F1 y crece en F2/F3. Lo marcado **
 5. Reglas de PRD §5 aplicadas (Nv. 50, Gen 5, IV/EV, `alwaysLeadsWith`, sin cláusulas de sueño ni OHKO).
 6. El jugador elige movimiento o cambio cada turno; el rival responde según la IA; tests de las reglas 1, 4 y 5 de la IA.
 7. Rendirse con confirmación termina como derrota.
-8. En todas las fechas de un ciclo el equipo cumple RF-12, RF-13 y RF-14.
+8. En todas las fechas de un ciclo el equipo cumple RF-12, RF-13, RF-13b, RF-13c y RF-14.
 9. Sets de F1 con `verified: true` y legales en Gen 5.
 10. Sprites N2/B2 de las especies y entrenadores de F1; Pokémon animados y nítidos.
 11. E2E de partida completa contra IA trivial en verde.

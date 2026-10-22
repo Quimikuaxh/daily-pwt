@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { loadGameData } from '../data/gameData'
-import { dateForTrainer } from '../test-utils/ui'
 import { calcStats } from './stats'
-import { getDailyChallenge } from './challenge'
+import { challengeFor } from './challenge'
+import { LAUNCH } from '../test-utils/dates'
 
 // RF-16: el jugador lleva los mismos IV que el rival del día (20 líderes, 25 campeones, 30 Rojo), EV 0 y naturaleza Seria.
 const data = loadGameData()
@@ -10,7 +10,7 @@ const data = loadGameData()
 describe('IV del jugador = IV del rival del día', () => {
   for (const [label, trainerId, iv] of [['líder', 'brock', 20], ['campeón', 'plubio', 25], ['Rojo', 'rojo', 30]] as const) {
     it(`contra ${label} (${trainerId}): IV ${iv}, EV 0, naturaleza Seria y estadísticas calculadas con ellos`, () => {
-      const challenge = getDailyChallenge(dateForTrainer(trainerId, data), data)
+      const challenge = challengeFor({ trainerId, date: LAUNCH }, data)
       expect(challenge.trainer.id).toBe(trainerId)
       expect(challenge.rivalTeam.every((set) => Object.values(set.ivs).every((value) => value === iv))).toBe(true)
       for (const set of challenge.playerTeam) {
@@ -28,7 +28,7 @@ describe('IV del jugador = IV del rival del día', () => {
   }
 
   it('el reto sigue siendo puro: mismas entradas, mismos IV', () => {
-    const date = dateForTrainer('rojo', data)
-    expect(getDailyChallenge(date, data).playerTeam.map((set) => set.ivs)).toEqual(getDailyChallenge(date, data).playerTeam.map((set) => set.ivs))
+    const selection = { trainerId: 'rojo', date: LAUNCH }
+    expect(challengeFor(selection, data).playerTeam.map((set) => set.ivs)).toEqual(challengeFor(selection, data).playerTeam.map((set) => set.ivs))
   })
 })

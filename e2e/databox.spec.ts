@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { D0, startBattle } from './support'
+import { startBattle } from './support'
 
 // Revisión de Jose: el relleno de PS queda dentro del recuadro de la barra en todos los niveles y en las dos cajas; el Pokémon del
 // jugador se ve a 2x, a la izquierda y recortado por abajo. Se mide en el navegador real (en jsdom no hay maquetación).
@@ -7,7 +7,7 @@ const LEVELS = [['green', 50], ['green', 31], ['yellow', 24], ['yellow', 11], ['
 
 test.describe('Cajas de datos y sprites del combate', () => {
   test('E2E-23 el relleno de PS está alineado con el recuadro de la barra (verde, amarillo y rojo; rival y jugador)', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.waitForActionOrResult()
     for (const side of ['rival', 'player'] as const) {
       for (const [level, width] of LEVELS) {
@@ -41,7 +41,7 @@ test.describe('Cajas de datos y sprites del combate', () => {
   })
 
   test('E2E-23 el Pokémon del jugador va a 2x, a la izquierda y solo pierde la parte baja bajo la caja de mensajes; el rival, a 1x', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.waitForActionOrResult()
     const geometry = await page.evaluate(() => {
       const field = (document.querySelector('[data-testid=field]') as Element).getBoundingClientRect()

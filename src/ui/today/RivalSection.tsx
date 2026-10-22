@@ -4,7 +4,7 @@ import { es } from '../../i18n/es'
 import { Sprite } from '../common/Sprite'
 import { speciesSprite, trainerSprite } from '../common/spriteUrls'
 import { TypeBadge } from '../common/TypeBadge'
-import { TODAY_SPRITE_BOX, TODAY_SPRITE_CLASS, pokemonSpriteClass } from './spriteBox'
+import { TODAY_SPRITE_BOX, pokemonSpriteClass, trainerSpriteClass } from './spriteBox'
 import { cardModel } from './cardModel'
 import { MonHead } from './MonHead'
 import { MoveList } from './MoveList'
@@ -18,7 +18,7 @@ function RivalCard({ challenge, data }: RivalSectionProps) {
   return (
     <div className="rival-card">
       <div className="rival-stage">
-        <Sprite src={trainerSprite(trainer.sprite)} name={trainer.nameEs} width={TODAY_SPRITE_BOX} height={TODAY_SPRITE_BOX} className={TODAY_SPRITE_CLASS} />
+        <Sprite src={trainerSprite(trainer.sprite)} name={trainer.nameEs} width={TODAY_SPRITE_BOX} height={TODAY_SPRITE_BOX} className={trainerSpriteClass(trainer.sprite)} />
       </div>
       <div className="rival-card-text">
         <p className="rival-name" translate="no">{trainer.nameEs}</p>

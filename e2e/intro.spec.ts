@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test'
-import { D0 } from './support'
 import { TodayPage } from './pages/TodayPage'
 import { BattlePage } from './pages/BattlePage'
 
@@ -15,7 +14,7 @@ const timings = (page: import('@playwright/test').Page, selector: string) =>
 test.describe('Orden de la intro', () => {
   test('E2E-39 el rival y el protagonista salen antes de que aparezca su Pokémon, y ninguno queda visible al acabar', async ({ page }) => {
     const today = new TodayPage(page)
-    await today.goto(D0, 'seed=a&ai=trivial')
+    await today.goto(undefined, 'seed=a&ai=trivial')
     await today.leadButtons.first().click()
     await today.fightButton.click()
     const field = page.getByTestId('field')
@@ -44,7 +43,7 @@ test.describe('Barra superior y menú de movimientos', () => {
 
   test('E2E-40 en escritorio Salir, Registro y Velocidad van en una sola línea', async ({ page }) => {
     const today = new TodayPage(page)
-    await today.goto(D0, 'seed=a&ai=trivial')
+    await today.goto(undefined, 'seed=a&ai=trivial')
     await today.leadButtons.first().click()
     await today.fightButton.click()
     const battle = new BattlePage(page)
@@ -55,7 +54,7 @@ test.describe('Barra superior y menú de movimientos', () => {
 
   test('E2E-41 teselas de movimiento: PP centrados con el mismo hueco, sin icono de tipo y con el botón Volver ripeado', async ({ page }) => {
     const today = new TodayPage(page)
-    await today.goto(D0, 'seed=a&ai=trivial')
+    await today.goto(undefined, 'seed=a&ai=trivial')
     await today.leadButtons.first().click()
     await today.fightButton.click()
     const battle = new BattlePage(page)

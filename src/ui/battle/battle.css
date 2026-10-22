@@ -402,6 +402,26 @@
   text-shadow: 1px 1px 0 #585858;
 }
 
+/* Etiqueta OFICIAL / PRÁCTICA (PRD §10.2): esquina superior derecha de la pantalla superior, libre de cajas de datos. */
+.bt-mode {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  z-index: 30;
+  padding: 1px 4px;
+  font-size: 10px;
+  line-height: 12px;
+  letter-spacing: 1px;
+  color: #f8f8f8;
+  background: rgb(24 24 24 / 0.78);
+  border: 1px solid #f8f8f8;
+  pointer-events: none;
+}
+
+.bt-mode-official {
+  background: rgb(184 24 64 / 0.85);
+}
+
 /* ---------- Intro (PRD §10.2.1) ---------- */
 .bt-iris {
   position: absolute;
@@ -424,12 +444,13 @@
   transform: scale(0.5);
 }
 
+/* Terminan (300 ms) bastante antes que la fase (500 ms), con holgura por si el navegador arranca tarde la animación: el campo queda del todo a la vista cuando empieza la entrada de los entrenadores. */
 [data-intro="iris"] .bt-iris {
-  animation: bt-iris-fade calc(500ms / var(--speed, 1)) ease-in both;
+  animation: bt-iris-fade calc(300ms / var(--speed, 1)) ease-in both;
 }
 
 [data-intro="iris"] .bt-iris-ball {
-  animation: bt-iris-zoom calc(500ms / var(--speed, 1)) ease-in both;
+  animation: bt-iris-zoom calc(300ms / var(--speed, 1)) ease-in both;
 }
 
 @keyframes bt-iris-fade {
@@ -565,7 +586,7 @@
 /* La entrada parte de fuera del lienzo (150 px desde el borde) y no se funde: con opacidad y ease-out el entrenador parecía aparecer de golpe. */
 @keyframes bt-slide-in-right {
   from {
-    transform: translateX(150px);
+    transform: translateX(var(--enter-distance));
     opacity: 1;
   }
   to {
@@ -587,7 +608,7 @@
 
 @keyframes bt-slide-in-left {
   from {
-    transform: translateX(-150px);
+    transform: translateX(calc(var(--enter-distance) * -1));
     opacity: 1;
   }
   to {
@@ -707,13 +728,17 @@
   }
 }
 
-/* enter: entran los dos entrenadores */
+/* enter: entran los dos entrenadores desde fuera del lienzo. Empiezan justo en el borde (--enter-distance) y frenan al llegar: así todo el recorrido se ve durante la fase entera (650 ms de animación en 700 ms de fase a x1), no solo el final. */
+[data-intro="enter"] .bt-trainer {
+  --enter-distance: 125px;
+}
+
 [data-intro="enter"] .bt-trainer-rival {
-  animation: bt-slide-in-right calc(500ms / var(--speed, 1)) ease-in-out both;
+  animation: bt-slide-in-right calc(650ms / var(--speed, 1)) ease-out both;
 }
 
 [data-intro="enter"] .bt-trainer-player {
-  animation: bt-slide-in-left calc(500ms / var(--speed, 1)) ease-in-out both;
+  animation: bt-slide-in-left calc(650ms / var(--speed, 1)) ease-out both;
 }
 
 [data-intro="challenge"] .bt-trainer {
@@ -990,6 +1015,11 @@
 [data-reduced-motion="true"] .bt-databox {
   animation: none !important;
   transition: opacity 300ms;
+}
+
+/* Debilitado con movimiento reducido: el sprite desaparece sin caída ni fundido (el orden barra -> mensaje -> sprite lo marca useBattle). */
+[data-reduced-motion="true"] .bt-mon .bt-sprite {
+  transition: none;
 }
 
 /* Cambio de Pokémon con movimiento reducido: sin entrenador, bola ni rayo; el que sale se desvanece y el nuevo entra con un fundido. */

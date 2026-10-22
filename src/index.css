@@ -743,6 +743,45 @@ img.sprite,
   letter-spacing: 2px;
 }
 
+.fight-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.fight-buttons .btn-official {
+  flex: 2 1 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.fight-buttons .btn-practice {
+  flex: 1 1 120px;
+}
+
+.btn-fight-title {
+  display: block;
+}
+
+.btn-fight-status {
+  display: block;
+  font-size: 18px;
+  line-height: 20px;
+  letter-spacing: 1px;
+}
+
+.fight-earlier {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: #f8f8f8;
+  text-shadow: 1px 1px 0 #181818;
+}
+
 .fight-hint {
   text-align: center;
   color: #f8f8f8;
@@ -826,6 +865,13 @@ img.sprite,
   padding: 2px 8px;
   background: #181818;
   border: 2px solid #585858;
+}
+
+.result-note {
+  margin: 0;
+  text-align: center;
+  font-size: 14px;
+  line-height: 18px;
 }
 
 .result-actions {

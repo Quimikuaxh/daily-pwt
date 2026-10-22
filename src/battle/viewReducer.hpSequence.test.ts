@@ -2,10 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { createBattleEngine } from './engine'
 import { viewReducer } from './viewReducer'
 import type { BattleView } from './protocol'
-import { getDailyChallenge } from '../core/challenge'
+import { challengeFor } from '../core/challenge'
 import { loadGameData } from '../data/gameData'
 import { firstEnabled } from '../test-utils/harness'
-import { dates } from '../test-utils/dates'
 
 // Lo que muestra la caja de datos del jugador es `mon.hp` tras cada línea del registro (useBattle aplica una línea por paso).
 // Propiedades: cada línea deja los PS exactos del motor (nunca un porcentaje), y los PS solo suben con curación, cambio o `-sethp`.
@@ -14,10 +13,12 @@ const PLAYER_HP_LINE = /^\|(-damage|-heal|-sethp|switch|drag)\|p1[a-c]?: /
 
 describe('PS del jugador renderizados línea a línea (reductor + motor, combates completos)', () => {
   const data = loadGameData()
-  const scenarios = dates(6).flatMap((date) => ['a', 'b'].map((seed) => ({ date, seed })))
+  // Rival por id y fecha literal (solo siembra el equipo del jugador): no depende de la bolsa ni de LAUNCH_DATE.
+  const date = '2026-10-19'
+  const scenarios = data.trainers.flatMap(({ id: trainerId }) => ['a', 'b'].map((seed) => ({ trainerId, seed })))
 
-  it.each(scenarios)('$date semilla $seed: PS exactos, sin subidas fuera de curaciones y final igual al snapshot', ({ date, seed }) => {
-    const challenge = getDailyChallenge(date, data)
+  it.each(scenarios)('$trainerId semilla $seed: PS exactos, sin subidas fuera de curaciones y final igual al snapshot', ({ trainerId, seed }) => {
+    const challenge = challengeFor({ trainerId, date }, data)
     const engine = createBattleEngine({ battleSeed: seed, player: challenge.playerTeam, rival: challenge.rivalTeam, ai: 'heuristic', maxTurns: 300 } as never)
     let update = engine.start()
     let shown: BattleView = update.view
@@ -46,7 +47,7 @@ describe('PS del jugador renderizados línea a línea (reductor + motor, combate
   })
 
   it('con las líneas de un turno aplicadas una a una, los PS finales coinciden con el snapshot de ese update', () => {
-    const challenge = getDailyChallenge(dates(1)[0], data)
+    const challenge = challengeFor({ trainerId: 'brock', date: '2026-10-19' }, data)
     const engine = createBattleEngine({ battleSeed: 'a', player: challenge.playerTeam, rival: challenge.rivalTeam, ai: 'heuristic', maxTurns: 300 } as never)
     let update = engine.start()
     let shown: BattleView = update.view

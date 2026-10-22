@@ -1,4 +1,5 @@
-# Publica dist/ en GitHub Pages en cada push a main (o a mano desde la pestaña Actions). No lanza los tests: algunos necesitan `scripts/.cache`, que no se versiona; se ejecutan en local antes de hacer push.
+# Publica dist/ en GitHub Pages en cada push a main (o a mano desde la pestaña Actions), solo si pasa antes la validación de ci.yml
+# (datos, tests unitarios, tipos, lint y build). Los tests e2e (Playwright) no se ejecutan aquí: se lanzan en local.
 # Requiere en el repo: Settings > Pages > Source = "GitHub Actions".
 name: Deploy
 
@@ -17,7 +18,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  validate:
+    uses: ./.github/workflows/ci.yml
+
   build:
+    needs: validate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { getDailyChallenge } from '../core/challenge'
+import { challengeFor, getDailyChallenge } from '../core/challenge'
 import { localDate, msUntilNextLocalMidnight } from '../core/date'
 import type { Challenge, GameData } from '../core/types'
 import { es } from '../i18n/es'
@@ -41,9 +41,13 @@ function useNow(): Date {
   return now
 }
 
-function buildChallenge(date: string, data: GameData | null): { challenge: Challenge | null; error: string | null } {
+/** Rival y variante forzados por id (ganchos de prueba, DEC-17): se saltan la bolsa. */
+export type RivalOverride = { trainerId: string; variantId?: string }
+
+function buildChallenge(date: string, data: GameData | null, rival?: RivalOverride): { challenge: Challenge | null; error: string | null } {
   try {
-    return { challenge: getDailyChallenge(date, data as GameData), error: null }
+    const challenge = rival ? challengeFor({ date, ...rival }, data as GameData) : getDailyChallenge(date, data as GameData)
+    return { challenge, error: null }
   } catch {
     // El detalle técnico no se enseña (RNF-05): cualquier fallo del generador es un problema de datos para el usuario.
     return { challenge: null, error: es.today.dataError }
@@ -51,9 +55,14 @@ function buildChallenge(date: string, data: GameData | null): { challenge: Chall
 }
 
 /** Reto de la fecha local del dispositivo (RF-01) y cuenta atrás hasta el siguiente (RF-30/31). */
-export function useToday(data: GameData | null, dateOverride?: string): TodayState {
+export function useToday(data: GameData | null, dateOverride?: string, rivalOverride?: RivalOverride): TodayState {
   const now = useNow()
   const date = dateOverride ?? localDate(now)
-  const { challenge, error } = useMemo(() => buildChallenge(date, data), [date, data])
+  const trainerId = rivalOverride?.trainerId
+  const variantId = rivalOverride?.variantId
+  const { challenge, error } = useMemo(
+    () => buildChallenge(date, data, trainerId === undefined ? undefined : { trainerId, variantId }),
+    [date, data, trainerId, variantId],
+  )
   return { challenge, countdown: formatCountdown(msUntilNextLocalMidnight(now)), error }
 }

@@ -1,0 +1,11 @@
+[
+  {
+    "trainerId": "camila",
+    "tournament": "type-expert:electric",
+    "species": "stunfisk",
+    "field": "moves",
+    "value": ["discharge", "earthpower", "foulplay", "scald"],
+    "reason": "Bulbapedia (Type Expert: Electric) da Foul Play (Juego Sucio) y WikiDex da Astonish (Impresionar) en lugar de Foul Play; con solo dos fuentes no hay mayoría.",
+    "evidence": "El mismo Stunfisk (Descarga, Poder Pasado Tierra, Hidrobomba... mismos 3 movimientos restantes) está en Torneo Mundial de Líderes, donde Bulbapedia y Serebii dan Foul Play y solo WikiDex da Impresionar; WikiDex repite el mismo valor en ambos torneos, es decir, la divergencia es sistemática de esa fuente."
+  }
+]

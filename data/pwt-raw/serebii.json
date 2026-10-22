@@ -1,0 +1,1126 @@
+{
+  "source": "serebii",
+  "language": "en",
+  "pages": [
+    {"key":"kanto-leaders","url":"https://www.serebii.net/black2white2/pwt/kanto.shtml","snapshot":null,"sha256":"b581ceb432b2d7fdb49dd5c3240c55d26bb6b2b199b60994c17ff3276f3368f9","trainers":8},
+    {"key":"johto-leaders","url":"https://www.serebii.net/black2white2/pwt/johto.shtml","snapshot":null,"sha256":"34386cd484fe7eb245cff2cfc7cce91e2dbdfb73eff8a1fcf7e962a78951663d","trainers":8},
+    {"key":"hoenn-leaders","url":"https://www.serebii.net/black2white2/pwt/hoenn.shtml","snapshot":null,"sha256":"11d040b85148a7e498b446a7f8db61cb236a2447f7329f10642028da9891b1b5","trainers":9},
+    {"key":"sinnoh-leaders","url":"https://www.serebii.net/black2white2/pwt/sinnoh.shtml","snapshot":null,"sha256":"73ad49a3f86cd5b65cc4b96e3b62dbe2867436eb31827906a7feb7ca28008617","trainers":8},
+    {"key":"unova-leaders","url":"https://www.serebii.net/black2white2/pwt/unova.shtml","snapshot":null,"sha256":"546e7bc2870c4e9bcb0073d7e72d7aa100806e35bc3ef0d273aa8127ba354f85","trainers":14},
+    {"key":"world-leaders","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","snapshot":null,"sha256":"87c04f9a2857ccab8f45a257cfe10aedb428d5e0baaedbda4ba5b57395c8499e","trainers":47},
+    {"key":"champions","url":"https://www.serebii.net/black2white2/pwt/champion.shtml","snapshot":null,"sha256":"bac70c400fee247c16ca4aa80f078b6097e4c3903ee67e7ccdaa54927bef5f11","trainers":7}
+  ],
+  "teams": [
+    {
+      "header": {"tournament":"kanto-leaders","trainer":"Brock","url":"https://www.serebii.net/black2white2/pwt/kanto.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Onix","item":"Salac Berry","abilities":[],"moves":["Sand Tomb","Protect","Stealth Rock","Sandstorm"],"level":50},
+      {"species":"Golem","item":"Dark Gem","abilities":[],"moves":["Stone Edge","Earthquake","Sucker Punch","Iron Defense"],"level":50},
+      {"species":"Kabutops","item":"Liechi Berry","abilities":[],"moves":["Stone Edge","Aqua Jet","Superpower","Swords Dance"],"level":50},
+      {"species":"Omastar","item":"Rindo Berry","abilities":[],"moves":["Hydro Pump","Ancientpower","Earth Power","Ice Beam"],"level":50},
+      {"species":"Aerodactyl","item":"Charti Berry","abilities":[],"moves":["Rock Slide","Earthquake","Thunder Fang","Tailwind"],"level":50},
+      {"species":"Relicanth","item":"Rock Gem","abilities":[],"moves":["Rock Slide","Waterfall","Rock Polish","Yawn"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"kanto-leaders","trainer":"Misty","url":"https://www.serebii.net/black2white2/pwt/kanto.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Starmie","item":"Petaya Berry","abilities":[],"moves":["Hydro Pump","Psychic","Thunderbolt","Ice Beam"],"level":50},
+      {"species":"Golduck","item":"Water Gem","abilities":[],"moves":["Aqua Jet","Blizzard","Focus Blast","Hone Claws"],"level":50},
+      {"species":"Seaking","item":"Wacan Berry","abilities":[],"moves":["Waterfall","Megahorn","Poison Jab","Agility"],"level":50},
+      {"species":"Lapras","item":"Ganlon Berry","abilities":[],"moves":["Hydro Pump","Ice Beam","Thunderbolt","Confuse Ray"],"level":50},
+      {"species":"Slowbro","item":"Apicot Berry","abilities":[],"moves":["Scald","Psyshock","Slack Off","Yawn"],"level":50},
+      {"species":"Blastoise","item":"Salac Berry","abilities":[],"moves":["Hydro Pump","Iron Tail","Avalanche","Iron Defense"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"kanto-leaders","trainer":"Lt. Surge","url":"https://www.serebii.net/black2white2/pwt/kanto.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Raichu","item":"Electric Gem","abilities":[],"moves":["Thunderbolt","Focus Blast","Signal Beam","Thunder Wave"],"level":50},
+      {"species":"Electrode","item":"Lum Berry","abilities":[],"moves":["Rain Dance","Thunder","Mirror Coat","Magnet Rise"],"level":50},
+      {"species":"Magnezone","item":"Air Balloon","abilities":[],"moves":["Discharge","Flash Cannon","Signal Beam","Barrier"],"level":50},
+      {"species":"Electivire","item":"Liechi Berry","abilities":[],"moves":["Wild Charge","Low Kick","Rock Tomb","Fire Punch"],"level":50},
+      {"species":"Jolteon","item":"Shuca Berry","abilities":[],"moves":["Thunder","Shadow Ball","Signal Beam","Rain Dance"],"level":50},
+      {"species":"Ampharos","item":"Petaya Berry","abilities":[],"moves":["Discharge","Power Gem","Charge","Cotton Guard"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"kanto-leaders","trainer":"Erika","url":"https://www.serebii.net/black2white2/pwt/kanto.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Vileplume","item":"Grass Gem","abilities":[],"moves":["Petal Dance","Sleep Powder","Moonlight","Sunny Day"],"level":50},
+      {"species":"Venusaur","item":"Sitrus Berry","abilities":[],"moves":["Petal Dance","Toxic","Light Screen","Synthesis"],"level":50},
+      {"species":"Victreebel","item":"Salac Berry","abilities":[],"moves":["Leaf Blade","Sucker Punch","Swords Dance","Reflect"],"level":50},
+      {"species":"Exeggutor","item":"Tanga Berry","abilities":[],"moves":["Solarbeam","Psyshock","Hypnosis","Sunny Day"],"level":50},
+      {"species":"Tangrowth","item":"Liechi Berry","abilities":[],"moves":["Power Whip","Earthquake","Rock Slide","Swords Dance"],"level":50},
+      {"species":"Bellossom","item":"Fighting Gem","abilities":[],"moves":["Leaf Blade","Drain Punch","Swords Dance","Sunny Day"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"kanto-leaders","trainer":"Janine","url":"https://www.serebii.net/black2white2/pwt/kanto.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Venomoth","item":"Petaya Berry","abilities":[],"moves":["Sludge Bomb","Bug Buzz","Giga Drain","Quiver Dance"],"level":50},
+      {"species":"Weezing","item":"Fire Gem","abilities":[],"moves":["Sludge Bomb","Fire Blast","Shadow Ball","Pain Split"],"level":50},
+      {"species":"Ariados","item":"Payapa Berry","abilities":[],"moves":["Poison Jab","Struggle Bug","Electroweb","Sucker Punch"],"level":50},
+      {"species":"Crobat","item":"Sitrus Berry","abilities":[],"moves":["Toxic","Super Fang","Heat Wave","Tailwind"],"level":50},
+      {"species":"Arbok","item":"Shuca Berry","abilities":[],"moves":["Gunk Shot","Sucker Punch","Coil","Dragon Tail"],"level":50},
+      {"species":"Tentacruel","item":"Apicot Berry","abilities":[],"moves":["Toxic Spikes","Scald","Giga Drain","Barrier"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"kanto-leaders","trainer":"Sabrina","url":"https://www.serebii.net/black2white2/pwt/kanto.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Alakazam","item":"Colbur Berry","abilities":[],"moves":["Psyshock","Shadow Ball","Focus Blast","Charge Beam"],"level":50},
+      {"species":"Hypno","item":"Sitrus Berry","abilities":[],"moves":["Dream Eater","Shadow Ball","Hypnosis","Calm Mind"],"level":50},
+      {"species":"Mr. Mime","item":"Kasib Berry","abilities":[],"moves":["Psychic","Charge Beam","Light Screen","Reflect"],"level":50},
+      {"species":"Slowking","item":"Ganlon Berry","abilities":[],"moves":["Psyshock","Ice Beam","Slack Off","Calm Mind"],"level":50},
+      {"species":"Espeon","item":"Petaya Berry","abilities":[],"moves":["Psyshock","Shadow Ball","Yawn","Reflect"],"level":50},
+      {"species":"Jynx","item":"Salac Berry","abilities":[],"moves":["Dream Eater","Frost Breath","Energy Ball","Lovely Kiss"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"kanto-leaders","trainer":"Blaine","url":"https://www.serebii.net/black2white2/pwt/kanto.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Arcanine","item":"Liechi Berry","abilities":[],"moves":["Flare Blitz","Wild Charge","Close Combat","Extremespeed"],"level":50},
+      {"species":"Ninetales","item":"Charti Berry","abilities":[],"moves":["Heat Wave","Energy Ball","Hypnosis","Nasty Plot"],"level":50},
+      {"species":"Charizard","item":"Dragon Gem","abilities":[],"moves":["Inferno","Dragon Rush","Focus Blast","Hone Claws"],"level":50},
+      {"species":"Magmortar","item":"Petaya Berry","abilities":[],"moves":["Fire Blast","Psychic","Thunderbolt","Focus Blast"],"level":50},
+      {"species":"Flareon","item":"Salac Berry","abilities":[],"moves":["Flame Charge","Superpower","Flail","Yawn"],"level":50},
+      {"species":"Rapidash","item":"Shuca Berry","abilities":[],"moves":["Flare Blitz","Megahorn","Wild Charge","Hypnosis"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"kanto-leaders","trainer":"Giovanni","url":"https://www.serebii.net/black2white2/pwt/kanto.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Rhyperior","item":"Liechi Berry","abilities":[],"moves":["Drill Run","Stone Edge","Megahorn","Hammer Arm"],"level":50},
+      {"species":"Golem","item":"Rindo Berry","abilities":[],"moves":["Earthquake","Stealth Rock","Rock Blast","Roar"],"level":50},
+      {"species":"Marowak","item":"Yache Berry","abilities":[],"moves":["Bonemerang","Stone Edge","Outrage","Thunderpunc"],"level":50},
+      {"species":"Sandslash","item":"Salac Berry","abilities":[],"moves":["Earthquake","Rock Slide","Brick Break","Sandstorm"],"level":50},
+      {"species":"Nidoking","item":"Shuca Berry","abilities":[],"moves":["Earth Power","Sludge Wave","Megahorn","Blizzard"],"level":50},
+      {"species":"Nidoqueen","item":"Passho Berry","abilities":[],"moves":["Earth Power","Poison Jab","Superpower","Thunder"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"johto-leaders","trainer":"Falkner","url":"https://www.serebii.net/black2white2/pwt/johto.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Pidgeot","item":"Sitrus Berry","abilities":[],"moves":["Brave Bird","Heat Wave","U-turn","Tailwind"],"level":50},
+      {"species":"Fearow","item":"Liechi Berry","abilities":[],"moves":["Drill Peck","Drill Run","Heat Wave","U-turn"],"level":50},
+      {"species":"Dodrio","item":"Wacan Berry","abilities":[],"moves":["Brave Bird","Thrash","Pursuit","Acupressure"],"level":50},
+      {"species":"Honchkrow","item":"Salac Berry","abilities":[],"moves":["Air Cutter","Dark Pulse","Icy Wind","Nasty Plot"],"level":50},
+      {"species":"Xatu","item":"Petaya Berry","abilities":[],"moves":["Psychic","Shadow Ball","Heat Wave","Calm Mind"],"level":50},
+      {"species":"Noctowl","item":"Ganlon Berry","abilities":[],"moves":["Air Slash","Dream Eater","Hypnosis","Reflect"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"johto-leaders","trainer":"Bugsy","url":"https://www.serebii.net/black2white2/pwt/johto.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Scizor","item":"Occa Berry","abilities":[],"moves":["Bullet Punch","X-scissor","Aerial Ace","Swords Dance"],"level":50},
+      {"species":"Shuckle","item":"Sitrus Berry","abilities":[],"moves":["Struggle Bug","Gyro Ball","Substitute","Power Split"],"level":50},
+      {"species":"Heracross","item":"Coba Berry","abilities":[],"moves":["Megahorn","Close Combat","Stone Edge","Swords Dance"],"level":50},
+      {"species":"Pinsir","item":"Liechi Berry","abilities":[],"moves":["X-scissor","Superpower","Earthquake","Bulk Up"],"level":50},
+      {"species":"Forretress","item":"Apicot Berry","abilities":[],"moves":["Struggle Bug","Gyro Ball","Pain Split","Stealth Rock"],"level":50},
+      {"species":"Yanmega","item":"Charti Berry","abilities":[],"moves":["Bug Buzz","Psychic","Protect","Hypnosis"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"johto-leaders","trainer":"Whitney","url":"https://www.serebii.net/black2white2/pwt/johto.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Miltank","item":"Liechi Berry","abilities":[],"moves":["Body Slam","Zen Headbutt","Hammer Arm","Milk Drink"],"level":50},
+      {"species":"Wigglytuff","item":"Normal Gem","abilities":[],"moves":["Hyper Voice","Fire Blast","Blizzard","Perish Song"],"level":50},
+      {"species":"Tauros","item":"Lum Berry","abilities":[],"moves":["Thrash","Outrage","Stone Edge","Earthquake"],"level":50},
+      {"species":"Ambipom","item":"Flying Gem","abilities":[],"moves":["Double Hit","Acrobatics","Low Sweep","U-turn"],"level":50},
+      {"species":"Ursaring","item":"Chople Berry","abilities":[],"moves":["Thrash","Hammer Arm","Thunderpunch","Bulk Up"],"level":50},
+      {"species":"Clefable","item":"Sitrus Berry","abilities":[],"moves":["Ice Beam","Thunderbolt","Metronome","Cosmic Power"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"johto-leaders","trainer":"Morty","url":"https://www.serebii.net/black2white2/pwt/johto.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Gengar","item":"Petaya Berry","abilities":[],"moves":["Shadow Ball","Focus Blast","Dark Pulse","Hypnosis"],"level":50},
+      {"species":"Mismagius","item":"Kasib Berry","abilities":[],"moves":["Shadow Ball","Power Gem","Perish Song","Pain Split"],"level":50},
+      {"species":"Banette","item":"Liechi Berry","abilities":[],"moves":["Shadow Claw","Sucker Punch","Curse","Will-o-wisp"],"level":50},
+      {"species":"Dusknoir","item":"Sitrus Berry","abilities":[],"moves":["Shadow Punch","Bulldoze","Thunderpunch","Pain Split"],"level":50},
+      {"species":"Sableye","item":"Ganlon Berry","abilities":[],"moves":["Ominous Wind","Foul Play","Calm Mind","Recover"],"level":50},
+      {"species":"Froslass","item":"Ice Gem","abilities":[],"moves":["Shadow Ball","Ice Beam","Thunderbolt","Confuse Ray"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"johto-leaders","trainer":"Chuck","url":"https://www.serebii.net/black2white2/pwt/johto.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Poliwrath","item":"Water Gem","abilities":[],"moves":["Waterfall","Focus Punch","Hypnosis","Bulk Up"],"level":50},
+      {"species":"Machamp","item":"Payapa Berry","abilities":[],"moves":["Dynamicpunch","Rock Slide","Dual Chop","Bulldoze"],"level":50},
+      {"species":"Hitmontop","item":"Ground Gem","abilities":[],"moves":["Close Combat","Bullet Punch","Drill Run","Bulk Up"],"level":50},
+      {"species":"Hitmonchan","item":"Ice Gem","abilities":[],"moves":["Mach Punch","Ice Punch","Thunderpunch","Bulk Up"],"level":50},
+      {"species":"Hitmonlee","item":"Salac Berry","abilities":[],"moves":["Jump Kick","Sucker Punch","Blaze Kick","Bulk Up"],"level":50},
+      {"species":"Primeape","item":"Liechi Berry","abilities":[],"moves":["Close Combat","Outrage","Stone Edge","U-turn"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"johto-leaders","trainer":"Jasmine","url":"https://www.serebii.net/black2white2/pwt/johto.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Steelix","item":"Steel Gem","abilities":[],"moves":["Gyro Ball","Stone Edge","Earthquake","Curse"],"level":50},
+      {"species":"Magnezone","item":"Shuca Berry","abilities":[],"moves":["Flash Cannon","Zap Cannon","Thunder Wave","Gravity"],"level":50},
+      {"species":"Forretress","item":"Occa Berry","abilities":[],"moves":["Gyro Ball","Earthquake","Zap Cannon","Gravity"],"level":50},
+      {"species":"Skarmory","item":"Salac Berry","abilities":[],"moves":["Brave Bird","Stealth Rock","Roost","Swords Dance"],"level":50},
+      {"species":"Metagross","item":"Liechi Berry","abilities":[],"moves":["Meteor Mash","Earthquake","Bullet Punch","Gravity"],"level":50},
+      {"species":"Mawile","item":"Dark Gem","abilities":[],"moves":["Iron Head","Sucker Punch","Super Fang","Swords Dance"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"johto-leaders","trainer":"Pryce","url":"https://www.serebii.net/black2white2/pwt/johto.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Mamoswine","item":"Liechi Berry","abilities":[],"moves":["Icicle Crash","Earthquake","Rock Slide","Double-edge"],"level":50},
+      {"species":"Jynx","item":"Psychic Gem","abilities":[],"moves":["Blizzard","Psychic","Focus Blast","Shadow Ball"],"level":50},
+      {"species":"Dewgong","item":"Sitrus Berry","abilities":[],"moves":["Blizzard","Brine","Perish Song","Hail"],"level":50},
+      {"species":"Cloyster","item":"Salac Berry","abilities":[],"moves":["Icicle Spear","Razor Shell","Rock Blast","Shell Smash"],"level":50},
+      {"species":"Lapras","item":"Petaya Berry","abilities":[],"moves":["Blizzard","Hydro Pump","Psychic","Hail"],"level":50},
+      {"species":"Weavile","item":"Dark Gem","abilities":[],"moves":["Ice Shard","Night Slash","X-scissor","Fake Out"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"johto-leaders","trainer":"Clair","url":"https://www.serebii.net/black2white2/pwt/johto.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Dragonite","item":"Liechi Berry","abilities":[],"moves":["Dragon Rush","Hurricane","Stone Edge","Hone Claws"],"level":50},
+      {"species":"Kingdra","item":"Haban Berry","abilities":[],"moves":["Dragon Pulse","Hydro Pump","Yawn","Agility"],"level":50},
+      {"species":"Altaria","item":"Fire Gem","abilities":[],"moves":["Dragonbreath","Fire Blast","Perish Song","Cotton Guard"],"level":50},
+      {"species":"Salamence","item":"Petaya Berry","abilities":[],"moves":["Dragon Pulse","Heat Wave","Hydro Pump","Earthquake"],"level":50},
+      {"species":"Druddigon","item":"Salac Berry","abilities":[],"moves":["Dragon Tail","Crunch","Superpower","Glare"],"level":50},
+      {"species":"Garchomp","item":"Yache Berry","abilities":[],"moves":["Dual Chop","Earthquake","Aqua Tail","Rock Slide"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"hoenn-leaders","trainer":"Roxanne","url":"https://www.serebii.net/black2white2/pwt/hoenn.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Probopass","item":"Shuca Berry","abilities":[],"moves":["Power Gem","Flash Cannon","Thunder Wave","Sandstorm"],"level":50},
+      {"species":"Armaldo","item":"Liechi Berry","abilities":[],"moves":["Stone Edge","X-scissor","Aqua Tail","Curse"],"level":50},
+      {"species":"Cradily","item":"Sitrus Berry","abilities":[],"moves":["Ancientpower","Giga Drain","Stockpile","Stealth Rock"],"level":50},
+      {"species":"Aggron","item":"Chople Berry","abilities":[],"moves":["Stone Edge","Iron Tail","Outrage","Thunder Wave"],"level":50},
+      {"species":"Relicanth","item":"Rindo Berry","abilities":[],"moves":["Stone Edge","Aqua Tail","Amnesia","Yawn"],"level":50},
+      {"species":"Golem","item":"Salac Berry","abilities":[],"moves":["Rock Slide","Iron Head","Steamroller","Rock Polish"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"hoenn-leaders","trainer":"Brawly","url":"https://www.serebii.net/black2white2/pwt/hoenn.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Hariyama","item":"Sitrus Berry","abilities":[],"moves":["Close Combat","Bullet Punch","Earthquake","Bulk Up"],"level":50},
+      {"species":"Medicham","item":"Psychic Gem","abilities":[],"moves":["Brick Break","Psycho Cut","Thunderpunch","Ice Punch"],"level":50},
+      {"species":"Breloom","item":"Coba Berry","abilities":[],"moves":["Focus Punch","Spore","Stone Edge","Mach Punch"],"level":50},
+      {"species":"Machamp","item":"Lum Berry","abilities":[],"moves":["Close Combat","Earthquake","Stone Edge","Bulk Up"],"level":50},
+      {"species":"Hitmontop","item":"Liechi Berry","abilities":[],"moves":["Triple Kick","Drill Run","Rock Slide","Agility"],"level":50},
+      {"species":"Heracross","item":"Salac Berry","abilities":[],"moves":["Close Combat","Megahorn","Aerial Ace","Rock Slide"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"hoenn-leaders","trainer":"Wattson","url":"https://www.serebii.net/black2white2/pwt/hoenn.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Manectric","item":"Petaya Berry","abilities":[],"moves":["Thunderbolt","Flamethrower","Signal Beam","Charge"],"level":50},
+      {"species":"Magnezone","item":"Air Balloon","abilities":[],"moves":["Discharge","Tri Attack","Magnet Rise","Metal Sound"],"level":50},
+      {"species":"Electrode","item":"Shuca Berry","abilities":[],"moves":["Charge Beam","Signal Beam","Light Screen","Double Team"],"level":50},
+      {"species":"Plusle","item":"Salac Berry","abilities":[],"moves":["Discharge","Agility","Nasty Plot","Baton Pass"],"level":50},
+      {"species":"Minun","item":"Electric Gem","abilities":[],"moves":["Volt Switch","Charm","Fake Tears","Thunder Wave"],"level":50},
+      {"species":"Raichu","item":"Liechi Berry","abilities":[],"moves":["Wild Charge","Brick Break","Return","Knock Off"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"hoenn-leaders","trainer":"Flannery","url":"https://www.serebii.net/black2white2/pwt/hoenn.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Torkoal","item":"Fire Gem","abilities":[],"moves":["Fire Blast","Stone Edge","Gyro Ball","Yawn"],"level":50},
+      {"species":"Camerupt","item":"Passho Berry","abilities":[],"moves":["Fire Blast","Earth Power","Rock Slide","Yawn"],"level":50},
+      {"species":"Magcargo","item":"Shuca Berry","abilities":[],"moves":["Lava Plume","Ancientpower","Earth Power","Shell Smash"],"level":50},
+      {"species":"Blaziken","item":"Salac Berry","abilities":[],"moves":["Flare Blitz","Sky Uppercut","Brave Bird","Bulk Up"],"level":50},
+      {"species":"Houndoom","item":"Petaya Berry","abilities":[],"moves":["Fire Blast","Dark Pulse","Will-o-wisp","Nasty Plot"],"level":50},
+      {"species":"Magmortar","item":"Liechi Berry","abilities":[],"moves":["Fire Blast","Cross Chop","Rock Slide","Thunderpunch"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"hoenn-leaders","trainer":"Norman","url":"https://www.serebii.net/black2white2/pwt/hoenn.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Slaking","item":"Sitrus Berry","abilities":[],"moves":["Giga Impact","Hammer Arm","Earthquake","Slack Off"],"level":50},
+      {"species":"Spinda","item":"Dark Gem","abilities":[],"moves":["Thrash","Sucker Punch","Teeter Dance","Assist"],"level":50},
+      {"species":"Kecleon","item":"Ganlon Berry","abilities":[],"moves":["Fake Out","Shadow Claw","Recover","Skill Swap"],"level":50},
+      {"species":"Castform","item":"Ice Gem","abilities":[],"moves":["Fire Blast","Hydro Pump","Icy Wind","Disable"],"level":50},
+      {"species":"Exploud","item":"Petaya Berry","abilities":[],"moves":["Hyper Voice","Focus Blast","Fire Blast","Ice Beam"],"level":50},
+      {"species":"Zangoose","item":"Liechi Berry","abilities":[],"moves":["Return","Close Combat","Rock Slide","Night Slash"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"hoenn-leaders","trainer":"Winona","url":"https://www.serebii.net/black2white2/pwt/hoenn.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Altaria","item":"Apicot Berry","abilities":[],"moves":["Roost","Dream Eater","Sing","Cotton Guard"],"level":50},
+      {"species":"Pelipper","item":"Petaya Berry","abilities":[],"moves":["Hurricane","Scald","Ice Beam","Tailwind"],"level":50},
+      {"species":"Swellow","item":"Liechi Berry","abilities":[],"moves":["Brave Bird","Endeavor","Double Team","U-turn"],"level":50},
+      {"species":"Skarmory","item":"Wacan Berry","abilities":[],"moves":["Brave Bird","Roost","Whirlwind","Stealth Rock"],"level":50},
+      {"species":"Tropius","item":"Yache Berry","abilities":[],"moves":["Air Slash","Leech Seed","Substitute","Roost"],"level":50},
+      {"species":"Honchkrow","item":"Charti Berry","abilities":[],"moves":["Brave Bird","Night Slash","Heat Wave","Icy Wind"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"hoenn-leaders","trainer":"Tate","url":"https://www.serebii.net/black2white2/pwt/hoenn.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Solrock","item":"Liechi Berry","abilities":[],"moves":["Zen Headbutt","Rock Slide","Fire Blast","Trick Room"],"level":50},
+      {"species":"Xatu","item":"Wacan Berry","abilities":[],"moves":["Psychic","Shadow Ball","Featherdance","Trick Room"],"level":50},
+      {"species":"Chimecho","item":"Colbur Berry","abilities":[],"moves":["Dream Eater","Energy Ball","Hypnosis","Trick Room"],"level":50},
+      {"species":"Grumpig","item":"Ganlon Berry","abilities":[],"moves":["Psyshock","Rest","Sleep Talk","Calm Mind"],"level":50},
+      {"species":"Gallade","item":"Kasib Berry","abilities":[],"moves":["Psycho Cut","Stone Edge","Night Slash","Leaf Blade"],"level":50},
+      {"species":"Claydol","item":"Sitrus Berry","abilities":[],"moves":["Psychic","Earth Power","Cosmic Power","Trick Room"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"hoenn-leaders","trainer":"Liza","url":"https://www.serebii.net/black2white2/pwt/hoenn.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Lunatone","item":"Petaya Berry","abilities":[],"moves":["Dream Eater","Hypnosis","Ice Beam","Cosmic Power"],"level":50},
+      {"species":"Xatu","item":"Charti Berry","abilities":[],"moves":["Psyshock","Heat Wave","Thunder Wave","Tailwind"],"level":50},
+      {"species":"Chimecho","item":"Colbur Berry","abilities":[],"moves":["Psychic","Yawn","Light Screen","Reflect"],"level":50},
+      {"species":"Grumpig","item":"Salac Berry","abilities":[],"moves":["Psyshock","Focus Blast","Power Gem","Calm Mind"],"level":50},
+      {"species":"Gardevoir","item":"Ghost Gem","abilities":[],"moves":["Dream Eater","Shadow Ball","Thunderbolt","Hypnosis"],"level":50},
+      {"species":"Claydol","item":"Sitrus Berry","abilities":[],"moves":["Zen Headbutt","Stone Edge","Cosmic Power","Bulldoze"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"hoenn-leaders","trainer":"Juan","url":"https://www.serebii.net/black2white2/pwt/hoenn.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Kingdra","item":"Haban Berry","abilities":[],"moves":["Muddy Water","Dragon Pulse","Ice Beam","Rain Dance"],"level":50},
+      {"species":"Walrein","item":"Sitrus Berry","abilities":[],"moves":["Surf","Blizzard","Aqua Ring","Stockpile"],"level":50},
+      {"species":"Crawdaunt","item":"Wacan Berry","abilities":[],"moves":["Crabhammer","Night Slash","Superpower","Dragon Dance"],"level":50},
+      {"species":"Whiscash","item":"Rindo Berry","abilities":[],"moves":["Waterfall","Earthquake","Rock Slide","Dragon Dance"],"level":50},
+      {"species":"Huntail","item":"Liechi Berry","abilities":[],"moves":["Aqua Tail","Ice Fang","Crunch","Shell Smash"],"level":50},
+      {"species":"Gorebyss","item":"Petaya Berry","abilities":[],"moves":["Hydro Pump","Icy Wind","Psychic","Shell Smash"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"sinnoh-leaders","trainer":"Roark","url":"https://www.serebii.net/black2white2/pwt/sinnoh.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Rampardos","item":"Salac Berry","abilities":[],"moves":["Stone Edge","Zen Headbutt","Earthquake","Outrage"],"level":50},
+      {"species":"Probopass","item":"Chople Berry","abilities":[],"moves":["Power Gem","Earth Power","Sandstorm","Stealth Rock"],"level":50},
+      {"species":"Sudowoodo","item":"Liechi Berry","abilities":[],"moves":["Stone Edge","Hammer Arm","Wood Hamme","Sucker Punch"],"level":50},
+      {"species":"Onix","item":"Rindo Berry","abilities":[],"moves":["Stone Edge","Roar","Sandstorm","Stealth Rock"],"level":50},
+      {"species":"Golem","item":"Passho Berry","abilities":[],"moves":["Stone Edge","Gyro Ball","Hammer Arm","Curse"],"level":50},
+      {"species":"Relicanth","item":"Ganlon Berry","abilities":[],"moves":["Rock Slide","Amnesia","Sleep Talk","Rest"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"sinnoh-leaders","trainer":"Gardenia","url":"https://www.serebii.net/black2white2/pwt/sinnoh.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Roserade","item":"Lum Berry","abilities":[],"moves":["Petal Dance","Shadow Ball","Weather Ball","Sunny Day"],"level":50},
+      {"species":"Carnivine","item":"Liechi Berry","abilities":[],"moves":["Power Whip","Crunch","Bug Bite","Swords Dance"],"level":50},
+      {"species":"Cherrim","item":"Grass Gem","abilities":[],"moves":["Giga Drain","Leech Seed","Substitute","Sunny Day"],"level":50},
+      {"species":"Tangrowth","item":"Salac Berry","abilities":[],"moves":["Power Whip","Focus Blast","Ancientpower","Earthquake"],"level":50},
+      {"species":"Leafeon","item":"Occa Berry","abilities":[],"moves":["Leaf Blade","X-scissor","Quick Attack","Swords Dance"],"level":50},
+      {"species":"Torterra","item":"Yache Berry","abilities":[],"moves":["Wood Hammer","Earthquake","Outrage","Curse"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"sinnoh-leaders","trainer":"Fantina","url":"https://www.serebii.net/black2white2/pwt/sinnoh.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Mismagius","item":"Salac Berry","abilities":[],"moves":["Shadow Ball","Psychic","Calm Mind","Power Gem"],"level":50},
+      {"species":"Drifblim","item":"Flying Gem","abilities":[],"moves":["Shadow Ball","Thunder","Acrobatics","Tailwind"],"level":50},
+      {"species":"Spiritomb","item":"Sitrus Berry","abilities":[],"moves":["Shadow Ball","Dark Pulse","Will-o-wisp","Calm Mind"],"level":50},
+      {"species":"Dusknoir","item":"Apicot Berry","abilities":[],"moves":["Shadow Sneak","Curse","Pain Split","Confuse Ray"],"level":50},
+      {"species":"Rotom","item":"Electric Gem","abilities":[],"moves":["Shadow Ball","Charge Beam","Substitute","Pain Split"],"level":50},
+      {"species":"Gengar","item":"Psychic Gem","abilities":[],"moves":["Hex","Dream Eater","Nightmare","Hypnosis"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"sinnoh-leaders","trainer":"Maylene","url":"https://www.serebii.net/black2white2/pwt/sinnoh.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Lucario","item":"Liechi Berry","abilities":[],"moves":["Cross Chop","Bone Rush","Extremespeed","Swords Dance"],"level":50},
+      {"species":"Infernape","item":"Fire Gem","abilities":[],"moves":["Close Combat","Fire Punch","Mach Punch","Bulk Up"],"level":50},
+      {"species":"Toxicroak","item":"Payapa Berry","abilities":[],"moves":["Drain Punch","Sucker Punch","Torment","Bulk Up"],"level":50},
+      {"species":"Gallade","item":"Coba Berry","abilities":[],"moves":["Close Combat","Psycho Cut","Slash","Bulk Up"],"level":50},
+      {"species":"Medicham","item":"Kasib Berry","abilities":[],"moves":["Brick Break","Zen Headbutt","Bullet Punch","Bulk Up"],"level":50},
+      {"species":"Machamp","item":"Sitrus Berry","abilities":[],"moves":["Cross Chop","Stone Edge","Ice Punch","Focus Energy"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"sinnoh-leaders","trainer":"Crasher Wake","url":"https://www.serebii.net/black2white2/pwt/sinnoh.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Floatzel","item":"Liechi Berry","abilities":[],"moves":["Aqua Jet","Ice Punch","Focus Blast","Bulk Up"],"level":50},
+      {"species":"Empoleon","item":"Petaya Berry","abilities":[],"moves":["Surf","Blizzard","Grass Knot","Featherdance"],"level":50},
+      {"species":"Lumineon","item":"Ice Gem","abilities":[],"moves":["Scald","Icy Wind","U-turn","Rain Dance"],"level":50},
+      {"species":"Gastrodon","item":"Apicot Berry","abilities":[],"moves":["Muddy Water","Earth Power","Stockpile","Recover"],"level":50},
+      {"species":"Quagsire","item":"Rindo Berry","abilities":[],"moves":["Aqua Tail","Earthquake","Rain Dance","Curse"],"level":50},
+      {"species":"Gyarados","item":"Wacan Berry","abilities":[],"moves":["Aqua Tail","Stone Edge","Outrage","Dragon Dance"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"sinnoh-leaders","trainer":"Byron","url":"https://www.serebii.net/black2white2/pwt/sinnoh.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Bastiodon","item":"Shuca Berry","abilities":[],"moves":["Metal Burst","Fire Blast","Stealth Rock","Iron Defense"],"level":50},
+      {"species":"Steelix","item":"Passho Berry","abilities":[],"moves":["Gyro Ball","Dragon Tail","Curse","Stealth Rock"],"level":50},
+      {"species":"Bronzong","item":"Sitrus Berry","abilities":[],"moves":["Gyro Ball","Hypnosis","Zen Headbutt","Trick Room"],"level":50},
+      {"species":"Magnezone","item":"Air Balloon","abilities":[],"moves":["Flash Cannon","Charge Beam","Barrier","Light Screen"],"level":50},
+      {"species":"Aggron","item":"Chople Berry","abilities":[],"moves":["Iron Head","Rock Slide","Outrage","Autotomize"],"level":50},
+      {"species":"Forretress","item":"Occa Berry","abilities":[],"moves":["Gyro Ball","Light Screen","Iron Defense","Spikes"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"sinnoh-leaders","trainer":"Candice","url":"https://www.serebii.net/black2white2/pwt/sinnoh.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Froslass","item":"Petaya Berry","abilities":[],"moves":["Blizzard","Shadow Ball","Thunderbolt","Hail"],"level":50},
+      {"species":"Abomasnow","item":"Occa Berry","abilities":[],"moves":["Blizzard","Grass Knot","Earthquake","Ingrain"],"level":50},
+      {"species":"Weavile","item":"Chople Berry","abilities":[],"moves":["Ice Punch","Night Slash","Revenge","Torment"],"level":50},
+      {"species":"Glaceon","item":"Salac Berry","abilities":[],"moves":["Icy Wind","Shadow Ball","Signal Beam","Yawn"],"level":50},
+      {"species":"Mamoswine","item":"Liechi Berry","abilities":[],"moves":["Icicle Crash","Bulldoze","Superpower","Rock Tomb"],"level":50},
+      {"species":"Glalie","item":"Rock Gem","abilities":[],"moves":["Ice Beam","Crunch","Rollout","Hail"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"sinnoh-leaders","trainer":"Volkner","url":"https://www.serebii.net/black2white2/pwt/sinnoh.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Electivire","item":"Salac Berry","abilities":[],"moves":["Wild Charge","Brick Break","Ice Punch","Bulldoze"],"level":50},
+      {"species":"Luxray","item":"Shuca Berry","abilities":[],"moves":["Wild Charge","Crunch","Superpower","Thunder Wave"],"level":50},
+      {"species":"Raichu","item":"Grass Gem","abilities":[],"moves":["Charge Beam","Focus Blast","Grass Knot","Charge"],"level":50},
+      {"species":"Rotom","item":"Colbur Berry","abilities":[],"moves":["Discharge","Hex","Pain Split","Will-o-wisp"],"level":50},
+      {"species":"Jolteon","item":"Sitrus Berry","abilities":[],"moves":["Thunderbolt","Shadow Ball","Charm","Wish"],"level":50},
+      {"species":"Electrode","item":"Electric Gem","abilities":[],"moves":["Electro Ball","Signal Beam","Taunt","Torment"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"unova-leaders","trainer":"Cheren","url":"https://www.serebii.net/black2white2/pwt/unova.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Stoutland","item":"Salac Berry","abilities":[],"moves":["Take Down","Crunch","Wild Charge","Reversal"],"level":50},
+      {"species":"Zangoose","item":"Chople Berry","abilities":[],"moves":["Crush Claw","Close Combat","X-scissor","Swords Dance"],"level":50},
+      {"species":"Cinccino","item":"Rawst Berry","abilities":[],"moves":["Tail Slap","Rock Blast","Bullet Seed","U-turn"],"level":50},
+      {"species":"Lopunny","item":"Liechi Berry","abilities":[],"moves":["Dizzy Punch","Jump Kick","Ice Punch","Charm"],"level":50},
+      {"species":"Castform","item":"Petaya Berry","abilities":[],"moves":["Weather Ball","Hydro Pump","Fire Blast","Blizzard"],"level":50},
+      {"species":"Bouffalant","item":"Normal Gem","abilities":[],"moves":["Head Charge","Megahorn","Wild Charge","Earthquake"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"unova-leaders","trainer":"Roxie","url":"https://www.serebii.net/black2white2/pwt/unova.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Scolipede","item":"Liechi Berry","abilities":[],"moves":["Toxic Spikes","Megahorn","Earthquake","Rock Slide"],"level":50},
+      {"species":"Seviper","item":"Shuca Berry","abilities":[],"moves":["Sludge Wave","Dark Pulse","Dragon Tail","Glare"],"level":50},
+      {"species":"Garbodor","item":"Salac Berry","abilities":[],"moves":["Gunk Shot","Rock Blast","Clear Smog","Stockpile"],"level":50},
+      {"species":"Crobat","item":"Payapa Berry","abilities":[],"moves":["Cross Poison","Brave Bird","U-turn","Tailwind"],"level":50},
+      {"species":"Drapion","item":"Sitrus Berry","abilities":[],"moves":["Cross Poison","Night Slash","Fire Fang","Acupressure"],"level":50},
+      {"species":"Amoonguss","item":"Ganlon Berry","abilities":[],"moves":["Toxic","Spore","Giga Drain","Substitute"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"unova-leaders","trainer":"Burgh","url":"https://www.serebii.net/black2white2/pwt/unova.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Leavanny","item":"Coba Berry","abilities":[],"moves":["X-scissor","Leaf Blade","Aerial Ace","Swords Dance"],"level":50},
+      {"species":"Vespiquen","item":"Apicot Berry","abilities":[],"moves":["Attack Order","Defend Order","Roost","Toxic"],"level":50},
+      {"species":"Crustle","item":"Salac Berry","abilities":[],"moves":["X-scissor","Rock Slide","Earthquake","Shell Smash"],"level":50},
+      {"species":"Escavalier","item":"Occa Berry","abilities":[],"moves":["Megahorn","Iron Head","Poison Jab","Swords Dance"],"level":50},
+      {"species":"Accelgor","item":"Petaya Berry","abilities":[],"moves":["Bug Buzz","Spikes","Focus Blast","Guard Split"],"level":50},
+      {"species":"Durant","item":"Liechi Berry","abilities":[],"moves":["X-scissor","Iron Head","Rock Slide","Hone Claws"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"unova-leaders","trainer":"Elesa","url":"https://www.serebii.net/black2white2/pwt/unova.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Zebstrika","item":"Liechi Berry","abilities":[],"moves":["Wild Charge","Flame Charge","Thrash","Me First"],"level":50},
+      {"species":"Ampharos","item":"Shuca Berry","abilities":[],"moves":["Discharge","Signal Beam","Power Gem","Cotton Guard"],"level":50},
+      {"species":"Galvantula","item":"Sitrus Berry","abilities":[],"moves":["Thunder","Energy Ball","Bug Buzz","Disable"],"level":50},
+      {"species":"Emolga","item":"Flying Gem","abilities":[],"moves":["Volt Switch","Acrobatics","Attract","Thunder Wave"],"level":50},
+      {"species":"Eelektross","item":"Salac Berry","abilities":[],"moves":["Zap Cannon","Flamethrower","Dragon Claw","Coil"],"level":50},
+      {"species":"Stunfisk","item":"Petaya Berry","abilities":[],"moves":["Discharge","Earth Power","Muddy Water","Stone Edge"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"unova-leaders","trainer":"Clay","url":"https://www.serebii.net/black2white2/pwt/unova.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Excadrill","item":"Liechi Berry","abilities":[],"moves":["Drill Run","Rock Slide","Submission","Swords Dance"],"level":50},
+      {"species":"Claydol","item":"Ganlon Berry","abilities":[],"moves":["Earth Power","Psychic","Cosmic Power","Sandstorm"],"level":50},
+      {"species":"Krookodile","item":"Chople Berry","abilities":[],"moves":["Earthquake","Crunch","Outrage","Rock Slide"],"level":50},
+      {"species":"Seismitoad","item":"Rindo Berry","abilities":[],"moves":["Earth Power","Muddy Water","Drain Punch","Ice Punch"],"level":50},
+      {"species":"Mamoswine","item":"Ice Gem","abilities":[],"moves":["Earthquake","Ice Shard","Stone Edge","Sandstorm"],"level":50},
+      {"species":"Golurk","item":"Ghost Gem","abilities":[],"moves":["Earthquake","Shadow Punch","Stone Edge","Hammer Arm"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"unova-leaders","trainer":"Skyla","url":"https://www.serebii.net/black2white2/pwt/unova.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Swanna","item":"Wacan Berry","abilities":[],"moves":["Hurricane","Scald","Ice Beam","Tailwind"],"level":50},
+      {"species":"Unfezant","item":"Liechi Berry","abilities":[],"moves":["Air Slash","U-turn","Giga Impact","Hypnosis"],"level":50},
+      {"species":"Swoobat","item":"Petaya Berry","abilities":[],"moves":["Air Slash","Psychic","Attract","Calm Mind"],"level":50},
+      {"species":"Mandibuzz","item":"Apicot Berry","abilities":[],"moves":["Brave Bird","Toxic","Double Team","Roost"],"level":50},
+      {"species":"Archeops","item":"Flying Gem","abilities":[],"moves":["Acrobatics","Stone Edge","Earthquake","Dragon Claw"],"level":50},
+      {"species":"Braviary","item":"Normal Gem","abilities":[],"moves":["Brave Bird","Rock Slide","Crush Claw","Bulk Up"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"unova-leaders","trainer":"Drayden","url":"https://www.serebii.net/black2white2/pwt/unova.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Haxorus","item":"Dragon Gem","abilities":[],"moves":["Outrage","Earthquake","Brick Break","Dragon Dance"],"level":50},
+      {"species":"Druddigon","item":"Salac Berry","abilities":[],"moves":["Outrage","Fire Fang","Sucker Punch","Glare"],"level":50},
+      {"species":"Hydreigon","item":"Petaya Berry","abilities":[],"moves":["Dragon Pulse","Dark Pulse","Fire Blast","Focus Blast"],"level":50},
+      {"species":"Flygon","item":"Liechi Berry","abilities":[],"moves":["Outrage","Earth Power","Flamethrower","Stone Edge"],"level":50},
+      {"species":"Altaria","item":"Apicot Berry","abilities":[],"moves":["Outrage","Roost","Dragon Dance","Cotton Guard"],"level":50},
+      {"species":"Salamence","item":"Yache Berry","abilities":[],"moves":["Dragon Rush","Thunder Fang","Fire Blast","Hone Claws"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"unova-leaders","trainer":"Marlon","url":"https://www.serebii.net/black2white2/pwt/unova.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Jellicent","item":"Rindo Berry","abilities":[],"moves":["Scald","Hex","Acid Armor","Recover"],"level":50},
+      {"species":"Carracosta","item":"Liechi Berry","abilities":[],"moves":["Hydro Pump","Stone Edge","Earthquake","Shell Smash"],"level":50},
+      {"species":"Starmie","item":"Ganlon Berry","abilities":[],"moves":["Scald","Psyshock","Cosmic Power","Recover"],"level":50},
+      {"species":"Alomomola","item":"Apicot Berry","abilities":[],"moves":["Scald","Mirror Coat","Wish","Calm Mind"],"level":50},
+      {"species":"Mantine","item":"Petaya Berry","abilities":[],"moves":["Hydro Pump","Ice Beam","Signal Beam","Agility"],"level":50},
+      {"species":"Wailord","item":"Sitrus Berry","abilities":[],"moves":["Hydro Pump","Avalanche","Amnesia","Aqua Ring"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"unova-leaders","trainer":"Chili","url":"https://www.serebii.net/black2white2/pwt/unova.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Simisear","item":"Fire Gem","abilities":[],"moves":["Heat Wave","Low Kick","Rock Slide","Work Up"],"level":50},
+      {"species":"Camerupt","item":"Passho Berry","abilities":[],"moves":["Lava Plume","Earth Power","Yawn","Stockpile"],"level":50},
+      {"species":"Heatmor","item":"Salac Berry","abilities":[],"moves":["Heat Wave","Sucker Punch","Focus Blast","Stockpile"],"level":50},
+      {"species":"Darmanitan","item":"Fighting Gem","abilities":[],"moves":["Flare Blitz","Hammer Arm","Rock Slide","U-turn"],"level":50},
+      {"species":"Arcanine","item":"Dragon Gem","abilities":[],"moves":["Fire Blast","Dragon Pulse","Solarbeam","Sunny Day"],"level":50},
+      {"species":"Magmortar","item":"Petaya Berry","abilities":[],"moves":["Flame Charge","Rock Slide","Psychic","Thunderbolt"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"unova-leaders","trainer":"Cress","url":"https://www.serebii.net/black2white2/pwt/unova.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Simipour","item":"Water Gem","abilities":[],"moves":["Hydro Pump","Grass Knot","Acrobatics","Work Up"],"level":50},
+      {"species":"Golduck","item":"Petaya Berry","abilities":[],"moves":["Hydro Pump","Psychic","Ice Beam","Calm Mind"],"level":50},
+      {"species":"Floatzel","item":"Liechi Berry","abilities":[],"moves":["Waterfall","Ice Punch","Brick Break","Bulk Up"],"level":50},
+      {"species":"Azumarill","item":"Sitrus Berry","abilities":[],"moves":["Aqua Tail","Brick Break","Bulldoze","Rollout"],"level":50},
+      {"species":"Slowking","item":"Lum Berry","abilities":[],"moves":["Scald","Psychic","Yawn","Calm Mind"],"level":50},
+      {"species":"Basculin","item":"Salac Berry","abilities":[],"moves":["Aqua Tail","Crunch","Double-edge","Flail"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"unova-leaders","trainer":"Cilan","url":"https://www.serebii.net/black2white2/pwt/unova.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Simisage","item":"Grass Gem","abilities":[],"moves":["Seed Bomb","Low Kick","Acrobatics","Tickle"],"level":50},
+      {"species":"Ferrothorn","item":"Apicot Berry","abilities":[],"moves":["Power Whip","Gyro Ball","Bulldoze","Curse"],"level":50},
+      {"species":"Maractus","item":"Lum Berry","abilities":[],"moves":["Petal Dance","Sucker Punch","Synthesis","Cotton Guard"],"level":50},
+      {"species":"Jumpluff","item":"Yache Berry","abilities":[],"moves":["Leech Seed","Cotton Spore","Cotton Spore","Sleep Powder"],"level":50},
+      {"species":"Whimsicott","item":"Occa Berry","abilities":[],"moves":["Giga Drain","Hurricane","Encore","Tailwind"],"level":50},
+      {"species":"Lilligant","item":"Petaya Berry","abilities":[],"moves":["Petal Dance","Quiver Dance","Sleep Powder","Teeter Dance"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"unova-leaders","trainer":"Lenora","url":"https://www.serebii.net/black2white2/pwt/unova.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Watchog","item":"Salac Berry","abilities":[],"moves":["Super Fang","Low Kick","Confuse Ray","Hypnosis"],"level":50},
+      {"species":"Audino","item":"Sitrus Berry","abilities":[],"moves":["Fire Blast","Blizzard","Thunder","Calm Mind"],"level":50},
+      {"species":"Clefable","item":"Steel Gem","abilities":[],"moves":["Meteor Mash","Thunderpunc","Wish","Cosmic Power"],"level":50},
+      {"species":"Sawsbuck","item":"Liechi Berry","abilities":[],"moves":["Retaliate","Horn Leech","Wild Charge","Jump Kick"],"level":50},
+      {"species":"Kangaskhan","item":"Chople Berry","abilities":[],"moves":["Fake Out","Outrage","Hammer Arm","Aqua Tail"],"level":50},
+      {"species":"Dunsparce","item":"Apicot Berry","abilities":[],"moves":["Rock Slide","Coil","Roost","Glare"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"unova-leaders","trainer":"Brycen","url":"https://www.serebii.net/black2white2/pwt/unova.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Cryogonal","item":"Petaya Berry","abilities":[],"moves":["Blizzard","Flash Cannon","Confuse Ray","Double Team"],"level":50},
+      {"species":"Beartic","item":"Liechi Berry","abilities":[],"moves":["Icicle Crash","Superpower","Stone Edge","Bulk Up"],"level":50},
+      {"species":"Vanilluxe","item":"Occa Berry","abilities":[],"moves":["Blizzard","Flash Cannon","Weather Ball","Hail"],"level":50},
+      {"species":"Weavile","item":"Chople Berry","abilities":[],"moves":["Ice Punch","Shadow Claw","Low Kick","Swords Dance"],"level":50},
+      {"species":"Dewgong","item":"Wacan Berry","abilities":[],"moves":["Frost Breath","Brine","Signal Beam","Stockpile"],"level":50},
+      {"species":"Walrein","item":"Salac Berry","abilities":[],"moves":["Frost Breath","Surf","Super Fang","Yawn"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"unova-leaders","trainer":"Bianca","url":"https://www.serebii.net/black2white2/pwt/unova.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Toxicroak","item":"Dark Gem","abilities":[],"moves":["Fake Out","Bullet Punch","Sucker Punch","Taunt"],"level":50},
+      {"species":"Gothitelle","item":"Chesto Berry","abilities":[],"moves":["Fake Tears","Psychic","Rest","Calm Mind"],"level":50},
+      {"species":"Reuniclus","item":"Sitrus Berry","abilities":[],"moves":["Psychic","Energy Ball","Recover","Wonder Room"],"level":50},
+      {"species":"Bisharp","item":"Sitrus Berry","abilities":[],"moves":["Night Slash","Metal Claw","Taunt","Metal Burst"],"level":50},
+      {"species":"Abomasnow","item":"Leftovers","abilities":[],"moves":["Frost Breath","Icy Wind","Leech Seed","Ingrain"],"level":50},
+      {"species":"Nidoqueen","item":"Payapa Berry","abilities":[],"moves":["Chip Away","Swagger","Helping Hand","Flatter"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Cheren","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Stoutland","item":"Focus Sash","abilities":[],"moves":["Return","Crunch","Ice Fang","Reversal"],"level":50},
+      {"species":"Porygon-Z","item":"Chople Berry","abilities":[],"moves":["Shadow Ball","Psychic","Signal Beam","Thunder"],"level":50},
+      {"species":"Cinccino","item":"King's Rock","abilities":[],"moves":["Tail Slap","Rock Blast","Bullet Seed","Aqua Tail"],"level":50},
+      {"species":"Lickilicky","item":"Expert Belt","abilities":[],"moves":["Hammer Arm","Power Whip","Thunder","Ice Punch"],"level":50},
+      {"species":"Castform","item":"Lum Berry","abilities":[],"moves":["Weather Ball","Ice Beam","Rain Dance","Thunder"],"level":50},
+      {"species":"Bouffalant","item":"Leftovers","abilities":[],"moves":["Head Charge","Megahorn","Wild Charge","Revenge"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Roxie","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Scolipede","item":"Choice Scarf","abilities":[],"moves":["Poison Jab","Megahorn","Earthquake","Rock Slide"],"level":50},
+      {"species":"Toxicroak","item":"Focus Sash","abilities":[],"moves":["Poison Jab","Swords Dance","Drain Punch","Protect"],"level":50},
+      {"species":"Garbodor","item":"Expert Belt","abilities":[],"moves":["Psychic","Thunderbolt","Focus Blast","Protect"],"level":50},
+      {"species":"Crobat","item":"Psychic Gem","abilities":[],"moves":["Cross Poison","Zen Headbutt","Tailwind","Brave Bird"],"level":50},
+      {"species":"Drapion","item":"Scope Lens","abilities":[],"moves":["Cross Poison","Night Slash","Ice Fang","Protect"],"level":50},
+      {"species":"Amoonguss","item":"Black Sludge","abilities":[],"moves":["Foul Play","Spore","Giga Drain","Protect"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Burgh","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Leavanny","item":"Focus Sash","abilities":[],"moves":["X-scissor","Leaf Blade","Aerial Ace","Swords Dance"],"level":50},
+      {"species":"Vespiquen","item":"Leftovers","abilities":[],"moves":["Attack Order","Defend Order","Roost","Toxic"],"level":50},
+      {"species":"Crustle","item":"Salac Berry","abilities":[],"moves":["X-scissor","Rock Blast","Earthquake","Shell Smash"],"level":50},
+      {"species":"Heracross","item":"Choice Scarf","abilities":[],"moves":["Megahorn","Close Combat","Shadow Claw","Stone Edge"],"level":50},
+      {"species":"Accelgor","item":"BrightPowder","abilities":[],"moves":["Bug Buzz","Focus Blast","Giga Drain","Double Team"],"level":50},
+      {"species":"Durant","item":"Wide Lens","abilities":[],"moves":["X-scissor","Iron Head","Stone Edge","Guillotine"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Elesa","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Zebstrika","item":"Life Orb","abilities":[],"moves":["Wild Charge","Overheat","Return","Quick Attack"],"level":50},
+      {"species":"Ampharos","item":"Shuca Berry","abilities":[],"moves":["Discharge","Signal Beam","Power Gem","Focus Blast"],"level":50},
+      {"species":"Luxray","item":"Expert Belt","abilities":[],"moves":["Wild Charge","Fire Fang","Ice Fang","Quick Attack"],"level":50},
+      {"species":"Emolga","item":"Flying Gem","abilities":[],"moves":["U-turn","Wild Charge","Acrobatics","Charm"],"level":50},
+      {"species":"Eelektross","item":"Choice Band","abilities":[],"moves":["Thunderpunch","Fire Punch","Dragon Claw","Brick Break"],"level":50},
+      {"species":"Stunfisk","item":"Sitrus Berry","abilities":[],"moves":["Discharge","Earth Power","Scald","Foul Play"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Clay","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Excadrill","item":"Focus Sash","abilities":[],"moves":["Drill Run","Rock Slide","Submission","Swords Dance"],"level":50},
+      {"species":"Flygon","item":"Liechi Berry","abilities":[],"moves":["Outrage","Earth Power","Fire Blast","Stone Edge"],"level":50},
+      {"species":"Krookodile","item":"Choice Band","abilities":[],"moves":["Earthquake","Fire Fang","Stone Edge","Aqua Tail"],"level":50},
+      {"species":"Seismitoad","item":"Life Orb","abilities":[],"moves":["Earth Power","Hydro Pump","Focus Blast","Grass Knot"],"level":50},
+      {"species":"Mamoswine","item":"Ice Gem","abilities":[],"moves":["Earthquake","Ice Shard","Stone Edge","Fissure"],"level":50},
+      {"species":"Golurk","item":"Leftovers","abilities":[],"moves":["Substitute","Shadow Punch","Earthquake","Focus Punch"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Skyla","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Swanna","item":"Focus Sash","abilities":[],"moves":["Hurricane","Scald","Ice Beam","Tailwind"],"level":50},
+      {"species":"Jumpluff","item":"Flying Gem","abilities":[],"moves":["Sleep Powder","Acrobatics","Bullet Seed","U-turn"],"level":50},
+      {"species":"Drifblim","item":"Expert Belt","abilities":[],"moves":["Shadow Ball","Thunderbolt","Psychic","Icy Wind"],"level":50},
+      {"species":"Mandibuzz","item":"Salac Berry","abilities":[],"moves":["Dark Pulse","Air Slash","Nasty Plot","Roost"],"level":50},
+      {"species":"Archeops","item":"Sitrus Berry","abilities":[],"moves":["Acrobatics","Stone Edge","Earthquake","Dragon Claw"],"level":50},
+      {"species":"Braviary","item":"White Herb","abilities":[],"moves":["Brave Bird","Superpower","Rock Slide","U-turn"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Drayden","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Haxorus","item":"Focus Sash","abilities":[],"moves":["Outrage","Earthquake","Brick Break","Dragon Dance"],"level":50},
+      {"species":"Druddigon","item":"Rocky Helmet","abilities":[],"moves":["Dragon Tail","Fire Fang","Glare","Rest"],"level":50},
+      {"species":"Hydreigon","item":"Choice Specs","abilities":[],"moves":["Dragon Pulse","Dark Pulse","Fire Blast","Focus Blast"],"level":50},
+      {"species":"Flygon","item":"Wide Lens","abilities":[],"moves":["Earth Power","Draco Meteor","Fire Blast","U-turn"],"level":50},
+      {"species":"Altaria","item":"Yache Berry","abilities":[],"moves":["Draco Meteor","Roost","Perish Song","Cotton Guard"],"level":50},
+      {"species":"Salamence","item":"White Herb","abilities":[],"moves":["Draco Meteor","Hydro Pump","Fire Blast","Tailwind"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Marlon","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Jellicent","item":"Expert Belt","abilities":[],"moves":["Hydro Pump","Energy Ball","Shadow Ball","Psychic"],"level":50},
+      {"species":"Carracosta","item":"Lum Berry","abilities":[],"moves":["Waterfall","Rock Slide","Aqua Jet","Shell Smash"],"level":50},
+      {"species":"Starmie","item":"Focus Sash","abilities":[],"moves":["Scald","Light Screen","Reflect","Thunderbolt"],"level":50},
+      {"species":"Quagsire","item":"Rindo Berry","abilities":[],"moves":["Stone Edge","Earthquake","Waterfall","Counter"],"level":50},
+      {"species":"Cloyster","item":"King's Rock","abilities":[],"moves":["Ice Shard","Rock Blast","Icicle Spear","Shell Smash"],"level":50},
+      {"species":"Wailord","item":"Choice Scarf","abilities":[],"moves":["Water Spout","Fissure","Blizzard","Bounce"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Chili","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Simisear","item":"Fire Gem","abilities":[],"moves":["Overheat","Low Kick","Acrobatics","Crunch"],"level":50},
+      {"species":"Camerupt","item":"Shuca Berry","abilities":[],"moves":["Overheat","Stone Edge","Earthquake","Explosion"],"level":50},
+      {"species":"Heatmor","item":"Focus Sash","abilities":[],"moves":["Fire Blast","Sucker Punch","Focus Blast","Sunny Day"],"level":50},
+      {"species":"Darmanitan","item":"Life Orb","abilities":[],"moves":["Flare Blitz","Hammer Arm","Stone Edge","U-turn"],"level":50},
+      {"species":"Arcanine","item":"Power Herb","abilities":[],"moves":["Overheat","Dragon Pulse","Solarbeam","Extremespeed"],"level":50},
+      {"species":"Emboar","item":"Expert Belt","abilities":[],"moves":["Flare Blitz","Head Smash","Hammer Arm","Wild Charge"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Cress","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Simipour","item":"Water Gem","abilities":[],"moves":["Hydro Pump","Low Kick","Acrobatics","Crunch"],"level":50},
+      {"species":"Crawdaunt","item":"Choice Scarf","abilities":[],"moves":["Crunch","Waterfall","Brick Break","Guillotine"],"level":50},
+      {"species":"Samurott","item":"Leftovers","abilities":[],"moves":["Razor Shell","Megahorn","Aqua Jet","Revenge"],"level":50},
+      {"species":"Azumarill","item":"Choice Band","abilities":[],"moves":["Aqua Jet","Aqua Tail","Superpower","Giga Impact"],"level":50},
+      {"species":"Slowking","item":"Expert Belt","abilities":[],"moves":["Psychic","Blizzard","Fire Blast","Nasty Plot"],"level":50},
+      {"species":"Seismitoad","item":"Rindo Berry","abilities":[],"moves":["Hydro Pump","Poison Jab","Earth Power","Rain Dance"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Cilan","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Simisage","item":"Grass Gem","abilities":[],"moves":["Seed Bomb","Low Kick","Acrobatics","Crunch"],"level":50},
+      {"species":"Ferrothorn","item":"Choice Band","abilities":[],"moves":["Power Whip","Gyro Ball","Bulldoze","Explosion"],"level":50},
+      {"species":"Serperior","item":"Leftovers","abilities":[],"moves":["Leech Seed","Protect","Aerial Ace","Leaf Blade"],"level":50},
+      {"species":"Jumpluff","item":"Focus Sash","abilities":[],"moves":["Leech Seed","Cotton Guard","Giga Drain","Sleep Powder"],"level":50},
+      {"species":"Whimsicott","item":"Mental Herb","abilities":[],"moves":["Giga Drain","Substitute","Hurricane","Leech Seed"],"level":50},
+      {"species":"Lilligant","item":"Miracle Seed","abilities":[],"moves":["Petal Dance","Quiver Dance","Sleep Powder","Dream Eater"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Lenora","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Watchog","item":"Focus Sash","abilities":[],"moves":["Super Fang","Flail","Confuse Ray","Hypnosis"],"level":50},
+      {"species":"Cinccino","item":"Life Orb","abilities":[],"moves":["Swift","Focus Blast","Grass Knot","Thunderbolt"],"level":50},
+      {"species":"Braviary","item":"Power Herb","abilities":[],"moves":["Sky Attack","Superpower","U-turn","Tailwind"],"level":50},
+      {"species":"Sawsbuck","item":"Choice Scarf","abilities":[],"moves":["Return","Horn Leech","Megahorn","Wild Charge"],"level":50},
+      {"species":"Kangaskhan","item":"Chople Berry","abilities":[],"moves":["Fake Out","Ice Punch","Hammer Arm","Sucker Punch"],"level":50},
+      {"species":"Lickilicky","item":"Expert Belt","abilities":[],"moves":["Flamethrower","Ice Beam","Surf","Thunderbolt"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Brycen","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Cryogonal","item":"Wide Lens","abilities":[],"moves":["Blizzard","Flash Cannon","Sheer Cold","Ice Shard"],"level":50},
+      {"species":"Beartic","item":"BrightPowder","abilities":[],"moves":["Icicle Crash","Focus Punch","Substitute","Swords Dance"],"level":50},
+      {"species":"Vanilluxe","item":"Leftovers","abilities":[],"moves":["Blizzard","Protect","Weather Ball","Hail"],"level":50},
+      {"species":"Weavile","item":"Focus Sash","abilities":[],"moves":["Night Slash","Ice Shard","Fake Out","Brick Break"],"level":50},
+      {"species":"Dewgong","item":"Life Orb","abilities":[],"moves":["Aqua Jet","Frost Breath","Drill Run","Fake Out"],"level":50},
+      {"species":"Walrein","item":"Expert Belt","abilities":[],"moves":["Earthquake","Aqua Tail","Super Fang","Avalanche"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Bianca","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Musharna","item":"Leftovers","abilities":[],"moves":["Calm Mind","Stored Power","Moonlight","Shadow Ball"],"level":50},
+      {"species":"Samurott","item":"Zoom Lens","abilities":[],"moves":["Blizzard","Aqua Jet","Hydro Pump","Megahorn"],"level":50},
+      {"species":"Emboar","item":"Life Orb","abilities":[],"moves":["Scald","Superpower","Overheat","Grass Knot"],"level":50},
+      {"species":"Serperior","item":"Light Clay","abilities":[],"moves":["Light Screen","Glare","Leaf Storm","Reflect"],"level":50},
+      {"species":"Stoutland","item":"Chople Berry","abilities":[],"moves":["Return","Wild Charge","Crunch","Ice Fang"],"level":50},
+      {"species":"Haxorus","item":"Focus Sash","abilities":[],"moves":["Outrage","Earthquake","Aqua Tail","Guillotine"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Brock","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Onix","item":"Eviolite","abilities":[],"moves":["Stone Edge","Earthquake","Iron Head","Sandstorm"],"level":50},
+      {"species":"Golem","item":"Lum Berry","abilities":[],"moves":["Stone Edge","Earthquake","Rock Polish","Sucker Punch"],"level":50},
+      {"species":"Kabutops","item":"Focus Sash","abilities":[],"moves":["Waterfall","Rock Slide","X-scissor","Swords Dance"],"level":50},
+      {"species":"Tyranitar","item":"Chople Berry","abilities":[],"moves":["Stone Edge","Payback","Thunderpunch","Ice Punch"],"level":50},
+      {"species":"Aerodactyl","item":"Choice Scarf","abilities":[],"moves":["Rock Slide","Earthquake","Fire Fang","Ice Fang"],"level":50},
+      {"species":"Rhyperior","item":"Expert Belt","abilities":[],"moves":["Earthquake","Stone Edge","Megahorn","Avalanche"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Misty","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Starmie","item":"Choice Scarf","abilities":[],"moves":["Grass Knot","Psychic","Thunderbolt","Ice Beam"],"level":50},
+      {"species":"Lanturn","item":"Sitrus Berry","abilities":[],"moves":["Thunderbolt","Scald","Ice Beam","Toxic"],"level":50},
+      {"species":"Jellicent","item":"Leftovers","abilities":[],"moves":["Recover","Surf","Shadow Ball","Will-o-wisp"],"level":50},
+      {"species":"Lapras","item":"Zoom Lens","abilities":[],"moves":["Hydro Pump","Blizzard","Ice Shard","Sheer Cold"],"level":50},
+      {"species":"Quagsire","item":"Focus Sash","abilities":[],"moves":["Yawn","Waterfall","Earthquake","Rain Dance"],"level":50},
+      {"species":"Blastoise","item":"Salac Berry","abilities":[],"moves":["Hydro Pump","Outrage","Avalanche","Iron Defense"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Lt. Surge","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Raichu","item":"Life Orb","abilities":[],"moves":["Volt Tackle","Fake Out","Focus Punch","Thunder Wave"],"level":50},
+      {"species":"Electrode","item":"Focus Sash","abilities":[],"moves":["Electro Ball","Signal Beam","Thunder Wave","Double Team"],"level":50},
+      {"species":"Magnezone","item":"Air Balloon","abilities":[],"moves":["Discharge","Flash Cannon","Signal Beam","Magnet Rise"],"level":50},
+      {"species":"Electivire","item":"Expert Belt","abilities":[],"moves":["Wild Charge","Earthquake","Cross Chop","Ice Punch"],"level":50},
+      {"species":"Jolteon","item":"Shuca Berry","abilities":[],"moves":["Quick Attack","Iron Tail","Double Team","Volt Switch"],"level":50},
+      {"species":"Lanturn","item":"Wide Lens","abilities":[],"moves":["Thunder","Hydro Pump","Blizzard","Signal Beam"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Erika","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Vileplume","item":"Black Sludge","abilities":[],"moves":["Drain Punch","Swords Dance","Synthesis","Sleep Powder"],"level":50},
+      {"species":"Venusaur","item":"Expert Belt","abilities":[],"moves":["Leaf Storm","Power Whip","Earthquake","Outrage"],"level":50},
+      {"species":"Cradily","item":"Leftovers","abilities":[],"moves":["Stone Edge","Recover","Seed Bomb","Curse"],"level":50},
+      {"species":"Exeggutor","item":"Tanga Berry","abilities":[],"moves":["Psychic","Psyshock","Leaf Storm","Ancientpower"],"level":50},
+      {"species":"Tangrowth","item":"Power Herb","abilities":[],"moves":["Solarbeam","Ancientpower","Focus Blast","Synthesis"],"level":50},
+      {"species":"Abomasnow","item":"Focus Sash","abilities":[],"moves":["Blizzard","Leech Seed","Protect","Sheer Cold"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Janine","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Venomoth","item":"Wide Lens","abilities":[],"moves":["Quiver Dance","Sleep Powder","Bug Buzz","Psychic"],"level":50},
+      {"species":"Weezing","item":"Rocky Helmet","abilities":[],"moves":["Thunderbolt","Will-o-wisp","Sludge Bomb","Flamethrower"],"level":50},
+      {"species":"Nidoqueen","item":"Life Orb","abilities":[],"moves":["Sludge Wave","Ice Beam","Earth Power","Thunderbolt"],"level":50},
+      {"species":"Crobat","item":"Black Sludge","abilities":[],"moves":["Brave Bird","Hypnosis","Toxic","Protect"],"level":50},
+      {"species":"Roserade","item":"Leftovers","abilities":[],"moves":["Leaf Storm","Sleep Powder","Substitute","Leech Seed"],"level":50},
+      {"species":"Tentacruel","item":"Chesto Berry","abilities":[],"moves":["Sludge Bomb","Scald","Ice Beam","Rest"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Sabrina","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Alakazam","item":"Kasib Berry","abilities":[],"moves":["Psychic","Shadow Ball","Focus Blast","Charge Beam"],"level":50},
+      {"species":"Metagross","item":"Expert Belt","abilities":[],"moves":["Psychic","Shadow Ball","Signal Beam","Grass Knot"],"level":50},
+      {"species":"Exeggutor","item":"Tanga Berry","abilities":[],"moves":["Psychic","Energy Ball","Sleep Powder","Dream Eater"],"level":50},
+      {"species":"Slowking","item":"Choice Specs","abilities":[],"moves":["Scald","Psychic","Shadow Ball","Focus Blast"],"level":50},
+      {"species":"Espeon","item":"Leftovers","abilities":[],"moves":["Psyshock","Signal Beam","Psychic","Calm Mind"],"level":50},
+      {"species":"Sigilyph","item":"Life Orb","abilities":[],"moves":["Psychic","Air Slash","Ice Beam","Light Screen"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Blaine","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Arcanine","item":"Focus Sash","abilities":[],"moves":["Overheat","Close Combat","Extremespeed","Bulldoze"],"level":50},
+      {"species":"Ninetales","item":"Charti Berry","abilities":[],"moves":["Fire Blast","Energy Ball","Psyshock","Will-o-wisp"],"level":50},
+      {"species":"Charizard","item":"Life Orb","abilities":[],"moves":["Flamethrower","Air Slash","Focus Blast","Dragon Pulse"],"level":50},
+      {"species":"Magmortar","item":"Choice Scarf","abilities":[],"moves":["Fire Blast","Psychic","Thunderbolt","Rock Slide"],"level":50},
+      {"species":"Flareon","item":"Passho Berry","abilities":[],"moves":["Superpower","Quick Attack","Overheat","Toxic"],"level":50},
+      {"species":"Rotom","item":"Flame Orb","abilities":[],"moves":["Trick","Overheat","Thunderbolt","Pain Split"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Giovanni","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Rhyperior","item":"Life Orb","abilities":[],"moves":["Earthquake","Rock Blast","Ice Punch","Hammer Arm"],"level":50},
+      {"species":"Hippowdon","item":"Quick Claw","abilities":[],"moves":["Earthquake","Crunch","Ice Fang","Stone Edge"],"level":50},
+      {"species":"Garchomp","item":"Choice Scarf","abilities":[],"moves":["Outrage","Earthquake","Rock Slide","Brick Break"],"level":50},
+      {"species":"Krookodile","item":"Expert Belt","abilities":[],"moves":["Earthquake","Superpower","Fire Fang","Grass Knot"],"level":50},
+      {"species":"Nidoking","item":"Choice Specs","abilities":[],"moves":["Earth Power","Ice Beam","Flamethrower","Thunderbolt"],"level":50},
+      {"species":"Gliscor","item":"Flying Gem","abilities":[],"moves":["Acrobatics","Earthquake","Fire Fang","Tailwind"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Falkner","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Pidgeot","item":"Life Orb","abilities":[],"moves":["Return","Swagger","Double Team","Air Slash"],"level":50},
+      {"species":"Crobat","item":"Red Card","abilities":[],"moves":["Super Fang","Taunt","Acrobatics","Confuse Ray"],"level":50},
+      {"species":"Aerodactyl","item":"Focus Sash","abilities":[],"moves":["Earthquake","Ice Fang","Rock Slide","Protect"],"level":50},
+      {"species":"Honchkrow","item":"Choice Scarf","abilities":[],"moves":["Night Slash","Brave Bird","Heat Wave","Icy Wind"],"level":50},
+      {"species":"Xatu","item":"Leftovers","abilities":[],"moves":["Calm Mind","Psyshock","Stored Power","Roost"],"level":50},
+      {"species":"Swellow","item":"Flame Orb","abilities":[],"moves":["Facade","Protect","Endeavor","Aerial Ace"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Bugsy","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Scizor","item":"Sitrus Berry","abilities":[],"moves":["Bullet Punch","U-turn","Swords Dance","Acrobatics"],"level":50},
+      {"species":"Shuckle","item":"Rocky Helmet","abilities":[],"moves":["Power Split","Stone Edge","Earthquake","Toxic"],"level":50},
+      {"species":"Heracross","item":"Choice Band","abilities":[],"moves":["Megahorn","Stone Edge","Close Combat","Shadow Claw"],"level":50},
+      {"species":"Pinsir","item":"Life Orb","abilities":[],"moves":["X-scissor","Bulldoze","Guillotine","Protect"],"level":50},
+      {"species":"Armaldo","item":"Quick Claw","abilities":[],"moves":["Earthquake","Stone Edge","X-scissor","Swords Dance"],"level":50},
+      {"species":"Yanmega","item":"Focus Sash","abilities":[],"moves":["Protect","Bug Buzz","Air Slash","Giga Drain"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Whitney","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Miltank","item":"Lum Berry","abilities":[],"moves":["Return","Zen Headbutt","Brick Break","Milk Drink"],"level":50},
+      {"species":"Blissey","item":"Leftovers","abilities":[],"moves":["Softboiled","Flamethrower","Grass Knot","Toxic"],"level":50},
+      {"species":"Tauros","item":"Life Orb","abilities":[],"moves":["Return","Earthquake","Rock Slide","Protect"],"level":50},
+      {"species":"Ambipom","item":"Focus Sash","abilities":[],"moves":["Fake Out","Double Hit","Low Sweep","Ice Punch"],"level":50},
+      {"species":"Ursaring","item":"Toxic Orb","abilities":[],"moves":["Facade","Swords Dance","Crunch","Rock Slide"],"level":50},
+      {"species":"Lopunny","item":"Chople Berry","abilities":[],"moves":["Entrainment","Return","Low Kick","Encore"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Morty","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Gengar","item":"Wide Lens","abilities":[],"moves":["Shadow Ball","Focus Blast","Giga Drain","Thunderbolt"],"level":50},
+      {"species":"Mismagius","item":"Sitrus Berry","abilities":[],"moves":["Perish Song","Mean Look","Will-o-wisp","Confuse Ray"],"level":50},
+      {"species":"Banette","item":"Ghost Gem","abilities":[],"moves":["Shadow Claw","Sucker Punch","Destiny Bond","Gunk Shot"],"level":50},
+      {"species":"Dusknoir","item":"Leftovers","abilities":[],"moves":["Shadow Sneak","Will-o-wisp","Protect","Fire Punch"],"level":50},
+      {"species":"Chandelure","item":"Life Orb","abilities":[],"moves":["Overheat","Shadow Ball","Energy Ball","Psychic"],"level":50},
+      {"species":"Froslass","item":"Focus Sash","abilities":[],"moves":["Ice Beam","Shadow Ball","Thunder Wave","Destiny Bond"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Chuck","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Poliwrath","item":"Sitrus Berry","abilities":[],"moves":["Waterfall","Belly Drum","Rock Slide","Hypnosis"],"level":50},
+      {"species":"Machamp","item":"Choice Band","abilities":[],"moves":["Dynamicpunch","Stone Edge","Ice Punch","Earthquake"],"level":50},
+      {"species":"Hitmontop","item":"Wide Lens","abilities":[],"moves":["Mach Punch","Feint","Triple Kick","Bullet Punch"],"level":50},
+      {"species":"Hitmonchan","item":"Leftovers","abilities":[],"moves":["Drain Punch","Thunderpunch","Ice Punch","Double Team"],"level":50},
+      {"species":"Hitmonlee","item":"Life Orb","abilities":[],"moves":["Hi Jump Kick","Fake Out","Bulldoze","Stone Edge"],"level":50},
+      {"species":"Conkeldurr","item":"Fighting Gem","abilities":[],"moves":["Drain Punch","Mach Punch","Rock Slide","Earthquake"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Jasmine","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Steelix","item":"Rocky Helmet","abilities":[],"moves":["Gyro Ball","Earthquake","Stealth Rock","Curse"],"level":50},
+      {"species":"Magnezone","item":"Quick Claw","abilities":[],"moves":["Thunderbolt","Flash Cannon","Mirror Coat","Magnet Rise"],"level":50},
+      {"species":"Forretress","item":"Iron Ball","abilities":[],"moves":["Earthquake","Gyro Ball","Toxic","Explosion"],"level":50},
+      {"species":"Skarmory","item":"Leftovers","abilities":[],"moves":["Curse","Roost","Aerial Ace","Stealth Rock"],"level":50},
+      {"species":"Metagross","item":"Air Balloon","abilities":[],"moves":["Meteor Mash","Bullet Punch","Earthquake","Explosion"],"level":50},
+      {"species":"Lucario","item":"Life Orb","abilities":[],"moves":["Extremespeed","Crunch","Aura Sphere","Stone Edge"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Pryce","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Mamoswine","item":"Focus Sash","abilities":[],"moves":["Earthquake","Ice Shard","Icicle Spear","Endeavor"],"level":50},
+      {"species":"Jynx","item":"Psychic Gem","abilities":[],"moves":["Blizzard","Psyshock","Focus Blast","Lovely Kiss"],"level":50},
+      {"species":"Dewgong","item":"Lum Berry","abilities":[],"moves":["Dive","Sheer Cold","Sleep Talk","Rest"],"level":50},
+      {"species":"Cloyster","item":"King's Rock","abilities":[],"moves":["Icicle Spear","Shell Smash","Explosion","Rock Blast"],"level":50},
+      {"species":"Lapras","item":"Chesto Berry","abilities":[],"moves":["Ice Beam","Surf","Thunderbolt","Rest"],"level":50},
+      {"species":"Weavile","item":"Ice Gem","abilities":[],"moves":["Ice Punch","Night Slash","Low Kick","Fake Out"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Clair","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Dragonite","item":"Yache Berry","abilities":[],"moves":["Draco Meteor","Earthquake","Extremespeed","Outrage"],"level":50},
+      {"species":"Kingdra","item":"Chesto Berry","abilities":[],"moves":["Dragon Dance","Outrage","Waterfall","Rest"],"level":50},
+      {"species":"Altaria","item":"Leftovers","abilities":[],"moves":["Cotton Guard","Toxic","Double Team","Fire Blast"],"level":50},
+      {"species":"Salamence","item":"Dragon Gem","abilities":[],"moves":["Draco Meteor","Outrage","Rock Slide","Earthquake"],"level":50},
+      {"species":"Druddigon","item":"Rocky Helmet","abilities":[],"moves":["Revenge","Sucker Punch","Glare","Dragon Claw"],"level":50},
+      {"species":"Garchomp","item":"Focus Sash","abilities":[],"moves":["Earthquake","Dual Chop","Fire Fang","Swords Dance"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Roxanne","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Probopass","item":"Air Balloon","abilities":[],"moves":["Power Gem","Earth Power","Pain Split","Thunderbolt"],"level":50},
+      {"species":"Armaldo","item":"Lum Berry","abilities":[],"moves":["Rock Slide","Rock Polish","Earthquake","X-scissor"],"level":50},
+      {"species":"Cradily","item":"Leftovers","abilities":[],"moves":["Toxic","Giga Drain","Amnesia","Rock Slide"],"level":50},
+      {"species":"Aggron","item":"Focus Sash","abilities":[],"moves":["Head Smash","Iron Head","Metal Burst","Avalanche"],"level":50},
+      {"species":"Carracosta","item":"Water Gem","abilities":[],"moves":["Waterfall","Shell Smash","Rock Slide","Aqua Jet"],"level":50},
+      {"species":"Golem","item":"Ground Gem","abilities":[],"moves":["Focus Punch","Protect","Earthquake","Fire Punch"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Brawly","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Hariyama","item":"Chesto Berry","abilities":[],"moves":["Bulk Up","Rest","Revenge","Stone Edge"],"level":50},
+      {"species":"Scrafty","item":"Leftovers","abilities":[],"moves":["Bulk Up","Drain Punch","Dragon Tail","Amnesia"],"level":50},
+      {"species":"Breloom","item":"Focus Sash","abilities":[],"moves":["Spore","Focus Punch","Seed Bomb","Stone Edge"],"level":50},
+      {"species":"Machamp","item":"Choice Band","abilities":[],"moves":["Dynamicpunch","Stone Edge","Fire Punch","Earthquake"],"level":50},
+      {"species":"Mienshao","item":"Life Orb","abilities":[],"moves":["Hi Jump Kick","Fake Out","Aerial Ace","Drain Punch"],"level":50},
+      {"species":"Heracross","item":"Choice Scarf","abilities":[],"moves":["Megahorn","Close Combat","Stone Edge","Aerial Ace"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Wattson","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Manectric","item":"Life Orb","abilities":[],"moves":["Thunderbolt","Flamethrower","Thunder Wave","Double Team"],"level":50},
+      {"species":"Magnezone","item":"Leftovers","abilities":[],"moves":["Thunderbolt","Toxic","Protect","Flash Cannon"],"level":50},
+      {"species":"Electrode","item":"Air Balloon","abilities":[],"moves":["Thunder","Signal Beam","Swagger","Thunder Wave"],"level":50},
+      {"species":"Rotom","item":"Wide Lens","abilities":[],"moves":["Thunder","Hydro Pump","Hex","Will-o-wisp"],"level":50},
+      {"species":"Ampharos","item":"Expert Belt","abilities":[],"moves":["Fire Punch","Thunderpunch","Bulldoze","Brick Break"],"level":50},
+      {"species":"Raichu","item":"Focus Sash","abilities":[],"moves":["Thunder","Focus Blast","Grass Knot","Swagger"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Flannery","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Torkoal","item":"Leftovers","abilities":[],"moves":["Overheat","Earthquake","Stone Edge","Yawn"],"level":50},
+      {"species":"Camerupt","item":"Passho Berry","abilities":[],"moves":["Earth Power","Fissure","Will-o-wisp","Flamethrower"],"level":50},
+      {"species":"Chandelure","item":"Focus Sash","abilities":[],"moves":["Flamethrower","Flame Charge","Shadow Ball","Calm Mind"],"level":50},
+      {"species":"Blaziken","item":"Air Balloon","abilities":[],"moves":["Hi Jump Kick","Earthquake","Flame Charge","Stone Edge"],"level":50},
+      {"species":"Houndoom","item":"Life Orb","abilities":[],"moves":["Overheat","Sucker Punch","Flame Charge","Will-o-wisp"],"level":50},
+      {"species":"Magmortar","item":"Shuca Berry","abilities":[],"moves":["Fire Blast","Thunderbolt","Flame Charge","Psychic"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Norman","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Slaking","item":"Eject Button","abilities":[],"moves":["Giga Impact","Night Slash","Earthquake","Hammer Arm"],"level":50},
+      {"species":"Ambipom","item":"Normal Gem","abilities":[],"moves":["Return","Acrobatics","Fake Out","Fire Punch"],"level":50},
+      {"species":"Bouffalant","item":"Life Orb","abilities":[],"moves":["Head Charge","Stone Edge","Megahorn","Revenge"],"level":50},
+      {"species":"Staraptor","item":"Choice Band","abilities":[],"moves":["Brave Bird","Close Combat","Quick Attack","Final Gambit"],"level":50},
+      {"species":"Exploud","item":"Expert Belt","abilities":[],"moves":["Hyper Voice","Fire Blast","Blizzard","Focus Blast"],"level":50},
+      {"species":"Sawsbuck","item":"Chesto Berry","abilities":[],"moves":["Horn Leech","Return","Swords Dance","Rest"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Winona","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Altaria","item":"Power Herb","abilities":[],"moves":["Sky Attack","Cotton Guard","Dragon Dance","Earthquake"],"level":50},
+      {"species":"Sigilyph","item":"Life Orb","abilities":[],"moves":["Psychic","Air Slash","Ancientpower","Thunder Wave"],"level":50},
+      {"species":"Gyarados","item":"Leftovers","abilities":[],"moves":["Dragon Dance","Substitute","Waterfall","Ice Fang"],"level":50},
+      {"species":"Skarmory","item":"Rocky Helmet","abilities":[],"moves":["Whirlwind","Spikes","Steel Wing","Aerial Ace"],"level":50},
+      {"species":"Tropius","item":"Yache Berry","abilities":[],"moves":["Sunny Day","Air Slash","Solarbeam","Attract"],"level":50},
+      {"species":"Honchkrow","item":"Dark Gem","abilities":[],"moves":["Drill Peck","Tailwind","Sucker Punch","Icy Wind"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Tate","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Solrock","item":"Passho Berry","abilities":[],"moves":["Rock Slide","Zen Headbutt","Trick Room","Earthquake"],"level":50},
+      {"species":"Xatu","item":"Focus Sash","abilities":[],"moves":["Psychic","Light Screen","Shadow Ball","Trick Room"],"level":50},
+      {"species":"Bronzong","item":"Lum Berry","abilities":[],"moves":["Gyro Ball","Earthquake","Zen Headbutt","Trick Room"],"level":50},
+      {"species":"Reuniclus","item":"Life Orb","abilities":[],"moves":["Psychic","Shadow Ball","Focus Blast","Trick Room"],"level":50},
+      {"species":"Gallade","item":"Scope Lens","abilities":[],"moves":["Psycho Cut","Night Slash","Close Combat","Ice Punch"],"level":50},
+      {"species":"Claydol","item":"Kasib Berry","abilities":[],"moves":["Trick Room","Explosion","Psychic","Light Screen"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Liza","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Lunatone","item":"Expert Belt","abilities":[],"moves":["Grass Knot","Cosmic Power","Trick Room","Signal Beam"],"level":50},
+      {"species":"Xatu","item":"Focus Sash","abilities":[],"moves":["Pain Split","Zen Headbutt","U-turn","Trick Room"],"level":50},
+      {"species":"Bronzong","item":"Rocky Helmet","abilities":[],"moves":["Iron Head","Hypnosis","Earthquake","Trick Room"],"level":50},
+      {"species":"Gothitelle","item":"Leftovers","abilities":[],"moves":["Psychic","Shadow Ball","Calm Mind","Trick Room"],"level":50},
+      {"species":"Gardevoir","item":"Lum Berry","abilities":[],"moves":["Disable","Psychic","Will-o-wisp","Thunderbolt"],"level":50},
+      {"species":"Claydol","item":"Sitrus Berry","abilities":[],"moves":["Trick Room","Earth Power","Ice Beam","Psyshock"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Juan","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Kingdra","item":"Haban Berry","abilities":[],"moves":["Hydro Pump","Dragon Pulse","Ice Beam","Rain Dance"],"level":50},
+      {"species":"Walrein","item":"Leftovers","abilities":[],"moves":["Surf","Toxic","Super Fang","Sheer Cold"],"level":50},
+      {"species":"Crawdaunt","item":"Life Orb","abilities":[],"moves":["Crabhammer","Night Slash","Rain Dance","Guillotine"],"level":50},
+      {"species":"Whiscash","item":"Chesto Berry","abilities":[],"moves":["Earthquake","Waterfall","Spark","Rest"],"level":50},
+      {"species":"Relicanth","item":"Damp Rock","abilities":[],"moves":["Rain Dance","Rock Slide","Waterfall","Earthquake"],"level":50},
+      {"species":"Politoed","item":"Wide Lens","abilities":[],"moves":["Hypnosis","Scald","Focus Blast","Ice Beam"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Roark","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Rampardos","item":"Focus Sash","abilities":[],"moves":["Stone Edge","Superpower","Earthquake","Avalanche"],"level":50},
+      {"species":"Probopass","item":"Air Balloon","abilities":[],"moves":["Stealth Rock","Earth Power","Discharge","Pain Split"],"level":50},
+      {"species":"Archeops","item":"Life Orb","abilities":[],"moves":["Stone Edge","Earthquake","Focus Blast","Quick Attack"],"level":50},
+      {"species":"Crustle","item":"Power Herb","abilities":[],"moves":["Rock Slide","X-scissor","Solarbeam","Shell Smash"],"level":50},
+      {"species":"Golem","item":"Choice Band","abilities":[],"moves":["Stone Edge","Earthquake","Sucker Punch","Explosion"],"level":50},
+      {"species":"Relicanth","item":"Liechi Berry","abilities":[],"moves":["Head Smash","Waterfall","Rock Polish","Yawn"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Gardenia","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Roserade","item":"Choice Scarf","abilities":[],"moves":["Petal Dance","Shadow Ball","Weather Ball","Sludge Bomb"],"level":50},
+      {"species":"Tropius","item":"Heat Rock","abilities":[],"moves":["Solarbeam","Air Slash","Synthesis","Sunny Day"],"level":50},
+      {"species":"Breloom","item":"Focus Sash","abilities":[],"moves":["Spore","Drain Punch","Mach Punch","Stone Edge"],"level":50},
+      {"species":"Tangrowth","item":"Salac Berry","abilities":[],"moves":["Power Whip","Focus Blast","Sludge Bomb","Earthquake"],"level":50},
+      {"species":"Leafeon","item":"Yache Berry","abilities":[],"moves":["Leaf Blade","X-scissor","Quick Attack","Swords Dance"],"level":50},
+      {"species":"Torterra","item":"Choice Band","abilities":[],"moves":["Wood Hammer","Earthquake","Outrage","Stone Edge"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Fantina","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Mismagius","item":"Salac Berry","abilities":[],"moves":["Shadow Ball","Psychic","Calm Mind","Pain Split"],"level":50},
+      {"species":"Drifblim","item":"Flying Gem","abilities":[],"moves":["Acrobatics","Will-o-wisp","Explosion","Sucker Punch"],"level":50},
+      {"species":"Spiritomb","item":"Sitrus Berry","abilities":[],"moves":["Shadow Ball","Psychic","Sucker Punch","Nasty Plot"],"level":50},
+      {"species":"Dusknoir","item":"Apicot Berry","abilities":[],"moves":["Shadow Sneak","Curse","Pain Split","Will-o-wisp"],"level":50},
+      {"species":"Jellicent","item":"Ghost Gem","abilities":[],"moves":["Shadow Ball","Brine","Recover","Water Spout"],"level":50},
+      {"species":"Gengar","item":"Focus Sash","abilities":[],"moves":["Shadow Ball","Thunderbolt","Nightmare","Hypnosis"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Maylene","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Lucario","item":"Focus Sash","abilities":[],"moves":["Ice Punch","Close Combat","Extremespeed","Swords Dance"],"level":50},
+      {"species":"Infernape","item":"Fire Gem","abilities":[],"moves":["Close Combat","Flare Blitz","Mach Punch","Bulk Up"],"level":50},
+      {"species":"Toxicroak","item":"Payapa Berry","abilities":[],"moves":["Drain Punch","Sucker Punch","Substitute","Bulk Up"],"level":50},
+      {"species":"Gallade","item":"Coba Berry","abilities":[],"moves":["Close Combat","Psycho Cut","Leaf Blade","Bulk Up"],"level":50},
+      {"species":"Medicham","item":"Choice Scarf","abilities":[],"moves":["Hi Jump Kick","Zen Headbutt","Thunderpunch","Ice Punch"],"level":50},
+      {"species":"Machamp","item":"Scope Lens","abilities":[],"moves":["Cross Chop","Stone Edge","Ice Punch","Bullet Punch"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Crasher Wake","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Floatzel","item":"Life Orb","abilities":[],"moves":["Aqua Jet","Ice Punch","Focus Blast","Bulk Up"],"level":50},
+      {"species":"Empoleon","item":"Petaya Berry","abilities":[],"moves":["Hydro Pump","Blizzard","Grass Knot","Featherdance"],"level":50},
+      {"species":"Ludicolo","item":"Leftovers","abilities":[],"moves":["Hydro Pump","Giga Drain","Focus Blast","Rain Dance"],"level":50},
+      {"species":"Gastrodon","item":"Rindo Berry","abilities":[],"moves":["Surf","Earth Power","Blizzard","Counter"],"level":50},
+      {"species":"Poliwrath","item":"Salac Berry","abilities":[],"moves":["Waterfall","Focus Punch","Ice Punch","Hypnosis"],"level":50},
+      {"species":"Gyarados","item":"Wacan Berry","abilities":[],"moves":["Aqua Tail","Earthquake","Outrage","Dragon Dance"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Byron","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Bastiodon","item":"Air Balloon","abilities":[],"moves":["Metal Burst","Fire Blast","Stealth Rock","Iron Defense"],"level":50},
+      {"species":"Excadrill","item":"Life Orb","abilities":[],"moves":["X-scissor","Earthquake","Rock Slide","Submission"],"level":50},
+      {"species":"Bronzong","item":"Iron Ball","abilities":[],"moves":["Gyro Ball","Zen Headbutt","Earthquake","Trick Room"],"level":50},
+      {"species":"Magnezone","item":"Shuca Berry","abilities":[],"moves":["Explosion","Mirror Coat","Protect","Reflect"],"level":50},
+      {"species":"Aggron","item":"Choice Band","abilities":[],"moves":["Head Smash","Iron Head","Fire Punch","Dragon Rush"],"level":50},
+      {"species":"Forretress","item":"Light Clay","abilities":[],"moves":["Gyro Ball","Stealth Rock","Earthquake","Reflect"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Candice","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Froslass","item":"Petaya Berry","abilities":[],"moves":["Blizzard","Shadow Ball","Psychic","Hail"],"level":50},
+      {"species":"Abomasnow","item":"Occa Berry","abilities":[],"moves":["Blizzard","Wood Hammer","Earthquake","Ingrain"],"level":50},
+      {"species":"Weavile","item":"Chople Berry","abilities":[],"moves":["Ice Punch","Night Slash","Brick Break","Torment"],"level":50},
+      {"species":"Glaceon","item":"Life Orb","abilities":[],"moves":["Blizzard","Shadow Ball","Signal Beam","Ice Shard"],"level":50},
+      {"species":"Mamoswine","item":"Salac Berry","abilities":[],"moves":["Icicle Crash","Bulldoze","Superpower","Rock Tomb"],"level":50},
+      {"species":"Glalie","item":"Rock Gem","abilities":[],"moves":["Blizzard","Crunch","Rollout","Hail"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"world-leaders","trainer":"Volkner","url":"https://www.serebii.net/black2white2/pwt/worldleaders.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Electivire","item":"Salac Berry","abilities":[],"moves":["Wild Charge","Cross Chop","Ice Punch","Bulldoze"],"level":50},
+      {"species":"Luxray","item":"Liechi Berry","abilities":[],"moves":["Wild Charge","Crunch","Superpower","Thunder Wave"],"level":50},
+      {"species":"Raichu","item":"Grass Gem","abilities":[],"moves":["Thunderbolt","Focus Blast","Grass Knot","Charge"],"level":50},
+      {"species":"Rotom","item":"King's Rock","abilities":[],"moves":["Discharge","Air Slash","Pain Split","Substitute"],"level":50},
+      {"species":"Jolteon","item":"Air Balloon","abilities":[],"moves":["Thunderbolt","Shadow Ball","Charm","Wish"],"level":50},
+      {"species":"Electrode","item":"Electric Gem","abilities":[],"moves":["Thunder","Signal Beam","Taunt","Torment"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"champions","trainer":"Blue","url":"https://www.serebii.net/black2white2/pwt/champion.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Aerodactyl","item":"Choice Band","abilities":[],"moves":["Stone Edge","Earthquake","Ice Fang","Fire Blast"],"level":50},
+      {"species":"Exeggutor","item":"Life Orb","abilities":[],"moves":["Leaf Storm","Wood Hammer","Zen Headbutt","Leech Seed"],"level":50},
+      {"species":"Gyarados","item":"King's Rock","abilities":[],"moves":["Waterfall","Earthquake","Ice Fang","Outrage"],"level":50},
+      {"species":"Alakazam","item":"Focus Sash","abilities":[],"moves":["Psychic","Focus Blast","Shadow Ball","Reflect"],"level":50},
+      {"species":"Arcanine","item":"Expert Belt","abilities":[],"moves":["Flare Blitz","Close Combat","Wild Charge","Extremespeed"],"level":50},
+      {"species":"Machamp","item":"White Herb","abilities":[],"moves":["Superpower","Stone Edge","Fire Punch","Bullet Punch"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"champions","trainer":"Lance","url":"https://www.serebii.net/black2white2/pwt/champion.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Dragonite","item":"Focus Sash","abilities":[],"moves":["Extremespeed","Ice Punch","Fire Punch","Draco Meteor"],"level":50},
+      {"species":"Salamence","item":"Expert Belt","abilities":[],"moves":["Dragon Claw","Crunch","Earthquake","Stone Edge"],"level":50},
+      {"species":"Kingdra","item":"Scope Lens","abilities":[],"moves":["Surf","Ice Beam","Dragon Pulse","Flash Cannon"],"level":50},
+      {"species":"Hydreigon","item":"White Herb","abilities":[],"moves":["Draco Meteor","Fire Blast","Earth Power","Dark Pulse"],"level":50},
+      {"species":"Haxorus","item":"Choice Scarf","abilities":[],"moves":["Outrage","Superpower","Earthquake","Rock Slide"],"level":50},
+      {"species":"Flygon","item":"Power Herb","abilities":[],"moves":["Solarbeam","Draco Meteor","Earth Power","U-turn"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"champions","trainer":"Steven","url":"https://www.serebii.net/black2white2/pwt/champion.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Metagross","item":"Occa Berry","abilities":[],"moves":["Hammer Arm","Bullet Punch","Zen Headbutt","Earthquake"],"level":50},
+      {"species":"Aggron","item":"Air Balloon","abilities":[],"moves":["Head Smash","Metal Burst","Earthquake","Avalanche"],"level":50},
+      {"species":"Excadrill","item":"Focus Sash","abilities":[],"moves":["Earthquake","Rock Slide","X-scissor","Sandstorm"],"level":50},
+      {"species":"Archeops","item":"Sitrus Berry","abilities":[],"moves":["Quick Attack","Acrobatics","Head Smash","Earthquake"],"level":50},
+      {"species":"Cradily","item":"Expert Belt","abilities":[],"moves":["Stone Edge","Seed Bomb","Earthquake","Sandstorm"],"level":50},
+      {"species":"Armaldo","item":"White Herb","abilities":[],"moves":["X-scissor","Rock Blast","Earthquake","Superpower"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"champions","trainer":"Wallace","url":"https://www.serebii.net/black2white2/pwt/champion.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Milotic","item":"Rocky Helmet","abilities":[],"moves":["Scald","Icy Wind","Rest","Sleep Talk"],"level":50},
+      {"species":"Sharpedo","item":"Focus Sash","abilities":[],"moves":["Aqua Jet","Zen Headbutt","Hydro Pump","Crunch"],"level":50},
+      {"species":"Walrein","item":"Leftovers","abilities":[],"moves":["Yawn","Blizzard","Surf","Sheer Cold"],"level":50},
+      {"species":"Ludicolo","item":"Life Orb","abilities":[],"moves":["Giga Drain","Surf","Focus Blast","Rain Dance"],"level":50},
+      {"species":"Swampert","item":"Rindo Berry","abilities":[],"moves":["Ice Beam","Muddy Water","Earth Power","Focus Blast"],"level":50},
+      {"species":"Starmie","item":"Expert Belt","abilities":[],"moves":["Thunderbolt","Psychic","Surf","Signal Beam"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"champions","trainer":"Cynthia","url":"https://www.serebii.net/black2white2/pwt/champion.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Garchomp","item":"Focus Sash","abilities":[],"moves":["Outrage","Earthquake","Stone Edge","Swords Dance"],"level":50},
+      {"species":"Spiritomb","item":"Rocky Helmet","abilities":[],"moves":["Pain Split","Will-o-wisp","Protect","Sucker Punch"],"level":50},
+      {"species":"Togekiss","item":"Leftovers","abilities":[],"moves":["Air Slash","Aura Sphere","Grass Knot","Shadow Ball"],"level":50},
+      {"species":"Lucario","item":"Life Orb","abilities":[],"moves":["Close Combat","Stone Edge","Extremespeed","Dark Pulse"],"level":50},
+      {"species":"Roserade","item":"White Herb","abilities":[],"moves":["Leaf Storm","Shadow Ball","Sludge Bomb","Sleep Powder"],"level":50},
+      {"species":"Glaceon","item":"Choice Scarf","abilities":[],"moves":["Ice Beam","Signal Beam","Shadow Ball","Water Pulse"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"champions","trainer":"Alder","url":"https://www.serebii.net/black2white2/pwt/champion.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Volcarona","item":"Charti Berry","abilities":[],"moves":["Quiver Dance","Heat Wave","Bug Buzz","Psychic"],"level":50},
+      {"species":"Conkeldurr","item":"Life Orb","abilities":[],"moves":["Hammer Arm","Mach Punch","Payback","Stone Edge"],"level":50},
+      {"species":"Reuniclus","item":"Leftovers","abilities":[],"moves":["Light Screen","Reflect","Toxic","Psychic"],"level":50},
+      {"species":"Krookodile","item":"Expert Belt","abilities":[],"moves":["Earthquake","Crunch","Stone Edge","Outrage"],"level":50},
+      {"species":"Chandelure","item":"Choice Scarf","abilities":[],"moves":["Flamethrower","Shadow Ball","Energy Ball","Psychic"],"level":50},
+      {"species":"Braviary","item":"Choice Band","abilities":[],"moves":["Brave Bird","Superpower","Rock Slide","U-turn"],"level":50}
+      ]
+    },
+    {
+      "header": {"tournament":"champions","trainer":"Red","url":"https://www.serebii.net/black2white2/pwt/champion.shtml","alwaysLeadsWith":null},
+      "team": [
+      {"species":"Venusaur","item":"White Herb","abilities":[],"moves":["Leaf Storm","Sludge Bomb","Earthquake","Sleep Powder"],"level":50},
+      {"species":"Charizard","item":"Focus Sash","abilities":[],"moves":["Fire Blast","Focus Blast","Air Slash","Dragon Pulse"],"level":50},
+      {"species":"Blastoise","item":"Choice Scarf","abilities":[],"moves":["Water Spout","Hydro Pump","Blizzard","Focus Blast"],"level":50},
+      {"species":"Pikachu","item":"Light Ball","abilities":[],"moves":["Volt Tackle","Iron Tail","Brick Break","Fake Out"],"level":50},
+      {"species":"Snorlax","item":"Quick Claw","abilities":[],"moves":["Body Slam","Earthquake","Crunch","Seed Bomb"],"level":50},
+      {"species":"Lapras","item":"Sitrus Berry","abilities":[],"moves":["Ice Beam","Hydro Pump","Ice Shard","Thunderbolt"],"level":50}
+      ]
+    }
+  ]
+}

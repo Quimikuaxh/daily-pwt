@@ -55,18 +55,31 @@ function putLeadFirst(team: ResolvedSet[], trainer: Trainer, leadRng: Prng): Res
   return [team[leadIndex], ...team.filter((_, index) => index !== leadIndex)]
 }
 
-/** Reto del día: función pura de (fecha, datos). Cada concepto usa su propio flujo del PRNG (DEC-02). */
-export function getDailyChallenge(date: string, data: GameData): Challenge {
-  const daySeed = SEED_PREFIX + date
-  const dayNumber = Math.max(0, dayIndex(date, LAUNCH_DATE))
+/** Qué reto construir: entrenador y variante opcional se eligen por id; la fecha aporta número y semillas (DEC-17). */
+export type ChallengeSelection = { date: string; trainerId: string; variantId?: string }
 
-  const trainerId = rivalForDay(dayNumber, data.rosterSchedule)
+/** Reto del día: función pura de (fecha, datos). El entrenador sale de la bolsa (DEC-03). */
+export function getDailyChallenge(date: string, data: GameData): Challenge {
+  const dayNumber = Math.max(0, dayIndex(date, LAUNCH_DATE))
+  return challengeFor({ date, trainerId: rivalForDay(dayNumber, data.rosterSchedule) }, data)
+}
+
+/**
+ * Reto con entrenador (y variante) elegidos por id, sin pasar por la bolsa ni depender de LAUNCH_DATE salvo para `number`.
+ * Es lo que usan los ganchos de prueba y los tests que necesitan un rival concreto. Sin `variantId`, la variante sale del PRNG de la fecha.
+ */
+export function challengeFor({ date, trainerId, variantId }: ChallengeSelection, data: GameData): Challenge {
+  const daySeed = SEED_PREFIX + date
+
   const trainer = data.trainers.find((candidate) => candidate.id === trainerId)
-  if (!trainer) throw new DataError(`El calendario menciona al entrenador «${trainerId}», que no existe en los datos.`)
+  if (!trainer) throw new DataError(`El entrenador «${trainerId}» no existe en los datos.`)
 
   const variants = uniqueVariants(trainer.variants)
   if (variants.length === 0) throw new DataError(`El entrenador «${trainer.nameEs}» no tiene equipos.`)
-  const variant = variants[new Prng(deriveSeed(daySeed, 'variant')).nextInt(variants.length)]
+  const variant = variantId === undefined
+    ? variants[new Prng(deriveSeed(daySeed, 'variant')).nextInt(variants.length)]
+    : variants.find((candidate) => candidate.id === variantId)
+  if (!variant) throw new DataError(`El entrenador «${trainer.nameEs}» no tiene la variante «${variantId}».`)
 
   const abilityRng = new Prng(deriveSeed(daySeed, 'abilities'))
   const resolvedTeam = variant.team.map((set) => resolveRivalSet(set, trainer, abilityRng, data))

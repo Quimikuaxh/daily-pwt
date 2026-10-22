@@ -1,9 +1,40 @@
 import type { Locator, Page } from '@playwright/test'
 import { BattlePage } from './pages/BattlePage'
 import { TodayPage } from './pages/TodayPage'
+import { LAUNCH_DATE } from '../src/core/launch'
 
-export const D0 = '2026-10-19'
-export const REF_DATES = ['2026-10-19', '2026-10-20', '2026-10-21'] as const
+export { LAUNCH_DATE }
+
+/** Suma días a 'YYYY-MM-DD' sin depender de la zona horaria. */
+export function addDays(date: string, days: number): string {
+  const [year, month, day] = date.split('-').map(Number)
+  return new Date(Date.UTC(year, month - 1, day + days)).toISOString().slice(0, 10)
+}
+
+/**
+ * Escenario de un E2E: rival (y variante opcional) por id con los ganchos ?trainer=&variant=, y una fecha que solo
+ * siembra variante, habilidades y equipo del jugador. Así el escenario no depende de LAUNCH_DATE ni del orden de la bolsa.
+ * Las fechas son literales a propósito: cambiarlas cambia el equipo del jugador (y los combates que dependen de él).
+ */
+export type Scenario = { trainer: string; variant?: string; date: string }
+
+export const PLUBIO: Scenario = { trainer: 'plubio', date: '2026-10-19' }
+export const MISTY: Scenario = { trainer: 'misty', date: '2026-10-20' }
+export const MAXIMO: Scenario = { trainer: 'maximo', date: '2026-10-21' }
+export const CAMILA: Scenario = { trainer: 'camila', date: '2026-10-22' }
+export const ROJO: Scenario = { trainer: 'rojo', date: '2026-10-23' }
+export const BROCK: Scenario = { trainer: 'brock', date: '2026-10-24' }
+
+/** Escenario por defecto: contra Plubio hay cambio forzado tras el primer turno (ver los casos que usan MISTY). */
+export const DEFAULT_SCENARIO = PLUBIO
+export const REF_SCENARIOS = [PLUBIO, MISTY, MAXIMO] as const
+export const SIX_SCENARIOS = [PLUBIO, MISTY, MAXIMO, CAMILA, ROJO, BROCK] as const
+
+/** Query de los ganchos para un escenario (sin `?`). */
+export function scenarioQuery(scenario: Scenario): string {
+  const variant = scenario.variant ? `&variant=${scenario.variant}` : ''
+  return `date=${scenario.date}&trainer=${scenario.trainer}${variant}`
+}
 
 /** Palabras en inglés / marcas de protocolo que nunca deben llegar al registro (RF-51). */
 export const FORBIDDEN_IN_LOG = /\||\b(used|fainted|sent out|super effective|not very effective|The opposing|Go!|foe)\b|\bp[12][a-d]?:/i
@@ -22,18 +53,22 @@ export function collectProblems(page: Page): string[] {
   return problems
 }
 
-/** Abre Hoy con ganchos (fecha, semilla de combate y IA trivial), elige el inicial y entra en combate. */
+/**
+ * Abre Hoy con ganchos (fecha, semilla de combate y IA trivial), elige el inicial y entra en combate. `mode` es el botón que se pulsa:
+ * por defecto el oficial, que solo se puede jugar una vez por día del reto y contexto (DEC-43); un test que juega más de una partida
+ * en el mismo contexto usa `practice`.
+ */
 export async function startBattle(
   page: Page,
-  opts: { date?: string; seed?: string; lead?: number; tap?: boolean } = {},
+  opts: { scenario?: Scenario; seed?: string; lead?: number; tap?: boolean; mode?: 'official' | 'practice' } = {},
 ): Promise<{ today: TodayPage; battle: BattlePage }> {
   const today = new TodayPage(page)
-  const query = [opts.date ? `date=${opts.date}` : '', `seed=${opts.seed ?? 'a'}`, 'ai=trivial'].filter(Boolean).join('&')
+  const query = [scenarioQuery(opts.scenario ?? DEFAULT_SCENARIO), `seed=${opts.seed ?? 'a'}`, 'ai=trivial'].join('&')
   await page.goto(`./?${query}`)
   await today.challengeNumber.waitFor()
   const press = (locator: Locator) => (opts.tap ? locator.tap() : locator.click())
   await press(today.leadButtons.nth(opts.lead ?? 0))
-  await press(today.fightButton)
+  await press(opts.mode === 'practice' ? today.practiceButton : today.fightButton)
   const battle = new BattlePage(page)
   await battle.root.waitFor()
   return { today, battle }

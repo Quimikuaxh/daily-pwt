@@ -1,11 +1,10 @@
 import { pathToFileURL } from 'node:url'
 import { resolve } from 'node:path'
 import { test, expect, type Locator, type Page } from '@playwright/test'
-import { D0, openParty, openSummary, startBattle } from './support'
+import { DEFAULT_SCENARIO, openParty, openSummary, SIX_SCENARIOS, startBattle, type Scenario } from './support'
 import { TodayPage } from './pages/TodayPage'
 
 // Alineación y recortes: tarjetas de Hoy (jugador y rival), iconos de tipo, pantalla de datos y glifos de la fuente del juego.
-const SIX_DATES = ['2026-10-19', '2026-10-20', '2026-10-21', '2026-10-22', '2026-10-23', '2026-10-24']
 
 /** decodePng de scripts/lib/png.mjs (el mismo decodificador del script de assets). */
 async function decodePng(bytes: Buffer): Promise<{ width: number; height: number; rgba: Uint8Array }> {
@@ -33,7 +32,7 @@ const rects = (locator: Locator) => locator.evaluateAll((elements) => elements.m
 test.describe('Hoy: tarjetas alineadas', () => {
   test('E2E-30 los iconos de tipo tienen el mismo ancho y los movimientos alinean tipo, categoría, potencia y precisión en columnas', async ({ page }) => {
     const today = new TodayPage(page)
-    await today.goto(D0)
+    await today.goto()
     await page.addStyleTag({ content: '.fight-bar{display:none}' })
     await today.rivalToggle.click()
 
@@ -59,7 +58,7 @@ test.describe('Hoy: tarjetas alineadas', () => {
 
   test('E2E-30 las tarjetas del jugador usan la misma rejilla (mismo componente)', async ({ page }) => {
     const today = new TodayPage(page)
-    await today.goto(D0)
+    await today.goto()
     await page.addStyleTag({ content: '.fight-bar{display:none}' })
     const lefts = await page.locator('article.player-card').first().locator('.move-row').evaluateAll((rows) => rows.map((row) => Math.round((row.querySelector('.move-stats > :nth-child(2)') as HTMLElement).getBoundingClientRect().left)))
     expect(new Set(lefts).size).toBe(1)
@@ -67,7 +66,7 @@ test.describe('Hoy: tarjetas alineadas', () => {
 
   test('E2E-31 el contenido termina por encima de la barra fija COMBATIR (nada queda tapado al final)', async ({ page }) => {
     const today = new TodayPage(page)
-    await today.goto(D0)
+    await today.goto()
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
     const lastCard = await page.locator('article.player-card').last().boundingBox()
     const bar = await page.locator('.fight-bar').boundingBox()
@@ -80,7 +79,7 @@ test.describe('Hoy: tarjetas alineadas', () => {
 test.describe('Iconos de tipo: texto centrado', () => {
   test('E2E-32 el texto queda centrado dentro del icono (Hoy, escala 2): márgenes opuestos dentro de 2 px lógicos', async ({ page }) => {
     const today = new TodayPage(page)
-    await today.goto(D0)
+    await today.goto()
     await page.addStyleTag({ content: '.fight-bar{display:none}' })
     await today.rivalToggle.click()
     const seen = new Set<string>()
@@ -103,8 +102,8 @@ test.describe('Iconos de tipo: texto centrado', () => {
   })
 })
 
-async function openSummaryAt(page: Page, date: string, member: number): Promise<void> {
-  const { battle } = await startBattle(page, { date, seed: 'a' })
+async function openSummaryAt(page: Page, scenario: Scenario, member: number): Promise<void> {
+  const { battle } = await startBattle(page, { scenario, seed: 'a' })
   await battle.waitForActionOrResult()
   await openParty(page)
   await openSummary(page, member)
@@ -118,9 +117,10 @@ const SUMMARY_BOXES: { selector: string; page: number | null; box: [number, numb
 ]
 
 test.describe('Pantalla de datos: ningún texto desborda su caja', () => {
-  for (const date of SIX_DATES) {
-    test(`E2E-33 ${date}: los 6 Pokémon en las tres páginas`, async ({ page }) => {
-      await openSummaryAt(page, date, 0)
+  for (const scenario of SIX_SCENARIOS) {
+    const label = scenario.trainer
+    test(`E2E-33 ${label}: los 6 Pokémon en las tres páginas`, async ({ page }) => {
+      await openSummaryAt(page, scenario, 0)
       const summary = page.locator('.bt-summary')
       for (let member = 0; member < 6; member += 1) {
         for (let pageIndex = 0; pageIndex < 3; pageIndex += 1) {
@@ -132,7 +132,7 @@ test.describe('Pantalla de datos: ningún texto desborda su caja', () => {
           for (const element of text) {
             const [box] = await logical(element)
             const label = (await element.textContent())?.trim() ?? ''
-            expect(box.left, `${date} #${member} p${pageIndex} "${label}" dentro del lienzo (izq.)`).toBeGreaterThanOrEqual(-0.5)
+            expect(box.left, `${label} #${member} p${pageIndex} "${label}" dentro del lienzo (izq.)`).toBeGreaterThanOrEqual(-0.5)
             expect(box.right, `"${label}" dentro del lienzo (der.)`).toBeLessThanOrEqual(256.5)
             expect(box.bottom, `"${label}" dentro del lienzo (abajo)`).toBeLessThanOrEqual(384.5)
           }
@@ -166,7 +166,7 @@ test.describe('Pantalla de datos: ningún texto desborda su caja', () => {
   }
 
   test('E2E-33 el nombre del movimiento nunca se solapa con el icono de tipo (todas las placas de las fechas de prueba)', async ({ page }) => {
-    await openSummaryAt(page, D0, 0)
+    await openSummaryAt(page, DEFAULT_SCENARIO, 0)
     const summary = page.locator('.bt-summary')
     await page.keyboard.press('ArrowRight')
     for (let member = 0; member < 6; member += 1) {
@@ -181,7 +181,7 @@ test.describe('Pantalla de datos: ningún texto desborda su caja', () => {
   })
 
   test('E2E-33 la descripción de la habilidad queda centrada en vertical en su recuadro', async ({ page }) => {
-    await openSummaryAt(page, D0, 0)
+    await openSummaryAt(page, DEFAULT_SCENARIO, 0)
     await page.keyboard.press('ArrowRight')
     const summary = page.locator('.bt-summary')
     for (let member = 0; member < 6; member += 1) {
@@ -221,9 +221,9 @@ test.describe('Glifos sin recortar', () => {
 
   test('E2E-34 ningún texto con overflow oculto corta los descendentes (p, g, j, q, y): Hoy, combate, equipo y datos', async ({ page }) => {
     const today = new TodayPage(page)
-    await today.goto(D0)
+    await today.goto()
     expect(await clippedTexts(page), 'Hoy').toEqual([])
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.waitForActionOrResult()
     expect(await clippedTexts(page), 'combate').toEqual([])
     await battle.fightButton.click()
@@ -244,7 +244,7 @@ test.describe('Hoy: rejillas a todo el ancho', () => {
     test(`E2E-37 a ${width} px el último elemento de cada fila llega al borde derecho del panel (equipo rival y tarjetas del jugador)`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 })
       const today = new TodayPage(page)
-      await today.goto(D0)
+      await today.goto()
       for (const detailed of [false, true]) {
         if (detailed) await today.rivalToggle.click()
         for (const selector of ['ul.rival-team', '.player-grid']) {
@@ -266,7 +266,7 @@ test.describe('Hoy: rejillas a todo el ancho', () => {
 
 test.describe('Pantalla de datos: iconos de tipo y selector de página', () => {
   test('E2E-38 el texto de los iconos de tipo de las placas de movimientos está centrado (mismo componente que Hoy): márgenes opuestos dentro de 1 px lógico', async ({ page }) => {
-    await openSummaryAt(page, D0, 0)
+    await openSummaryAt(page, DEFAULT_SCENARIO, 0)
     await page.keyboard.press('ArrowRight')
     const summary = page.locator('.bt-summary')
     const box = await summary.boundingBox()
@@ -285,7 +285,7 @@ test.describe('Pantalla de datos: iconos de tipo y selector de página', () => {
 
 test.describe('Pantalla de datos: cada texto centrado en su franja', () => {
   test('E2E-42 las mayúsculas de cada texto quedan centradas en la franja del fondo que le corresponde (≤ 1 px nativo) en las tres páginas', async ({ page }) => {
-    await openSummaryAt(page, D0, 0)
+    await openSummaryAt(page, DEFAULT_SCENARIO, 0)
     const summary = page.locator('.bt-summary')
     for (let member = 0; member < 3; member += 1) {
       for (let pageIndex = 0; pageIndex < 3; pageIndex += 1) {

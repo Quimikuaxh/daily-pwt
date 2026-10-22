@@ -1,7 +1,9 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, relative, resolve } from 'node:path'
 import { isMain } from './lib/cli.mjs'
 import { fromRoot } from './lib/paths.mjs'
+import { PWT_CACHE_DIR } from './lib/pwt-http.mjs'
+import { ROSTER } from './lib/pwt-roster.mjs'
 
 const SPRITES_DIR = fromRoot('public', 'sprites')
 const SHOWDOWN_SPRITES_URL = 'https://play.pokemonshowdown.com/sprites'
@@ -12,6 +14,7 @@ const PAUSE_BETWEEN_REQUESTS_MS = 700
 const WIKIDEX_PAUSE_MS = 5000
 const MAX_RETRIES = 6
 const REQUEST_TIMEOUT_MS = 20_000
+const WIKIDEX_TITLES_PER_QUERY = 40
 
 const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
 
@@ -58,10 +61,15 @@ async function fetchWithRetries(url, maxRetries = MAX_RETRIES) {
   throw new Error(`Agotados los reintentos (${lastProblem}): ${url}`)
 }
 
+function hasValidImage(relativePath, expectedType) {
+  const target = resolveSpriteTarget(relativePath)
+  return existsSync(target) && detectImageType(readFileSync(target)) === expectedType
+}
+
 /** Descarga `url` a `relativePath` si no existe ya una imagen válida. Devuelve true si el fichero queda bien. */
 async function download(url, relativePath, expectedType, { retries = MAX_RETRIES } = {}) {
+  if (hasValidImage(relativePath, expectedType)) return true
   const target = resolveSpriteTarget(relativePath)
-  if (existsSync(target) && detectImageType(readFileSync(target)) === expectedType) return true
   let body
   try {
     body = await fetchWithRetries(url, retries)
@@ -103,7 +111,9 @@ async function fetchPokemonSprites(spriteIds) {
   const failures = []
   for (const spriteId of spriteIds) {
     for (const [side, directory] of [['front', 'gen5ani'], ['back', 'gen5ani-back']]) {
-      const ok = await download(`${SHOWDOWN_SPRITES_URL}/${directory}/${spriteId}.gif`, `pokemon/${side}/${spriteId}.gif`, 'gif')
+      const relativePath = `pokemon/${side}/${spriteId}.gif`
+      if (hasValidImage(relativePath, 'gif')) continue
+      const ok = await download(`${SHOWDOWN_SPRITES_URL}/${directory}/${spriteId}.gif`, relativePath, 'gif')
       if (!ok) failures.push(`${side}/${spriteId}`)
       await sleep(PAUSE_BETWEEN_REQUESTS_MS)
     }
@@ -112,22 +122,60 @@ async function fetchPokemonSprites(spriteIds) {
 }
 
 /**
- * WikiDex: <Nombre>_N2B2.gif y <Nombre>_N2B2_mini.png. La API (api.php) da la URL del CDN; si el CDN no responde
- * (images.wikidexcdn.net no es alcanzable desde algunas redes) se usa la copia de Internet Archive de esa misma URL.
+ * URLs del CDN de WikiDex que aparecen en las páginas de entrenadores ya descargadas por `gen:pwt-raw`
+ * (scripts/.cache/pwt/wikidex__*.html): permiten localizar los sprites sin la API, que a veces da error.
+ * Clave: nombre de fichero decodificado (`Lt._Surge_N2B2.gif`).
+ */
+function cdnUrlsFromCachedWikidexPages() {
+  const urlByFileName = new Map()
+  if (!existsSync(PWT_CACHE_DIR)) return urlByFileName
+  for (const pageName of readdirSync(PWT_CACHE_DIR).filter((name) => name.startsWith('wikidex__'))) {
+    const html = readFileSync(resolve(PWT_CACHE_DIR, pageName), 'utf8')
+    for (const match of html.matchAll(/https?:\/\/images\.wikidexcdn\.net\/mwuploads\/wikidex\/[^"' ]+?\/([^/"' ]+_N2B2(?:_mini)?\.(?:gif|png))/g)) {
+      urlByFileName.set(decodeURIComponent(match[1]), match[0])
+    }
+  }
+  return urlByFileName
+}
+
+/** Nombre del fichero de WikiDex: el encabezado de su página si difiere del nombre en español («Lt. Surge»). */
+function wikidexFileStem(trainer) {
+  const rosterEntry = ROSTER.find((entry) => entry.id === trainer.id)
+  return (rosterEntry?.wikidexHeading ?? trainer.nameEs).replace(/ /g, '_')
+}
+
+/**
+ * WikiDex: <Nombre>_N2B2.gif y <Nombre>_N2B2_mini.png. La URL del CDN sale de las páginas en caché y, si falta, de la API;
+ * si el CDN no responde (images.wikidexcdn.net no es alcanzable desde algunas redes) se usa la copia de Internet Archive de esa misma URL.
  */
 async function fetchTrainerSprites(trainers) {
-  const files = trainers.flatMap((trainer) => [
-    { wikiFile: `${trainer.nameEs}_N2B2.gif`, relativePath: `trainers/${trainer.sprite}.gif`, type: 'gif' },
-    { wikiFile: `${trainer.nameEs}_N2B2_mini.png`, relativePath: `trainers/${trainer.sprite}-mini.png`, type: 'png' },
-  ])
-  const titles = files.map((file) => `Archivo:${file.wikiFile}`).join('|')
-  const query = `${WIKIDEX_API_URL}?action=query&format=json&formatversion=2&prop=imageinfo&iiprop=url&titles=${encodeURIComponent(titles)}`
-  const answer = JSON.parse((await fetchWithRetries(query)).toString('utf8'))
-  const urlByTitle = new Map(answer.query.pages.map((page) => [page.title.replace(/ /g, '_'), page.imageinfo?.[0]?.url]))
+  const files = trainers
+    .flatMap((trainer) => [
+      { wikiFile: `${wikidexFileStem(trainer)}_N2B2.gif`, relativePath: `trainers/${trainer.sprite}.gif`, type: 'gif' },
+      { wikiFile: `${wikidexFileStem(trainer)}_N2B2_mini.png`, relativePath: `trainers/${trainer.sprite}-mini.png`, type: 'png' },
+    ])
+    .filter((file) => !hasValidImage(file.relativePath, file.type))
+  const urlByFileName = cdnUrlsFromCachedWikidexPages()
+  const filesWithoutUrl = files.filter((file) => !urlByFileName.has(file.wikiFile))
+  // La API de MediaWiki admite como mucho 50 títulos por consulta.
+  for (let start = 0; start < filesWithoutUrl.length; start += WIKIDEX_TITLES_PER_QUERY) {
+    const titles = filesWithoutUrl.slice(start, start + WIKIDEX_TITLES_PER_QUERY).map((file) => `Archivo:${file.wikiFile}`).join('|')
+    const query = `${WIKIDEX_API_URL}?action=query&format=json&formatversion=2&prop=imageinfo&iiprop=url&titles=${encodeURIComponent(titles)}`
+    try {
+      const answer = JSON.parse((await fetchWithRetries(query, 2)).toString('utf8'))
+      for (const page of answer.query.pages) {
+        const url = page.imageinfo?.[0]?.url
+        if (url) urlByFileName.set(page.title.replace(/^Archivo:/, '').replace(/ /g, '_'), url)
+      }
+    } catch (error) {
+      console.error(`  la API de WikiDex no respondió con JSON (${error.message})`)
+    }
+    await sleep(WIKIDEX_PAUSE_MS)
+  }
 
   const failures = []
   for (const file of files) {
-    const cdnUrl = urlByTitle.get(`Archivo:${file.wikiFile}`)
+    const cdnUrl = urlByFileName.get(file.wikiFile)
     let ok = false
     if (cdnUrl) {
       ok = await download(cdnUrl, file.relativePath, file.type, { retries: 1 })

@@ -3,7 +3,7 @@ import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { render, screen } from '@testing-library/react'
 import { TodayScreen } from './TodayScreen'
-import { pokemonSpriteClass } from './spriteBox'
+import { pokemonSpriteClass, trainerSpriteClass } from './spriteBox'
 import { makeGameData } from '../../test-utils/fixtures'
 import { setLocalTime } from '../../test-utils/ui'
 
@@ -13,17 +13,6 @@ const SPRITES_DIR = join(import.meta.dirname, '../../../public/sprites')
 
 beforeEach(() => { vi.useFakeTimers(); setLocalTime('2026-10-17', 12) })
 afterEach(() => { vi.useRealTimers() })
-
-function largestGif(dir: string): { width: number; height: number } {
-  let width = 0
-  let height = 0
-  for (const file of readdirSync(join(SPRITES_DIR, dir)).filter((name) => name.endsWith('.gif'))) {
-    const header = readFileSync(join(SPRITES_DIR, dir, file))
-    width = Math.max(width, header.readUInt16LE(6))
-    height = Math.max(height, header.readUInt16LE(8))
-  }
-  return { width, height }
-}
 
 describe('sprites de Hoy', () => {
   it('todas las imágenes usan tamaño natural (object-fit: none) en una caja cuadrada', () => {
@@ -36,11 +25,15 @@ describe('sprites de Hoy', () => {
     }
   })
 
-  it('la caja cubre el GIF de cada entrenador, y los Pokémon que no caben (unas 20 especies) se reducen en vez de recortarse', () => {
+  it('los entrenadores y Pokémon que no caben en la caja (unas 20 especies y 3 entrenadores) se reducen en vez de recortarse', () => {
     render(<TodayScreen data={data} onStart={vi.fn()} />)
     const box = Number(screen.getAllByRole('img')[0].getAttribute('width'))
-    const trainers = largestGif('trainers')
-    expect(Math.max(trainers.width, trainers.height)).toBeLessThanOrEqual(box)
+    const trainersDir = join(SPRITES_DIR, 'trainers')
+    for (const file of readdirSync(trainersDir).filter((name) => name.endsWith('.gif'))) {
+      const header = readFileSync(join(trainersDir, file))
+      const tooBig = Math.max(header.readUInt16LE(6), header.readUInt16LE(8)) > box
+      expect(trainerSpriteClass(file.replace('.gif', '')).includes('sprite-shrink'), file).toBe(tooBig)
+    }
     const frontDir = join(SPRITES_DIR, 'pokemon/front')
     for (const file of readdirSync(frontDir).filter((name) => name.endsWith('.gif'))) {
       const header = readFileSync(join(frontDir, file))

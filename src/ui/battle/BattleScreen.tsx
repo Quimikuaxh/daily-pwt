@@ -3,7 +3,8 @@ import type { BattleClient } from '../../battle/client'
 import type { AiKind, BattleRequest, EngineEnd } from '../../battle/protocol'
 import { MAX_TURNS } from '../../config'
 import type { Challenge, GameData } from '../../core/types'
-import { useBattle } from '../../hooks/useBattle'
+import { useBattle, type BattleParams } from '../../hooks/useBattle'
+import type { BattleMode } from '../../storage/gameStore'
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
 import { es } from '../../i18n/es'
 import { Dialog } from '../common/Dialog'
@@ -26,6 +27,13 @@ type BattleScreenProps = {
   playerLead: number
   battleSeed: string
   ai?: AiKind
+  /** Etiqueta OFICIAL/PRÁCTICA y textos de salir y rendirse (PRD §10.2). Por defecto, práctica. */
+  mode?: BattleMode
+  /** Reanudación de un oficial guardado: sin intro y con las decisiones ya tomadas reproducidas. */
+  replay?: BattleParams['replay']
+  onDecision?: BattleParams['onDecision']
+  onSettled?: BattleParams['onSettled']
+  onReplayFailed?: BattleParams['onReplayFailed']
   onFinish: (ended: EngineEnd) => void
   onExit: () => void
 }
@@ -37,7 +45,7 @@ type TouchChoice = { request: BattleRequest | null; mode: TouchMode }
 
 const isInteractive = (target: EventTarget | null): boolean => target instanceof HTMLElement && target.closest('button, a, input, select, textarea, [role="dialog"]') !== null
 
-export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', onFinish, onExit }: BattleScreenProps) {
+export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', replay, onDecision, onSettled, onReplayFailed, onFinish, onExit }: BattleScreenProps) {
   const { trainer, rivalTeam, playerTeam } = challenge
   const speciesName = (speciesId: string, fallback: string): string => data.names.species[speciesId] ?? fallback
 
@@ -50,6 +58,10 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
       playerLead: speciesName(playerTeam[playerLead].species, playerTeam[playerLead].nameEs),
     },
     onFinish,
+    replay,
+    onDecision,
+    onSettled,
+    onReplayFailed,
   })
 
   const reducedMotion = usePrefersReducedMotion()
@@ -140,6 +152,9 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
 
           <div className="bt-stage" style={stageStyle}>
             <div className="bt-ds" style={{ width: SCREEN_WIDTH, height: STAGE_HEIGHT }}>
+              <span data-testid="battle-mode" data-mode={mode} className={`bt-mode bt-mode-${mode}`} role="img" aria-label={es.battle.modeLabel(mode === 'official')}>
+                {mode === 'official' ? es.battle.modeOfficial : es.battle.modePractice}
+              </span>
               {partyOpen && (
                 <PartyScreen
                   members={members}
@@ -180,7 +195,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
       {dialog === 'forfeit' && (
         <Dialog
           title={es.battle.forfeitTitle}
-          body={es.battle.forfeitBody}
+          body={mode === 'official' ? es.battle.forfeitBodyOfficial : es.battle.forfeitBody}
           confirmLabel={es.battle.forfeitConfirm}
           cancelLabel={es.battle.cancel}
           onConfirm={confirmDialog}
@@ -190,7 +205,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
       {dialog === 'exit' && (
         <Dialog
           title={es.battle.exitTitle}
-          body={es.battle.exitBody}
+          body={mode === 'official' ? es.battle.exitBodyOfficial : es.battle.exitBody}
           confirmLabel={es.battle.exitConfirm}
           cancelLabel={es.battle.cancel}
           onConfirm={confirmDialog}

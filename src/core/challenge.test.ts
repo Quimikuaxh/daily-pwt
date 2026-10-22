@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { getDailyChallenge } from './challenge'
+import { challengeFor, getDailyChallenge } from './challenge'
 import { DataError } from './errors'
 import { Prng } from './prng'
 import { deriveSeed } from './prng'
@@ -79,11 +79,11 @@ describe('getDailyChallenge: forma y pureza (UT-08)', () => {
   })
 
   it('el número crece un día a día', () => {
-    expect([getDailyChallenge('2026-10-19', data).number, getDailyChallenge('2026-10-20', data).number]).toEqual([1, 2])
+    expect([getDailyChallenge(LAUNCH_DATE, data).number, getDailyChallenge(addDays(LAUNCH_DATE, 1), data).number]).toEqual([1, 2])
   })
 
   it('una fecha anterior al lanzamiento da #1 y no lanza', () => {
-    expect(getDailyChallenge('2026-10-16', data).number).toBe(1)
+    expect(getDailyChallenge(addDays(LAUNCH_DATE, -3), data).number).toBe(1)
   })
 
   it('consumir otro PRNG (el del combate) entre llamadas no altera el reto', () => {
@@ -234,5 +234,32 @@ describe('getDailyChallenge: nombres (RF-21)', () => {
   it('nameEs de los Pokémon sale de names.species', () => {
     const c = getDailyChallenge(LAUNCH_DATE, data)
     for (const p of [...c.rivalTeam, ...c.playerTeam]) expect(p.nameEs).toBe(data.names.species[p.species])
+  })
+})
+
+describe('challengeFor: rival y variante por id (DEC-17)', () => {
+  it('devuelve el entrenador pedido sin pasar por la bolsa, en cualquier fecha', () => {
+    for (const trainer of [trainerAlpha, trainerBeta, trainerGamma]) {
+      for (const date of ['2020-01-01', LAUNCH_DATE, '2031-07-09']) {
+        expect(challengeFor({ trainerId: trainer.id, date }, data).trainer.id).toBe(trainer.id)
+      }
+    }
+  })
+
+  it('es consistente con getDailyChallenge cuando el id coincide con el de la bolsa', () => {
+    const daily = getDailyChallenge(LAUNCH_DATE, data)
+    expect(challengeFor({ trainerId: daily.trainer.id, date: LAUNCH_DATE }, data)).toEqual(daily)
+  })
+
+  it('con variantId fuerza esa variante y sin él usa la del PRNG de la fecha', () => {
+    expect(trainerAlpha.variants.length).toBeGreaterThan(1)
+    for (const variant of trainerAlpha.variants) {
+      expect(challengeFor({ trainerId: trainerAlpha.id, variantId: variant.id, date: LAUNCH_DATE }, data).variant.id).toBe(variant.id)
+    }
+  })
+
+  it('un entrenador o una variante inexistentes lanzan DataError', () => {
+    expect(() => challengeFor({ trainerId: 'nadie', date: LAUNCH_DATE }, data)).toThrow(DataError)
+    expect(() => challengeFor({ trainerId: trainerAlpha.id, variantId: 'nada', date: LAUNCH_DATE }, data)).toThrow(DataError)
   })
 })

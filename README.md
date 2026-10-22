@@ -12,13 +12,13 @@ El desarrollo se divide en tres fases (detalle en [docs/PRD.md](docs/PRD.md) §0
 
 | Fase | Contenido |
 |---|---|
-| F1 (en curso a 2026-10-19) | Reto diario determinista; 6 entrenadores (Brock, Misty, Camila, Plubio, Rojo, Máximo) con 9 variantes de equipo; pool del jugador (sets de Smogon Gen 5 y de los rivales); combate 6 contra 6 con IA heurística; pantalla Hoy, combate (con intro, mensajes uno a uno e historial a demanda) y resultado, con el estilo de los menús de N2/B2 y del PWT. |
-| F2 | Roster completo de 53 entrenadores con todas sus variantes; scripts de datos y validación completos; sprites de todos los entrenadores. |
+| F1 (hecha) | Reto diario determinista; 6 entrenadores (Brock, Misty, Camila, Plubio, Rojo, Máximo) con 9 variantes de equipo; pool del jugador (sets de Smogon Gen 5 y de los rivales); combate 6 contra 6 con IA heurística; pantalla Hoy, combate (con intro, mensajes uno a uno e historial a demanda) y resultado, con el estilo de los menús de N2/B2 y del PWT. |
+| F2 (datos hechos; falta fijar `LAUNCH_DATE` y calibrar la dificultad) | Roster completo de 53 entrenadores (46 líderes y 7 campeones) con sus 99 variantes (594 sets, todos verificados con ≥ 2 fuentes), todos barajados juntos en la bolsa; pool del jugador con los sets de los 53 rivales y Smogon; sprites de todos los entrenadores y especies; validación de datos (`npm run validate:data`) y CI. |
 | F3 | Combate oficial único y prácticas, reanudar partida, estadísticas, compartir, pantallas Ayuda y Ajustes. |
 
 En F1 no hay límite de un combate oficial al día ni persistencia: un mismo reto admite combates ilimitados.
 
-Fecha de lanzamiento (`#1`) en F1: 2026-10-19 (provisional) (ver [Configuración](#lanzamiento-launch_date)).
+Fecha de lanzamiento (`#1`): 2026-10-19 (provisional) (ver [Configuración](#lanzamiento-launch_date)).
 
 ## Requisitos
 
@@ -51,10 +51,18 @@ npm install
 | `npm run gen:smogon` | Descarga los sets de Smogon Gen 5 (individuales) a `data/smogon/` (requiere red; el resultado se versiona). |
 | `npm run gen:player-sets` | Genera `data/player-sets.json` (pool del jugador) desde `data/smogon/` y `data/trainers.json`, y `data/smogon/discarded.json`. Sin red. |
 | `npm run gen:ui-index` | Genera `src/generated/battle-ui-images.json` (gráficos de interfaz que se precargan desde Hoy). |
+| `npm run validate:data` | Valida `data/*.json`, `src/generated/` y los sprites (PRD §8.3; ver [Validación de datos](#validación-de-datos-y-ci)). Sin red ni `scripts/.cache`; sale con código 1 si hay algún problema. |
+| `npm run gen:pwt-raw` / `npm run gen:pwt` | Extraen los equipos del PWT de Bulbapedia, Serebii y WikiDex y los fusionan (ver [docs/F2-DATOS.md](docs/F2-DATOS.md)). `npm run gen:pwt -- --write` además escribe `data/trainers.json`. |
 | `npm run gen:sprites` | Descarga a `public/sprites/` los sprites que falten (requiere red). |
 | `npm run gen:ui` | Descarga y recorta a `public/ui/` los gráficos de interfaz de N2/B2 (`--force` los rehace todos). Requiere red. |
 
-`gen:sprites` y `gen:ui` no forman parte de `npm run gen`.
+`gen:sprites`, `gen:ui`, `gen:pwt-raw` y `gen:pwt` no forman parte de `npm run gen`. Tras cargar o cambiar entrenadores: `npm run gen:pwt -- --write`, `npm run gen`, `npm run gen:sprites` (si faltan sprites), `npm run gen:sprite-boxes`, `gen:icon-index`, `gen:descriptions`, `gen:ui-index` (si cambian sprites o especies) y `npm run validate:data`.
+
+## Validación de datos y CI
+
+`npm run validate:data` (`scripts/validate-data.mjs`) ejecuta las comprobaciones de PRD §8.3 sin red: 53 entrenadores del roster con ≥ 1 variante (líderes ≥ 2: regional y Mundial; los 46 tienen 2), 6 Pokémon por variante, especies, movimientos (aprendibles), habilidades (de la especie) y objetos de Gen 5, nada prohibido por el PWT, ids únicos, nombres en español, IV por categoría, pool del jugador, calendario y sprites existentes. Imprime el informe de cobertura (sets `verified: false`, entrenadores sin variantes).
+
+`.github/workflows/ci.yml` (pull requests, push a ramas distintas de `main` y requisito previo del despliegue) ejecuta `npm ci`, `validate:data`, `npm test`, `npx tsc -b`, `npm run lint` y `npm run build`. No ejecuta Playwright (en local son ~7 min con 4 workers; en CI, con 2 workers y la instalación de navegadores, pasaría de 10 min y es sensible a la carga): se lanza en local antes de hacer merge.
 
 ## Construcción y despliegue
 
@@ -68,7 +76,7 @@ El build de producción no incluye los ganchos de prueba (ver [Ganchos de prueba
 
 ### GitHub Pages
 
-`.github/workflows/deploy.yml` construye y publica `dist/` en GitHub Pages en cada push a `main` (también se puede lanzar a mano desde la pestaña Actions). Como las rutas son relativas, funciona bajo `https://<usuario>.github.io/daily-pwt/` sin configurar `base`.
+`.github/workflows/deploy.yml` valida (job `validate`, el de `ci.yml`), construye y publica `dist/` en GitHub Pages en cada push a `main` (también se puede lanzar a mano desde la pestaña Actions). Como las rutas son relativas, funciona bajo `https://<usuario>.github.io/daily-pwt/` sin configurar `base`.
 
 Configuración única del repositorio: Settings > Pages > Source = **GitHub Actions**.
 
@@ -87,11 +95,12 @@ daily-pwt/
   src/
     core/                    Lógica pura del reto diario (sin React, DOM ni reloj): fechas, PRNG, equipos, LAUNCH_DATE
     battle/                  Motor de combate (Web Worker con @pkmn/sim), IA rival, traducción del registro
+    storage/                 Progreso guardado: interfaz GameStore y LocalStorageStore (oficial del día, decisiones para reanudar)
     ui/                      Componentes de Hoy, Combate y Resultado
     generated/              Datos precalculados (no editar a mano)
     i18n/es.ts               Textos de la interfaz
     config.ts                Reexporta LAUNCH_DATE y define MAX_TURNS (300)
-    testHooks.ts             Ganchos de prueba ?date=, ?seed=, ?ai=
+    testHooks.ts             Ganchos de prueba ?date=, ?seed=, ?ai=, ?trainer=, ?variant=
 ```
 
 ## Combate (cómo se juega)
@@ -100,20 +109,23 @@ daily-pwt/
 - **Cambiar** abre la pantalla de equipo (dos pantallas): 6 placas con icono, nombre, nivel, PS y estado. Al elegir un Pokémon salen Cambiar, Datos y Cancelar. **Datos** abre su pantalla de datos con tres páginas (Información, Habilidades y estadísticas, Movimientos): ← → cambian de página, ↑ ↓ de Pokémon y Escape vuelve; también hay botones « », pestañas, ▲ ▼, Volver y Cerrar. En el cambio forzado tras un KO no hay Cancelar ni Volver, pero Datos sigue disponible.
 - Al cambiar de Pokémon (el tuyo o el del rival) el entrenador entra, el rayo rojo retira al Pokémon y la Poké Ball lanza el nuevo; respeta la velocidad y `prefers-reduced-motion`.
 - Los mensajes salen uno a uno en la caja de texto y avanzan solos. Un toque en la caja, Enter o Espacio los adelanta; en la intro, la salta. **Velocidad** cicla x1, x2 y x4.
-- **Registro** abre el historial completo del combate (aparte, a demanda). **Salir** descarta la partida.
+- **Registro** abre el historial completo del combate (aparte, a demanda). **Salir** descarta la partida si es una práctica; si es el oficial, queda guardada y se reanuda desde Hoy.
+- **Oficial y práctica** (PRD §4.3): en Hoy, «Combate oficial» y «Práctica». Solo hay un oficial por día del reto: queda registrado al empezarlo, salir o recargar lo reanuda en el mismo turno (sin intro) y rendirse es derrota; terminado, el botón queda deshabilitado con el resultado. Un oficial que empieza el día N y acaba pasada la medianoche cuenta para N. La práctica es ilimitada, no cuenta para nada y no se guarda. La etiqueta OFICIAL o PRÁCTICA se ve arriba a la derecha del combate.
+- **Datos locales** (DEC-43): el progreso vive en `localStorage`, clave `daily-pwt:v1` (un registro por día con rival, variante, resultado, turnos, supervivientes y horas, más las decisiones del combate en curso). Si el navegador no deja guardar, el sitio funciona igual y Hoy avisa de que no se recordará. Para empezar de cero: DevTools → Application → Local Storage → borrar `daily-pwt:v1` (y `daily-pwt:v1:corrupt` si existe), o `localStorage.removeItem('daily-pwt:v1')` en la consola. Borrarlos devuelve el oficial del día; hasta que haya «Borrar datos locales» en Ajustes (F3) es una operación manual.
 - Escala del lienzo: por debajo de x2 ocupa todo el ancho con escala fraccionaria (≈1,4 a 360 px, 1,5 a 400 px) y `image-rendering: pixelated`; desde x2 solo enteros (2 a 1280×800). Con `prefers-reduced-motion` la intro y los cambios no desplazan nada: solo fundidos.
 
 ## Configuración
 
 ### Lanzamiento (`LAUNCH_DATE`)
 
-- Archivo: `src/core/launch.ts` (`src/config.ts` lo reexporta). Valor actual: `2026-10-19` (apaño para que el 2026-10-21 toque Máximo; se fija en F2).
+- Archivo: `src/core/launch.ts` (`src/config.ts` lo reexporta). Valor actual: `2026-10-19` (provisional; la fija Jose al final de F2).
 - Efecto: fija el día `#1` del reto y, con él, el desplazamiento de la bolsa de entrenadores. Las fechas anteriores a `LAUNCH_DATE` muestran `#1`.
-- Cambiarlo altera el entrenador y el equipo de cada fecha. Solo debe hacerse en una fase que lo permita (ver [PENDIENTE.md](docs/PENDIENTE.md)).
+- Cambiarlo altera el entrenador, la variante y el equipo de cada fecha y los números `#N`. La secuencia de rivales solo depende del índice de día (los 53 se barajan juntos desde el día 0): con la fecha actual los días 2026-10-19 a 21 son Hiedra, Fredo y Antón (con los 6 de F1 fueron Plubio, Misty y Máximo) y Máximo toca el día `#39` (2026-11-26). Para fijarla: poner la fecha real de lanzamiento `D` en `src/core/launch.ts` (Máximo tocará `D + 38`), regenerar el snapshot y revisarlo (pasos siguientes). Efecto completo y opciones descartadas en [docs/F2-DATOS.md](docs/F2-DATOS.md), «Calendario».
+- Cambiar el roster (añadir o quitar entrenadores) rebaraja la bolsa igual que cambiar la fecha: regenerar el snapshot y avisar de que cambia lo ya publicado.
 
 Pasos al cambiarlo:
 
-1. Actualizar las referencias fijas al lanzamiento: `LAUNCH` en `src/test-utils/dates.ts` (fecha base de los tests que usan `dates()`), `D0` en `e2e/support.ts` y las expectativas `#N` de `e2e/` (p. ej. `#7` para 2026-10-25 en `e2e/build.spec.ts`).
+1. No hay que tocar fechas en los tests: `LAUNCH` (`src/test-utils/dates.ts`) y `LAUNCH_DATE` (`e2e/support.ts`) siguen a `src/core/launch.ts`, y los rivales se eligen por id (ver [Ganchos de prueba](#ganchos-de-prueba)). Solo el snapshot de referencia depende de la fecha.
 2. Regenerar el snapshot de referencia y revisarlo a mano antes de versionarlo:
    ```sh
    npx vitest run src/core/challenge.snapshot.test.ts -u
@@ -127,13 +139,17 @@ Solo existen en builds con `VITE_TEST_HOOKS=1`. En el build normal son ignorados
 
 | Parámetro | Valor | Efecto |
 |---|---|---|
-| `?date=` | `YYYY-MM-DD` (fecha local) | Fija el reto de esa fecha. Un valor con otro formato se ignora. |
+| `?date=` | `YYYY-MM-DD` (fecha local) | Fija el reto de esa fecha, y con él el día del oficial guardado. Un valor con otro formato se ignora. |
 | `?seed=` | 1–64 caracteres `[A-Za-z0-9_.:-]` | Semilla del primer combate de la sesión. Los siguientes usan `<seed>-<n>`. Sin el parámetro, la semilla es aleatoria. |
+| `?trainer=` | id de entrenador (`[a-z0-9-]`, p. ej. `brock`) | Fuerza ese rival sin pasar por la bolsa. La fecha (`?date=` o la del reloj) sigue aportando el número del reto y las semillas de variante y equipo del jugador. Un id que no existe da el error de datos de Hoy. |
+| `?variant=` | id de variante (p. ej. `brock-world-leaders`) | Fuerza la variante de equipo; solo vale junto a `?trainer=`. Sin él, la variante sale del PRNG de la fecha. |
 | `?ai=` | `trivial` | Sustituye la IA heurística del rival por una IA que elige el primer movimiento disponible. |
 
 ```sh
 VITE_TEST_HOOKS=1 npm run build
 ```
+
+Los tests eligen el escenario por id, no por fecha (DEC-35 en [ARQUITECTURA.md](docs/ARQUITECTURA.md)): en vitest, `challengeFor({ trainerId, variantId?, date }, data)` (`src/core/challenge.ts`); en Playwright, los escenarios de `e2e/support.ts` (`PLUBIO`, `MISTY`... con `scenarioQuery`), cuya fecha es un literal que solo siembra el equipo del jugador. Así añadir entrenadores o fijar `LAUNCH_DATE` no obliga a reajustar los tests; solo se regenera el snapshot del generador.
 
 ## Datos
 
@@ -143,11 +159,11 @@ VITE_TEST_HOOKS=1 npm run build
 - Cada entrenador tiene `variants`; cada variante tiene exactamente 6 sets (`team`) a Nv. 50 con `sourceTournament` y `sourceUrl`.
 - Los IV son fijos por categoría del rival: líderes 20, campeones 25, Rojo 30. El jugador lleva los mismos IV que el rival del día, EV 0 y naturaleza Seria. Los EV ausentes del rival se toman como 0 y se marcan.
 - `verified: true` indica que el set se ha cotejado con dos fuentes.
-- Se edita a mano. Los tests de validación comprueban forma, legalidad en Gen 5 y prohibiciones del PWT, pero no la exactitud frente al juego.
+- Los 53 entrenadores se generan con `npm run gen:pwt -- --write` (ver [docs/F2-DATOS.md](docs/F2-DATOS.md)); un nuevo `--write` sobrescribe el fichero. `rosterSchedule` tiene una única entrada con los 53 desde el día 0. Los tests y `npm run validate:data` comprueban forma, legalidad en Gen 5 y prohibiciones del PWT, pero no la exactitud frente al juego.
 
 ### Pool del jugador (`data/player-sets.json`)
 
-- Sets de los que se elige el equipo del jugador cada día: 1031 sets de 328 especies, de Smogon (Gen 5, individuales: Ubers, OU, UU, RU, NU, PU y ZU) y de los equipos de los rivales del PWT. De Smogon solo se toman objeto, habilidad y movimientos; EVs 0, naturaleza Seria, IV iguales a los del rival del día.
+- Sets de los que se elige el equipo del jugador cada día: 1568 sets de 329 especies, de Smogon (Gen 5, individuales: Ubers, OU, UU, RU, NU, PU y ZU) y de los equipos de los rivales del PWT. De Smogon solo se toman objeto, habilidad y movimientos; EVs 0, naturaleza Seria, IV iguales a los del rival del día.
 - Solo Pokémon totalmente evolucionados, sin legendarios, movimientos ni objetos prohibidos en el PWT (`src/core/pwt-rules.json`) y legales en Gen 5 según el validador de `@pkmn/sim`. Los descartados están en `data/smogon/discarded.json`. Tags: `source:smogon-<tier>` y `source:<idEntrenador>`.
 - Regla de alternativas de Smogon (varios movimientos u objetos por hueco): la primera opción de cada hueco; un set de Smogon da un único set (ver ARQUITECTURA DEC-31).
 - `data/smogon/` contiene los JSON descargados con `npm run gen:smogon` y su `manifest.json` (URL, fecha, SHA-256): `npm run gen:player-sets` es offline y determinista. `gen:player-sets` **sobrescribe** `data/player-sets.json`.
@@ -178,7 +194,7 @@ Traducciones manuales que prevalecen sobre las de PokeAPI.
 ### Sprites (`public/sprites/`)
 
 - Pokémon: sprites animados de Gen 5 de Pokémon Showdown (`gen5ani` para el frente, `gen5ani-back` para la espalda). Nombre de fichero: `<spriteId>.gif`.
-- Entrenadores: sprites de Negro 2 / Blanco 2 de WikiDex (`<Nombre>_N2B2.gif` y `<Nombre>_N2B2_mini.png`). Si el CDN de WikiDex no responde, se usa la copia de Internet Archive de la misma URL.
+- Entrenadores: sprites de Negro 2 / Blanco 2 de WikiDex (`<Nombre>_N2B2.gif` y `<Nombre>_N2B2_mini.png`). La URL del CDN sale de las páginas de WikiDex ya descargadas por `gen:pwt-raw` (`scripts/.cache/pwt/`) o, si falta, de su API (a veces responde 503). El fichero de Teniente Surge es `Lt._Surge_N2B2.gif`. Si el CDN no responde, se usa la copia de Internet Archive de la misma URL.
 - Datos generados nuevos: `npm run gen:sprite-boxes` (caja visible de cada GIF, en `src/generated/sprite-boxes.json`), `npm run gen:icon-index` (posición de cada especie en la hoja de iconos) y `npm run gen:descriptions` (descripciones de movimientos y habilidades en español, texto de Pokémon X/Y de PokeAPI; descarga y cachea los CSV en `scripts/.cache/`). Se regeneran en memoria en `src/data/generated.test.ts`.
 - `npm run gen:sprites` (`scripts/fetch-sprites.mjs`) descarga solo los ficheros que faltan o no tienen cabecera GIF/PNG válida. Requiere red, espera entre peticiones (lento) y termina con código de error si falta algún sprite.
 - Los sprites se versionan en el repositorio. La aplicación no los descarga en caliente.
@@ -192,7 +208,7 @@ Traducciones manuales que prevalecen sobre las de PokeAPI.
 npm test
 ```
 
-Vitest con dos proyectos: `node` (`src/**/*.test.ts`, `scripts/**/*.test.ts`) y `jsdom` (`src/**/*.test.tsx`, React Testing Library). Algunos tests de datos leen `scripts/.cache/`; sin esa carpeta hay que ejecutar `npm run gen:names` con red antes.
+Vitest con dos proyectos: `node` (`src/**/*.test.ts`, `scripts/**/*.test.ts`) y `jsdom` (`src/**/*.test.tsx`, React Testing Library). Las comparaciones de `names-es.json` y `descriptions-es.json` con su regeneración (`src/data/generated.test.ts`) necesitan `scripts/.cache/` (CSV de PokeAPI): sin esa carpeta (CI, clon limpio) se omiten con un aviso en la salida; para activarlas, `npm run gen:names` con red. `npm run validate:data` comprueba sin caché que cada nombre y descripción usados existen.
 
 Comprobación de tipos y lint:
 
@@ -208,12 +224,14 @@ npm run test:e2e:install   # solo la primera vez: chromium y webkit
 npm run test:e2e
 ```
 
+- `npm run test:e2e` lanza primero la batería principal (`--grep-invert @timing`, con workers en paralelo) y después `npm run test:e2e:timing` (`--grep @timing --workers=1`). Los casos `@timing` miden tiempos reales (E2E-21 carga con 4G y CPU x4, E2E-03 cambio de día con reloj simulado, E2E-47 a E2E-51 animaciones y descargas, E2E-56 oficial que cruza medianoche) y se vuelven inestables con la carga de otros workers; en serie son estables y no se relajan sus umbrales. Para ejecutarlos por separado: `npm run test:e2e:timing`.
+
 - Playwright compila y sirve dos builds con `vite preview` antes de los tests:
   - `dist-e2e/` con `VITE_TEST_HOOKS=1`, puerto 4391. La mayoría de los casos usa este build.
   - `dist-e2e-prod/` sin ganchos, puerto 4392. Lo usan los casos que verifican que los ganchos no existen en producción (E2E-17).
 - Puertos: variables `E2E_PORT` y `E2E_PORT_PROD`. Si el puerto está ocupado, la ejecución falla (no reutiliza servidores).
 - Proyectos: `chromium` y `webkit` (escritorio); `mobile-360` (Pixel 5 a 360×740, solo `mobile.spec.ts`). Firefox es opcional: `E2E_FIREFOX=1` tras `npx playwright install firefox`.
-- Duración: unos 7 minutos con 4 workers (medición de octubre de 2026). En CI (`CI=1`) se usan 2 workers.
+- Duración: unos 7 minutos con 4 workers (más el tramo `@timing` en serie) (medición de octubre de 2026). En CI (`CI=1`) se usan 2 workers.
 - Informes: `test-results/` (trazas de los fallos) y `playwright-report/`. Ver el informe con `npx playwright show-report`.
 
 Los directorios `dist-e2e/`, `dist-e2e-prod/`, `test-results/` y `playwright-report/` están en `.gitignore`.
@@ -255,6 +273,8 @@ Sin monetización.
 
 - [docs/PRD.md](docs/PRD.md): requisitos de producto, fases y criterios de aceptación.
 - [docs/REQUISITOS-F1.md](docs/REQUISITOS-F1.md): requisitos de la fase F1.
+- [docs/REQUISITOS-F2.md](docs/REQUISITOS-F2.md): requisitos de la fase F2.
+- [docs/F2-DATOS.md](docs/F2-DATOS.md): importación de los 53 entrenadores, calendario y anexo de nombres.
 - [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md): decisiones técnicas y contratos.
 - [docs/PLAN-PRUEBAS-F1.md](docs/PLAN-PRUEBAS-F1.md): casos de prueba de F1.
 - [docs/PENDIENTE.md](docs/PENDIENTE.md): trabajo para F2/F3, pendientes menores y cómo sustituir la fuente.

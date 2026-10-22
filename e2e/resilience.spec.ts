@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { TodayPage } from './pages/TodayPage'
-import { D0, collectProblems, startBattle } from './support'
+import { collectProblems, DEFAULT_SCENARIO, scenarioQuery, startBattle } from './support'
 
 const GIF_FRONT = '**/sprites/pokemon/front/*.gif'
 
@@ -10,25 +10,25 @@ test.describe('Fallos controlados', () => {
     await page.route('**/assets/index-*.js', async (route) => {
       const response = await route.fetch()
       const body = await response.text()
-      const broken = body.replace('dataVersion:`f1-1`', 'dataVersion:``')
+      const broken = body.replace(/dataVersion:`f\d+-\d+`/, 'dataVersion:``')
       corrupted = broken !== body
       await route.fulfill({ response, body: broken })
     })
-    await page.goto(`./?date=${D0}`)
+    await page.goto(`./?${scenarioQuery(DEFAULT_SCENARIO)}`)
     const alert = page.getByRole('alert')
     await expect(alert).toBeVisible()
     expect(corrupted, 'el test ha corrompido realmente los datos del bundle').toBe(true)
     await expect(alert).toContainText('No se han podido preparar los datos del reto de hoy')
     const text = (await page.locator('body').innerText()).trim()
-    expect(text, 'sin trazas ni ids técnicos').not.toMatch(/DataError|undefined|\bat \w+|dataVersion|f1-1/)
-    await expect(page.getByRole('button', { name: 'Combatir' }), 'sin botón de combate').toHaveCount(0)
+    expect(text, 'sin trazas ni ids técnicos').not.toMatch(/DataError|undefined|\bat \w+|dataVersion|f\d+-\d+/)
+    await expect(page.getByRole('button', { name: /^(Combate oficial|Práctica)/ }), 'sin botones de combate').toHaveCount(0)
     await expect(page.locator('footer'), 'la página sigue montada').toBeVisible()
   })
 
   test('E2E-14 fallo del worker: error en español con Volver a Hoy', async ({ page }) => {
     await page.route('**/assets/battle.worker-*.js', (route) => route.abort())
     const today = new TodayPage(page)
-    await today.goto(D0, 'seed=a&ai=trivial')
+    await today.goto(undefined, 'seed=a&ai=trivial')
     await today.chooseLead(0)
     await today.fightButton.click()
     const alert = page.getByRole('alert')
@@ -36,12 +36,12 @@ test.describe('Fallos controlados', () => {
     await expect(page.locator('body')).not.toContainText(/Error:|undefined/)
     await page.getByRole('button', { name: 'Volver a Hoy' }).click()
     await expect(today.challengeNumber, 'vuelve a Hoy').toBeVisible()
-    await expect(today.fightButton).toBeDisabled()
+    await expect(today.fightButton, 'un fallo del motor no gasta el oficial: se puede reanudar').toHaveText(/Reanudar/)
   })
 
   test('E2E-15 GIF abortado: caja con el nombre y mismas dimensiones', async ({ page }) => {
     const today = new TodayPage(page)
-    await today.goto(D0)
+    await today.goto()
     await page.waitForLoadState('networkidle')
     const normal = await page.locator('ul.rival-team img.sprite').first().boundingBox()
     expect(normal).not.toBeNull()
@@ -64,7 +64,7 @@ test.describe('Fallos controlados', () => {
 test.describe('Sprites pixelados', () => {
   test('E2E-16 image-rendering pixelated, escala entera y GIF animado', async ({ page, request }) => {
     const today = new TodayPage(page)
-    await today.goto(D0)
+    await today.goto()
     await page.waitForLoadState('networkidle')
 
     const sprites = await page.locator('img.sprite').evaluateAll((imgs) =>
@@ -90,7 +90,7 @@ test.describe('Sprites pixelados', () => {
   })
 
   test('E2E-16 en combate los sprites se escalan a múltiplos enteros del lienzo (que es entero desde x2)', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.waitForActionOrResult()
     const field = await page.getByTestId('field').boundingBox()
     const canvasScale = field!.width / 256
@@ -115,7 +115,7 @@ test.describe('Red y fuentes', () => {
     const urls: string[] = []
     page.on('request', (request) => urls.push(request.url()))
     const problems = collectProblems(page)
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.waitForActionOrResult()
     await page.waitForLoadState('networkidle')
 

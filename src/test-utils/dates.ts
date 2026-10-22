@@ -1,3 +1,5 @@
+import { LAUNCH_DATE } from '../core/launch'
+
 /** Suma días a 'YYYY-MM-DD' con Date.UTC (sin depender de la zona ni del horario de verano). */
 export function addDays(date: string, n: number): string {
   const [y, m, d] = date.split('-').map(Number)
@@ -7,10 +9,14 @@ export function addDays(date: string, n: number): string {
 
 export const range = (n: number): number[] => Array.from({ length: n }, (_, i) => i)
 
-export const LAUNCH = '2026-10-19'
+/** Día #1 del reto; los tests que cuentan días desde el lanzamiento lo siguen sin fijar su valor. */
+export const LAUNCH = LAUNCH_DATE
 export const dates = (n: number, from = LAUNCH): string[] => range(n).map((i) => addDays(from, i))
 
-/** Fechas de referencia del plan de pruebas (§0). */
+/**
+ * Fechas de referencia del plan de pruebas (§0). Literales a propósito: solo las usa el snapshot del generador,
+ * que es el único test ligado a fechas reales y a LAUNCH_DATE.
+ */
 export const REFERENCE_DATES = [
   '2026-10-18', // D-1
   '2026-10-19', // D0

@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 import type { MonView } from '../../battle/protocol'
 import { es } from '../../i18n/es'
 import { uiAsset } from './introAssets'
+import { HP_BAR_ANIMATION_MS } from '../../hooks/useBattle'
 import { useAnimatedValue } from './useAnimatedValue'
 
 type DataBoxProps = {
@@ -41,7 +42,6 @@ function Digits({ kind, value, className }: { kind: 'hp' | 'level'; value: numbe
  * Caja de datos de N2/B2: el cuadro es el ripeado y encima se pintan la barra, el nombre, el nivel y los PS.
  * Lo visible es decorativo (aria-hidden) y el texto accesible va aparte, así el lector de pantalla no oye los dígitos suelta a suelta.
  */
-const BAR_ANIMATION_MS = 700
 
 export function DataBox({ side, mon, name, testId, gender, speed = 1, reducedMotion = false }: DataBoxProps) {
   const targetPercent = Math.max(0, Math.min(100, mon.hpPercent))
@@ -50,7 +50,7 @@ export function DataBox({ side, mon, name, testId, gender, speed = 1, reducedMot
   const hasNumbers = isPlayer && mon.hp !== undefined && mon.maxHp !== undefined
   const hpText = hasNumbers ? es.battle.hpValues(mon.hp as number, mon.maxHp as number) : es.battle.percent(targetPercent)
   // Un único valor animado (PS del jugador; % del rival) del que derivan la barra y el número.
-  const animationOptions = { durationMs: BAR_ANIMATION_MS / speed, enabled: !reducedMotion, resetKey: mon.species }
+  const animationOptions = { durationMs: HP_BAR_ANIMATION_MS / speed, enabled: !reducedMotion, resetKey: mon.species }
   const animatedHp = useAnimatedValue(hasNumbers ? (mon.hp as number) : targetPercent, animationOptions)
   const animatedPercent = hasNumbers ? (mon.maxHp ? (100 * animatedHp) / (mon.maxHp as number) : 0) : animatedHp
   const percent = Math.max(0, Math.min(100, animatedPercent))

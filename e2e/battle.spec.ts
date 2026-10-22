@@ -1,17 +1,17 @@
 import { test, expect } from '@playwright/test'
 import { BattlePage } from './pages/BattlePage'
 import { TodayPage } from './pages/TodayPage'
-import { D0, FORBIDDEN_IN_LOG, REF_DATES, startBattle } from './support'
+import { FORBIDDEN_IN_LOG, MISTY, REF_SCENARIOS, startBattle } from './support'
 
 const SEEDS = ['a', 'b', 'c']
 
 test.describe('Partida completa contra la IA trivial', () => {
-  for (const date of REF_DATES) {
+  for (const scenario of REF_SCENARIOS) {
     for (const seed of SEEDS) {
-      test(`E2E-05 ${date} semilla ${seed}: llega a Resultado con registro en español`, async ({ page }) => {
+      test(`E2E-05 ${scenario.trainer} semilla ${seed}: llega a Resultado con registro en español`, async ({ page }) => {
         // Hay partidas de 60 turnos con intro y mensajes uno a uno: con 4 trabajadores en paralelo superan los 120 s por defecto.
         test.setTimeout(240_000)
-        const { battle } = await startBattle(page, { date, seed })
+        const { battle } = await startBattle(page, { scenario, seed })
         await battle.maxSpeed()
         await battle.playToResult()
 
@@ -26,7 +26,7 @@ test.describe('Partida completa contra la IA trivial', () => {
   }
 
   test('E2E-05 el registro es español, sin ids ni inglés', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.maxSpeed()
     // Se lee el registro durante el combate (el Resultado lo desmonta): se juega hasta que haya varios turnos.
     let lines: string[] = []
@@ -43,9 +43,10 @@ test.describe('Partida completa contra la IA trivial', () => {
   test('E2E-05 misma semilla y mismas decisiones: mismo resultado y registro', async ({ page }) => {
     // Dos partidas completas con intro y mensajes uno a uno; en webkit no caben en los 120 s por defecto.
     test.setTimeout(300_000)
+    // Las dos partidas son prácticas: el oficial solo se juega una vez por día (DEC-43) y el test trata del motor, no del guardado.
     const runs: { lines: string[]; outcome: unknown }[] = []
     for (let run = 0; run < 2; run += 1) {
-      const { battle } = await startBattle(page, { date: D0, seed: 'repeat' })
+      const { battle } = await startBattle(page, { seed: 'repeat', mode: 'practice' })
       await battle.maxSpeed()
       const lines: string[] = []
       for (;;) {
@@ -65,7 +66,7 @@ test.describe('Partida completa contra la IA trivial', () => {
 
 test.describe('Combate', () => {
   test('E2E-06 cambio voluntario y cambio forzado tras un KO', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.maxSpeed()
 
     // Voluntario: Cambiar abre la lista, se elige un sustituto y el rival sigue el turno.
@@ -104,7 +105,7 @@ test.describe('Combate', () => {
   })
 
   test('E2E-07 Rendirse: cancelar no cambia nada; confirmar es derrota; Volver a Hoy y Otro combate', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.maxSpeed()
     await battle.waitForActionOrResult()
     const introFirst = (await battle.logLines())[0]
@@ -137,8 +138,8 @@ test.describe('Combate', () => {
     await expect(new TodayPage(page).challengeNumber).toHaveText('#1')
   })
 
-  test('E2E-08 Salir del combate pide confirmación y descarta la partida', async ({ page }) => {
-    const { battle, today } = await startBattle(page, { date: D0, seed: 'a' })
+  test('E2E-08 Salir del combate pide confirmación; el oficial queda para reanudar y la práctica se descarta', async ({ page }) => {
+    const { battle, today } = await startBattle(page, { seed: 'a' })
     await battle.maxSpeed()
     await battle.waitForActionOrResult()
 
@@ -154,17 +155,18 @@ test.describe('Combate', () => {
     await expect(today.challengeNumber).toBeVisible()
     await expect(battle.root).toHaveCount(0)
     await expect(page.getByRole('heading', { level: 1, name: /Victoria|Derrota/ }), 'salir no genera resultado').toHaveCount(0)
-    await expect(today.fightButton, 'Hoy vuelve sin inicial elegido').toBeDisabled()
+    await expect(today.fightButton, 'salir no gasta otro intento: el oficial se puede reanudar').toHaveText(/Reanudar/)
+    await expect(today.practiceButton, 'Hoy vuelve sin inicial elegido').toBeDisabled()
 
     await today.chooseLead(0)
-    await today.fightButton.click()
+    await today.practiceButton.click()
     await battle.waitForActionOrResult()
     expect((await battle.logLines()).filter((l) => /^Turno/.test(l)), 'combate nuevo desde el turno 1').toEqual(['Turno 1'])
   })
 
   test('E2E-18 la táctil queda en espera durante animación y turno rival (sin botones); cinco clics = una decisión; «Turno N» no sale en pantalla', async ({ page }) => {
-    // 2026-10-20 (Misty): el primer turno no debilita a nadie; contra el rival de D0 hay cambio forzado y no habría «Turno 2».
-    const { battle } = await startBattle(page, { date: '2026-10-20', seed: 'a' })
+    // Misty: el primer turno no debilita a nadie; contra Plubio (escenario por defecto) hay cambio forzado y no habría «Turno 2».
+    const { battle } = await startBattle(page, { scenario: MISTY, seed: 'a' })
     await battle.waitForActionOrResult()
     expect((await battle.logLines()).filter((l) => /^Turno \d+$/.test(l))).toEqual(['Turno 1'])
 
@@ -181,7 +183,7 @@ test.describe('Combate', () => {
   })
 
   test('E2E-23 Mochila atenuada: explica en la caja de texto que en el PWT no se usan objetos', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.waitForActionOrResult()
     const bag = page.getByRole('button', { name: 'Mochila' })
     await expect(bag).toHaveAttribute('aria-disabled', 'true')
@@ -191,7 +193,7 @@ test.describe('Combate', () => {
   })
 
   test('E2E-24 el sprite del jugador asoma sobre la caja de mensajes (no queda tapado)', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     await battle.waitForActionOrResult()
     const sprite = await page.locator('.bt-mon-player .bt-sprite').boundingBox()
     const message = await page.locator('.bt-message').boundingBox()
@@ -200,15 +202,20 @@ test.describe('Combate', () => {
     expect(visibleAboveBox, 'al menos el 60 % del sprite sobre la caja').toBeGreaterThan(0.6)
   })
 
-  test('E2E-20 resultado mínimo: victoria y derrota', async ({ page }) => {
-    // 2026-10-20 (Misty): con el primer movimiento siempre, el jugador gana en ~25 decisiones; contra el rival de D0 pierde.
-    const { battle } = await startBattle(page, { date: '2026-10-20', seed: 'a' })
+  test('E2E-20 resultado mínimo: el combate jugado pinta su Resultado y la rendición da Derrota', async ({ page }) => {
+    // Con el primer movimiento siempre el desenlace depende del equipo del jugador, que sale del pool (cambia con el pool y con la fecha
+    // literal del escenario): se acepta victoria o derrota y se comprueba que cada una pinta su Resultado. La derrota se fuerza rindiéndose.
+    const { battle } = await startBattle(page, { scenario: MISTY, seed: 'a' })
     await battle.maxSpeed()
     await battle.playToResult()
-    const win = await battle.outcome()
-    expect(win.title).toBe('Victoria')
-    expect(win.lead).toBe('¡Has ganado el combate!')
-    expect(win.stats, 'victoria: turnos y Pokémon en pie, sin rivales debilitados').toHaveLength(2)
+    const played = await battle.outcome()
+    expect(['Victoria', 'Derrota']).toContain(played.title)
+    if (played.title === 'Victoria') {
+      expect(played.lead).toBe('¡Has ganado el combate!')
+      expect(played.stats, 'victoria: turnos y Pokémon en pie, sin rivales debilitados').toHaveLength(2)
+    } else {
+      expect(played.stats, 'derrota: turnos, en pie y rivales debilitados').toHaveLength(3)
+    }
 
     await page.getByRole('button', { name: 'Otro combate' }).click()
     await battle.root.waitFor()
@@ -224,7 +231,7 @@ test.describe('Combate', () => {
 
 test.describe('Animaciones de entrada', () => {
   test('E2E-46 cambio forzado: la pantalla de equipo se cierra al elegir y el nuevo Pokémon sale de su Poké Ball a la vista', async ({ page }) => {
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
+    const { battle } = await startBattle(page, { seed: 'a' })
     for (let guard = 0; guard < 60; guard += 1) {
       const state = await battle.waitForActionOrResult()
       expect(state).not.toBe('result')
@@ -241,41 +248,11 @@ test.describe('Animaciones de entrada', () => {
     await expect(field).not.toHaveAttribute('data-switch', /./)
     expect(await battle.waitForActionOrResult()).toBe('moves')
   })
-
-  test('E2E-47 intro: los dos entrenadores entran deslizándose desde fuera del lienzo (no aparecen de golpe)', async ({ page }) => {
-    await page.addInitScript(() => {
-      const samples: { rival: number; player: number; opacity: number }[] = []
-      ;(window as unknown as { __slide: typeof samples }).__slide = samples
-      const sample = () => {
-        const field = document.querySelector('[data-testid=field]')
-        if (field?.getAttribute('data-intro') === 'enter') {
-          const edge = field.getBoundingClientRect()
-          const rival = document.querySelector('.bt-trainer-rival')!.getBoundingClientRect()
-          const player = document.querySelector('.bt-trainer-player')!.getBoundingClientRect()
-          samples.push({ rival: rival.left - edge.right, player: edge.left - player.right, opacity: Math.min(+getComputedStyle(document.querySelector('.bt-trainer-rival')!).opacity, +getComputedStyle(document.querySelector('.bt-trainer-player')!).opacity) })
-        }
-        requestAnimationFrame(sample)
-      }
-      requestAnimationFrame(sample)
-    })
-    const { battle } = await startBattle(page, { date: D0, seed: 'a' })
-    await battle.root.waitFor()
-    await expect(page.getByTestId('field')).toHaveAttribute('data-intro', 'done', { timeout: 15000 })
-    const samples = await page.evaluate(() => (window as unknown as { __slide: { rival: number; player: number; opacity: number }[] }).__slide)
-    expect(samples.length, 'fotogramas durante la fase «enter» (500 ms)').toBeGreaterThan(5)
-    expect(Math.min(...samples.map((sample) => sample.opacity)), 'el entrenador se desliza opaco, sin fundido que lo oculte al principio').toBeGreaterThanOrEqual(0.99)
-    for (const side of ['rival', 'player'] as const) {
-      const offsets = samples.map((sample) => sample[side])
-      expect(offsets[0], `${side}: empieza fuera del lienzo`).toBeGreaterThanOrEqual(-2)
-      expect(offsets.at(-1), `${side}: termina dentro`).toBeLessThan(-40)
-      expect(offsets.filter((offset, index) => index > 0 && offset < offsets[index - 1] - 1).length, `${side}: avanza en muchos fotogramas, no de golpe`).toBeGreaterThanOrEqual(5)
-      expect(Math.max(...offsets.slice(1).map((offset, index) => Math.abs(offset - offsets[index]))), `${side}: ningún salto brusco`).toBeLessThan(70)
-    }
-  })
+  // E2E-47 (entrada deslizante de los entrenadores) vive en intro-slide.spec.ts
 })
 
 test.describe('PS del jugador animados', () => {
-  test('E2E-50 los PS numéricos bajan a la par de la barra: monótonos, sin saltar al valor final y con el PS exacto al terminar', async ({ page }) => {
+  test('E2E-50 los PS numéricos bajan a la par de la barra: monótonos, sin saltar al valor final y con el PS exacto al terminar @timing', async ({ page }) => {
     await page.addInitScript(() => {
       const frames: { hp: number; max: number; fill: number }[] = []
       ;(window as unknown as { __hp: typeof frames }).__hp = frames
@@ -291,7 +268,7 @@ test.describe('PS del jugador animados', () => {
       }
       requestAnimationFrame(sample)
     })
-    const { battle } = await startBattle(page, { date: '2026-10-20', seed: 'a' })
+    const { battle } = await startBattle(page, { scenario: MISTY, seed: 'a' })
     await battle.waitForActionOrResult()
     await battle.chooseFirstMove()
     await battle.waitForActionOrResult()

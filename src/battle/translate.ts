@@ -165,6 +165,40 @@ function translateSingleTurn(f: Fields, ctx: TranslateContext): string | null {
   return null
 }
 
+/**
+ * Objetos cuyo `-enditem` (sin etiquetas) va seguido de su propio `-boost [from] item:`: esa línea ya es el mensaje.
+ * DEC-36: la desaparición del objeto no se muestra cuando otra línea cuenta lo que ha hecho.
+ */
+const ITEMS_ANNOUNCED_BY_BOOST = new Set([
+  'absorbbulb', 'cellbattery', 'luminousmoss', 'snowball', 'adrenalineorb', 'roomservice', 'throatspray',
+  'weaknesspolicy', 'mirrorherb', 'blunderpolicy',
+])
+
+const SELF_USE_MESSAGES: Record<string, (mon: string, item: string) => string> = {
+  focussash: log.focusSashHeld,
+  whiteherb: log.whiteHerbRestored,
+  powerherb: log.powerHerbCharged,
+  airballoon: log.airBalloonPopped,
+}
+
+/**
+ * Solo se muestra el `-enditem` cuando es la única noticia: objeto quitado por otro (con `[from]`) o gastado sin
+ * otra línea que lo cuente. Se descartan `[eat]` (el efecto de la baya llega en la línea siguiente), `[silent]`
+ * (lo cuenta el `-item`/`-activate` de Ladrón, Truco, Antihurto...) y los objetos con `-boost [from] item:`.
+ */
+function translateEndItem(f: Fields, ctx: TranslateContext): string | null {
+  if (f.tags.has('eat') || f.tags.has('silent')) return null
+  const mon = monText(ctx, f.args[0])
+  const itemId = toId(f.args[1] ?? '')
+  const item = itemName(ctx, f.args[1])
+  if (f.tags.has('weaken')) return log.itemWeakenedHit(mon, item)
+  const source = f.tags.get('from')
+  if (source === 'gem') return log.gemBoosted(mon, item)
+  if (source) return log.itemLost(mon, item)
+  if (ITEMS_ANNOUNCED_BY_BOOST.has(itemId)) return null
+  return (SELF_USE_MESSAGES[itemId] ?? log.itemSpent)(mon, item)
+}
+
 function translateKnownLine(f: Fields, ctx: TranslateContext): string | null | undefined {
   const first = f.args[0]
   switch (f.type) {
@@ -243,11 +277,8 @@ function translateKnownLine(f: Fields, ctx: TranslateContext): string | null | u
       return log.abilityBlocks(monText(ctx, first), effectName(ctx, f.args[1]) ?? log.unknownAbility)
     case '-item':
       return log.itemObtained(monText(ctx, first), itemName(ctx, f.args[1]))
-    case '-enditem': {
-      const mon = monText(ctx, first)
-      const item = itemName(ctx, f.args[1])
-      return f.tags.has('eat') ? log.itemConsumed(mon, item) : log.itemLost(mon, item)
-    }
+    case '-enditem':
+      return translateEndItem(f, ctx)
     case 'cant':
       return translateCant(f, ctx)
     case '-mustrecharge':
