@@ -20,6 +20,8 @@ export type PartyMember = {
   hp: number
   maxHp: number
   hpPercent: number
+  /** Rival: sus PS solo se conocen en porcentaje (como en su caja de PS); `hp` es entonces el porcentaje y `maxHp` 100. */
+  hpPercentOnly: boolean
   status: string | null
   fainted: boolean
   active: boolean
@@ -103,6 +105,7 @@ export function partyMembers(request: BattleRequest | null, view: BattleView | n
         hp: condition.hp,
         maxHp,
         hpPercent: maxHp > 0 ? Math.round((100 * condition.hp) / maxHp) : 0,
+        hpPercentOnly: false,
         status: condition.status,
         fainted: condition.fainted,
         active: member.active,
@@ -120,6 +123,56 @@ export function partyMembers(request: BattleRequest | null, view: BattleView | n
     ]
   })
 }
+
+/**
+ * Equipo del rival para consultarlo (botón RIVAL; decisiones de Jose del 22/10/2026): los 6 en el orden del motor, con su set completo
+ * (Hoy ya lo enseña), PS en porcentaje y solo los PP máximos de cada movimiento (no cuántos ha gastado).
+ */
+export function rivalMembers(view: BattleView | null, data: GameData, team: readonly ResolvedSet[]): PartyMember[] {
+  return team.flatMap((set, index) => {
+    const species = data.dex.species[set.species]
+    if (!species) return []
+    const mon = view?.rival.team[index]
+    const fainted = mon?.fainted ?? false
+    const hpPercent = fainted ? 0 : mon?.hpPercent ?? 100
+    const natureEffects = natureEffect(set.nature)
+    return [
+      {
+        slot: index + 1,
+        speciesId: set.species,
+        spriteId: species.spriteId,
+        name: data.names.species[set.species] ?? set.nameEs ?? species.name,
+        level: set.level,
+        gender: set.gender ?? null,
+        hp: hpPercent,
+        maxHp: 100,
+        hpPercent,
+        hpPercentOnly: true,
+        status: fainted ? null : mon?.status ?? null,
+        fainted,
+        active: view?.rival.active === index,
+        canSendOut: false,
+        types: species.types.map((typeName) => ({ id: typeName, label: data.names.types[typeName] ?? typeName })),
+        itemName: data.names.items[set.item] ?? (set.item ? es.log.unknownItem : es.battle.summary.noItem),
+        abilityName: data.names.abilities[set.ability] ?? es.log.unknownAbility,
+        abilityId: set.ability,
+        natureName: (es.battle.summary.natures as Record<string, string>)[set.nature] ?? set.nature,
+        natureUp: natureEffects?.up ?? null,
+        natureDown: natureEffects?.down ?? null,
+        stats: calcStats(species.baseStats, set.ivs, set.evs, set.nature, set.level),
+        moves: set.moves.map((moveId) => {
+          const dexMove = data.dex.moves[moveId]
+          const fullPp = dexMove ? Math.floor((dexMove.pp * 8) / 5) : null
+          return { ...moveModel(moveId, data), pp: null, maxPp: fullPp, basePower: dexMove?.basePower ?? 0, category: dexMove?.category ?? null }
+        }),
+      },
+    ]
+  })
+}
+
+/** PS de un miembro como texto: «97/152» los propios; «64 %» los del rival. */
+export const memberHpText = (member: Pick<PartyMember, 'hp' | 'maxHp' | 'hpPercentOnly'>): string =>
+  member.hpPercentOnly ? es.battle.percent(member.hp) : es.battle.hpValues(member.hp, member.maxHp)
 
 /** Texto de estado de un miembro para lectores de pantalla y para el rótulo bajo el panel. */
 export function memberStateLabel(member: PartyMember): string {

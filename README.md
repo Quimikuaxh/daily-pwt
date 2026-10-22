@@ -105,7 +105,7 @@ daily-pwt/
 
 ## Combate (cómo se juega)
 
-- El combate sigue la pantalla de Pokémon Negro 2 / Blanco 2: arriba la batalla, abajo la pantalla táctil (Luchar, Cambiar, Rendirse; Mochila sale atenuada: en el PWT no hay objetos y al tocarla la caja de texto lo explica). Luchar abre los movimientos y Volver regresa al menú.
+- El combate sigue la pantalla de Pokémon Negro 2 / Blanco 2: arriba la batalla, abajo la pantalla táctil (Luchar, Cambiar, Rendirse y **Rival**: en el PWT no hay objetos, así que el hueco de la Mochila abre el equipo del rival para consultar sus Datos, con PS en porcentaje y solo los PP máximos). Luchar abre los movimientos y Volver regresa al menú.
 - **Cambiar** abre la pantalla de equipo (dos pantallas): 6 placas con icono, nombre, nivel, PS y estado. Al elegir un Pokémon salen Cambiar, Datos y Cancelar. **Datos** abre su pantalla de datos con tres páginas (Información, Habilidades y estadísticas, Movimientos): ← → cambian de página, ↑ ↓ de Pokémon y Escape vuelve; también hay botones « », pestañas, ▲ ▼, Volver y Cerrar. En el cambio forzado tras un KO no hay Cancelar ni Volver, pero Datos sigue disponible.
 - Al cambiar de Pokémon (el tuyo o el del rival) el entrenador entra, el rayo rojo retira al Pokémon y la Poké Ball lanza el nuevo; respeta la velocidad y `prefers-reduced-motion`.
 - Los mensajes salen uno a uno en la caja de texto y avanzan solos. Un toque en la caja, Enter o Espacio los adelanta; en la intro, la salta. **Velocidad** cicla x1, x2 y x4.

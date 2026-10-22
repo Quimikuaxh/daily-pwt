@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest'
 import { calcStats } from '../../../core/stats'
 import { es } from '../../../i18n/es'
 import iconIndex from '../../../generated/icon-index.json'
-import { partyMembers } from './partyModel'
+import { memberHpText, partyMembers, rivalMembers } from './partyModel'
 import { dexNumberText } from './summaryModel'
-import { realData, realRequest, realTeam, realView } from './partyFixtures'
+import { realChallenge, realData, realRequest, realTeam, realView } from './partyFixtures'
 
 // RF-70 / RF-71: los datos de la pantalla de equipo y de datos salen del ResolvedSet y del estado del combate, sin inventar nada.
 describe('partyMembers', () => {
@@ -98,5 +98,50 @@ describe('partyMembers', () => {
 
   it('sin request no hay miembros', () => {
     expect(partyMembers(null, null, realData, realTeam)).toEqual([])
+  })
+})
+
+// UT-68 · Equipo rival (botón RIVAL, decisiones de Jose del 22/10/2026).
+describe('rivalMembers', () => {
+  const rivalTeam = realChallenge.rivalTeam
+  const view = () => {
+    const base = realView()
+    return {
+      ...base,
+      rival: {
+        remaining: 5,
+        active: 1,
+        team: rivalTeam.map((set, index) => ({ species: set.species, hpPercent: index === 0 ? 0 : index === 1 ? 64 : 100, status: index === 2 ? 'par' : null, fainted: index === 0 })),
+      },
+    }
+  }
+
+  it('los 6 en el orden del equipo rival, con su set completo y estadísticas reales', () => {
+    const members = rivalMembers(view(), realData, rivalTeam)
+    expect(members.map((member) => member.speciesId)).toEqual(rivalTeam.map((set) => set.species))
+    members.forEach((member, index) => {
+      const set = rivalTeam[index]
+      expect(member.moves.map((move) => move.id)).toEqual(set.moves)
+      expect(member.abilityId).toBe(set.ability)
+      expect(member.stats).toEqual(calcStats(realData.dex.species[set.species].baseStats, set.ivs, set.evs, set.nature, set.level))
+      expect(member.canSendOut).toBe(false)
+    })
+  })
+
+  it('PS en porcentaje, debilitado y estado desde la vista; el activo, marcado', () => {
+    const [first, second, third] = rivalMembers(view(), realData, rivalTeam)
+    expect(first).toMatchObject({ fainted: true, hp: 0, hpPercentOnly: true })
+    expect(second).toMatchObject({ hp: 64, maxHp: 100, active: true })
+    expect(memberHpText(second)).toBe('64 %')
+    expect(third.status).toBe('par')
+  })
+
+  it('solo los PP máximos: no se revela cuántos ha gastado', () => {
+    for (const member of rivalMembers(view(), realData, rivalTeam)) {
+      for (const move of member.moves) {
+        expect(move.pp).toBeNull()
+        expect(move.maxPp).toBeGreaterThan(0)
+      }
+    }
   })
 })

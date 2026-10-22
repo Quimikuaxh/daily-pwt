@@ -13,7 +13,7 @@ import { RemainingIndicator } from './RemainingIndicator'
 import { TopScreen } from './TopScreen'
 import { PartyScreen } from './party/PartyScreen'
 import { PARTY_SCREEN_IMAGES, useImagesReady } from './preloadAssets'
-import { partyMembers } from './party/partyModel'
+import { partyMembers, rivalMembers } from './party/partyModel'
 import { TouchScreen, type TouchMode } from './TouchScreen'
 import { canChoose, hasOnlyForcedMove, isForcedSwitch, moveOptions, switchBlockedReason, switchOptions } from './battleModel'
 import { avatarForSeed } from './introAssets'
@@ -75,7 +75,6 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   const avatar = useMemo(() => avatarForSeed(battleSeed), [battleSeed])
   const [touchChoice, setTouchChoice] = useState({ request: null, mode: 'main' } as TouchChoice)
   const [dialog, setDialog] = useState(null as PendingDialog)
-  const [bagNoticeRequest, setBagNoticeRequest] = useState(null as BattleRequest | null)
   // Petición de cambio forzado ya contestada: la pantalla de equipo se cierra al elegir para que se vea el lanzamiento de la Poké Ball del nuevo Pokémon.
   const [answeredForcedRequest, setAnsweredForcedRequest] = useState(null as BattleRequest | null)
 
@@ -87,6 +86,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   const moves = moveOptions(menuRequest, data)
   const blockedReason = menuRequest === null ? null : switchBlockedReason(menuRequest, switchOptions(menuRequest, data.names))
   const members = useMemo(() => partyMembers(menuRequest, battle.view, data, playerTeam), [menuRequest, battle.view, data, playerTeam])
+  const rivals = useMemo(() => rivalMembers(battle.view, data, rivalTeam), [battle.view, data, rivalTeam])
   const touchMode: TouchMode = forcedSwitchPending ? 'switch' : touchChoice.request === menuRequest ? touchChoice.mode : 'main'
   const ended = battle.ended !== null
 
@@ -110,8 +110,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
 
   const activePlayerName = battle.view?.player.active == null ? null : speciesName(battle.view.player.team[battle.view.player.active].species, '')
   const prompt = canActNow && !forcedSwitch && battle.introPhase === 'done' && activePlayerName ? es.battle.whatWillDo(activePlayerName) : null
-  const bagNoticeShown = bagNoticeRequest !== null && bagNoticeRequest === menuRequest && touchMode === 'main' && canActNow
-  const message = bagNoticeShown ? es.battle.bagUnavailable : prompt ?? battle.message
+  const message = prompt ?? battle.message
 
   function chooseMove(slot: number) {
     choose({ type: 'move', slot })
@@ -123,8 +122,10 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
     choose({ type: 'switch', slot })
   }
 
-  const partyReady = useImagesReady(PARTY_SCREEN_IMAGES, touchMode === 'switch')
+  const partyReady = useImagesReady(PARTY_SCREEN_IMAGES, touchMode === 'switch' || touchMode === 'rival')
   const partyOpen = touchMode === 'switch' && partyReady && !battle.failed && members.length > 0
+  const rivalOpen = touchMode === 'rival' && partyReady && !battle.failed && rivals.length > 0
+  const closeToMain = () => setTouchChoice({ request: menuRequest, mode: 'main' })
 
   function confirmDialog() {
     const confirmed = dialog
@@ -169,10 +170,21 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                   forced={forcedSwitch}
                   enabled={canActNow}
                   onChoose={chooseSwitch}
-                  onClose={() => setTouchChoice({ request: menuRequest, mode: 'main' })}
+                  onClose={closeToMain}
                 />
               )}
-              <div className="bt-underlay" inert={partyOpen}>
+              {rivalOpen && (
+                <PartyScreen
+                  members={rivals}
+                  data={data}
+                  forced={false}
+                  enabled
+                  onChoose={() => {}}
+                  onClose={closeToMain}
+                  readOnly={{ prompt: es.battle.party.rivalPrompt(trainer.nameEs), label: es.battle.party.rivalLabel }}
+                />
+              )}
+              <div className="bt-underlay" inert={partyOpen || rivalOpen}>
                 <TopScreen view={battle.view} data={data} challenge={challenge} introPhase={battle.introPhase} switchAnim={battle.switchAnim} avatar={avatar} message={message} onAdvance={advance} speed={battle.speed} reducedMotion={reducedMotion} />
                 {battle.failed ? (
                   <section role="alert" className="bt-touch bt-error" style={{ height: SCREEN_HEIGHT }}>
@@ -189,7 +201,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                     onMode={(mode) => setTouchChoice({ request: menuRequest, mode })}
                     onChooseMove={chooseMove}
                     onForfeit={() => setDialog('forfeit')}
-                    onBag={() => setBagNoticeRequest(menuRequest)}
+                    onRival={() => setTouchChoice({ request: menuRequest, mode: 'rival' })}
                     weather={battle.view?.weather ?? null}
                     weatherTurns={battle.view?.weatherTurns ?? null}
                   />

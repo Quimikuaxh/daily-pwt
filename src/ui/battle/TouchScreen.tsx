@@ -25,7 +25,7 @@ function TouchBackground() {
   )
 }
 
-export type TouchMode = 'main' | 'moves' | 'switch'
+export type TouchMode = 'main' | 'moves' | 'switch' | 'rival'
 
 type TouchScreenProps = {
   mode: TouchMode
@@ -36,8 +36,8 @@ type TouchScreenProps = {
   onMode: (mode: TouchMode) => void
   onChooseMove: (slot: number) => void
   onForfeit: () => void
-  /** La Mochila no se puede usar en el PWT: solo avisa. */
-  onBag: () => void
+  /** El hueco de la Mochila (en el PWT no hay objetos) abre el equipo del rival para consultarlo. */
+  onRival: () => void
   /** Clima activo (id del simulador) o null, y los turnos que le quedan (null si es permanente). */
   weather?: string | null
   weatherTurns?: number | null
@@ -49,7 +49,6 @@ const weatherLabel = (weather: string): string => WEATHER_LABELS[weather] ?? es.
 /** Pantalla táctil (256x192): menú principal Luchar / Cambiar / Rendirse y movimientos. El equipo (Cambiar) es la pantalla de equipo, que ocupa las dos pantallas. */
 export function TouchScreen(props: TouchScreenProps) {
   const reasonId = useId()
-  const bagReasonId = useId()
   const fightRef = useRef(null as HTMLButtonElement | null)
   const wasActing = useRef(false)
   const { mode, canAct, switchBlockedReason } = props
@@ -90,10 +89,9 @@ export function TouchScreen(props: TouchScreenProps) {
             <span className="bt-fight-shape" aria-hidden="true" />
             <span className="bt-fight-label">{es.battle.fight}</span>
           </button>
-          <button type="button" className="bt-bag" aria-disabled="true" aria-describedby={bagReasonId} onClick={props.onBag}>
+          <button type="button" className="bt-bag bt-rival-team" aria-label={es.battle.rivalTeamAria} onClick={props.onRival}>
             <img src={uiAsset('touch/bag.png')} alt="" />
-            <span className="bt-plate-label">{es.battle.bag}</span>
-            <span id={bagReasonId} className="sr-only">{es.battle.bagUnavailable}</span>
+            <span className="bt-plate-label" aria-hidden="true">{es.battle.rivalTeam}</span>
           </button>
           <button
             type="button"

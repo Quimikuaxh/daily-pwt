@@ -7,7 +7,7 @@ import { speciesSprite } from '../../common/spriteUrls'
 import { TypeBadge } from '../../common/TypeBadge'
 import { useImagesLoadedIn } from '../preloadAssets'
 import { uiAsset } from '../../common/uiAssets'
-import type { PartyMember } from './partyModel'
+import { memberHpText, type PartyMember } from './partyModel'
 import { BANDS, infoLine, infoRow, moveDetailRow, statRow, topInBand, type Band } from './summaryLayout'
 import { abilityDescription, dexNumberText, frontSpriteSize, hpBar, moveDescription, natureEffectText, SKILL_STAT_KEYS } from './summaryModel'
 import './summary.css'
@@ -118,7 +118,7 @@ function InfoPage({ member }: { member: PartyMember }) {
       <Label x={17} band={BANDS.natureLabel}>{text.nature}</Label>
       <Value x={81} band={BANDS.natureValue} maxWidth={90}>{member.natureName}</Value>
       <Label x={17} band={BANDS.hpLabel}>{text.hp}</Label>
-      <Value x={81} band={BANDS.hpValue} maxWidth={90}>{es.battle.hpValues(member.hp, member.maxHp)}</Value>
+      <Value x={81} band={BANDS.hpValue} maxWidth={90}>{memberHpText(member)}</Value>
     </>
   )
 }
@@ -128,7 +128,7 @@ function SkillsPage({ member }: { member: PartyMember }) {
   return (
     <>
       <Label x={89} band={BANDS.hpRow}>{es.today.statNames.hp}</Label>
-      <Value x={186} band={BANDS.hpRow} right>{`${member.hp} / ${member.maxHp}`}</Value>
+      <Value x={186} band={BANDS.hpRow} right>{member.hpPercentOnly ? memberHpText(member) : `${member.hp} / ${member.maxHp}`}</Value>
       <HpBar member={member} {...SKILLS_HP_BAR} />
       {SKILL_STAT_KEYS.map((key, index) => {
         const tone = member.natureUp === key ? 'up' : member.natureDown === key ? 'down' : undefined
@@ -207,7 +207,7 @@ function MoveSlots({ member, page, moveIndex, onPick }: { member: PartyMember; p
               )}
               <span className="bt-sum-slot-name" data-size={sizeFor(move.name, 11, 15) === 'normal' ? undefined : sizeFor(move.name, 11, 15)}>{move.name}</span>
               <span className="bt-sum-slot-pp">{text.pp}</span>
-              <span className="bt-sum-slot-pp-value">{move.pp !== null && move.maxPp !== null ? es.battle.hpValues(move.pp, move.maxPp) : '--'}</span>
+              <span className="bt-sum-slot-pp-value">{move.pp !== null && move.maxPp !== null ? es.battle.hpValues(move.pp, move.maxPp) : move.maxPp ?? '--'}</span>
             </span>
           </button>
         )

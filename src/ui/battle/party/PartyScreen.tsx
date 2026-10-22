@@ -4,7 +4,7 @@ import { es } from '../../../i18n/es'
 import { uiAsset } from '../../common/uiAssets'
 import { MemberIcon } from './MemberIcon'
 import { PANEL, PANEL_BANDS, PANEL_HEIGHT, PANEL_WIDTH, panelPosition } from './layout'
-import { memberStateLabel, type PartyMember } from './partyModel'
+import { memberHpText, memberStateLabel, type PartyMember } from './partyModel'
 import { hpBar } from './hpBar'
 import './party.css'
 import { SUMMARY_SCREEN_IMAGES, useImagesLoadedIn, useImagesReady } from '../preloadAssets'
@@ -21,6 +21,8 @@ type PartyScreenProps = {
   enabled: boolean
   onChoose: (slot: number) => void
   onClose: () => void
+  /** Equipo del rival (botón RIVAL): solo se consulta, sin Cambiar; `prompt` sustituye al texto de la barra de abajo. */
+  readOnly?: { prompt: string; label: string }
 }
 
 type PanelColor = 'blue' | 'red' | 'green'
@@ -55,7 +57,7 @@ function PartyPanel({ member, index, selected, enabled, onSelect, buttonRef }: {
       disabled={!enabled}
       aria-haspopup="true"
       aria-expanded={selected}
-      aria-label={es.battle.party.memberAria(member.name, es.battle.party.levelShort(member.level), es.battle.hpValues(member.hp, member.maxHp), stateLabel)}
+      aria-label={es.battle.party.memberAria(member.name, es.battle.party.levelShort(member.level), memberHpText(member), stateLabel)}
       onClick={onSelect}
     >
       <span className="bt-party-visual" aria-hidden="true">
@@ -70,7 +72,7 @@ function PartyPanel({ member, index, selected, enabled, onSelect, buttonRef }: {
         <span className="bt-party-level" data-band={PANEL_BANDS.bottomRow.join(',')} data-size="normal" style={{ left: PANEL.level.x, top: PANEL.level.y }}>{es.battle.party.levelShort(member.level)}</span>
         {' '}
         {statusIcon && <img className="bt-party-status" style={{ left: PANEL.status.x, top: PANEL.status.y }} src={uiAsset(`status/${statusIcon}.png`)} alt="" />}
-        <span className="bt-party-hp" data-band={PANEL_BANDS.bottomRow.join(',')} data-size="normal" style={{ right: PANEL_WIDTH - 106, top: PANEL.hp.y }}>{es.battle.hpValues(member.hp, member.maxHp)}</span>
+        <span className="bt-party-hp" data-band={PANEL_BANDS.bottomRow.join(',')} data-size="normal" style={{ right: PANEL_WIDTH - 106, top: PANEL.hp.y }}>{memberHpText(member)}</span>
       </span>
     </button>
   )
@@ -86,12 +88,13 @@ function whyCannotSwitch(member: PartyMember): string | null {
  * Pantalla de equipo del combate (ocupa las dos pantallas, como en el juego): cuadrícula de 6 placas y, al elegir una,
  * el menú Cambiar / Datos / Cancelar. Datos abre la pantalla de datos del Pokémon. En el cambio forzado no hay Cancelar ni Volver.
  */
-export function PartyScreen({ members, data, forced, enabled, onChoose, onClose }: PartyScreenProps) {
+export function PartyScreen({ members, data, forced, enabled, onChoose, onClose, readOnly }: PartyScreenProps) {
   const [selectedSlot, setSelectedSlot] = useState(null as number | null)
   const [summarySlot, setSummarySlot] = useState(null as number | null)
   const summaryReady = useImagesReady(SUMMARY_SCREEN_IMAGES, summarySlot !== null)
   const panelRefs = useRef(new Map<number, HTMLButtonElement>())
   const switchRef = useRef(null as HTMLButtonElement | null)
+  const summaryRef = useRef(null as HTMLButtonElement | null)
   const summaryReturnSlot = useRef(null as number | null)
   const rootRef = useRef(null as HTMLElement | null)
   const imagesLoaded = useImagesLoadedIn(rootRef)
@@ -100,7 +103,7 @@ export function PartyScreen({ members, data, forced, enabled, onChoose, onClose 
   const blockedReason = selected ? whyCannotSwitch(selected) : null
 
   useEffect(() => {
-    if (selected) switchRef.current?.focus()
+    if (selected) (switchRef.current ?? summaryRef.current)?.focus()
   }, [selected])
 
   useEffect(() => {
@@ -136,13 +139,13 @@ export function PartyScreen({ members, data, forced, enabled, onChoose, onClose 
     setSummarySlot(slot)
   }
 
-  const prompt = forced ? es.battle.party.forcedPrompt : es.battle.party.choosePrompt
+  const prompt = readOnly ? readOnly.prompt : forced ? es.battle.party.forcedPrompt : es.battle.party.choosePrompt
 
   return (
-    <section ref={rootRef} className="bt-party" aria-label={es.battle.party.label} data-loading={imagesLoaded ? undefined : 'true'}>
+    <section ref={rootRef} className="bt-party" aria-label={readOnly?.label ?? es.battle.party.label} data-loading={imagesLoaded ? undefined : 'true'}>
       <img className="bt-party-bg bt-party-bg-top" src={uiAsset('party/bg-top.png')} alt="" />
       <img className="bt-party-bg bt-party-bg-bottom" src={uiAsset('party/bg-bottom.png')} alt="" />
-      <div className="bt-party-members" role="group" aria-label={es.battle.party.label} inert={selected !== null || summarySlot !== null ? true : undefined}>
+      <div className="bt-party-members" role="group" aria-label={readOnly?.label ?? es.battle.party.label} inert={selected !== null || summarySlot !== null ? true : undefined}>
         {members.map((member, index) => (
           <PartyPanel
             key={member.slot}
@@ -176,20 +179,22 @@ export function PartyScreen({ members, data, forced, enabled, onChoose, onClose 
         <div className="bt-party-options-layer">
           <button type="button" className="bt-party-dismiss" tabIndex={-1} aria-hidden="true" onClick={closeOptions} />
           <div className="bt-party-options" role="group" aria-label={es.battle.party.optionsLabel(selected.name)}>
-            <button
-              ref={switchRef}
-              type="button"
-              className="bt-party-option"
-              aria-disabled={blockedReason !== null || !enabled ? 'true' : undefined}
-              aria-describedby={blockedReason ? 'bt-party-reason' : undefined}
-              onClick={() => {
-                if (blockedReason !== null || !enabled) return
-                onChoose(selected.slot)
-              }}
-            >
-              {es.battle.party.options.switch}
-            </button>
-            <button type="button" className="bt-party-option" onClick={() => openSummary(selected.slot)}>
+            {!readOnly && (
+              <button
+                ref={switchRef}
+                type="button"
+                className="bt-party-option"
+                aria-disabled={blockedReason !== null || !enabled ? 'true' : undefined}
+                aria-describedby={blockedReason ? 'bt-party-reason' : undefined}
+                onClick={() => {
+                  if (blockedReason !== null || !enabled) return
+                  onChoose(selected.slot)
+                }}
+              >
+                {es.battle.party.options.switch}
+              </button>
+            )}
+            <button ref={summaryRef} type="button" className="bt-party-option" onClick={() => openSummary(selected.slot)}>
               {es.battle.party.options.summary}
             </button>
             {!forced && (
@@ -197,7 +202,7 @@ export function PartyScreen({ members, data, forced, enabled, onChoose, onClose 
                 {es.battle.party.options.cancel}
               </button>
             )}
-            {blockedReason && <span id="bt-party-reason" className="sr-only">{blockedReason}</span>}
+            {blockedReason && !readOnly && <span id="bt-party-reason" className="sr-only">{blockedReason}</span>}
           </div>
         </div>
       )}

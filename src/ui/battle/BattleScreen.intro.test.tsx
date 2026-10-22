@@ -259,15 +259,22 @@ describe('pantalla táctil (menú principal, movimientos y Volver)', () => {
     expect(['luchar', 'cambiar', 'rendirse'].map((name) => screen.queryByRole('button', { name: new RegExp(name, 'i') }) !== null)).toEqual([true, true, true])
   })
 
-  it('Mochila está atenuada (aria-disabled) con el motivo accesible, y al tocarla la caja de texto lo explica', async () => {
+  // Cambio de requisito (decisión de Jose, 22/10/2026): el hueco de la Mochila abre el equipo rival, solo para consultarlo.
+  it('RIVAL abre el equipo del rival: sus 6 Pokémon, PS en porcentaje, solo Datos y Cancelar (sin Cambiar) y se cierra', async () => {
     const { user } = await turn()
-    const bag = screen.getByRole('button', { name: /mochila/i })
-    expect(bag).toHaveAttribute('aria-disabled', 'true')
-    expect(bag).toHaveAccessibleDescription('En el PWT no se pueden usar objetos.')
-    await user.click(bag)
-    expect(screen.getByRole('status')).toHaveTextContent('En el PWT no se pueden usar objetos.')
-    await user.click(fight())
-    expect(screen.getByRole('status')).not.toHaveTextContent('En el PWT no se pueden usar objetos.')
+    await user.click(screen.getByRole('button', { name: 'Ver el equipo rival' }))
+    const team = await screen.findByRole('region', { name: 'Equipo rival' })
+    const panels = within(team).getAllByRole('button').filter((button) => button.classList.contains('bt-party-panel'))
+    expect(panels).toHaveLength(6)
+    expect(panels[0]).toHaveAccessibleName(/%/)
+    await user.click(panels[1])
+    const options = screen.getByRole('group', { name: /Qué hacer con/ })
+    expect(within(options).queryByRole('button', { name: 'Cambiar' })).toBeNull()
+    expect(within(options).getByRole('button', { name: 'Datos' })).toBeInTheDocument()
+    await user.click(within(options).getByRole('button', { name: 'Cancelar' }))
+    await user.keyboard('{Escape}')
+    expect(screen.queryByRole('region', { name: 'Equipo rival' })).toBeNull()
+    expect(fight()).toBeEnabled()
   })
 
   it('Luchar abre los movimientos y Volver regresa al menú principal', async () => {

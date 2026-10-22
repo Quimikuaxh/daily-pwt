@@ -969,14 +969,15 @@
   animation: bt-show 1ms calc((800ms - var(--switch-skip)) / var(--speed, 1)) both;
 }
 
+/* `forwards`, no `both`: la bola no existe hasta el lanzamiento (con `both` esperaba ya en la mano, en el centro, mientras el entrenador aún entraba). */
 [data-switch^="rival"] .bt-ball-rival {
-  animation: bt-ball-rival-flight calc(350ms / var(--speed, 1)) calc((800ms - var(--switch-skip)) / var(--speed, 1)) linear both,
-    bt-ball-frames calc(350ms / var(--speed, 1)) calc((800ms - var(--switch-skip)) / var(--speed, 1)) linear both;
+  animation: bt-ball-rival-flight calc(350ms / var(--speed, 1)) calc((800ms - var(--switch-skip)) / var(--speed, 1)) linear forwards,
+    bt-ball-frames calc(350ms / var(--speed, 1)) calc((800ms - var(--switch-skip)) / var(--speed, 1)) linear forwards;
 }
 
 [data-switch^="player"] .bt-ball-player {
-  animation: bt-ball-player-flight calc(350ms / var(--speed, 1)) calc((800ms - var(--switch-skip)) / var(--speed, 1)) linear both,
-    bt-ball-frames calc(350ms / var(--speed, 1)) calc((800ms - var(--switch-skip)) / var(--speed, 1)) linear both;
+  animation: bt-ball-player-flight calc(350ms / var(--speed, 1)) calc((800ms - var(--switch-skip)) / var(--speed, 1)) linear forwards,
+    bt-ball-frames calc(350ms / var(--speed, 1)) calc((800ms - var(--switch-skip)) / var(--speed, 1)) linear forwards;
 }
 
 [data-switch^="rival"] .bt-shine-rival {
@@ -1312,16 +1313,7 @@
   height: 60px;
 }
 
-/* Como el juego cuando no se permite usar objetos: atenuado, pero se puede tocar para ver el motivo. */
-.bt-bag[aria-disabled="true"] {
-  cursor: not-allowed;
-}
-
-.bt-bag[aria-disabled="true"] img,
-.bt-bag[aria-disabled="true"] .bt-plate-label {
-  opacity: 0.55;
-}
-
+/* El hueco de la Mochila abre el equipo rival (en el PWT no hay objetos). */
 .bt-bag .bt-plate-label {
   top: 29px;
   color: #f8b838;

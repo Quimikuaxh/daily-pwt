@@ -51,7 +51,7 @@ Golpe supereficaz, poco eficaz y neutro al atacar, y los básicos del combate (l
 Propias, en pixel art a la escala del lienzo. No usar las de Pokémon Showdown ni intentar extraer las de la ROM. Definir antes el alcance: animación por movimiento para los más usados en el roster y en el pool del jugador, y una genérica por tipo y categoría (físico, especial, estado) para el resto.
 
 ## Pantalla de equipo y de datos
-- **Mochila = equipo rival (idea de Jose, 22/10/2026, a futuro):** el botón Mochila (hoy solo avisa de que en el PWT no hay objetos) abrirá una pantalla igual a la del equipo propio con el equipo del rival, solo para consultar Datos (sin Cambiar). Por decidir: qué se enseña de los Pokémon rivales aún no vistos (los sets ya son públicos en Hoy) y si se ven sus PS exactos o en porcentaje.
+- **Mochila = equipo rival:** hecho (rama `feature/mochila-rival`, DEC-52).
 - **Fondo de la pantalla de datos de N2/B2:** el actual es el de Negro/Blanco (limpiado por script de capturas de Bulbagarden Archives). Si aparece un rip limpio de N2/B2, sustituir las URLs de `battle/summary/*` en `data/ui-assets.json` y quitar sus `cleanups`.
 - **Descripciones en español:** son de Pokémon X/Y (primera edición con español en PokeAPI), no de N2/B2.
 - **Rival:** sin animación de lanzamiento ripeada (los sprites de entrenador son estáticos); la bola sale de una mano estimada a partir del tamaño de su sprite.

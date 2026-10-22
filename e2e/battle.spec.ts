@@ -174,7 +174,7 @@ test.describe('Combate', () => {
     await battle.fightButton.click()
     await battle.enabledMoves.first().evaluate((button) => { for (let i = 0; i < 5; i += 1) (button as HTMLButtonElement).click() })
     await expect(battle.moves, 'sin menú de movimientos al elegir').toHaveCount(0)
-    await expect(page.getByRole('button', { name: /^(Luchar|Rendirse|Mochila|Cambiar)$/ }), 'táctil en espera: sin botones').toHaveCount(0)
+    await expect(page.getByRole('button', { name: /^(Luchar|Rendirse|Ver el equipo rival|Cambiar)$/ }), 'táctil en espera: sin botones').toHaveCount(0)
     await expect(page.getByTestId('field').getByRole('status'), 'el mensaje en pantalla no es «Turno N»').not.toHaveText(/^Turno \d+$/)
 
     await battle.maxSpeed()
@@ -182,14 +182,29 @@ test.describe('Combate', () => {
     expect((await battle.logLines()).filter((l) => /^Turno \d+$/.test(l)), 'un solo turno procesado').toEqual(['Turno 1', 'Turno 2'])
   })
 
-  test('E2E-23 Mochila atenuada: explica en la caja de texto que en el PWT no se usan objetos', async ({ page }) => {
+  // Cambio de requisito (22/10/2026): el hueco de la Mochila es RIVAL y abre el equipo rival solo para consultarlo.
+  test('E2E-23 RIVAL abre el equipo del rival: 6 placas con PS en %, Datos sí, Cambiar no, y Datos enseña solo los PP máximos', async ({ page }) => {
     const { battle } = await startBattle(page, { seed: 'a' })
     await battle.waitForActionOrResult()
-    const bag = page.getByRole('button', { name: 'Mochila' })
-    await expect(bag).toHaveAttribute('aria-disabled', 'true')
-    await expect(bag).toHaveAccessibleDescription('En el PWT no se pueden usar objetos.')
-    await bag.click({ force: true })
-    await expect(page.getByRole('status')).toContainText('En el PWT no se pueden usar objetos.')
+    await page.getByRole('button', { name: 'Ver el equipo rival' }).click()
+    const team = page.getByRole('region', { name: 'Equipo rival' })
+    await expect(team.locator('.bt-party-panel')).toHaveCount(6)
+    await expect(team.locator('.bt-party-hp').first()).toHaveText(/^\d+ %$/)
+    await team.locator('.bt-party-panel').nth(1).click()
+    const options = page.getByRole('group', { name: /Qué hacer con/ })
+    await expect(options.getByRole('button', { name: 'Cambiar', exact: true })).toHaveCount(0)
+    await options.getByRole('button', { name: 'Datos' }).click()
+    await page.locator('.bt-summary:not([data-loading])').waitFor()
+    await page.keyboard.press('ArrowRight')
+    await page.keyboard.press('ArrowRight')
+    await expect(page.locator('.bt-sum-slot-pp-value').first()).toHaveText(/^\d+$/)
+    // Escape: de Movimientos a Habilidades, cierra Datos y cierra el equipo rival.
+    await page.keyboard.press('Escape')
+    await page.keyboard.press('Escape')
+    await expect(page.locator('.bt-summary')).toHaveCount(0)
+    await page.keyboard.press('Escape')
+    await expect(team).toHaveCount(0)
+    await expect(battle.fightButton).toBeEnabled()
   })
 
   test('E2E-24 el sprite del jugador asoma sobre la caja de mensajes (no queda tapado)', async ({ page }) => {
