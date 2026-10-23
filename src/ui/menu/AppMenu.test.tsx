@@ -31,6 +31,8 @@ describe('AppMenu', () => {
     }
     expect(dialog).toHaveTextContent(/WikiDex/)
     expect(dialog).toHaveTextContent(/Pokémon Showdown/)
+    expect(dialog).toHaveTextContent(/Super Music Collection/)
+    expect(dialog).toHaveTextContent(/The Sounds Resource/)
     expect(dialog).toHaveTextContent(/no oficial/)
   })
 
