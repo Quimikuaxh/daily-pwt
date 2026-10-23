@@ -9,6 +9,9 @@ import type { BattleMode } from '../../storage/gameStore'
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
 import { es } from '../../i18n/es'
 import { Dialog } from '../common/Dialog'
+import { Modal } from '../common/Modal'
+import { SoundSettings } from '../menu/SoundSettings'
+import type { Settings } from '../../storage/settings'
 import { HistoryDialog } from './HistoryDialog'
 import { RemainingIndicator } from './RemainingIndicator'
 import { TopScreen } from './TopScreen'
@@ -40,18 +43,21 @@ type BattleScreenProps = {
   onSpeedChange?: BattleParams['onSpeedChange']
   /** Animaciones de movimientos (Ajustes, por defecto activadas). */
   moveAnimations?: boolean
+  /** Sonido y volumen de Ajustes; con `onSoundChange`, el botón Sonido los cambia desde el combate (decisión de Jose, DEC-57). */
+  sound?: Pick<Settings, 'sound' | 'volume'>
+  onSoundChange?: (sound: Pick<Settings, 'sound' | 'volume'>) => void
   onFinish: (ended: EngineEnd) => void
   onExit: () => void
 }
 
-type PendingDialog = 'forfeit' | 'exit' | 'history' | null
+type PendingDialog = 'forfeit' | 'exit' | 'history' | 'sound' | null
 
 /** Menú elegido para una petición concreta: cuando llega otra petición (turno nuevo) se vuelve al menú principal. */
 type TouchChoice = { request: BattleRequest | null; mode: TouchMode }
 
 const isInteractive = (target: EventTarget | null): boolean => target instanceof HTMLElement && target.closest('button, a, input, select, textarea, [role="dialog"]') !== null
 
-export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', replay, onDecision, onSettled, onReplayFailed, initialSpeed, onSpeedChange, moveAnimations = true, onFinish, onExit }: BattleScreenProps) {
+export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', replay, onDecision, onSettled, onReplayFailed, initialSpeed, onSpeedChange, moveAnimations = true, sound, onSoundChange, onFinish, onExit }: BattleScreenProps) {
   const { trainer, rivalTeam, playerTeam } = challenge
   const speciesName = (speciesId: string, fallback: string): string => data.names.species[speciesId] ?? fallback
 
@@ -162,6 +168,9 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
               <button type="button" className="btn btn-secondary btn-small" onClick={() => setDialog('exit')}>{es.battle.exit}</button>
               <button type="button" className="btn btn-secondary btn-small" onClick={() => setDialog('history')}>{es.battle.history}</button>
               <button type="button" className="btn btn-secondary btn-small" onClick={battle.cycleSpeed}>{es.battle.speed(battle.speed)}</button>
+              {sound && onSoundChange && (
+                <button type="button" className="btn btn-secondary btn-small" onClick={() => setDialog('sound')}>{es.battle.sound}</button>
+              )}
             </div>
             {battle.view && (
               <div className="bt-counters">
@@ -229,6 +238,11 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
       </main>
 
       {dialog === 'history' && <HistoryDialog lines={battle.log} onClose={() => setDialog(null)} />}
+      {dialog === 'sound' && sound && onSoundChange && (
+        <Modal title={es.settings.soundTitle} onClose={() => setDialog(null)} className="settings-dialog">
+          <SoundSettings settings={sound} onChange={onSoundChange} showTitle={false} />
+        </Modal>
+      )}
       {dialog === 'forfeit' && (
         <Dialog
           title={es.battle.forfeitTitle}

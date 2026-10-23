@@ -108,10 +108,12 @@
   flex-wrap: nowrap;
 }
 
+/* Cuatro botones (Salir, Registro, Velocidad, Sonido): cada uno crece desde su texto, así «Velocidad: x1» cabe en una línea a 360 px. */
 .bt-layout[data-layout="stacked"] .bt-chrome-buttons .btn {
-  flex: 1 1 0;
+  flex: 1 1 auto;
   min-width: 0;
   padding-inline: 0.25rem;
+  white-space: nowrap;
 }
 
 .bt-layout[data-layout="stacked"] .bt-stage {

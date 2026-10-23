@@ -3,6 +3,7 @@ import { es } from '../../i18n/es'
 import { SPEEDS, type Settings } from '../../storage/settings'
 import { Dialog } from '../common/Dialog'
 import { Modal } from '../common/Modal'
+import { SoundSettings } from './SoundSettings'
 
 const text = es.settings
 
@@ -56,36 +57,7 @@ export function SettingsDialog({ settings, onChange, onClearData, onClose }: Set
           </div>
           <p className="settings-hint">{text.animationsHint}</p>
         </section>
-        <section className="settings-section">
-          <h3 className="help-title" id="settings-sound">{text.soundTitle}</h3>
-          <div className="settings-options" role="group" aria-labelledby="settings-sound">
-            {[true, false].map((on) => (
-              <button
-                key={String(on)}
-                type="button"
-                className="btn btn-small settings-option"
-                aria-pressed={settings.sound === on}
-                onClick={() => onChange({ ...settings, sound: on })}
-              >
-                {on ? text.soundOn : text.soundOff}
-              </button>
-            ))}
-          </div>
-          <label className="settings-volume">
-            <span>{text.volumeLabel}</span>
-            <input
-              type="range"
-              min={0}
-              max={100}
-              step={5}
-              value={settings.volume}
-              aria-valuetext={text.volumeValue(settings.volume)}
-              onChange={(event) => onChange({ ...settings, volume: Number(event.currentTarget.value) })}
-            />
-            <output className="settings-volume-value" aria-hidden="true">{text.volumeValue(settings.volume)}</output>
-          </label>
-          <p className="settings-hint">{text.soundHint}</p>
-        </section>
+        <SoundSettings settings={settings} onChange={(sound) => onChange({ ...settings, ...sound })} />
         <section className="settings-section">
           <h3 className="help-title">{text.dataTitle}</h3>
           <p className="settings-hint">{text.dataHint}</p>

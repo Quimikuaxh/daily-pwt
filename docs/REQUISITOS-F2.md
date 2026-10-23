@@ -34,7 +34,7 @@ F2 carga el roster completo (PRD §7.3, 53 entrenadores), valida los datos en CI
 - RF-88 Música solo en combate: el tema del rival (`gym-<región>` los líderes, `champion-<región>` los campeones; Mirto, el de Iris) en bucle desde el iris de la intro, o desde el principio al reanudar un oficial; se funde al terminar el combate o al salir. La velocidad del combate no la cambia.
 - RF-89 En Resultado, «Winning in the PWT!» una vez si se gana; nada si se pierde o se rinde. Se corta al salir de Resultado.
 - RF-90 Efectos: golpe neutro, supereficaz o poco eficaz al bajar la barra por un movimiento (uno por golpe en los múltiples), lanzar y abrir la Poké Ball en la intro y en los cambios, y debilitado al caer el sprite. Nunca al reproducir un combate guardado.
-- RF-91 Ajustes: Activado/Silenciado y un deslizador de volumen (0-100 %, 70 por defecto) que valen para música y efectos, se aplican al instante y se guardan en el navegador; los ajustes guardados antes de existir se leen activado y a 70.
+- RF-91 Ajustes: Activado/Silenciado y un deslizador de volumen (0-100 %, 70 por defecto) que valen para música y efectos, se aplican al instante y se guardan en el navegador; también se cambian en combate con el botón Sonido (decisión de Jose); los ajustes guardados antes de existir se leen activado y a 70.
 - RF-92 Cada combate descarga solo la pista de su rival y los 6 efectos, nunca toda la música; sin Web Audio, o si falla una descarga, el juego sigue mudo y sin errores.
 
 ## 2. Criterios de aceptación (PRD §14)

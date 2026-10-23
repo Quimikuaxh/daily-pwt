@@ -22,6 +22,21 @@ test.describe('Sonido', () => {
     await expect(page.getByRole('slider', { name: 'Volumen' })).toHaveAttribute('aria-valuetext', '40 %')
   })
 
+  test('E2E-70 en combate, el botón Sonido silencia y cambia el volumen, y se guarda en Ajustes', async ({ page }) => {
+    const { battle } = await startBattle(page, { seed: 'a', mode: 'practice' })
+    await battle.waitForActionOrResult()
+    await page.getByRole('button', { name: 'Sonido', exact: true }).click()
+    const dialog = page.getByRole('dialog', { name: 'Sonido' })
+    await dialog.getByRole('button', { name: 'Silenciado' }).click()
+    await dialog.getByRole('slider', { name: 'Volumen' }).focus()
+    await page.keyboard.press('ArrowRight')
+    await expect(dialog.getByRole('slider', { name: 'Volumen' })).toHaveAttribute('aria-valuetext', '75 %')
+    await page.keyboard.press('Escape')
+    await expect(dialog).toHaveCount(0)
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('daily-pwt:settings') ?? '{}'))
+    expect(saved).toMatchObject({ sound: false, volume: 75 })
+  })
+
   test('E2E-69 sin tocar la página no se descarga audio ni hay errores; el combate pide solo la pista de su rival y los 6 efectos', async ({ page }) => {
     const errors: string[] = []
     page.on('pageerror', (error) => errors.push(error.message))

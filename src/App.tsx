@@ -141,6 +141,8 @@ export default function App({ data, createClient, store: injectedStore }: AppPro
         onReplayFailed={official ? () => abandonUnresumable(store.getDay(date) as DayRecord, 'replayFailed') : undefined}
         initialSpeed={settings.speed}
         moveAnimations={settings.moveAnimations}
+        sound={settings}
+        onSoundChange={(sound) => changeSettings({ ...settings, ...sound })}
         onSpeedChange={(speed) => changeSettings({ ...settings, speed })}
         onFinish={(ended) => {
           // El oficial cuenta para el día del reto con el que empezó, aunque termine pasada la medianoche (PRD §4.3).

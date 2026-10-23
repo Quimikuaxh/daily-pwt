@@ -232,6 +232,7 @@ export const es = {
     rivalTeam: 'Rival',
     rivalTeamAria: 'Ver el equipo rival',
     history: 'Registro',
+    sound: 'Sonido',
     historyClose: 'Cerrar',
     historyTitle: 'Registro del combate',
     historyEmpty: 'Todavía no ha pasado nada.',
