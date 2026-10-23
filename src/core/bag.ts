@@ -47,8 +47,21 @@ function locate(dayIndex: number, schedule: readonly RosterScheduleEntry[]): Cyc
   }
 }
 
-// Las órdenes dependen del ciclo anterior (regla 12), así que se memorizan por calendario.
-const orderCache = new WeakMap<readonly RosterScheduleEntry[], Map<number, string[]>>()
+// Las órdenes dependen del ciclo anterior (regla 12), así que se memorizan por calendario y apertura.
+const orderCache = new WeakMap<readonly RosterScheduleEntry[], Map<string, Map<number, string[]>>>()
+
+/**
+ * Apertura del lanzamiento: en el primer ciclo, el entrenador `opening[k]` pasa al día `k` y quien estaba ahí ocupa su hueco. Cada
+ * entrenador sigue saliendo una vez por ciclo y los demás ciclos no cambian (salvo que la regla 12 los toque). Un id que no esté en el
+ * ciclo se ignora (datos de prueba con otro roster); `challenge.test.ts` comprueba que los de `LAUNCH_OPENING` existen en los datos reales.
+ */
+function applyOpening(order: string[], opening: readonly string[]): void {
+  opening.forEach((id, position) => {
+    const from = order.indexOf(id)
+    if (from < 0 || position >= order.length) return
+    ;[order[position], order[from]] = [order[from], order[position]]
+  })
+}
 
 function rosterOfGlobalCycle(schedule: readonly RosterScheduleEntry[], globalCycle: number): string[] {
   let entryIndex = 0
@@ -56,15 +69,22 @@ function rosterOfGlobalCycle(schedule: readonly RosterScheduleEntry[], globalCyc
   return schedule[entryIndex].trainerIds
 }
 
-function cycleOrder(schedule: readonly RosterScheduleEntry[], globalCycle: number): string[] {
-  let cache = orderCache.get(schedule)
+function cycleOrder(schedule: readonly RosterScheduleEntry[], globalCycle: number, opening: readonly string[]): string[] {
+  let byOpening = orderCache.get(schedule)
+  if (!byOpening) {
+    byOpening = new Map()
+    orderCache.set(schedule, byOpening)
+  }
+  const openingKey = opening.join(',')
+  let cache = byOpening.get(openingKey)
   if (!cache) {
     cache = new Map()
-    orderCache.set(schedule, cache)
+    byOpening.set(openingKey, cache)
   }
   for (let cycle = 0; cycle <= globalCycle; cycle++) {
     if (cache.has(cycle)) continue
     const order = new Prng(BAG_SEED_PREFIX + cycle).shuffle([...rosterOfGlobalCycle(schedule, cycle)].sort())
+    if (cycle === 0) applyOpening(order, opening)
     const previous = cycle > 0 ? cache.get(cycle - 1)! : undefined
     if (previous && order.length > 1 && order[0] === previous[previous.length - 1]) {
       ;[order[0], order[1]] = [order[1], order[0]]
@@ -74,9 +94,12 @@ function cycleOrder(schedule: readonly RosterScheduleEntry[], globalCycle: numbe
   return cache.get(globalCycle)!
 }
 
-/** Id del entrenador del día `dayIndex` (bolsa barajada, DEC-03). Los días negativos cuentan como el día 0. */
-export function rivalForDay(dayIndex: number, schedule: readonly RosterScheduleEntry[]): string {
+/**
+ * Id del entrenador del día `dayIndex` (bolsa barajada, DEC-03), con la apertura del lanzamiento en el primer ciclo. Los días negativos
+ * cuentan como el día 0.
+ */
+export function rivalForDay(dayIndex: number, schedule: readonly RosterScheduleEntry[], opening: readonly string[] = []): string {
   validateSchedule(schedule)
   const { positionInCycle, globalCycle } = locate(Math.max(0, dayIndex), schedule)
-  return cycleOrder(schedule, globalCycle)[positionInCycle]
+  return cycleOrder(schedule, globalCycle, opening)[positionInCycle]
 }

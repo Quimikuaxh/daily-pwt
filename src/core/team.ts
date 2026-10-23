@@ -8,7 +8,7 @@ import type { DexData, PokemonSet, ResolvedSet, StatsTable } from './types'
 export const MAX_TEAM_ATTEMPTS = 1000
 const MIN_DISTINCT_TYPES = 4
 /** RF-13b: suma de estadísticas base de los 6 Pokémon. */
-export const MIN_BASE_STAT_TOTAL = 2860
+export const MIN_BASE_STAT_TOTAL = 3060
 /** RF-13c: cada tipo de un Pokémon de doble tipo cuenta. */
 export const MAX_POKEMON_PER_TYPE = 2
 
@@ -86,7 +86,7 @@ export type PlayerTeamResult = { team: ResolvedSet[]; attempts: number; relaxed:
  * Elige 6 sets del pool con el PRNG dado (RF-10..16). Cada intento baraja de nuevo el pool con el mismo flujo.
  * Los IV del jugador son los del rival del día (20 contra líderes, 25 contra campeones, 30 contra Rojo; RF-16), EV 0 y naturaleza Seria.
  * Orden de relajación tras MAX_TEAM_ATTEMPTS intentos sin equipo que cumpla todo: primero RF-14 (movimiento ×2); si no hay equipo ni así,
- * también RF-13b (suma de estadísticas base ≥ 2860; `relaxed` es `['RF-13b']` si el equipo sí tiene movimiento ×2, o `['RF-14', 'RF-13b']`). RF-12, RF-13 y RF-13c (máximo 2 Pokémon por tipo)
+ * también RF-13b (suma de estadísticas base ≥ 3060; `relaxed` es `['RF-13b']` si el equipo sí tiene movimiento ×2, o `['RF-14', 'RF-13b']`). RF-12, RF-13 y RF-13c (máximo 2 Pokémon por tipo)
  * no se relajan nunca: sin solución, error de datos.
  */
 export function buildPlayerTeam(pool: readonly PokemonSet[], rivalTeam: readonly ResolvedSet[], rng: Prng, dex: DexData): PlayerTeamResult {

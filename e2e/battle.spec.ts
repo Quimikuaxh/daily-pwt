@@ -165,8 +165,9 @@ test.describe('Combate', () => {
   })
 
   test('E2E-18 la táctil queda en espera durante animación y turno rival (sin botones); cinco clics = una decisión; «Turno N» no sale en pantalla', async ({ page }) => {
-    // Misty: el primer turno no debilita a nadie; contra Plubio (escenario por defecto) hay cambio forzado y no habría «Turno 2».
-    const { battle } = await startBattle(page, { scenario: MISTY, seed: 'a' })
+    // Misty con la semilla b: el primer turno no debilita a nadie; contra Plubio (escenario por defecto) hay cambio forzado y no habría
+    // «Turno 2». La semilla a dejó de servir con el mínimo de 3060 (23/10/2026): el equipo del jugador cambió y ya hay un KO en el turno 1.
+    const { battle } = await startBattle(page, { scenario: MISTY, seed: 'b' })
     await battle.waitForActionOrResult()
     expect((await battle.logLines()).filter((l) => /^Turno \d+$/.test(l))).toEqual(['Turno 1'])
 

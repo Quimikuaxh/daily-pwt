@@ -62,7 +62,7 @@ Lo marcado **[F1, se amplía]** es alcance de F1 y crece en F2/F3. Lo marcado **
 - RF-11c Los PS numéricos del jugador bajan o suben a la par de la barra (lineal, 700 ms a x1, enteros en cada fotograma, sin animación con `prefers-reduced-motion`) y terminan en el PS exacto (DEC-34).
 - RF-12 Sin Pokémon evolucionables, especies repetidas, objetos repetidos ni legendarios prohibidos (lista de PRD §6).
 - RF-13 Al menos 4 tipos distintos.
-- RF-13b (F2, PRD §0) Suma de estadísticas base (`baseStats` del dex, como el total de las tarjetas de Hoy) de los 6 Pokémon >= 2860 (antes 2800; cambio de requisito del 23/10/2026).
+- RF-13b (F2, PRD §0) Suma de estadísticas base (`baseStats` del dex, como el total de las tarjetas de Hoy) de los 6 Pokémon >= 3060 (antes 2800 y luego 2860; cambios de requisito del 23/10/2026).
 - RF-13c (F2, PRD §0) Como máximo 2 Pokémon (antes 3; cambio de requisito del 23/10/2026) que compartan un mismo tipo (cada tipo de un Pokémon de doble tipo cuenta).
 - RF-14 Al menos un movimiento de daño ×2 o más por tipos contra algún Pokémon del rival.
 - RF-15 Si la tirada incumple, se repite con el siguiente valor del PRNG (regla 7 de §2).
@@ -113,6 +113,7 @@ Lo marcado **[F1, se amplía]** es alcance de F1 y crece en F2/F3. Lo marcado **
 - RF-72 Cambio de Pokémon animado, voluntario o forzado, del jugador y del rival: el entrenador entra, el rayo rojo retira al Pokémon (si seguía en pie) y lanza la bola del nuevo, con la secuencia de la intro (1,6 s a x1; 1,1 s si el anterior estaba debilitado). Respeta la velocidad x1/x2/x4; con `prefers-reduced-motion` solo fundidos. Los mensajes siguen saliendo uno a uno y el historial no cambia; los controles se abren al terminar. Arrastrar (Remolino, Rugido) no lleva bola.
 - RF-73 Mochila: botón atenuado (`aria-disabled`) con motivo accesible; al tocarlo la caja de texto dice que en el PWT no se pueden usar objetos.
 - RF-77 La caja de mensajes del combate no muestra «Turno N» (sigue en el historial/Registro).
+- RF-77b Al elegir movimiento o cambio, la caja de mensajes queda vacía hasta el primer mensaje del turno; no vuelve a salir el último mensaje del turno anterior (23/10/2026, a petición de Jose).
 - RF-78 Al elegir un movimiento o un cambio, la pantalla táctil vuelve al fondo de espera, sin botones ni menú de movimientos, mientras se resuelve el turno (un solo `choose` por turno, RF-52/CMP-16); al empezar el turno siguiente reaparece el menú principal (Luchar, Mochila, Rendirse, Pokémon) y el foco vuelve a Luchar si se había perdido. El mensaje actual sigue siendo una región `aria-live`.
 - RF-75 Barra superior del combate: en escritorio Salir, Registro y Velocidad van en una sola línea (los contadores debajo); en móvil, en una fila sobre el lienzo.
 - RF-76 Intro y cambios: el entrenador (rival o protagonista) termina de salir antes de que aparezca su Pokémon y no queda ningún entrenador visible al acabar.

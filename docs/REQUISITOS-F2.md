@@ -12,7 +12,7 @@ F2 carga el roster completo (PRD §7.3, 53 entrenadores), valida los datos en CI
 | §6 Pool del jugador | Sets de los 53 rivales (varios por especie) más Smogon | Hecho |
 | §8.3 Validación | `npm run validate:data` y `.github/workflows/ci.yml` | Hecho |
 | §10.7 Sprites | Entrenadores N2/B2 (`.gif` y `-mini.png`) y especies nuevas (frente y espalda) | Hecho (ver README) |
-| §6 Equilibrio del equipo del jugador | Suma de estadísticas base >= 2860 y <= 2 Pokémon por tipo (antes 2800 y 3; cambio del 23/10/2026) (RF-13b, RF-13c; DEC-41) | Hecho |
+| §6 Equilibrio del equipo del jugador | Suma de estadísticas base >= 3060 y <= 2 Pokémon por tipo (antes 2800 y 3; cambios del 23/10/2026) (RF-13b, RF-13c; DEC-41) | Hecho |
 | §4.3 y §11 Oficial único, reanudar y práctica (adelantado de F3, PRD §0) | RF-79 a RF-86; DEC-43 | Hecho |
 | §9 IA / §14.19 Calibración | Calibrar la dificultad con el roster completo | Pendiente (PENDIENTE.md) |
 | Calendario | Fijar `LAUNCH_DATE` | Pendiente: la fija Jose al final |

@@ -71,8 +71,9 @@ test.describe('Menú de equipo y datos', () => {
   })
 
   test('E2E-26 los PS actuales y los PP de Datos reflejan el combate', async ({ page }) => {
-    // Misty: tras el primer movimiento no hay cambio forzado (contra Plubio, el escenario por defecto, sí, y la pantalla de equipo ya estaría abierta).
-    const { battle } = await startBattle(page, { scenario: MISTY, seed: 'a' })
+    // Misty con la semilla b: tras el primer movimiento no hay cambio forzado (contra Plubio, el escenario por defecto, sí, y la pantalla de
+    // equipo ya estaría abierta). La semilla a dejó de servir con el mínimo de 3060 (23/10/2026): ahora hay un KO en el turno 1.
+    const { battle } = await startBattle(page, { scenario: MISTY, seed: 'b' })
     await battle.maxSpeed()
     await battle.waitForActionOrResult()
     await battle.chooseFirstMove()

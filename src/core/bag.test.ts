@@ -112,3 +112,30 @@ describe('rosterSchedule (UT-13)', () => {
     expect(() => rivalForDay(0, single([]))).toThrow()
   })
 })
+
+// UT-82 · Apertura del lanzamiento (LAUNCH_OPENING, 23/10/2026): en el primer ciclo, los de la apertura van primero intercambiados con
+// quien ocupaba su hueco; cada uno sigue saliendo una vez por ciclo y los demás ciclos no cambian.
+describe('rivalForDay: apertura del lanzamiento', () => {
+  const ROSTER8 = ['brock', 'misty', 'camila', 'plubio', 'rojo', 'lance', 'cintia', 'mirto']
+  const s = single(ROSTER8)
+
+  it('el primero de la apertura sale el día 0 e intercambia su hueco con quien estaba', () => {
+    const plain = days(8, s)
+    const opened = Array.from({ length: 8 }, (_, i) => rivalForDay(i, s, ['rojo']))
+    const from = plain.indexOf('rojo')
+    expect(opened[0]).toBe('rojo')
+    expect(opened[from]).toBe(plain[0])
+    expect(opened.filter((_, i) => i !== 0 && i !== from)).toEqual(plain.filter((_, i) => i !== 0 && i !== from))
+  })
+
+  it('el resto de ciclos no cambia y cada ciclo sigue siendo una permutación', () => {
+    const plain = days(32, s)
+    const opened = Array.from({ length: 32 }, (_, i) => rivalForDay(i, s, ['rojo']))
+    expect([...opened.slice(0, 8)].sort()).toEqual([...ROSTER8].sort())
+    expect(opened.slice(8)).toEqual(plain.slice(8))
+  })
+
+  it('un entrenador de la apertura que no está en el calendario se ignora (datos de prueba con otro roster)', () => {
+    expect(days(8, s)).toEqual(Array.from({ length: 8 }, (_, i) => rivalForDay(i, s, ['nadie'])))
+  })
+})

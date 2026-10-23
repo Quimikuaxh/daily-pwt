@@ -263,3 +263,16 @@ describe('challengeFor: rival y variante por id (DEC-17)', () => {
     expect(() => challengeFor({ trainerId: trainerAlpha.id, variantId: 'nada', date: LAUNCH_DATE }, data)).toThrow(DataError)
   })
 })
+
+// UT-82 · Apertura del lanzamiento con los datos reales (Jose, 23/10/2026): el #1 es Misty y todos los de la apertura están en el calendario.
+describe('apertura del lanzamiento (LAUNCH_OPENING)', () => {
+  it('con los datos reales, los primeros días son los de la apertura, en orden, y existen en el primer ciclo', async () => {
+    const { loadGameData } = await import('../data/gameData')
+    const { LAUNCH_OPENING } = await import('./launch')
+    const real = loadGameData()
+    expect(LAUNCH_OPENING[0]).toBe('misty')
+    for (const id of LAUNCH_OPENING) expect(real.rosterSchedule[0].trainerIds, id).toContain(id)
+    expect(LAUNCH_OPENING.map((_, i) => getDailyChallenge(addDays(LAUNCH_DATE, i), real).trainer.id)).toEqual([...LAUNCH_OPENING])
+    expect(getDailyChallenge(addDays(LAUNCH_DATE, -1), real).trainer.id).toBe('misty')
+  })
+})

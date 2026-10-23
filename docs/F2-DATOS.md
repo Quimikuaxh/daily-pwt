@@ -33,7 +33,7 @@ La bolsa (`src/core/bag.ts`) baraja por ciclos con la semilla `daily-pwt:v1:bag:
 
 | i · fecha | 6 (F1) | 53 | | i · fecha | 6 (F1) | 53 |
 |---|---|---|---|---|---|---|
-| 0 · 2026-10-24 | Plubio | Hiedra | | 7 · 2026-10-31 | Misty | Alana |
+| 0 · 2026-10-24 | Plubio | Misty (apertura; la bolsa daba Hiedra, que pasa al 45) | | 7 · 2026-10-31 | Misty | Alana |
 | 1 · 2026-10-25 | Misty | Fredo | | 8 · 2026-11-01 | Máximo | Junco |
 | 2 · 2026-10-26 | Máximo | Antón | | 9 · 2026-11-02 | Plubio | Sachiko |
 | 3 · 2026-10-27 | Camila | Mirto | | 10 · 2026-11-03 | | Brock |
@@ -42,7 +42,7 @@ La bolsa (`src/core/bag.ts`) baraja por ciclos con la semilla `daily-pwt:v1:bag:
 | 6 · 2026-10-30 | Rojo | Inverna | | 13 · 2026-11-06 | | Blaine |
 
 - Máximo toca con 53 en el índice 38 (#39, 2026-12-01). Los demás de F1: Plubio 5, Brock 10, Rojo 17, Camila 33, Misty 45.
-- **Fecha fijada (Jose, 23/10/2026): `LAUNCH_DATE = 2026-10-24`**, el día siguiente, para que nadie haya visto ningún reto antes del #1 (Hiedra). *Descartado:* un lanzamiento en el pasado (p. ej. 2026-09-13 para que Máximo tocara antes), porque el contador empezaría en un `#N` alto.
+- **Fecha fijada (Jose, 23/10/2026): `LAUNCH_DATE = 2026-10-24`**, el día siguiente, con apertura contra Misty (`LAUNCH_OPENING`, Hiedra pasa al índice 45), para que nadie haya visto ningún reto antes del #1 (Misty). *Descartado:* un lanzamiento en el pasado (p. ej. 2026-09-13 para que Máximo tocara antes), porque el contador empezaría en un `#N` alto.
 - **Descartadas:** mantener los 6 de F1 delante y añadir los 47 en una entrada posterior (los 6 se repetirían antes de ver a los demás; las entradas exigen frontera de ciclo, `fromDayIndex` múltiplo de 6); una entrada de calendario nueva en fecha futura (deja a los ya publicados intactos pero deja dos entradas y un corte arbitrario); restricciones por región (sesgo que complica la bolsa sin pedirlo el PRD).
 - Cambiar `LAUNCH_DATE` desplaza todo: el rival, la variante y el equipo de cada fecha respecto a lo publicado y los números `#N`. Cambiar el roster rebaraja también.
 

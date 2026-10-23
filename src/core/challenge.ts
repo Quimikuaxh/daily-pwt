@@ -1,5 +1,5 @@
 import { NEUTRAL_NATURE } from './constants'
-import { LAUNCH_DATE } from './launch'
+import { LAUNCH_DATE, LAUNCH_OPENING } from './launch'
 import { rivalForDay } from './bag'
 import { challengeNumber, dayIndex } from './date'
 import { DataError } from './errors'
@@ -61,7 +61,7 @@ export type ChallengeSelection = { date: string; trainerId: string; variantId?: 
 /** Reto del día: función pura de (fecha, datos). El entrenador sale de la bolsa (DEC-03). */
 export function getDailyChallenge(date: string, data: GameData): Challenge {
   const dayNumber = Math.max(0, dayIndex(date, LAUNCH_DATE))
-  return challengeFor({ date, trainerId: rivalForDay(dayNumber, data.rosterSchedule) }, data)
+  return challengeFor({ date, trainerId: rivalForDay(dayNumber, data.rosterSchedule, LAUNCH_OPENING) }, data)
 }
 
 /**

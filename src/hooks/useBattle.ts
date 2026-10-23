@@ -363,6 +363,9 @@ export function useBattle(params: BattleParams): BattleController {
     if (lockedRef.current) return
     lockedRef.current = true
     setLocked(true)
+    // Al elegir, la caja se vacía hasta el primer mensaje del turno (como en el juego): sin esto, al quitarse «¿Qué hará X?» volvía a
+    // asomar el último mensaje del turno anterior hasta que llegaba la respuesta del motor.
+    setMessage(null)
     paramsRef.current.onDecision?.({ type: choice.type, slot: choice.slot })
     paramsRef.current.client.choose(choice)
   }, [])

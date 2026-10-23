@@ -143,6 +143,13 @@ describe('menú de movimientos (CMP-12)', () => {
     expect(client.choose).toHaveBeenCalledWith({ type: 'move', slot: 3 })
   })
 
+  it('al elegir, la caja de mensajes se vacía hasta el turno nuevo: no vuelve a asomar el último mensaje del turno anterior', async () => {
+    const { user } = await readyFight()
+    expect(screen.getByRole('status').textContent).toMatch(/Qué hará/)
+    await user.click(moveBtn('stoneedge'))
+    expect(screen.getByRole('status').textContent?.trim()).toBe('')
+  })
+
   it('pulsar un movimiento desactivado no llama a client.choose', async () => {
     const moves = [MOVES[0], MOVES[1], mkPsMove('stoneedge', 'Stone Edge', { disabled: true }), MOVES[3]]
     const { client, user } = await readyFight({ request: mkRequest({ moves, side: sidePokemon() }) })
