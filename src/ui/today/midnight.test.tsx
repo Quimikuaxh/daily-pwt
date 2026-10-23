@@ -43,7 +43,8 @@ describe('medianoche con Hoy abierta', () => {
   })
 
   it('la cuenta atrás se reinicia tras la medianoche (más de 23 h)', async () => {
-    setLocalTime(LAUNCH, 23, 59, 55)
+    // Un día normal de 24 h: D+1 (2026-10-25) es el cambio de hora de otoño en Madrid y dura 25 h (24:59:59 sería correcto).
+    setLocalTime(addDays(LAUNCH, 2), 23, 59, 55)
     mount()
     await settle(6000)
     expect(screen.getByRole('banner').textContent).toMatch(/23:59:5\d/)

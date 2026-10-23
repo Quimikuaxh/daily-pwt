@@ -29,21 +29,20 @@ npm run gen:pwt -- --write   # además escribe data/trainers.json (integración;
 
 Decisión de Jose (DEC-38): los 53 se barajan **todos juntos**, desde el día 0, en la entrada base del `rosterSchedule`; sin restricciones de región, sin los 6 de F1 delante ni entrada posterior.
 
-La bolsa (`src/core/bag.ts`) baraja por ciclos con la semilla `daily-pwt:v1:bag:<ciclo global>`: el rival del día `i` depende solo del índice `i` y del roster, **no de la fecha**; `LAUNCH_DATE` solo fija qué fecha es `i = 0`. Secuencia real (`rivalForDay`) con `LAUNCH_DATE` provisional 2026-10-19:
+La bolsa (`src/core/bag.ts`) baraja por ciclos con la semilla `daily-pwt:v1:bag:<ciclo global>`: el rival del día `i` depende solo del índice `i` y del roster, **no de la fecha**; `LAUNCH_DATE` solo fija qué fecha es `i = 0`. Secuencia real (`rivalForDay`) con `LAUNCH_DATE` = 2026-10-24 (lanzamiento, fijado por Jose el 23/10/2026); la columna «6 (F1)» es la secuencia que habría con el roster de F1:
 
 | i · fecha | 6 (F1) | 53 | | i · fecha | 6 (F1) | 53 |
 |---|---|---|---|---|---|---|
-| 0 · 2026-10-19 | Plubio | Hiedra | | 7 · 2026-10-26 | Misty | Alana |
-| 1 · 2026-10-20 | Misty | Fredo | | 8 · 2026-10-27 | Máximo | Junco |
-| 2 · 2026-10-21 | Máximo | Antón | | 9 · 2026-10-28 | Plubio | Sachiko |
-| 3 · 2026-10-22 | Camila | Mirto | | 10 · 2026-10-29 | | Brock |
-| 4 · 2026-10-23 | Rojo | Cintia | | 11 · 2026-10-30 | | Lance |
-| 5 · 2026-10-24 | Brock | Plubio | | 12 · 2026-10-31 | | Blanca |
-| 6 · 2026-10-25 | Rojo | Inverna | | 13 · 2026-11-01 | | Blaine |
+| 0 · 2026-10-24 | Plubio | Hiedra | | 7 · 2026-10-31 | Misty | Alana |
+| 1 · 2026-10-25 | Misty | Fredo | | 8 · 2026-11-01 | Máximo | Junco |
+| 2 · 2026-10-26 | Máximo | Antón | | 9 · 2026-11-02 | Plubio | Sachiko |
+| 3 · 2026-10-27 | Camila | Mirto | | 10 · 2026-11-03 | | Brock |
+| 4 · 2026-10-28 | Rojo | Cintia | | 11 · 2026-11-04 | | Lance |
+| 5 · 2026-10-29 | Brock | Plubio | | 12 · 2026-11-05 | | Blanca |
+| 6 · 2026-10-30 | Rojo | Inverna | | 13 · 2026-11-06 | | Blaine |
 
-- Días ya jugados (2026-10-19 a 2026-10-21): con 6 salieron Plubio, Misty y Máximo; con 53 salen Hiedra, Fredo y Antón. Cambia el rival, la variante y el equipo del jugador de esos días.
-- Máximo toca con 53 en el índice 38 (2026-11-26 con la fecha actual). Los demás de F1: Plubio 5, Brock 10, Rojo 17, Camila 33, Misty 45.
-- **Propuesta para fijar la fecha (decide Jose):** como la secuencia solo depende del índice, la fecha de lanzamiento real `D` da Hiedra el día `#1` y Máximo el día `#39` = `D + 38`. Si el lanzamiento público es posterior a hoy, basta poner `LAUNCH_DATE = D` (p. ej. 2026-11-01: Máximo el 2026-12-09) y regenerar el snapshot; nadie ha visto ningún reto antes. Que Máximo toque el 2026-10-21 exigiría `LAUNCH_DATE = 2026-09-13` (día #39 hoy): descartada, un lanzamiento en el pasado hace que el contador empiece en #39.
+- Máximo toca con 53 en el índice 38 (#39, 2026-12-01). Los demás de F1: Plubio 5, Brock 10, Rojo 17, Camila 33, Misty 45.
+- **Fecha fijada (Jose, 23/10/2026): `LAUNCH_DATE = 2026-10-24`**, el día siguiente, para que nadie haya visto ningún reto antes del #1 (Hiedra). *Descartado:* un lanzamiento en el pasado (p. ej. 2026-09-13 para que Máximo tocara antes), porque el contador empezaría en un `#N` alto.
 - **Descartadas:** mantener los 6 de F1 delante y añadir los 47 en una entrada posterior (los 6 se repetirían antes de ver a los demás; las entradas exigen frontera de ciclo, `fromDayIndex` múltiplo de 6); una entrada de calendario nueva en fecha futura (deja a los ya publicados intactos pero deja dos entradas y un corte arbitrario); restricciones por región (sesgo que complica la bolsa sin pedirlo el PRD).
 - Cambiar `LAUNCH_DATE` desplaza todo: el rival, la variante y el equipo de cada fecha respecto a lo publicado y los números `#N`. Cambiar el roster rebaraja también.
 

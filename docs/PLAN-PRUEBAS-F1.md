@@ -5,7 +5,7 @@ Base: [REQUISITOS-F1](REQUISITOS-F1.md), [ARQUITECTURA](ARQUITECTURA.md) §9.
 ## 0. Convenciones
 - Niveles: **UT** (Vitest, Node), **CMP** (RTL + jsdom, user-event, fake timers), **INT** (motor en Node sobre `Battle` síncrono), **E2E** (Playwright sobre `vite preview` con `VITE_TEST_HOOKS=1`; chromium y webkit), **VIS** (capturas a 360×740 y 1280×800 con playwright-cli, revisadas con web-design-guidelines).
 - Roster F1: `brock` (variantes `brock-kanto-leaders`, `brock-world-leaders`), `misty`, `camila`, `plubio`, `rojo`. Ciclo de la bolsa = 5 días.
-- Fechas de referencia, **solo para el snapshot UT-17 y los tests de bolsa/ciclo** (`LAUNCH_DATE=2026-10-19`; desde F2 roster de 53 entrenadores y ciclo de 53 días, antes 6): D-1 2026-10-18; D0 2026-10-19; D+1..D+4 2026-10-20..23; D+5 2026-10-24; el ciclo 2 empieza en D+53 (antes D+6); D+365 2027-10-19; cambios de hora 2027 (Europe/Madrid) 03-27/28/29 y 10-30/31, 11-01.
+- Fechas de referencia, **solo para el snapshot UT-17 y los tests de bolsa/ciclo** (`LAUNCH_DATE=2026-10-24`, fecha de lanzamiento fijada por Jose el 23/10/2026; desde F2 roster de 53 entrenadores y ciclo de 53 días, antes 6): D-1 2026-10-23; D0 2026-10-24; D+1..D+4 2026-10-25..28; D+5 2026-10-29; el ciclo 2 empieza en D+53 (antes D+6); D+365 2027-10-24; cambios de hora 2027 (Europe/Madrid) 03-27/28/29 y 10-30/31, 11-01.
 - Fixtures: `GameData` sintético mínimo y real; `AiState` manual; semillas de combate fijas; pools imposibles; JSON corrupto.
 - Criterios fijados: fecha anterior a `LAUNCH_DATE` = `#1` (prevalece sobre la fórmula literal de RF-09); "Sacar primero" sobre el ya elegido no lo deselecciona (siempre hay uno).
 - Ningún test hace peticiones de red; los scripts de descarga no se ejecutan en tests.
@@ -31,7 +31,7 @@ Base: [REQUISITOS-F1](REQUISITOS-F1.md), [ARQUITECTURA](ARQUITECTURA.md) §9.
 - UT-14 Variante: Brock ≈50 % ±10 % en 400 fechas; una variante siempre esa; variantes idénticas deduplicadas sin sesgo. (RF-06)
 - UT-15 Habilidad doble: siempre de la lista del set, ambas aparecen en 200 fechas, repetible por fecha; habilidad única se respeta. (RF-07)
 - UT-16 `alwaysLeadsWith`: Misty→Starmie, Plubio→Milotic, Brock→Onix; sin regla (Rojo) el primero varía y es reproducible; regla con especie ausente → error de datos. (RF-08)
-- UT-17 Snapshot de `getDailyChallenge` con las fechas de referencia y datos reales (incluye `number`, trainer, variant, rivalTeam con habilidades, playerTeam, `meta`); cambiar un dato lo rompe. Regenerar al fijar `LAUNCH_DATE` en F2. (RF-04)
+- UT-17 Snapshot de `getDailyChallenge` con las fechas de referencia y datos reales (incluye `number`, trainer, variant, rivalTeam con habilidades, playerTeam, `meta`); cambiar un dato lo rompe. Regenerar si cambian `LAUNCH_DATE`, el roster o las reglas de generación. (RF-04)
 - Criterio transversal (DEC-35): los demás tests (unitarios, de componente y E2E) eligen rival y variante por id (`challengeFor`, `?trainer=&variant=`) y cuentan días desde `LAUNCH`/`LAUNCH_DATE` sin fijar su valor; cambiar `LAUNCH_DATE` solo debe romper UT-17.
 - UT-18 Mismo string de fecha con distinto `TZ` → mismo reto.
 

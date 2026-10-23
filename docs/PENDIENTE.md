@@ -5,7 +5,7 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 **Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). El sonido va en `feature/f3-sonido` (desde `main`): los audios ya están descargados y versionados (se descargaron en local, desde la nube las fuentes están bloqueadas); falta implementarlo según «Sonido: plan de implementación».
 
 ## Para F2 (resto)
-- **Fijar `LAUNCH_DATE` el día del lanzamiento real** (`src/core/launch.ts`, provisional 2026-10-19; decisión de Jose: se cambia a la fecha real cuando se lance la aplicación, no antes) y regenerar el snapshot `src/core/__snapshots__/challenge.reference.json` (README, «Lanzamiento»). Con los 53 barajados juntos, la secuencia depende solo del índice de día: con la fecha actual los días 19 a 21 de octubre son Hiedra, Fredo y Antón (con 6 fueron Plubio, Misty y Máximo) y Máximo toca el día #39 (2026-11-26, `D + 38`). Cambiar fecha o roster cambia lo ya publicado (rival, variante, equipo, `#N`). Propuesta y alternativas descartadas en `docs/F2-DATOS.md`, «Calendario». `scripts/capture-vis.mjs` ya usa `?trainer=` con `e2e/scenarios.json` (DEC-50).
+- **`LAUNCH_DATE` fijada: 2026-10-24** (Jose, 23/10/2026). Snapshot y fechas de referencia regenerados. Cambiarla de nuevo, o cambiar el roster o las reglas de generación, cambia lo ya publicado (rival, variante, equipo, `#N`): README, «Lanzamiento».
 - **Calibrar la dificultad** (PRD §14, criterio 19) con el roster completo. Resultado preliminar (INT-14, solo los 5 de F1) con el jugador de prueba "mejor daño" y los IV del jugador iguales a los del rival (RF-16): Brock 100 %, Misty 70 %, Camila 70 %, Plubio 50 %, Rojo 0 %. Brock y Rojo siguen fuera del rango 40-80 %.
 - **Stunfisk de Camila (Mundial):** Juego Sucio según Bulbapedia y Serebii, Impresionar según WikiDex; se usa Juego Sucio (resolución manual en `data/pwt-raw/resolutions.json`).
 - **Ruta crítica 230 KB gzip (decidido: se deja así).** Con el roster de 53 el chunk principal pasa a 208 KB (era 182) y la carga sigue < 3 s en 4G (2,1-2,5 s). Optimización futura, solo si hace falta: carga por entrenador (JSON por entrenador, `GameData` asíncrono) o recortar dex/names.
@@ -15,7 +15,7 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 ## Orden de trabajo
 1. **F3** (sección «Para F3»): estadísticas y rachas (el almacenamiento `daily-pwt:v1` ya guarda el historial por día), compartir, Ayuda (créditos y aviso legal) y Ajustes; después música y efectos de sonido.
 2. **Resto de F2** que no depende de Jose: minis de entrenador (en local, ver arriba). E2E en CI y capturas con `?trainer=`, hechos.
-3. **Necesitan a Jose**: calibrar la dificultad (partidas de prueba), verificar en Windows y Safari iOS reales, fijar `LAUNCH_DATE` al lanzar.
+3. **Necesitan a Jose**: calibrar la dificultad (partidas de prueba), verificar en Windows y Safari iOS reales.
 4. **Fases futuras**: modo PWT, logros con login; las animaciones de movimientos, lo último.
 
 ## Para F3

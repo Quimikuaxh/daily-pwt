@@ -18,7 +18,7 @@ El desarrollo se divide en tres fases (detalle en [docs/PRD.md](docs/PRD.md) §0
 
 En F1 no hay límite de un combate oficial al día ni persistencia: un mismo reto admite combates ilimitados.
 
-Fecha de lanzamiento (`#1`): 2026-10-19 (provisional) (ver [Configuración](#lanzamiento-launch_date)).
+Fecha de lanzamiento (`#1`): 2026-10-24 (ver [Configuración](#lanzamiento-launch_date)).
 
 ## Requisitos
 
@@ -125,14 +125,14 @@ daily-pwt/
 
 ### Lanzamiento (`LAUNCH_DATE`)
 
-- Archivo: `src/core/launch.ts` (`src/config.ts` lo reexporta). Valor actual: `2026-10-19` (provisional; la fija Jose al final de F2).
+- Archivo: `src/core/launch.ts` (`src/config.ts` lo reexporta). Valor: `2026-10-24`, fecha de lanzamiento fijada por Jose el 23/10/2026.
 - Efecto: fija el día `#1` del reto y, con él, el desplazamiento de la bolsa de entrenadores. Las fechas anteriores a `LAUNCH_DATE` muestran `#1`.
-- Cambiarlo altera el entrenador, la variante y el equipo de cada fecha y los números `#N`. La secuencia de rivales solo depende del índice de día (los 53 se barajan juntos desde el día 0): con la fecha actual los días 2026-10-19 a 21 son Hiedra, Fredo y Antón (con los 6 de F1 fueron Plubio, Misty y Máximo) y Máximo toca el día `#39` (2026-11-26). Para fijarla: poner la fecha real de lanzamiento `D` en `src/core/launch.ts` (Máximo tocará `D + 38`), regenerar el snapshot y revisarlo (pasos siguientes). Efecto completo y opciones descartadas en [docs/F2-DATOS.md](docs/F2-DATOS.md), «Calendario».
+- Cambiarlo altera el entrenador, la variante y el equipo de cada fecha y los números `#N`. La secuencia de rivales solo depende del índice de día (los 53 se barajan juntos desde el día 0): con esta fecha los días 2026-10-24 a 26 son Hiedra, Fredo y Antón y Máximo toca el día `#39` (2026-12-01, `D + 38`). Para cambiarla: poner la nueva fecha `D` en `src/core/launch.ts`, mover las fechas de referencia de `src/test-utils/dates.ts` (D-1 … D+5 y D+365), regenerar el snapshot y revisarlo (pasos siguientes). Efecto completo y opciones descartadas en [docs/F2-DATOS.md](docs/F2-DATOS.md), «Calendario».
 - Cambiar el roster (añadir o quitar entrenadores) rebaraja la bolsa igual que cambiar la fecha: regenerar el snapshot y avisar de que cambia lo ya publicado.
 
 Pasos al cambiarlo:
 
-1. No hay que tocar fechas en los tests: `LAUNCH` (`src/test-utils/dates.ts`) y `LAUNCH_DATE` (`e2e/support.ts`) siguen a `src/core/launch.ts`, y los rivales se eligen por id (ver [Ganchos de prueba](#ganchos-de-prueba)). Solo el snapshot de referencia depende de la fecha.
+1. Salvo `REFERENCE_DATES` (`src/test-utils/dates.ts`, literales relativos a la fecha de lanzamiento), no hay que tocar fechas en los tests: `LAUNCH` (`src/test-utils/dates.ts`) y `LAUNCH_DATE` (`e2e/support.ts`) siguen a `src/core/launch.ts`, y los rivales se eligen por id (ver [Ganchos de prueba](#ganchos-de-prueba)). Solo el snapshot de referencia depende de la fecha.
 2. Regenerar el snapshot de referencia y revisarlo a mano antes de versionarlo:
    ```sh
    npx vitest run src/core/challenge.snapshot.test.ts -u

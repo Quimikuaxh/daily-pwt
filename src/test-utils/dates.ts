@@ -18,11 +18,11 @@ export const dates = (n: number, from = LAUNCH): string[] => range(n).map((i) =>
  * que es el único test ligado a fechas reales y a LAUNCH_DATE.
  */
 export const REFERENCE_DATES = [
-  '2026-10-18', // D-1
-  '2026-10-19', // D0
-  '2026-10-20', '2026-10-21', '2026-10-22', '2026-10-23', // D+1..D+4
-  '2026-10-24', // D+5 (último día del ciclo 1; con 6 entrenadores el ciclo 2 empieza en D+6)
-  '2027-10-19', // D+365
+  '2026-10-23', // D-1
+  '2026-10-24', // D0
+  '2026-10-25', '2026-10-26', '2026-10-27', '2026-10-28', // D+1..D+4
+  '2026-10-29', // D+5
+  '2027-10-24', // D+365
   '2027-03-27', '2027-03-28', '2027-03-29', // cambio de hora de primavera 2027 (Madrid)
   '2027-10-30', '2027-10-31', '2027-11-01', // cambio de hora de otoño 2027
 ]

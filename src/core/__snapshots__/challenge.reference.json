@@ -1,7 +1,7 @@
 {
-  "2026-10-18": {
+  "2026-10-23": {
     "number": 1,
-    "date": "2026-10-18",
+    "date": "2026-10-23",
     "dataVersion": "f2-1",
     "trainer": {
       "id": "hiedra",
@@ -23,7 +23,7 @@
         "nameEs": "Scolipede",
         "level": 50,
         "item": "liechiberry",
-        "ability": "swarm",
+        "ability": "poisonpoint",
         "moves": [
           "megahorn",
           "earthquake",
@@ -201,166 +201,166 @@
     ],
     "playerTeam": [
       {
-        "species": "jynx",
-        "nameEs": "Jynx",
+        "species": "glaceon",
+        "nameEs": "Glaceon",
         "level": 50,
-        "item": "psychicgem",
-        "ability": "oblivious",
-        "moves": [
-          "focusblast",
-          "blizzard",
-          "psychic",
-          "shadowball"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "emboar",
-        "nameEs": "Emboar",
-        "level": 50,
-        "item": "choicescarf",
-        "ability": "blaze",
-        "moves": [
-          "flareblitz",
-          "superpower",
-          "wildcharge",
-          "sleeptalk"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "garchomp",
-        "nameEs": "Garchomp",
-        "level": 50,
-        "item": "choiceband",
-        "ability": "sandveil",
-        "moves": [
-          "outrage",
-          "earthquake",
-          "stoneedge",
-          "dragonclaw"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "altaria",
-        "nameEs": "Altaria",
-        "level": 50,
-        "item": "leftovers",
-        "ability": "naturalcure",
-        "moves": [
-          "dragondance",
-          "roost",
-          "dragonclaw",
-          "healbell"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "charizard",
-        "nameEs": "Charizard",
-        "level": 50,
-        "item": "focussash",
-        "ability": "blaze",
-        "moves": [
-          "fireblast",
-          "focusblast",
-          "airslash",
-          "dragonpulse"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "lapras",
-        "nameEs": "Lapras",
-        "level": 50,
-        "item": "sitrusberry",
-        "ability": "shellarmor",
+        "item": "choicespecs",
+        "ability": "icebody",
         "moves": [
           "icebeam",
+          "hiddenpower",
+          "shadowball",
+          "blizzard"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "crustle",
+        "nameEs": "Crustle",
+        "level": 50,
+        "item": "custapberry",
+        "ability": "shellarmor",
+        "moves": [
+          "stealthrock",
+          "spikes",
+          "stoneedge",
+          "xscissor"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "hydreigon",
+        "nameEs": "Hydreigon",
+        "level": 50,
+        "item": "whiteherb",
+        "ability": "levitate",
+        "moves": [
+          "dracometeor",
+          "darkpulse",
+          "fireblast",
+          "earthpower"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "seismitoad",
+        "nameEs": "Seismitoad",
+        "level": 50,
+        "item": "rindoberry",
+        "ability": "swiftswim",
+        "moves": [
           "hydropump",
-          "iceshard",
-          "thunderbolt"
+          "poisonjab",
+          "earthpower",
+          "raindance"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "probopass",
+        "nameEs": "Probopass",
+        "level": 50,
+        "item": "leftovers",
+        "ability": "magnetpull",
+        "moves": [
+          "stealthrock",
+          "powergem",
+          "toxic",
+          "voltswitch"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "haxorus",
+        "nameEs": "Haxorus",
+        "level": 50,
+        "item": "dragongem",
+        "ability": "moldbreaker",
+        "moves": [
+          "outrage",
+          "dragondance",
+          "earthquake",
+          "brickbreak"
         ],
         "nature": "Serious",
         "ivs": {
@@ -382,13 +382,13 @@
       }
     ],
     "meta": {
-      "teamAttempts": 2,
+      "teamAttempts": 3,
       "relaxedRules": []
     }
   },
-  "2026-10-19": {
+  "2026-10-24": {
     "number": 1,
-    "date": "2026-10-19",
+    "date": "2026-10-24",
     "dataVersion": "f2-1",
     "trainer": {
       "id": "hiedra",
@@ -470,7 +470,7 @@
         "nameEs": "Garbodor",
         "level": 50,
         "item": "expertbelt",
-        "ability": "stench",
+        "ability": "weakarmor",
         "moves": [
           "psychic",
           "thunderbolt",
@@ -588,16 +588,16 @@
     ],
     "playerTeam": [
       {
-        "species": "magnezone",
-        "nameEs": "Magnezone",
+        "species": "hitmontop",
+        "nameEs": "Hitmontop",
         "level": 50,
-        "item": "leftovers",
-        "ability": "magnetpull",
+        "item": "groundgem",
+        "ability": "intimidate",
         "moves": [
-          "substitute",
-          "chargebeam",
-          "thunder",
-          "hiddenpower"
+          "bulkup",
+          "drillrun",
+          "closecombat",
+          "bulletpunch"
         ],
         "nature": "Serious",
         "ivs": {
@@ -618,15 +618,75 @@
         }
       },
       {
-        "species": "garchomp",
-        "nameEs": "Garchomp",
+        "species": "armaldo",
+        "nameEs": "Armaldo",
         "level": 50,
-        "item": "yacheberry",
-        "ability": "roughskin",
+        "item": "choiceband",
+        "ability": "battlearmor",
         "moves": [
-          "swordsdance",
+          "xscissor",
+          "stoneedge",
           "earthquake",
-          "outrage",
+          "rapidspin"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "slaking",
+        "nameEs": "Slaking",
+        "level": 50,
+        "item": "choicescarf",
+        "ability": "truant",
+        "moves": [
+          "return",
+          "earthquake",
+          "nightslash",
+          "pursuit"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "archeops",
+        "nameEs": "Archeops",
+        "level": 50,
+        "item": "sitrusberry",
+        "ability": "defeatist",
+        "moves": [
+          "acrobatics",
+          "stoneedge",
+          "earthquake",
           "dragonclaw"
         ],
         "nature": "Serious",
@@ -648,46 +708,16 @@
         }
       },
       {
-        "species": "salamence",
-        "nameEs": "Salamence",
-        "level": 50,
-        "item": "lumberry",
-        "ability": "moxie",
-        "moves": [
-          "dragondance",
-          "outrage",
-          "earthquake",
-          "dragonclaw"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "reuniclus",
-        "nameEs": "Reuniclus",
+        "species": "exploud",
+        "nameEs": "Exploud",
         "level": 50,
         "item": "lifeorb",
-        "ability": "magicguard",
+        "ability": "scrappy",
         "moves": [
-          "psychic",
-          "shadowball",
-          "focusblast",
-          "trickroom"
+          "hypervoice",
+          "surf",
+          "fireblast",
+          "focusblast"
         ],
         "nature": "Serious",
         "ivs": {
@@ -708,46 +738,16 @@
         }
       },
       {
-        "species": "charizard",
-        "nameEs": "Charizard",
+        "species": "druddigon",
+        "nameEs": "Druddigon",
         "level": 50,
-        "item": "dragongem",
-        "ability": "blaze",
+        "item": "leftovers",
+        "ability": "roughskin",
         "moves": [
-          "inferno",
-          "dragonrush",
-          "focusblast",
-          "honeclaws"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "infernape",
-        "nameEs": "Infernape",
-        "level": 50,
-        "item": "expertbelt",
-        "ability": "ironfist",
-        "moves": [
-          "overheat",
-          "closecombat",
-          "grassknot",
-          "hiddenpower"
+          "stealthrock",
+          "outrage",
+          "earthquake",
+          "suckerpunch"
         ],
         "nature": "Serious",
         "ivs": {
@@ -769,13 +769,13 @@
       }
     ],
     "meta": {
-      "teamAttempts": 1,
+      "teamAttempts": 2,
       "relaxedRules": []
     }
   },
-  "2026-10-20": {
+  "2026-10-25": {
     "number": 2,
-    "date": "2026-10-20",
+    "date": "2026-10-25",
     "dataVersion": "f2-1",
     "trainer": {
       "id": "fredo",
@@ -787,22 +787,22 @@
       "specialtyType": "Ice"
     },
     "variant": {
-      "id": "fredo-johto-leaders",
-      "sourceTournament": "Johto Leaders",
-      "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/Johto_Leaders_Tournament#Pryce"
+      "id": "fredo-world-leaders",
+      "sourceTournament": "World Leaders",
+      "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/World_Leaders_Tournament/Johto#Pryce"
     },
     "rivalTeam": [
       {
         "species": "mamoswine",
         "nameEs": "Mamoswine",
         "level": 50,
-        "item": "liechiberry",
+        "item": "focussash",
         "ability": "oblivious",
         "moves": [
-          "iciclecrash",
-          "rockslide",
+          "iciclespear",
+          "iceshard",
           "earthquake",
-          "doubleedge"
+          "endeavor"
         ],
         "nature": "Serious",
         "ivs": {
@@ -831,8 +831,8 @@
         "moves": [
           "focusblast",
           "blizzard",
-          "psychic",
-          "shadowball"
+          "psyshock",
+          "lovelykiss"
         ],
         "nature": "Serious",
         "ivs": {
@@ -856,13 +856,13 @@
         "species": "dewgong",
         "nameEs": "Dewgong",
         "level": 50,
-        "item": "sitrusberry",
+        "item": "lumberry",
         "ability": "thickfat",
         "moves": [
-          "hail",
-          "blizzard",
-          "perishsong",
-          "brine"
+          "dive",
+          "sheercold",
+          "rest",
+          "sleeptalk"
         ],
         "nature": "Serious",
         "ivs": {
@@ -886,11 +886,11 @@
         "species": "cloyster",
         "nameEs": "Cloyster",
         "level": 50,
-        "item": "salacberry",
+        "item": "kingsrock",
         "ability": "skilllink",
         "moves": [
           "shellsmash",
-          "razorshell",
+          "explosion",
           "rockblast",
           "iciclespear"
         ],
@@ -916,13 +916,13 @@
         "species": "lapras",
         "nameEs": "Lapras",
         "level": 50,
-        "item": "petayaberry",
+        "item": "chestoberry",
         "ability": "waterabsorb",
         "moves": [
-          "psychic",
-          "hydropump",
-          "blizzard",
-          "hail"
+          "rest",
+          "surf",
+          "icebeam",
+          "thunderbolt"
         ],
         "nature": "Serious",
         "ivs": {
@@ -946,12 +946,12 @@
         "species": "weavile",
         "nameEs": "Weavile",
         "level": 50,
-        "item": "darkgem",
+        "item": "icegem",
         "ability": "pressure",
         "moves": [
-          "xscissor",
+          "lowkick",
           "nightslash",
-          "iceshard",
+          "icepunch",
           "fakeout"
         ],
         "nature": "Serious",
@@ -975,16 +975,16 @@
     ],
     "playerTeam": [
       {
-        "species": "gliscor",
-        "nameEs": "Gliscor",
+        "species": "marowak",
+        "nameEs": "Marowak",
         "level": 50,
-        "item": "toxicorb",
-        "ability": "poisonheal",
+        "item": "yacheberry",
+        "ability": "rockhead",
         "moves": [
-          "swordsdance",
-          "protect",
-          "earthquake",
-          "facade"
+          "bonemerang",
+          "stoneedge",
+          "outrage",
+          "thunderpunch"
         ],
         "nature": "Serious",
         "ivs": {
@@ -1005,46 +1005,16 @@
         }
       },
       {
-        "species": "tentacruel",
-        "nameEs": "Tentacruel",
-        "level": 50,
-        "item": "chestoberry",
-        "ability": "liquidooze",
-        "moves": [
-          "scald",
-          "sludgebomb",
-          "rest",
-          "icebeam"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "castform",
-        "nameEs": "Castform",
+        "species": "excadrill",
+        "nameEs": "Excadrill",
         "level": 50,
         "item": "lifeorb",
-        "ability": "forecast",
+        "ability": "sandforce",
         "moves": [
-          "sunnyday",
-          "weatherball",
-          "thunderbolt",
-          "icebeam"
+          "swordsdance",
+          "earthquake",
+          "rockslide",
+          "ironhead"
         ],
         "nature": "Serious",
         "ivs": {
@@ -1065,16 +1035,46 @@
         }
       },
       {
-        "species": "rapidash",
-        "nameEs": "Rapidash",
+        "species": "meganium",
+        "nameEs": "Meganium",
         "level": 50,
         "item": "leftovers",
-        "ability": "flashfire",
+        "ability": "overgrow",
         "moves": [
-          "flareblitz",
-          "morningsun",
+          "aromatherapy",
+          "dragontail",
+          "gigadrain",
+          "synthesis"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "bouffalant",
+        "nameEs": "Bouffalant",
+        "level": 50,
+        "item": "normalgem",
+        "ability": "reckless",
+        "moves": [
+          "headcharge",
+          "megahorn",
           "wildcharge",
-          "drillrun"
+          "earthquake"
         ],
         "nature": "Serious",
         "ivs": {
@@ -1095,46 +1095,46 @@
         }
       },
       {
-        "species": "druddigon",
-        "nameEs": "Druddigon",
+        "species": "staraptor",
+        "nameEs": "Staraptor",
         "level": 50,
-        "item": "rockyhelmet",
-        "ability": "sheerforce",
+        "item": "choiceband",
+        "ability": "intimidate",
         "moves": [
-          "glare",
-          "suckerpunch",
-          "dragonclaw",
-          "revenge"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "blaziken",
-        "nameEs": "Blaziken",
-        "level": 50,
-        "item": "salacberry",
-        "ability": "blaze",
-        "moves": [
-          "skyuppercut",
           "bravebird",
-          "flareblitz",
-          "bulkup"
+          "closecombat",
+          "quickattack",
+          "finalgambit"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "heracross",
+        "nameEs": "Heracross",
+        "level": 50,
+        "item": "choicescarf",
+        "ability": "swarm",
+        "moves": [
+          "megahorn",
+          "closecombat",
+          "stoneedge",
+          "aerialace"
         ],
         "nature": "Serious",
         "ivs": {
@@ -1156,13 +1156,13 @@
       }
     ],
     "meta": {
-      "teamAttempts": 3,
+      "teamAttempts": 1,
       "relaxedRules": []
     }
   },
-  "2026-10-21": {
+  "2026-10-26": {
     "number": 3,
-    "date": "2026-10-21",
+    "date": "2026-10-26",
     "dataVersion": "f2-1",
     "trainer": {
       "id": "anton",
@@ -1274,7 +1274,7 @@
         "nameEs": "Pinsir",
         "level": 50,
         "item": "liechiberry",
-        "ability": "hypercutter",
+        "ability": "moldbreaker",
         "moves": [
           "bulkup",
           "superpower",
@@ -1362,106 +1362,16 @@
     ],
     "playerTeam": [
       {
-        "species": "dodrio",
-        "nameEs": "Dodrio",
+        "species": "steelix",
+        "nameEs": "Steelix",
         "level": 50,
-        "item": "choiceband",
-        "ability": "earlybird",
-        "moves": [
-          "bravebird",
-          "return",
-          "pursuit",
-          "quickattack"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "froslass",
-        "nameEs": "Froslass",
-        "level": 50,
-        "item": "focussash",
-        "ability": "cursedbody",
-        "moves": [
-          "spikes",
-          "taunt",
-          "icebeam",
-          "destinybond"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "wormadamtrash",
-        "nameEs": "Wormadam",
-        "level": 50,
-        "item": "leftovers",
-        "ability": "anticipation",
+        "item": "custapberry",
+        "ability": "sturdy",
         "moves": [
           "stealthrock",
-          "psychic",
-          "bugbite",
-          "toxic"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "garchomp",
-        "nameEs": "Garchomp",
-        "level": 50,
-        "item": "choicescarf",
-        "ability": "sandveil",
-        "moves": [
-          "brickbreak",
-          "outrage",
           "earthquake",
-          "rockslide"
+          "heavyslam",
+          "explosion"
         ],
         "nature": "Serious",
         "ivs": {
@@ -1482,16 +1392,46 @@
         }
       },
       {
-        "species": "rotommow",
-        "nameEs": "Rotom",
+        "species": "lickilicky",
+        "nameEs": "Lickilicky",
         "level": 50,
-        "item": "choicespecs",
-        "ability": "levitate",
+        "item": "leftovers",
+        "ability": "owntempo",
         "moves": [
-          "leafstorm",
-          "voltswitch",
+          "wish",
+          "protect",
+          "bodyslam",
+          "dragontail"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "manectric",
+        "nameEs": "Manectric",
+        "level": 50,
+        "item": "lifeorb",
+        "ability": "static",
+        "moves": [
+          "doubleteam",
+          "thunderwave",
           "thunderbolt",
-          "trick"
+          "flamethrower"
         ],
         "nature": "Serious",
         "ivs": {
@@ -1512,16 +1452,76 @@
         }
       },
       {
-        "species": "bellossom",
-        "nameEs": "Bellossom",
+        "species": "snorlax",
+        "nameEs": "Snorlax",
         "level": 50,
-        "item": "fightinggem",
-        "ability": "chlorophyll",
+        "item": "choiceband",
+        "ability": "thickfat",
         "moves": [
-          "sunnyday",
-          "drainpunch",
-          "swordsdance",
-          "leafblade"
+          "return",
+          "pursuit",
+          "earthquake",
+          "crunch"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "qwilfish",
+        "nameEs": "Qwilfish",
+        "level": 50,
+        "item": "blacksludge",
+        "ability": "intimidate",
+        "moves": [
+          "spikes",
+          "painsplit",
+          "waterfall",
+          "haze"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "octillery",
+        "nameEs": "Octillery",
+        "level": 50,
+        "item": "expertbelt",
+        "ability": "sniper",
+        "moves": [
+          "hydropump",
+          "icebeam",
+          "energyball",
+          "fireblast"
         ],
         "nature": "Serious",
         "ivs": {
@@ -1547,9 +1547,9 @@
       "relaxedRules": []
     }
   },
-  "2026-10-22": {
+  "2026-10-27": {
     "number": 4,
-    "date": "2026-10-22",
+    "date": "2026-10-27",
     "dataVersion": "f2-1",
     "trainer": {
       "id": "mirto",
@@ -1600,7 +1600,7 @@
         "nameEs": "Conkeldurr",
         "level": 50,
         "item": "lifeorb",
-        "ability": "guts",
+        "ability": "sheerforce",
         "moves": [
           "hammerarm",
           "payback",
@@ -1660,7 +1660,7 @@
         "nameEs": "Krookodile",
         "level": 50,
         "item": "expertbelt",
-        "ability": "moxie",
+        "ability": "intimidate",
         "moves": [
           "earthquake",
           "crunch",
@@ -1690,7 +1690,7 @@
         "nameEs": "Chandelure",
         "level": 50,
         "item": "choicescarf",
-        "ability": "flamebody",
+        "ability": "flashfire",
         "moves": [
           "flamethrower",
           "shadowball",
@@ -1720,7 +1720,7 @@
         "nameEs": "Braviary",
         "level": 50,
         "item": "choiceband",
-        "ability": "keeneye",
+        "ability": "sheerforce",
         "moves": [
           "bravebird",
           "superpower",
@@ -1748,136 +1748,16 @@
     ],
     "playerTeam": [
       {
-        "species": "braviary",
-        "nameEs": "Braviary",
-        "level": 50,
-        "item": "powerherb",
-        "ability": "sheerforce",
-        "moves": [
-          "superpower",
-          "uturn",
-          "tailwind",
-          "skyattack"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "machamp",
-        "nameEs": "Machamp",
-        "level": 50,
-        "item": "payapaberry",
-        "ability": "noguard",
-        "moves": [
-          "dualchop",
-          "rockslide",
-          "dynamicpunch",
-          "bulldoze"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "simipour",
-        "nameEs": "Simipour",
-        "level": 50,
-        "item": "choicespecs",
-        "ability": "torrent",
-        "moves": [
-          "hydropump",
-          "icebeam",
-          "hiddenpower",
-          "focusblast"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "rapidash",
-        "nameEs": "Rapidash",
-        "level": 50,
-        "item": "shucaberry",
-        "ability": "flashfire",
-        "moves": [
-          "flareblitz",
-          "megahorn",
-          "wildcharge",
-          "hypnosis"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "ludicolo",
-        "nameEs": "Ludicolo",
+        "species": "exeggutor",
+        "nameEs": "Exeggutor",
         "level": 50,
         "item": "lifeorb",
-        "ability": "swiftswim",
+        "ability": "harvest",
         "moves": [
-          "swordsdance",
-          "waterfall",
-          "seedbomb",
-          "icepunch"
+          "trickroom",
+          "sleeppowder",
+          "leafstorm",
+          "psyshock"
         ],
         "nature": "Serious",
         "ivs": {
@@ -1898,16 +1778,136 @@
         }
       },
       {
-        "species": "torterra",
-        "nameEs": "Torterra",
+        "species": "hitmontop",
+        "nameEs": "Hitmontop",
         "level": 50,
-        "item": "leftovers",
+        "item": "liechiberry",
+        "ability": "technician",
+        "moves": [
+          "triplekick",
+          "drillrun",
+          "rockslide",
+          "agility"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 25,
+          "atk": 25,
+          "def": 25,
+          "spa": 25,
+          "spd": 25,
+          "spe": 25
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "meganium",
+        "nameEs": "Meganium",
+        "level": 50,
+        "item": "choicespecs",
         "ability": "overgrow",
         "moves": [
-          "stealthrock",
-          "woodhammer",
-          "stoneedge",
-          "synthesis"
+          "leafstorm",
+          "gigadrain",
+          "hiddenpower",
+          "ancientpower"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 25,
+          "atk": 25,
+          "def": 25,
+          "spa": 25,
+          "spd": 25,
+          "spe": 25
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "hitmonchan",
+        "nameEs": "Hitmonchan",
+        "level": 50,
+        "item": "icegem",
+        "ability": "ironfist",
+        "moves": [
+          "bulkup",
+          "icepunch",
+          "machpunch",
+          "thunderpunch"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 25,
+          "atk": 25,
+          "def": 25,
+          "spa": 25,
+          "spd": 25,
+          "spe": 25
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "alakazam",
+        "nameEs": "Alakazam",
+        "level": 50,
+        "item": "focussash",
+        "ability": "innerfocus",
+        "moves": [
+          "psychic",
+          "focusblast",
+          "shadowball",
+          "reflect"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 25,
+          "atk": 25,
+          "def": 25,
+          "spa": 25,
+          "spd": 25,
+          "spe": 25
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "ampharos",
+        "nameEs": "Ampharos",
+        "level": 50,
+        "item": "petayaberry",
+        "ability": "static",
+        "moves": [
+          "charge",
+          "discharge",
+          "cottonguard",
+          "powergem"
         ],
         "nature": "Serious",
         "ivs": {
@@ -1929,13 +1929,13 @@
       }
     ],
     "meta": {
-      "teamAttempts": 5,
+      "teamAttempts": 2,
       "relaxedRules": []
     }
   },
-  "2026-10-23": {
+  "2026-10-28": {
     "number": 5,
-    "date": "2026-10-23",
+    "date": "2026-10-28",
     "dataVersion": "f2-1",
     "trainer": {
       "id": "cintia",
@@ -2016,7 +2016,7 @@
         "nameEs": "Roserade",
         "level": 50,
         "item": "whiteherb",
-        "ability": "poisonpoint",
+        "ability": "naturalcure",
         "moves": [
           "leafstorm",
           "sludgebomb",
@@ -2134,166 +2134,166 @@
     ],
     "playerTeam": [
       {
+        "species": "liepard",
+        "nameEs": "Liepard",
+        "level": 50,
+        "item": "lifeorb",
+        "ability": "prankster",
+        "moves": [
+          "nastyplot",
+          "encore",
+          "darkpulse",
+          "hiddenpower"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 25,
+          "atk": 25,
+          "def": 25,
+          "spa": 25,
+          "spd": 25,
+          "spe": 25
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "empoleon",
+        "nameEs": "Empoleon",
+        "level": 50,
+        "item": "petayaberry",
+        "ability": "torrent",
+        "moves": [
+          "agility",
+          "substitute",
+          "surf",
+          "icebeam"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 25,
+          "atk": 25,
+          "def": 25,
+          "spa": 25,
+          "spd": 25,
+          "spe": 25
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "muk",
+        "nameEs": "Muk",
+        "level": 50,
+        "item": "blacksludge",
+        "ability": "stickyhold",
+        "moves": [
+          "curse",
+          "poisonjab",
+          "brickbreak",
+          "shadowsneak"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 25,
+          "atk": 25,
+          "def": 25,
+          "spa": 25,
+          "spd": 25,
+          "spe": 25
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "whimsicott",
+        "nameEs": "Whimsicott",
+        "level": 50,
+        "item": "mentalherb",
+        "ability": "infiltrator",
+        "moves": [
+          "gigadrain",
+          "substitute",
+          "hurricane",
+          "leechseed"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 25,
+          "atk": 25,
+          "def": 25,
+          "spa": 25,
+          "spd": 25,
+          "spe": 25
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "miltank",
+        "nameEs": "Miltank",
+        "level": 50,
+        "item": "liechiberry",
+        "ability": "thickfat",
+        "moves": [
+          "hammerarm",
+          "zenheadbutt",
+          "bodyslam",
+          "milkdrink"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 25,
+          "atk": 25,
+          "def": 25,
+          "spa": 25,
+          "spd": 25,
+          "spe": 25
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
         "species": "rampardos",
         "nameEs": "Rampardos",
         "level": 50,
-        "item": "salacberry",
+        "item": "focussash",
         "ability": "moldbreaker",
         "moves": [
           "stoneedge",
-          "zenheadbutt",
+          "superpower",
           "earthquake",
-          "outrage"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "ferrothorn",
-        "nameEs": "Ferrothorn",
-        "level": 50,
-        "item": "apicotberry",
-        "ability": "ironbarbs",
-        "moves": [
-          "powerwhip",
-          "gyroball",
-          "bulldoze",
-          "curse"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "magmortar",
-        "nameEs": "Magmortar",
-        "level": 50,
-        "item": "shucaberry",
-        "ability": "flamebody",
-        "moves": [
-          "psychic",
-          "flamecharge",
-          "thunderbolt",
-          "fireblast"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "suicune",
-        "nameEs": "Suicune",
-        "level": 50,
-        "item": "leftovers",
-        "ability": "pressure",
-        "moves": [
-          "rest",
-          "sleeptalk",
-          "scald",
-          "roar"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "marowak",
-        "nameEs": "Marowak",
-        "level": 50,
-        "item": "yacheberry",
-        "ability": "lightningrod",
-        "moves": [
-          "bonemerang",
-          "stoneedge",
-          "outrage",
-          "thunderpunch"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "tangrowth",
-        "nameEs": "Tangrowth",
-        "level": 50,
-        "item": "lifeorb",
-        "ability": "leafguard",
-        "moves": [
-          "swordsdance",
-          "powerwhip",
-          "earthquake",
-          "rockslide"
+          "avalanche"
         ],
         "nature": "Serious",
         "ivs": {
@@ -2315,13 +2315,13 @@
       }
     ],
     "meta": {
-      "teamAttempts": 1,
+      "teamAttempts": 2,
       "relaxedRules": []
     }
   },
-  "2026-10-24": {
+  "2026-10-29": {
     "number": 6,
-    "date": "2026-10-24",
+    "date": "2026-10-29",
     "dataVersion": "f2-1",
     "trainer": {
       "id": "plubio",
@@ -2520,16 +2520,16 @@
     ],
     "playerTeam": [
       {
-        "species": "salamence",
-        "nameEs": "Salamence",
+        "species": "sceptile",
+        "nameEs": "Sceptile",
         "level": 50,
-        "item": "choicescarf",
-        "ability": "moxie",
+        "item": "choicespecs",
+        "ability": "overgrow",
         "moves": [
-          "outrage",
-          "earthquake",
+          "leafstorm",
+          "focusblast",
           "hiddenpower",
-          "dragonclaw"
+          "gigadrain"
         ],
         "nature": "Serious",
         "ivs": {
@@ -2550,16 +2550,16 @@
         }
       },
       {
-        "species": "drapion",
-        "nameEs": "Drapion",
+        "species": "relicanth",
+        "nameEs": "Relicanth",
         "level": 50,
-        "item": "scopelens",
-        "ability": "battlearmor",
+        "item": "rockgem",
+        "ability": "swiftswim",
         "moves": [
-          "crosspoison",
-          "nightslash",
-          "icefang",
-          "protect"
+          "rockslide",
+          "waterfall",
+          "rockpolish",
+          "yawn"
         ],
         "nature": "Serious",
         "ivs": {
@@ -2580,106 +2580,106 @@
         }
       },
       {
-        "species": "glalie",
-        "nameEs": "Glalie",
+        "species": "magmortar",
+        "nameEs": "Magmortar",
+        "level": 50,
+        "item": "petayaberry",
+        "ability": "flamebody",
+        "moves": [
+          "thunderbolt",
+          "flamecharge",
+          "rockslide",
+          "psychic"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 25,
+          "atk": 25,
+          "def": 25,
+          "spa": 25,
+          "spd": 25,
+          "spe": 25
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "omastar",
+        "nameEs": "Omastar",
+        "level": 50,
+        "item": "rindoberry",
+        "ability": "swiftswim",
+        "moves": [
+          "hydropump",
+          "ancientpower",
+          "earthpower",
+          "icebeam"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 25,
+          "atk": 25,
+          "def": 25,
+          "spa": 25,
+          "spd": 25,
+          "spe": 25
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "hitmonchan",
+        "nameEs": "Hitmonchan",
         "level": 50,
         "item": "leftovers",
-        "ability": "icebody",
+        "ability": "ironfist",
+        "moves": [
+          "doubleteam",
+          "icepunch",
+          "drainpunch",
+          "thunderpunch"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 25,
+          "atk": 25,
+          "def": 25,
+          "spa": 25,
+          "spd": 25,
+          "spe": 25
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "cacturne",
+        "nameEs": "Cacturne",
+        "level": 50,
+        "item": "focussash",
+        "ability": "waterabsorb",
         "moves": [
           "spikes",
-          "taunt",
-          "icebeam",
-          "earthquake"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "tentacruel",
-        "nameEs": "Tentacruel",
-        "level": 50,
-        "item": "blacksludge",
-        "ability": "raindish",
-        "moves": [
-          "scald",
-          "rapidspin",
-          "toxic",
-          "protect"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "jumpluff",
-        "nameEs": "Jumpluff",
-        "level": 50,
-        "item": "flyinggem",
-        "ability": "chlorophyll",
-        "moves": [
-          "acrobatics",
-          "synthesis",
-          "uturn",
-          "encore"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "tangrowth",
-        "nameEs": "Tangrowth",
-        "level": 50,
-        "item": "liechiberry",
-        "ability": "leafguard",
-        "moves": [
-          "swordsdance",
-          "earthquake",
-          "rockslide",
-          "powerwhip"
+          "destinybond",
+          "suckerpunch",
+          "seedbomb"
         ],
         "nature": "Serious",
         "ivs": {
@@ -2701,13 +2701,13 @@
       }
     ],
     "meta": {
-      "teamAttempts": 2,
+      "teamAttempts": 1,
       "relaxedRules": []
     }
   },
-  "2027-10-19": {
+  "2027-10-24": {
     "number": 366,
-    "date": "2027-10-19",
+    "date": "2027-10-24",
     "dataVersion": "f2-1",
     "trainer": {
       "id": "alana",
@@ -2719,22 +2719,22 @@
       "specialtyType": "Flying"
     },
     "variant": {
-      "id": "alana-world-leaders",
-      "sourceTournament": "World Leaders",
-      "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/World_Leaders_Tournament/Hoenn#Winona"
+      "id": "alana-hoenn-leaders",
+      "sourceTournament": "Hoenn Leaders",
+      "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/Hoenn_Leaders_Tournament#Winona"
     },
     "rivalTeam": [
       {
         "species": "altaria",
         "nameEs": "Altaria",
         "level": 50,
-        "item": "powerherb",
+        "item": "apicotberry",
         "ability": "naturalcure",
         "moves": [
           "cottonguard",
-          "dragondance",
-          "skyattack",
-          "earthquake"
+          "dreameater",
+          "roost",
+          "sing"
         ],
         "nature": "Serious",
         "ivs": {
@@ -2755,16 +2755,16 @@
         }
       },
       {
-        "species": "sigilyph",
-        "nameEs": "Sigilyph",
+        "species": "pelipper",
+        "nameEs": "Pelipper",
         "level": 50,
-        "item": "lifeorb",
-        "ability": "magicguard",
+        "item": "petayaberry",
+        "ability": "keeneye",
         "moves": [
-          "thunderwave",
-          "psychic",
-          "airslash",
-          "ancientpower"
+          "tailwind",
+          "icebeam",
+          "hurricane",
+          "scald"
         ],
         "nature": "Serious",
         "ivs": {
@@ -2785,16 +2785,16 @@
         }
       },
       {
-        "species": "gyarados",
-        "nameEs": "Gyarados",
+        "species": "swellow",
+        "nameEs": "Swellow",
         "level": 50,
-        "item": "leftovers",
-        "ability": "intimidate",
+        "item": "liechiberry",
+        "ability": "guts",
         "moves": [
-          "dragondance",
-          "waterfall",
-          "icefang",
-          "substitute"
+          "doubleteam",
+          "bravebird",
+          "endeavor",
+          "uturn"
         ],
         "nature": "Serious",
         "ivs": {
@@ -2818,13 +2818,13 @@
         "species": "skarmory",
         "nameEs": "Skarmory",
         "level": 50,
-        "item": "rockyhelmet",
+        "item": "wacanberry",
         "ability": "keeneye",
         "moves": [
-          "aerialace",
-          "steelwing",
+          "roost",
+          "bravebird",
           "whirlwind",
-          "spikes"
+          "stealthrock"
         ],
         "nature": "Serious",
         "ivs": {
@@ -2849,12 +2849,12 @@
         "nameEs": "Tropius",
         "level": 50,
         "item": "yacheberry",
-        "ability": "solarpower",
+        "ability": "chlorophyll",
         "moves": [
-          "sunnyday",
-          "attract",
+          "substitute",
+          "leechseed",
           "airslash",
-          "solarbeam"
+          "roost"
         ],
         "nature": "Serious",
         "ivs": {
@@ -2878,13 +2878,13 @@
         "species": "honchkrow",
         "nameEs": "Honchkrow",
         "level": 50,
-        "item": "darkgem",
+        "item": "chartiberry",
         "ability": "superluck",
         "moves": [
-          "drillpeck",
-          "suckerpunch",
+          "bravebird",
+          "nightslash",
           "icywind",
-          "tailwind"
+          "heatwave"
         ],
         "nature": "Serious",
         "ivs": {
@@ -2907,16 +2907,16 @@
     ],
     "playerTeam": [
       {
-        "species": "raichu",
-        "nameEs": "Raichu",
+        "species": "ampharos",
+        "nameEs": "Ampharos",
         "level": 50,
-        "item": "lifeorb",
-        "ability": "lightningrod",
+        "item": "expertbelt",
+        "ability": "static",
         "moves": [
-          "encore",
-          "nastyplot",
-          "thunderbolt",
-          "grassknot"
+          "firepunch",
+          "bulldoze",
+          "thunderpunch",
+          "brickbreak"
         ],
         "nature": "Serious",
         "ivs": {
@@ -2937,16 +2937,16 @@
         }
       },
       {
-        "species": "cloyster",
-        "nameEs": "Cloyster",
+        "species": "crawdaunt",
+        "nameEs": "Crawdaunt",
         "level": 50,
-        "item": "focussash",
-        "ability": "skilllink",
+        "item": "choiceband",
+        "ability": "adaptability",
         "moves": [
-          "iciclespear",
-          "rapidspin",
-          "shellsmash",
-          "spikes"
+          "waterfall",
+          "crunch",
+          "superpower",
+          "toxic"
         ],
         "nature": "Serious",
         "ivs": {
@@ -2967,16 +2967,46 @@
         }
       },
       {
-        "species": "dodrio",
-        "nameEs": "Dodrio",
+        "species": "empoleon",
+        "nameEs": "Empoleon",
         "level": 50,
-        "item": "choicescarf",
-        "ability": "tangledfeet",
+        "item": "petayaberry",
+        "ability": "torrent",
         "moves": [
-          "bravebird",
+          "agility",
+          "substitute",
+          "surf",
+          "icebeam"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "miltank",
+        "nameEs": "Miltank",
+        "level": 50,
+        "item": "lumberry",
+        "ability": "thickfat",
+        "moves": [
+          "brickbreak",
+          "zenheadbutt",
           "return",
-          "pursuit",
-          "drillpeck"
+          "milkdrink"
         ],
         "nature": "Serious",
         "ivs": {
@@ -2997,46 +3027,16 @@
         }
       },
       {
-        "species": "tentacruel",
-        "nameEs": "Tentacruel",
-        "level": 50,
-        "item": "blacksludge",
-        "ability": "raindish",
-        "moves": [
-          "toxicspikes",
-          "rapidspin",
-          "scald",
-          "protect"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "crustle",
-        "nameEs": "Crustle",
+        "species": "gigalith",
+        "nameEs": "Gigalith",
         "level": 50,
         "item": "custapberry",
         "ability": "sturdy",
         "moves": [
           "stealthrock",
-          "spikes",
-          "stoneedge",
-          "xscissor"
+          "explosion",
+          "rockblast",
+          "earthquake"
         ],
         "nature": "Serious",
         "ivs": {
@@ -3057,16 +3057,16 @@
         }
       },
       {
-        "species": "staraptor",
-        "nameEs": "Staraptor",
+        "species": "victreebel",
+        "nameEs": "Victreebel",
         "level": 50,
-        "item": "choiceband",
-        "ability": "intimidate",
+        "item": "salacberry",
+        "ability": "chlorophyll",
         "moves": [
-          "bravebird",
-          "closecombat",
-          "quickattack",
-          "finalgambit"
+          "suckerpunch",
+          "leafblade",
+          "swordsdance",
+          "reflect"
         ],
         "nature": "Serious",
         "ivs": {
@@ -3093,35 +3093,35 @@
     }
   },
   "2027-03-27": {
-    "number": 160,
+    "number": 155,
     "date": "2027-03-27",
     "dataVersion": "f2-1",
     "trainer": {
-      "id": "petra",
-      "nameEs": "Petra",
-      "gender": "F",
+      "id": "erico",
+      "nameEs": "Erico",
+      "gender": "M",
       "category": "leader",
       "region": "hoenn",
-      "sprite": "petra",
-      "specialtyType": "Rock"
+      "sprite": "erico",
+      "specialtyType": "Electric"
     },
     "variant": {
-      "id": "petra-world-leaders",
+      "id": "erico-world-leaders",
       "sourceTournament": "World Leaders",
-      "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/World_Leaders_Tournament/Hoenn#Roxanne"
+      "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/World_Leaders_Tournament/Hoenn#Wattson"
     },
     "rivalTeam": [
       {
-        "species": "probopass",
-        "nameEs": "Probopass",
+        "species": "manectric",
+        "nameEs": "Manectric",
         "level": 50,
-        "item": "airballoon",
-        "ability": "magnetpull",
+        "item": "lifeorb",
+        "ability": "lightningrod",
         "moves": [
-          "painsplit",
-          "powergem",
-          "earthpower",
-          "thunderbolt"
+          "doubleteam",
+          "thunderwave",
+          "thunderbolt",
+          "flamethrower"
         ],
         "nature": "Serious",
         "ivs": {
@@ -3142,106 +3142,16 @@
         }
       },
       {
-        "species": "armaldo",
-        "nameEs": "Armaldo",
-        "level": 50,
-        "item": "lumberry",
-        "ability": "battlearmor",
-        "moves": [
-          "rockpolish",
-          "earthquake",
-          "xscissor",
-          "rockslide"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "cradily",
-        "nameEs": "Cradily",
+        "species": "magnezone",
+        "nameEs": "Magnezone",
         "level": 50,
         "item": "leftovers",
-        "ability": "suctioncups",
-        "moves": [
-          "rockslide",
-          "gigadrain",
-          "amnesia",
-          "toxic"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "aggron",
-        "nameEs": "Aggron",
-        "level": 50,
-        "item": "focussash",
-        "ability": "rockhead",
-        "moves": [
-          "metalburst",
-          "avalanche",
-          "ironhead",
-          "headsmash"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "carracosta",
-        "nameEs": "Carracosta",
-        "level": 50,
-        "item": "watergem",
         "ability": "sturdy",
         "moves": [
-          "shellsmash",
-          "rockslide",
-          "aquajet",
-          "waterfall"
+          "thunderbolt",
+          "toxic",
+          "flashcannon",
+          "protect"
         ],
         "nature": "Serious",
         "ivs": {
@@ -3262,16 +3172,106 @@
         }
       },
       {
-        "species": "golem",
-        "nameEs": "Golem",
+        "species": "electrode",
+        "nameEs": "Electrode",
         "level": 50,
-        "item": "groundgem",
-        "ability": "rockhead",
+        "item": "airballoon",
+        "ability": "static",
         "moves": [
-          "focuspunch",
+          "swagger",
+          "thunderwave",
+          "thunder",
+          "signalbeam"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "rotomwash",
+        "nameEs": "Rotom",
+        "level": 50,
+        "item": "widelens",
+        "ability": "levitate",
+        "moves": [
+          "willowisp",
+          "hydropump",
+          "thunder",
+          "hex"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "ampharos",
+        "nameEs": "Ampharos",
+        "level": 50,
+        "item": "expertbelt",
+        "ability": "static",
+        "moves": [
           "firepunch",
-          "earthquake",
-          "protect"
+          "bulldoze",
+          "thunderpunch",
+          "brickbreak"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "raichu",
+        "nameEs": "Raichu",
+        "level": 50,
+        "item": "focussash",
+        "ability": "static",
+        "moves": [
+          "swagger",
+          "thunder",
+          "grassknot",
+          "focusblast"
         ],
         "nature": "Serious",
         "ivs": {
@@ -3480,35 +3480,95 @@
     }
   },
   "2027-03-28": {
-    "number": 161,
+    "number": 156,
     "date": "2027-03-28",
     "dataVersion": "f2-1",
     "trainer": {
-      "id": "morti",
-      "nameEs": "Morti",
+      "id": "lectro",
+      "nameEs": "Lectro",
       "gender": "M",
       "category": "leader",
-      "region": "johto",
-      "sprite": "morti",
-      "specialtyType": "Ghost"
+      "region": "sinnoh",
+      "sprite": "lectro",
+      "specialtyType": "Electric"
     },
     "variant": {
-      "id": "morti-johto-leaders",
-      "sourceTournament": "Johto Leaders",
-      "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/Johto_Leaders_Tournament#Morty"
+      "id": "lectro-sinnoh-leaders",
+      "sourceTournament": "Sinnoh Leaders",
+      "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/Sinnoh_Leaders_Tournament#Volkner"
     },
     "rivalTeam": [
       {
-        "species": "gengar",
-        "nameEs": "Gengar",
+        "species": "electivire",
+        "nameEs": "Electivire",
         "level": 50,
-        "item": "petayaberry",
-        "ability": "levitate",
+        "item": "salacberry",
+        "ability": "motordrive",
         "moves": [
-          "shadowball",
+          "brickbreak",
+          "bulldoze",
+          "wildcharge",
+          "icepunch"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "luxray",
+        "nameEs": "Luxray",
+        "level": 50,
+        "item": "shucaberry",
+        "ability": "rivalry",
+        "moves": [
+          "superpower",
+          "crunch",
+          "wildcharge",
+          "thunderwave"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "raichu",
+        "nameEs": "Raichu",
+        "level": 50,
+        "item": "grassgem",
+        "ability": "static",
+        "moves": [
           "focusblast",
-          "darkpulse",
-          "hypnosis"
+          "grassknot",
+          "charge",
+          "chargebeam"
         ],
         "nature": "Serious",
         "ivs": {
@@ -3529,45 +3589,15 @@
         }
       },
       {
-        "species": "mismagius",
-        "nameEs": "Mismagius",
+        "species": "rotom",
+        "nameEs": "Rotom",
         "level": 50,
-        "item": "kasibberry",
+        "item": "colburberry",
         "ability": "levitate",
         "moves": [
-          "shadowball",
-          "powergem",
-          "perishsong",
-          "painsplit"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "banette",
-        "nameEs": "Banette",
-        "level": 50,
-        "item": "liechiberry",
-        "ability": "frisk",
-        "moves": [
-          "shadowclaw",
-          "suckerpunch",
-          "curse",
+          "hex",
+          "painsplit",
+          "discharge",
           "willowisp"
         ],
         "nature": "Serious",
@@ -3589,76 +3619,46 @@
         }
       },
       {
-        "species": "dusknoir",
-        "nameEs": "Dusknoir",
+        "species": "jolteon",
+        "nameEs": "Jolteon",
         "level": 50,
         "item": "sitrusberry",
-        "ability": "pressure",
+        "ability": "voltabsorb",
         "moves": [
-          "shadowpunch",
-          "bulldoze",
-          "thunderpunch",
-          "painsplit"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "sableye",
-        "nameEs": "Sableye",
-        "level": 50,
-        "item": "ganlonberry",
-        "ability": "stall",
-        "moves": [
-          "ominouswind",
-          "foulplay",
-          "calmmind",
-          "recover"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "froslass",
-        "nameEs": "Froslass",
-        "level": 50,
-        "item": "icegem",
-        "ability": "snowcloak",
-        "moves": [
-          "confuseray",
+          "shadowball",
+          "charm",
           "thunderbolt",
-          "icebeam",
-          "shadowball"
+          "wish"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "electrode",
+        "nameEs": "Electrode",
+        "level": 50,
+        "item": "electricgem",
+        "ability": "soundproof",
+        "moves": [
+          "taunt",
+          "torment",
+          "electroball",
+          "signalbeam"
         ],
         "nature": "Serious",
         "ivs": {
@@ -3681,16 +3681,16 @@
     ],
     "playerTeam": [
       {
-        "species": "toxicroak",
-        "nameEs": "Toxicroak",
+        "species": "breloom",
+        "nameEs": "Breloom",
         "level": 50,
-        "item": "payapaberry",
-        "ability": "anticipation",
+        "item": "focussash",
+        "ability": "effectspore",
         "moves": [
-          "suckerpunch",
-          "substitute",
+          "spore",
+          "stoneedge",
           "drainpunch",
-          "bulkup"
+          "machpunch"
         ],
         "nature": "Serious",
         "ivs": {
@@ -3771,36 +3771,6 @@
         }
       },
       {
-        "species": "electrode",
-        "nameEs": "Electrode",
-        "level": 50,
-        "item": "airballoon",
-        "ability": "soundproof",
-        "moves": [
-          "swagger",
-          "thunderwave",
-          "thunder",
-          "signalbeam"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
         "species": "marowak",
         "nameEs": "Marowak",
         "level": 50,
@@ -3859,6 +3829,36 @@
           "spd": 0,
           "spe": 0
         }
+      },
+      {
+        "species": "tauros",
+        "nameEs": "Tauros",
+        "level": 50,
+        "item": "lifeorb",
+        "ability": "sheerforce",
+        "moves": [
+          "rockclimb",
+          "earthquake",
+          "fireblast",
+          "zenheadbutt"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
       }
     ],
     "meta": {
@@ -3867,185 +3867,185 @@
     }
   },
   "2027-03-29": {
-    "number": 162,
+    "number": 157,
     "date": "2027-03-29",
     "dataVersion": "f2-1",
     "trainer": {
-      "id": "camila",
-      "nameEs": "Camila",
-      "gender": "F",
+      "id": "anton",
+      "nameEs": "Antón",
+      "gender": "M",
       "category": "leader",
-      "region": "unova",
-      "sprite": "camila",
-      "specialtyType": "Electric"
+      "region": "johto",
+      "sprite": "anton",
+      "specialtyType": "Bug"
     },
     "variant": {
-      "id": "camila-world-leaders",
+      "id": "anton-world-leaders",
       "sourceTournament": "World Leaders",
-      "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/World_Leaders_Tournament/Unova#Elesa"
+      "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/World_Leaders_Tournament/Johto#Bugsy"
     },
     "rivalTeam": [
       {
-        "species": "zebstrika",
-        "nameEs": "Zebstrika",
-        "level": 50,
-        "item": "lifeorb",
-        "ability": "lightningrod",
-        "moves": [
-          "wildcharge",
-          "overheat",
-          "return",
-          "quickattack"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "ampharos",
-        "nameEs": "Ampharos",
-        "level": 50,
-        "item": "shucaberry",
-        "ability": "static",
-        "moves": [
-          "focusblast",
-          "powergem",
-          "signalbeam",
-          "discharge"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "luxray",
-        "nameEs": "Luxray",
-        "level": 50,
-        "item": "expertbelt",
-        "ability": "rivalry",
-        "moves": [
-          "firefang",
-          "wildcharge",
-          "icefang",
-          "quickattack"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "emolga",
-        "nameEs": "Emolga",
-        "level": 50,
-        "item": "flyinggem",
-        "ability": "static",
-        "moves": [
-          "wildcharge",
-          "uturn",
-          "acrobatics",
-          "charm"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "eelektross",
-        "nameEs": "Eelektross",
-        "level": 50,
-        "item": "choiceband",
-        "ability": "levitate",
-        "moves": [
-          "brickbreak",
-          "thunderpunch",
-          "firepunch",
-          "dragonclaw"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "stunfisk",
-        "nameEs": "Stunfisk",
+        "species": "scizor",
+        "nameEs": "Scizor",
         "level": 50,
         "item": "sitrusberry",
-        "ability": "limber",
+        "ability": "swarm",
         "moves": [
-          "earthpower",
-          "foulplay",
-          "scald",
-          "discharge"
+          "swordsdance",
+          "acrobatics",
+          "bulletpunch",
+          "uturn"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "shuckle",
+        "nameEs": "Shuckle",
+        "level": 50,
+        "item": "rockyhelmet",
+        "ability": "gluttony",
+        "moves": [
+          "stoneedge",
+          "earthquake",
+          "powersplit",
+          "toxic"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "heracross",
+        "nameEs": "Heracross",
+        "level": 50,
+        "item": "choiceband",
+        "ability": "swarm",
+        "moves": [
+          "shadowclaw",
+          "megahorn",
+          "stoneedge",
+          "closecombat"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "pinsir",
+        "nameEs": "Pinsir",
+        "level": 50,
+        "item": "lifeorb",
+        "ability": "hypercutter",
+        "moves": [
+          "protect",
+          "guillotine",
+          "bulldoze",
+          "xscissor"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "armaldo",
+        "nameEs": "Armaldo",
+        "level": 50,
+        "item": "quickclaw",
+        "ability": "battlearmor",
+        "moves": [
+          "swordsdance",
+          "xscissor",
+          "stoneedge",
+          "earthquake"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "yanmega",
+        "nameEs": "Yanmega",
+        "level": 50,
+        "item": "focussash",
+        "ability": "tintedlens",
+        "moves": [
+          "bugbuzz",
+          "gigadrain",
+          "protect",
+          "airslash"
         ],
         "nature": "Serious",
         "ivs": {
@@ -4098,16 +4098,16 @@
         }
       },
       {
-        "species": "kingdra",
-        "nameEs": "Kingdra",
+        "species": "probopass",
+        "nameEs": "Probopass",
         "level": 50,
-        "item": "habanberry",
-        "ability": "sniper",
+        "item": "airballoon",
+        "ability": "magnetpull",
         "moves": [
-          "raindance",
-          "hydropump",
-          "icebeam",
-          "dragonpulse"
+          "stealthrock",
+          "earthpower",
+          "discharge",
+          "painsplit"
         ],
         "nature": "Serious",
         "ivs": {
@@ -4254,133 +4254,44 @@
     }
   },
   "2027-10-30": {
-    "number": 377,
+    "number": 372,
     "date": "2027-10-30",
     "dataVersion": "f2-1",
     "trainer": {
-      "id": "cintia",
-      "nameEs": "Cintia",
+      "id": "candela",
+      "nameEs": "Candela",
       "gender": "F",
-      "category": "champion",
-      "region": "sinnoh",
-      "sprite": "cintia"
+      "category": "leader",
+      "region": "hoenn",
+      "sprite": "candela",
+      "specialtyType": "Fire"
     },
     "variant": {
-      "id": "cintia-champions",
-      "sourceTournament": "Champions",
-      "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/Champions_Tournament#Cynthia"
+      "id": "candela-world-leaders",
+      "sourceTournament": "World Leaders",
+      "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/World_Leaders_Tournament/Hoenn#Flannery"
     },
     "rivalTeam": [
       {
-        "species": "garchomp",
-        "nameEs": "Garchomp",
-        "level": 50,
-        "item": "focussash",
-        "ability": "sandveil",
-        "moves": [
-          "outrage",
-          "earthquake",
-          "stoneedge",
-          "swordsdance"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "spiritomb",
-        "nameEs": "Spiritomb",
-        "level": 50,
-        "item": "rockyhelmet",
-        "ability": "pressure",
-        "moves": [
-          "suckerpunch",
-          "protect",
-          "willowisp",
-          "painsplit"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "roserade",
-        "nameEs": "Roserade",
-        "level": 50,
-        "item": "whiteherb",
-        "ability": "poisonpoint",
-        "moves": [
-          "leafstorm",
-          "sludgebomb",
-          "shadowball",
-          "sleeppowder"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "togekiss",
-        "nameEs": "Togekiss",
+        "species": "torkoal",
+        "nameEs": "Torkoal",
         "level": 50,
         "item": "leftovers",
-        "ability": "serenegrace",
+        "ability": "whitesmoke",
         "moves": [
-          "airslash",
-          "aurasphere",
-          "shadowball",
-          "grassknot"
+          "overheat",
+          "stoneedge",
+          "earthquake",
+          "yawn"
         ],
         "nature": "Serious",
         "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
         },
         "evs": {
           "hp": 0,
@@ -4392,25 +4303,115 @@
         }
       },
       {
-        "species": "lucario",
-        "nameEs": "Lucario",
+        "species": "camerupt",
+        "nameEs": "Camerupt",
+        "level": 50,
+        "item": "passhoberry",
+        "ability": "magmaarmor",
+        "moves": [
+          "willowisp",
+          "flamethrower",
+          "earthpower",
+          "fissure"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "chandelure",
+        "nameEs": "Chandelure",
+        "level": 50,
+        "item": "focussash",
+        "ability": "flamebody",
+        "moves": [
+          "flamecharge",
+          "shadowball",
+          "flamethrower",
+          "calmmind"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "blaziken",
+        "nameEs": "Blaziken",
+        "level": 50,
+        "item": "airballoon",
+        "ability": "blaze",
+        "moves": [
+          "earthquake",
+          "stoneedge",
+          "flamecharge",
+          "highjumpkick"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "houndoom",
+        "nameEs": "Houndoom",
         "level": 50,
         "item": "lifeorb",
-        "ability": "innerfocus",
+        "ability": "flashfire",
         "moves": [
-          "closecombat",
-          "darkpulse",
-          "stoneedge",
-          "extremespeed"
+          "willowisp",
+          "suckerpunch",
+          "overheat",
+          "flamecharge"
         ],
         "nature": "Serious",
         "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
         },
         "evs": {
           "hp": 0,
@@ -4422,25 +4423,25 @@
         }
       },
       {
-        "species": "glaceon",
-        "nameEs": "Glaceon",
+        "species": "magmortar",
+        "nameEs": "Magmortar",
         "level": 50,
-        "item": "choicescarf",
-        "ability": "snowcloak",
+        "item": "shucaberry",
+        "ability": "flamebody",
         "moves": [
-          "icebeam",
-          "shadowball",
-          "signalbeam",
-          "waterpulse"
+          "psychic",
+          "flamecharge",
+          "thunderbolt",
+          "fireblast"
         ],
         "nature": "Serious",
         "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
         },
         "evs": {
           "hp": 0,
@@ -4454,175 +4455,175 @@
     ],
     "playerTeam": [
       {
-        "species": "gyarados",
-        "nameEs": "Gyarados",
+        "species": "alakazam",
+        "nameEs": "Alakazam",
         "level": 50,
-        "item": "wacanberry",
-        "ability": "intimidate",
-        "moves": [
-          "stoneedge",
-          "aquatail",
-          "dragondance",
-          "outrage"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "mawile",
-        "nameEs": "Mawile",
-        "level": 50,
-        "item": "leftovers",
-        "ability": "intimidate",
-        "moves": [
-          "irondefense",
-          "batonpass",
-          "substitute",
-          "taunt"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "samurott",
-        "nameEs": "Samurott",
-        "level": 50,
-        "item": "lumberry",
-        "ability": "torrent",
-        "moves": [
-          "swordsdance",
-          "razorshell",
-          "aquajet",
-          "megahorn"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "ambipom",
-        "nameEs": "Ambipom",
-        "level": 50,
-        "item": "normalgem",
-        "ability": "technician",
-        "moves": [
-          "return",
-          "acrobatics",
-          "fakeout",
-          "firepunch"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "accelgor",
-        "nameEs": "Accelgor",
-        "level": 50,
-        "item": "brightpowder",
-        "ability": "stickyhold",
-        "moves": [
-          "doubleteam",
-          "focusblast",
-          "bugbuzz",
-          "gigadrain"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "glalie",
-        "nameEs": "Glalie",
-        "level": 50,
-        "item": "focussash",
+        "item": "kasibberry",
         "ability": "innerfocus",
         "moves": [
-          "spikes",
-          "taunt",
-          "explosion",
-          "icebeam"
+          "psychic",
+          "shadowball",
+          "focusblast",
+          "chargebeam"
         ],
         "nature": "Serious",
         "ivs": {
-          "hp": 25,
-          "atk": 25,
-          "def": 25,
-          "spa": 25,
-          "spd": 25,
-          "spe": 25
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "mothim",
+        "nameEs": "Mothim",
+        "level": 50,
+        "item": "choicespecs",
+        "ability": "tintedlens",
+        "moves": [
+          "bugbuzz",
+          "airslash",
+          "sleeptalk",
+          "uturn"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "cradily",
+        "nameEs": "Cradily",
+        "level": 50,
+        "item": "leftovers",
+        "ability": "suctioncups",
+        "moves": [
+          "rockslide",
+          "gigadrain",
+          "amnesia",
+          "toxic"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "omastar",
+        "nameEs": "Omastar",
+        "level": 50,
+        "item": "lifeorb",
+        "ability": "swiftswim",
+        "moves": [
+          "hydropump",
+          "icebeam",
+          "shellsmash",
+          "earthpower"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "claydol",
+        "nameEs": "Claydol",
+        "level": 50,
+        "item": "ganlonberry",
+        "ability": "levitate",
+        "moves": [
+          "earthpower",
+          "sandstorm",
+          "psychic",
+          "cosmicpower"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "raichu",
+        "nameEs": "Raichu",
+        "level": 50,
+        "item": "liechiberry",
+        "ability": "static",
+        "moves": [
+          "return",
+          "wildcharge",
+          "knockoff",
+          "brickbreak"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
         },
         "evs": {
           "hp": 0,
@@ -4640,35 +4641,35 @@
     }
   },
   "2027-10-31": {
-    "number": 378,
+    "number": 373,
     "date": "2027-10-31",
     "dataVersion": "f2-1",
     "trainer": {
-      "id": "yasmina",
-      "nameEs": "Yasmina",
-      "gender": "F",
+      "id": "roco",
+      "nameEs": "Roco",
+      "gender": "M",
       "category": "leader",
-      "region": "johto",
-      "sprite": "yasmina",
-      "specialtyType": "Steel"
+      "region": "sinnoh",
+      "sprite": "roco",
+      "specialtyType": "Rock"
     },
     "variant": {
-      "id": "yasmina-world-leaders",
+      "id": "roco-world-leaders",
       "sourceTournament": "World Leaders",
-      "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/World_Leaders_Tournament/Johto#Jasmine"
+      "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/World_Leaders_Tournament/Sinnoh#Roark"
     },
     "rivalTeam": [
       {
-        "species": "steelix",
-        "nameEs": "Steelix",
+        "species": "rampardos",
+        "nameEs": "Rampardos",
         "level": 50,
-        "item": "rockyhelmet",
-        "ability": "rockhead",
+        "item": "focussash",
+        "ability": "moldbreaker",
         "moves": [
-          "curse",
-          "stealthrock",
+          "stoneedge",
+          "superpower",
           "earthquake",
-          "gyroball"
+          "avalanche"
         ],
         "nature": "Serious",
         "ivs": {
@@ -4689,106 +4690,16 @@
         }
       },
       {
-        "species": "magnezone",
-        "nameEs": "Magnezone",
-        "level": 50,
-        "item": "quickclaw",
-        "ability": "magnetpull",
-        "moves": [
-          "thunderbolt",
-          "flashcannon",
-          "mirrorcoat",
-          "magnetrise"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "forretress",
-        "nameEs": "Forretress",
-        "level": 50,
-        "item": "ironball",
-        "ability": "sturdy",
-        "moves": [
-          "earthquake",
-          "explosion",
-          "toxic",
-          "gyroball"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "skarmory",
-        "nameEs": "Skarmory",
-        "level": 50,
-        "item": "leftovers",
-        "ability": "sturdy",
-        "moves": [
-          "curse",
-          "stealthrock",
-          "roost",
-          "aerialace"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "metagross",
-        "nameEs": "Metagross",
+        "species": "probopass",
+        "nameEs": "Probopass",
         "level": 50,
         "item": "airballoon",
-        "ability": "clearbody",
+        "ability": "sturdy",
         "moves": [
-          "earthquake",
-          "explosion",
-          "meteormash",
-          "bulletpunch"
+          "stealthrock",
+          "earthpower",
+          "discharge",
+          "painsplit"
         ],
         "nature": "Serious",
         "ivs": {
@@ -4809,16 +4720,106 @@
         }
       },
       {
-        "species": "lucario",
-        "nameEs": "Lucario",
+        "species": "archeops",
+        "nameEs": "Archeops",
         "level": 50,
         "item": "lifeorb",
-        "ability": "innerfocus",
+        "ability": "defeatist",
         "moves": [
-          "aurasphere",
-          "crunch",
           "stoneedge",
-          "extremespeed"
+          "earthquake",
+          "focusblast",
+          "quickattack"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "crustle",
+        "nameEs": "Crustle",
+        "level": 50,
+        "item": "powerherb",
+        "ability": "shellarmor",
+        "moves": [
+          "rockslide",
+          "xscissor",
+          "solarbeam",
+          "shellsmash"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "golem",
+        "nameEs": "Golem",
+        "level": 50,
+        "item": "choiceband",
+        "ability": "rockhead",
+        "moves": [
+          "stoneedge",
+          "earthquake",
+          "suckerpunch",
+          "explosion"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "relicanth",
+        "nameEs": "Relicanth",
+        "level": 50,
+        "item": "liechiberry",
+        "ability": "rockhead",
+        "moves": [
+          "headsmash",
+          "waterfall",
+          "rockpolish",
+          "yawn"
         ],
         "nature": "Serious",
         "ivs": {
@@ -4841,45 +4842,15 @@
     ],
     "playerTeam": [
       {
-        "species": "snorlax",
-        "nameEs": "Snorlax",
+        "species": "bronzong",
+        "nameEs": "Bronzong",
         "level": 50,
-        "item": "quickclaw",
-        "ability": "immunity",
-        "moves": [
-          "bodyslam",
-          "earthquake",
-          "crunch",
-          "seedbomb"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "solrock",
-        "nameEs": "Solrock",
-        "level": 50,
-        "item": "liechiberry",
+        "item": "rockyhelmet",
         "ability": "levitate",
         "moves": [
-          "zenheadbutt",
-          "rockslide",
-          "fireblast",
+          "hypnosis",
+          "ironhead",
+          "earthquake",
           "trickroom"
         ],
         "nature": "Serious",
@@ -4901,16 +4872,16 @@
         }
       },
       {
-        "species": "torterra",
-        "nameEs": "Torterra",
+        "species": "ursaring",
+        "nameEs": "Ursaring",
         "level": 50,
-        "item": "choiceband",
-        "ability": "overgrow",
+        "item": "toxicorb",
+        "ability": "quickfeet",
         "moves": [
-          "woodhammer",
+          "facade",
           "earthquake",
-          "stoneedge",
-          "bulletseed"
+          "crunch",
+          "swordsdance"
         ],
         "nature": "Serious",
         "ivs": {
@@ -4931,46 +4902,46 @@
         }
       },
       {
-        "species": "seviper",
-        "nameEs": "Seviper",
+        "species": "tentacruel",
+        "nameEs": "Tentacruel",
+        "level": 50,
+        "item": "apicotberry",
+        "ability": "liquidooze",
+        "moves": [
+          "scald",
+          "toxicspikes",
+          "gigadrain",
+          "barrier"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "samurott",
+        "nameEs": "Samurott",
         "level": 50,
         "item": "lifeorb",
-        "ability": "shedskin",
+        "ability": "torrent",
         "moves": [
-          "sludgebomb",
-          "flamethrower",
-          "gigadrain",
-          "suckerpunch"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "mantine",
-        "nameEs": "Mantine",
-        "level": 50,
-        "item": "petayaberry",
-        "ability": "swiftswim",
-        "moves": [
-          "signalbeam",
-          "icebeam",
           "hydropump",
-          "agility"
+          "icebeam",
+          "hiddenpower",
+          "megahorn"
         ],
         "nature": "Serious",
         "ivs": {
@@ -4991,16 +4962,46 @@
         }
       },
       {
-        "species": "excadrill",
-        "nameEs": "Excadrill",
+        "species": "rotomheat",
+        "nameEs": "Rotom",
+        "level": 50,
+        "item": "flameorb",
+        "ability": "levitate",
+        "moves": [
+          "trick",
+          "overheat",
+          "thunderbolt",
+          "painsplit"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "volbeat",
+        "nameEs": "Volbeat",
         "level": 50,
         "item": "leftovers",
-        "ability": "sandforce",
+        "ability": "prankster",
         "moves": [
-          "earthquake",
-          "ironhead",
-          "protect",
-          "rapidspin"
+          "uturn",
+          "roost",
+          "encore",
+          "sunnyday"
         ],
         "nature": "Serious",
         "ivs": {
@@ -5027,35 +5028,95 @@
     }
   },
   "2027-11-01": {
-    "number": 379,
+    "number": 374,
     "date": "2027-11-01",
     "dataVersion": "f2-1",
     "trainer": {
-      "id": "yakon",
-      "nameEs": "Yakón",
+      "id": "ciprian",
+      "nameEs": "Ciprián",
       "gender": "M",
       "category": "leader",
       "region": "unova",
-      "sprite": "yakon",
-      "specialtyType": "Ground"
+      "sprite": "ciprian",
+      "specialtyType": "Water"
     },
     "variant": {
-      "id": "yakon-world-leaders",
+      "id": "ciprian-world-leaders",
       "sourceTournament": "World Leaders",
-      "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/World_Leaders_Tournament/Unova#Clay"
+      "sourceUrl": "https://bulbapedia.bulbagarden.net/wiki/World_Leaders_Tournament/Unova#Marlon"
     },
     "rivalTeam": [
       {
-        "species": "excadrill",
-        "nameEs": "Excadrill",
+        "species": "jellicent",
+        "nameEs": "Jellicent",
+        "level": 50,
+        "item": "expertbelt",
+        "ability": "waterabsorb",
+        "moves": [
+          "hydropump",
+          "energyball",
+          "shadowball",
+          "psychic"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "carracosta",
+        "nameEs": "Carracosta",
+        "level": 50,
+        "item": "lumberry",
+        "ability": "solidrock",
+        "moves": [
+          "rockslide",
+          "shellsmash",
+          "aquajet",
+          "waterfall"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "starmie",
+        "nameEs": "Starmie",
         "level": 50,
         "item": "focussash",
-        "ability": "sandrush",
+        "ability": "naturalcure",
         "moves": [
-          "drillrun",
-          "rockslide",
-          "submission",
-          "swordsdance"
+          "thunderbolt",
+          "reflect",
+          "scald",
+          "lightscreen"
         ],
         "nature": "Serious",
         "ivs": {
@@ -5076,106 +5137,16 @@
         }
       },
       {
-        "species": "flygon",
-        "nameEs": "Flygon",
+        "species": "quagsire",
+        "nameEs": "Quagsire",
         "level": 50,
-        "item": "liechiberry",
-        "ability": "levitate",
+        "item": "rindoberry",
+        "ability": "damp",
         "moves": [
-          "earthpower",
-          "fireblast",
-          "outrage",
-          "stoneedge"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "krookodile",
-        "nameEs": "Krookodile",
-        "level": 50,
-        "item": "choiceband",
-        "ability": "moxie",
-        "moves": [
-          "earthquake",
-          "aquatail",
-          "rockslide",
-          "firefang"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "seismitoad",
-        "nameEs": "Seismitoad",
-        "level": 50,
-        "item": "lifeorb",
-        "ability": "swiftswim",
-        "moves": [
-          "grassknot",
-          "focusblast",
-          "earthpower",
-          "hydropump"
-        ],
-        "nature": "Serious",
-        "ivs": {
-          "hp": 20,
-          "atk": 20,
-          "def": 20,
-          "spa": 20,
-          "spd": 20,
-          "spe": 20
-        },
-        "evs": {
-          "hp": 0,
-          "atk": 0,
-          "def": 0,
-          "spa": 0,
-          "spd": 0,
-          "spe": 0
-        }
-      },
-      {
-        "species": "mamoswine",
-        "nameEs": "Mamoswine",
-        "level": 50,
-        "item": "icegem",
-        "ability": "snowcloak",
-        "moves": [
-          "fissure",
           "stoneedge",
-          "iceshard",
-          "earthquake"
+          "earthquake",
+          "waterfall",
+          "counter"
         ],
         "nature": "Serious",
         "ivs": {
@@ -5196,16 +5167,46 @@
         }
       },
       {
-        "species": "golurk",
-        "nameEs": "Golurk",
+        "species": "cloyster",
+        "nameEs": "Cloyster",
         "level": 50,
-        "item": "leftovers",
-        "ability": "klutz",
+        "item": "kingsrock",
+        "ability": "skilllink",
         "moves": [
-          "shadowpunch",
-          "substitute",
-          "focuspunch",
-          "earthquake"
+          "iceshard",
+          "iciclespear",
+          "rockblast",
+          "shellsmash"
+        ],
+        "nature": "Serious",
+        "ivs": {
+          "hp": 20,
+          "atk": 20,
+          "def": 20,
+          "spa": 20,
+          "spd": 20,
+          "spe": 20
+        },
+        "evs": {
+          "hp": 0,
+          "atk": 0,
+          "def": 0,
+          "spa": 0,
+          "spd": 0,
+          "spe": 0
+        }
+      },
+      {
+        "species": "wailord",
+        "nameEs": "Wailord",
+        "level": 50,
+        "item": "choicescarf",
+        "ability": "oblivious",
+        "moves": [
+          "waterspout",
+          "blizzard",
+          "bounce",
+          "fissure"
         ],
         "nature": "Serious",
         "ivs": {

@@ -42,7 +42,7 @@ Juego web diario estilo Daily Red contra los entrenadores del Pokémon World Tou
 
 ## Trampas conocidas
 
-- **`LAUNCH_DATE`** (`src/core/launch.ts`) es provisional (2026-10-19) y se fija el día del lanzamiento real (decisión de Jose). Cambiarla, o cambiar el roster, cambia los retos ya publicados y obliga a regenerar el snapshot `src/core/__snapshots__/challenge.reference.json`. Los tests eligen rival con `?trainer=<id>` (build con `VITE_TEST_HOOKS=1`) y no dependen de la fecha.
+- **`LAUNCH_DATE`** (`src/core/launch.ts`) es 2026-10-24, el lanzamiento (fijada por Jose). Cambiarla, o cambiar el roster o las reglas de generación, cambia los retos ya publicados y obliga a regenerar el snapshot `src/core/__snapshots__/challenge.reference.json`. Los tests eligen rival con `?trainer=<id>` (build con `VITE_TEST_HOOKS=1`) y no dependen de la fecha.
 - **`scripts/.cache`** no se versiona: los tests que comparan nombres y descripciones con PokeAPI se omiten con aviso si falta. Regenerar con `npm run gen:names` (necesita red).
 - **Fuentes externas**: Bulbapedia responde 403 (Cloudflare) y se lee vía Internet Archive; WikiDex devuelve 503 a ratos. Todo lo descargado se guarda en el repo; la app no depende de nada externo en tiempo de ejecución.
 - **Sprites**: `public/` pesa ~39 MB, pero la web solo descarga los sprites del reto del día. No precargar el pool entero.

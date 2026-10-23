@@ -28,7 +28,7 @@ Lo marcado **[F1, se amplía]** es alcance de F1 y crece en F2/F3. Lo marcado **
 ## 2. Decisiones cerradas
 
 1. Entrenadores de F1: Brock (2 variantes: Líderes de Kanto y Mundial), Misty, Camila, Plubio, Rojo y Máximo (adelantado de F2, ver PRD §0). Cubren `alwaysLeadsWith`, IV 20/25/30, primera fase con Mineral Evolutivo y habilidades dobles.
-2. `LAUNCH_DATE` provisional = 2026-10-19, constante editable en `src/core/launch.ts` (`src/config.ts` la reexporta). Una fecha anterior cuenta como `#1`. Es un apaño para que el 2026-10-21 toque Máximo con el roster de 6 (ciclo de 6 días, sin entrada nueva en `rosterSchedule`); se fija en F2 y entonces se regeneran los snapshots.
+2. `LAUNCH_DATE` = 2026-10-24 (lanzamiento, fijada por Jose el 23/10/2026; era provisional 2026-10-19), constante editable en `src/core/launch.ts` (`src/config.ts` la reexporta). Una fecha anterior cuenta como `#1`. Cambiarla obliga a regenerar el snapshot (README, «Lanzamiento»).
 3. Sprites: solo las especies y entrenadores de F1, descargados una vez al repo, con texto de reserva si falta alguno.
 4. **[regla]** Naturaleza neutra (Seria) si el set no la indica; se marca en los datos.
 5. Validación de datos en F1 como test unitario.
