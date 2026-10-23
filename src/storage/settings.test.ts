@@ -6,20 +6,31 @@ import { clearSettings, DEFAULT_SETTINGS, loadSettings, saveSettings, SETTINGS_K
 describe('ajustes en localStorage', () => {
   it('sin nada guardado, o sin almacenamiento, valen los de por defecto (x1)', () => {
     expect(loadSettings(new MemoryStorage())).toEqual(DEFAULT_SETTINGS)
-    expect(loadSettings(null)).toEqual({ speed: 1, moveAnimations: true })
+    expect(loadSettings(null)).toEqual({ speed: 1, moveAnimations: true, sound: true, volume: 70 })
   })
 
   it('guarda y recupera la velocidad', () => {
     const storage = new MemoryStorage()
-    saveSettings(storage, { speed: 4, moveAnimations: false })
-    expect(JSON.parse(storage.getItem(SETTINGS_KEY) as string)).toEqual({ version: 1, speed: 4, moveAnimations: false })
-    expect(loadSettings(storage)).toEqual({ speed: 4, moveAnimations: false })
+    saveSettings(storage, { speed: 4, moveAnimations: false, sound: false, volume: 35 })
+    expect(JSON.parse(storage.getItem(SETTINGS_KEY) as string)).toEqual({ version: 1, speed: 4, moveAnimations: false, sound: false, volume: 35 })
+    expect(loadSettings(storage)).toEqual({ speed: 4, moveAnimations: false, sound: false, volume: 35 })
   })
 
-  it('ajustes guardados antes de existir las animaciones: se leen activadas', () => {
+  it('ajustes guardados antes de existir las animaciones o el sonido: se leen con los de por defecto', () => {
     const storage = new MemoryStorage()
     storage.setItem(SETTINGS_KEY, JSON.stringify({ version: 1, speed: 2 }))
-    expect(loadSettings(storage)).toEqual({ speed: 2, moveAnimations: true })
+    expect(loadSettings(storage)).toEqual({ speed: 2, moveAnimations: true, sound: true, volume: 70 })
+  })
+
+  // UT-77 · Sonido y volumen (DEC-57).
+  it('un volumen fuera de 0-100, no entero o que no es número vale 70; el sonido que no es sí/no, activado', () => {
+    const storage = new MemoryStorage()
+    for (const volume of [-1, 101, 50.5, '60', null]) {
+      storage.setItem(SETTINGS_KEY, JSON.stringify({ version: 1, speed: 1, sound: 'no', volume }))
+      expect(loadSettings(storage), String(volume)).toMatchObject({ sound: true, volume: 70 })
+    }
+    storage.setItem(SETTINGS_KEY, JSON.stringify({ version: 1, speed: 1, sound: false, volume: 0 }))
+    expect(loadSettings(storage)).toMatchObject({ sound: false, volume: 0 })
   })
 
   it('un valor ilegible, de otra versión o una velocidad que no existe vuelven a los de por defecto', () => {
@@ -33,13 +44,13 @@ describe('ajustes en localStorage', () => {
   it('almacenamiento que lanza: no rompe', () => {
     const broken = { getItem: () => { throw new Error('bloqueado') }, setItem: () => { throw new Error('lleno') }, removeItem: () => { throw new Error('no') } } as unknown as Storage
     expect(loadSettings(broken)).toEqual(DEFAULT_SETTINGS)
-    expect(() => saveSettings(broken, { speed: 2, moveAnimations: true })).not.toThrow()
+    expect(() => saveSettings(broken, { ...DEFAULT_SETTINGS, speed: 2 })).not.toThrow()
     expect(() => clearSettings(broken)).not.toThrow()
   })
 
   it('borrar los ajustes quita la clave', () => {
     const storage = new MemoryStorage()
-    saveSettings(storage, { speed: 2, moveAnimations: true })
+    saveSettings(storage, { ...DEFAULT_SETTINGS, speed: 2 })
     clearSettings(storage)
     expect(storage.getItem(SETTINGS_KEY)).toBeNull()
   })

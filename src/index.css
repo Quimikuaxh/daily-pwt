@@ -457,6 +457,28 @@ img.sprite,
   --dots: #c83058;
 }
 
+.settings-volume {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+/* Deslizador de volumen: alto de 44 px para el dedo y los colores de los botones marcados. */
+.settings-volume input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  accent-color: #b81840;
+  cursor: pointer;
+}
+
+.settings-volume-value {
+  min-width: 4ch;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
 .settings-section .btn-danger {
   margin-top: 8px;
 }

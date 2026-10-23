@@ -14,7 +14,7 @@ type SettingsDialogProps = {
   onClose: () => void
 }
 
-/** Ajustes (PRD §10.6, decisiones del 22/10/2026): velocidad del combate, animaciones de movimientos y «Borrar datos locales»; sin tema claro/oscuro. */
+/** Ajustes (PRD §10.6, decisiones del 22 y 23/10/2026): velocidad del combate, animaciones de movimientos, sonido y volumen, y «Borrar datos locales»; sin tema claro/oscuro. */
 export function SettingsDialog({ settings, onChange, onClearData, onClose }: SettingsDialogProps) {
   const [confirming, setConfirming] = useState(false)
   const [cleared, setCleared] = useState(false)
@@ -55,6 +55,36 @@ export function SettingsDialog({ settings, onChange, onClearData, onClose }: Set
             ))}
           </div>
           <p className="settings-hint">{text.animationsHint}</p>
+        </section>
+        <section className="settings-section">
+          <h3 className="help-title" id="settings-sound">{text.soundTitle}</h3>
+          <div className="settings-options" role="group" aria-labelledby="settings-sound">
+            {[true, false].map((on) => (
+              <button
+                key={String(on)}
+                type="button"
+                className="btn btn-small settings-option"
+                aria-pressed={settings.sound === on}
+                onClick={() => onChange({ ...settings, sound: on })}
+              >
+                {on ? text.soundOn : text.soundOff}
+              </button>
+            ))}
+          </div>
+          <label className="settings-volume">
+            <span>{text.volumeLabel}</span>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              step={5}
+              value={settings.volume}
+              aria-valuetext={text.volumeValue(settings.volume)}
+              onChange={(event) => onChange({ ...settings, volume: Number(event.currentTarget.value) })}
+            />
+            <output className="settings-volume-value" aria-hidden="true">{text.volumeValue(settings.volume)}</output>
+          </label>
+          <p className="settings-hint">{text.soundHint}</p>
         </section>
         <section className="settings-section">
           <h3 className="help-title">{text.dataTitle}</h3>

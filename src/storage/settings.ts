@@ -2,12 +2,17 @@
 export type BattleSpeed = 1 | 2 | 4
 export const SPEEDS: readonly BattleSpeed[] = [1, 2, 4]
 
-/** `moveAnimations`: animaciones de movimientos en combate (DEC-53), activadas por defecto. */
-export type Settings = { speed: BattleSpeed; moveAnimations: boolean }
+/**
+ * `moveAnimations`: animaciones de movimientos en combate (DEC-53), activadas por defecto. `sound` y `volume` (0-100): música y efectos
+ * (DEC-57), activados y a 70 por defecto (decisión de Jose); el volumen vale para los dos.
+ */
+export type Settings = { speed: BattleSpeed; moveAnimations: boolean; sound: boolean; volume: number }
 
 export const SETTINGS_KEY = 'daily-pwt:settings'
 const SCHEMA_VERSION = 1
-export const DEFAULT_SETTINGS: Settings = { speed: 1, moveAnimations: true }
+export const DEFAULT_SETTINGS: Settings = { speed: 1, moveAnimations: true, sound: true, volume: 70 }
+
+const isVolume = (value: unknown): value is number => typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 100
 
 /**
  * Ajustes del jugador en `localStorage` (clave `daily-pwt:settings`), aparte del progreso: son una comodidad de este navegador.
@@ -19,12 +24,15 @@ export function loadSettings(storage: Storage | null): Settings {
     if (!raw) return DEFAULT_SETTINGS
     const parsed: unknown = JSON.parse(raw)
     if (typeof parsed !== 'object' || parsed === null) return DEFAULT_SETTINGS
-    const { version, speed, moveAnimations } = parsed as { version?: unknown; speed?: unknown; moveAnimations?: unknown }
+    const { version, speed, moveAnimations, sound, volume } = parsed as { version?: unknown; speed?: unknown; moveAnimations?: unknown; sound?: unknown; volume?: unknown }
     if (version !== SCHEMA_VERSION) return DEFAULT_SETTINGS
     return {
       speed: SPEEDS.includes(speed as BattleSpeed) ? (speed as BattleSpeed) : DEFAULT_SETTINGS.speed,
       // Ajustes guardados antes de existir la opción: activadas.
       moveAnimations: typeof moveAnimations === 'boolean' ? moveAnimations : DEFAULT_SETTINGS.moveAnimations,
+      // Igual con el sonido: los guardados antes de existir se leen con los de por defecto.
+      sound: typeof sound === 'boolean' ? sound : DEFAULT_SETTINGS.sound,
+      volume: isVolume(volume) ? volume : DEFAULT_SETTINGS.volume,
     }
   } catch {
     return DEFAULT_SETTINGS

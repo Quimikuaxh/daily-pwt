@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { LocalStorageStore } from '../../storage/localStorageStore'
 import { MemoryStorage } from '../../test-utils/memoryStorage'
@@ -36,14 +36,28 @@ describe('AppMenu', () => {
 
   it('Ajustes: la velocidad marcada es la guardada y cambiarla avisa', async () => {
     const onSettingsChange = vi.fn()
-    const { user } = mount({ settings: { speed: 2, moveAnimations: true }, onSettingsChange })
+    const { user } = mount({ settings: { speed: 2, moveAnimations: true, sound: true, volume: 70 }, onSettingsChange })
     await user.click(screen.getByRole('button', { name: 'Ajustes' }))
     expect(screen.getByRole('button', { name: 'x2' })).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByRole('button', { name: 'x1' })).toHaveAttribute('aria-pressed', 'false')
     await user.click(screen.getByRole('button', { name: 'x4' }))
-    expect(onSettingsChange).toHaveBeenCalledWith({ speed: 4, moveAnimations: true })
+    expect(onSettingsChange).toHaveBeenCalledWith({ speed: 4, moveAnimations: true, sound: true, volume: 70 })
     await user.click(screen.getByRole('button', { name: 'Desactivadas' }))
-    expect(onSettingsChange).toHaveBeenLastCalledWith({ speed: 2, moveAnimations: false })
+    expect(onSettingsChange).toHaveBeenLastCalledWith({ speed: 2, moveAnimations: false, sound: true, volume: 70 })
+  })
+
+  // UT-77 · Sonido y volumen (DEC-57).
+  it('Ajustes: silenciar y mover el volumen avisan con el valor nuevo; el volumen se lee en %', async () => {
+    const onSettingsChange = vi.fn()
+    const { user } = mount({ settings: { speed: 1, moveAnimations: true, sound: true, volume: 70 }, onSettingsChange })
+    await user.click(screen.getByRole('button', { name: 'Ajustes' }))
+    expect(screen.getByRole('button', { name: 'Activado' })).toHaveAttribute('aria-pressed', 'true')
+    await user.click(screen.getByRole('button', { name: 'Silenciado' }))
+    expect(onSettingsChange).toHaveBeenLastCalledWith({ speed: 1, moveAnimations: true, sound: false, volume: 70 })
+    const slider = screen.getByRole('slider', { name: 'Volumen' })
+    expect(slider).toHaveAttribute('aria-valuetext', '70 %')
+    fireEvent.change(slider, { target: { value: '40' } })
+    expect(onSettingsChange).toHaveBeenLastCalledWith({ speed: 1, moveAnimations: true, sound: true, volume: 40 })
   })
 
   it('Borrar datos locales pide confirmación; cancelar no borra y confirmar borra y avisa', async () => {

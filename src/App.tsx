@@ -11,6 +11,7 @@ import { clearSettings, DEFAULT_SETTINGS, loadSettings, saveSettings, type Setti
 import type { MenuContext } from './ui/menu/AppMenu'
 import type { BattleMode, DayRecord, GameStore, VoidReason } from './storage/gameStore'
 import { readTestHooks } from './testHooks'
+import { getAudio } from './audio/audio'
 import { BattleScreen } from './ui/battle/BattleScreen'
 import { preloadBattleImages } from './ui/battle/preloadAssets'
 import { ResultScreen } from './ui/result/ResultScreen'
@@ -50,6 +51,8 @@ export default function App({ data, createClient, store: injectedStore }: AppPro
   const [battlesStarted, setBattlesStarted] = useState(0)
 
   useEffect(() => preloadBattleImages(), [])
+  // Volumen y silencio de Ajustes, al instante en lo que suene (DEC-57).
+  useEffect(() => getAudio().configure({ volume: settings.volume, muted: !settings.sound }), [settings.volume, settings.sound])
 
   const nowIso = () => new Date().toISOString()
 
