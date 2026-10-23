@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { battleMusicFor, getAudio, SFX_IDS } from '../../audio/audio'
 import type { BattleClient } from '../../battle/client'
 import type { AiKind, BattleRequest, EngineEnd } from '../../battle/protocol'
 import { MAX_TURNS } from '../../config'
@@ -91,6 +92,18 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   const rivals = useMemo(() => rivalMembers(battle.view, data, rivalTeam), [battle.view, data, rivalTeam])
   const touchMode: TouchMode = forcedSwitchPending ? 'switch' : touchChoice.request === menuRequest ? touchChoice.mode : 'main'
   const ended = battle.ended !== null
+
+  // Música del rival (DEC-57): se descargan su pista y los efectos al entrar; suena desde el iris de la intro (o desde el principio al
+  // reanudar un oficial, que no tiene intro) y se funde al terminar el combate, al salir o al desmontar. La velocidad no la cambia.
+  const music = battleMusicFor(trainer)
+  useEffect(() => getAudio().preload([music], SFX_IDS), [music])
+  const musicOn = battle.introPhase !== 'loading' && !ended
+  useEffect(() => {
+    if (!musicOn) return
+    const audio = getAudio()
+    audio.playMusic(music)
+    return () => audio.stopMusic()
+  }, [musicOn, music])
 
   const autoChosenFor = useRef(request)
   useEffect(() => {

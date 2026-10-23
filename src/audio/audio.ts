@@ -6,9 +6,12 @@ export const SFX_IDS = ['hit-super', 'hit-neutral', 'hit-weak', 'ball-throw', 'b
 export type SfxId = (typeof SFX_IDS)[number]
 export const VICTORY_MUSIC = 'victory-pwt'
 
-/** Tema del rival: `gym-<región>` para líderes y `champion-<región>` para campeones (los 53, `build-audio.test.ts`). */
-export const battleMusicFor = (trainer: { category: 'leader' | 'champion'; region: string }): string =>
-  `${trainer.category === 'leader' ? 'gym' : 'champion'}-${trainer.region}`
+/**
+ * Tema del rival: `gym-<región>` para líderes y `champion-<región>` para campeones (los 53 tienen región, `build-audio.test.ts`). Sin
+ * región, el de Teselia.
+ */
+export const battleMusicFor = (trainer: { category: 'leader' | 'champion'; region: string | null }): string =>
+  `${trainer.category === 'leader' ? 'gym' : 'champion'}-${trainer.region ?? 'unova'}`
 
 function browserContext(): AudioContextLike | null {
   const Context = typeof window === 'undefined' ? undefined : (window.AudioContext ?? (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext)
