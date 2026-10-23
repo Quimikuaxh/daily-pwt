@@ -151,7 +151,8 @@ export const es = {
     rivalTeam: 'Equipo rival',
     categories: { leader: 'Líder de gimnasio', champion: { M: 'Campeón', F: 'Campeona' } },
     regions: REGIONS,
-    specialty: (type: string) => `Especialidad: ${type}`,
+    /** Va seguido de la placa del tipo, que ya lleva su nombre. */
+    specialty: 'Especialidad:',
     showRivalDetails: 'Ver movimientos y objetos del rival',
     hideRivalDetails: 'Ocultar movimientos y objetos del rival',
     itemLabel: 'Objeto:',

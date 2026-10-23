@@ -28,7 +28,7 @@ function RivalCard({ challenge, data }: RivalSectionProps) {
         </p>
         {specialty && (
           <p className="rival-meta">
-            {es.today.specialty(data.names.types[specialty] ?? specialty)}{' '}
+            {es.today.specialty}{' '}
             <TypeBadge typeName={specialty} label={data.names.types[specialty] ?? specialty} />
           </p>
         )}

@@ -148,7 +148,7 @@ Base: [REQUISITOS-F1](REQUISITOS-F1.md), [ARQUITECTURA](ARQUITECTURA.md) §9.
 Las fechas "D0", "3 fechas" y "5 fechas" de abajo son, desde DEC-35, escenarios por rival (`e2e/support.ts`: Plubio, Misty, Máximo, Camila, Rojo, Brock); la fecha de cada escenario es un literal que solo siembra el equipo del jugador.
 - E2E-01 Hoy completo con `?date=2026-10-19`: `#1`, cuenta atrás, rival, 6 especies, 6 tarjetas, "Combatir" desactivado con motivo, aviso fan, consola limpia. F3 (22/10/2026, cambio de requisito): la cabecera tiene los botones de Estadísticas, Ayuda y Ajustes (antes se exigía que no hubiera ninguno).
 - E2E-02 Dos contextos (distinto `timezoneId`) con la misma fecha → mismo reto.
-- E2E-03 `page.clock` 23:59:55 + 10 s: `#1`→`#2`, cambia el reto, reinicia la cuenta atrás, sin recarga; variante 2027-03-27 (~23 h).
+- E2E-03 `page.clock` 23:59:55 + 10 s: `#1`→`#2`, cambia el reto, reinicia la cuenta atrás, sin recarga; variante 2027-03-27 (~23 h). La cuenta atrás del #2 se espera con la duración real de ese día en Madrid (23 de octubre de 2026: con `LAUNCH_DATE` = 2026-10-24, el #2 es el 25, de 25 h, y se espera «24:59:..»; antes se suponía siempre 23:59).
 - E2E-04 Medianoche con combate en curso: sigue el reto original; Hoy muestra el nuevo al volver.
 - E2E-05 Partida completa contra IA trivial (3 semillas × 3 fechas) hasta Resultado; registro en español; misma semilla y decisiones → mismo resultado.
 - E2E-06 Cambio voluntario y forzado tras KO.

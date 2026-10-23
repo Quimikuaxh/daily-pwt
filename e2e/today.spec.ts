@@ -74,6 +74,15 @@ test.describe('Pantalla Hoy', () => {
   })
 })
 
+const addDays = (date: string, days: number): string => new Date(Date.parse(`${date}T12:00:00Z`) + days * 86_400_000).toISOString().slice(0, 10)
+
+/** Instante de la medianoche de `date` en Madrid (+01:00 en invierno, +02:00 en verano). */
+function madridMidnight(date: string): number {
+  const hourIn = (instant: number) => new Intl.DateTimeFormat('es-ES', { timeZone: 'Europe/Madrid', hour: '2-digit', hourCycle: 'h23' }).format(instant)
+  const candidates = ['+02:00', '+01:00'].map((offset) => Date.parse(`${date}T00:00:00${offset}`))
+  return candidates.find((instant) => hourIn(instant) === '00') ?? candidates[0]
+}
+
 test.describe('Cambio de día (page.clock)', () => {
   test('E2E-03 23:59:55 + 10 s: #1 pasa a #2 sin recargar @timing', async ({ page }) => {
     await page.clock.install({ time: new Date(`${LAUNCH_DATE}T23:59:55+02:00`) })
@@ -97,7 +106,9 @@ test.describe('Cambio de día (page.clock)', () => {
     expect(await page.evaluate(() => (window as any).__noReload), 'sin recarga').toBe(true)
     expect(await today.rivalName(), 'rival distinto').not.toBe(before.rival)
     expect(await page.locator('.player-name').allTextContents(), 'equipo distinto').not.toEqual(before.team)
-    await expect(today.countdown, 'la cuenta atrás reinicia').toHaveText(/^23:59:\d\d$/)
+    // El día #2 puede no durar 24 h: con LAUNCH_DATE = 2026-10-24, el #2 es el 25 de octubre, que en Madrid dura 25 (cambio de hora).
+    const hoursOfDay2 = (madridMidnight(addDays(LAUNCH_DATE, 2)) - madridMidnight(addDays(LAUNCH_DATE, 1))) / 3_600_000
+    await expect(today.countdown, 'la cuenta atrás reinicia').toHaveText(new RegExp(`^${String(hoursOfDay2 - 1).padStart(2, '0')}:59:\\d\\d$`))
     await expect(today.leadButtons.filter({ hasText: 'Sale primero' }), 'el inicial elegido no pasa al reto nuevo').toHaveCount(0)
   })
 
