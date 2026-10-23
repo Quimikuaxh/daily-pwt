@@ -19,6 +19,14 @@ const SFX_ARGS = ['-vn', '-ar', '48000', '-ac', '2', '-c:a', 'aac', '-b:a', '96k
 /** Quita el silencio del principio y del final: el efecto debe sonar en cuanto se pide. */
 const TRIM_SILENCE = 'silenceremove=start_periods=1:start_threshold=-60dB,areverse,silenceremove=start_periods=1:start_threshold=-60dB,areverse'
 
+/** Puntos de bucle (DEC-57): los dos o ninguno, y el final después del principio. */
+function loopOf(item) {
+  const { loopStartSec: start, loopEndSec: end } = item
+  if (start === undefined && end === undefined) return null
+  if (!(Number.isFinite(start) && Number.isFinite(end) && start >= 0 && end > start)) throw new Error(`Puntos de bucle no válidos en ${item.id}`)
+  return { loopStartSec: start, loopEndSec: end }
+}
+
 /** Valida el manifiesto y devuelve cada pista con su origen, su URL o entrada del ZIP y su destino en public/audio. */
 export function planAudio(manifest) {
   const seen = new Set()
@@ -31,7 +39,8 @@ export function planAudio(manifest) {
     const path = `audio/${kind}/${item.id}.m4a`
     if (kind === 'music') {
       if (!source.baseUrl?.startsWith('https://') || !item.file) throw new Error(`Pista mal definida: ${item.id}`)
-      return { kind, id: item.id, path, url: source.baseUrl + encodeURIComponent(item.file).replaceAll('%2F', '/'), cacheName: item.file.split('/').pop() }
+      const loop = loopOf(item)
+      return { kind, id: item.id, path, url: source.baseUrl + encodeURIComponent(item.file).replaceAll('%2F', '/'), cacheName: item.file.split('/').pop(), ...(loop && { loop }) }
     }
     if (!source.zip || !item.entry) throw new Error(`Efecto mal definido: ${item.id}`)
     return { kind, id: item.id, path, zip: source.zip, entry: item.entry }
@@ -82,7 +91,9 @@ async function main() {
         else encode('pipe:0', target, SFX_ARGS, TRIM_SILENCE, extractEntry(item.zip, item.entry))
         console.log(`  ${item.path}`)
       }
-      index[item.kind][item.id] = { path: item.path, durationSec: Math.round(ffprobeDuration(target) * 1000) / 1000 }
+      const durationSec = Math.round(ffprobeDuration(target) * 1000) / 1000
+      if (item.loop && item.loop.loopEndSec >= durationSec) throw new Error(`El bucle acaba después de la pista (${durationSec} s)`)
+      index[item.kind][item.id] = { path: item.path, durationSec, ...item.loop }
     } catch (error) {
       console.error(`  ${item.path}: ${error.message}`)
       failures.push(item.path)

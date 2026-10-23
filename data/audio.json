@@ -1,5 +1,5 @@
 {
-  "_nota": "Fuente de verdad de scripts/build-audio.mjs (npm run gen:audio). Música: pistas completas del OST oficial (FLAC de Internet Archive), codificadas a AAC en public/audio/music/. Efectos: entradas del ZIP de The Sounds Resource (descarga manual a scripts/.cache/sfx/, el sitio tiene reto de Cloudflare), sin silencio al principio ni al final, en public/audio/sfx/. Tema por rival: `gym-<región>` para líderes y `champion-<región>` para campeones (PRD §0, «Fuentes y temas del sonido»).",
+  "_nota": "Fuente de verdad de scripts/build-audio.mjs (npm run gen:audio). Puntos de bucle (loopStartSec/loopEndSec, segundos de la pista codificada) calculados con scripts/find-loops.py; se pueden ajustar a mano y basta con volver a lanzar gen:audio. Música: pistas completas del OST oficial (FLAC de Internet Archive), codificadas a AAC en public/audio/music/. Efectos: entradas del ZIP de The Sounds Resource (descarga manual a scripts/.cache/sfx/, el sitio tiene reto de Cloudflare), sin silencio al principio ni al final, en public/audio/sfx/. Tema por rival: `gym-<región>` para líderes y `champion-<región>` para campeones (PRD §0, «Fuentes y temas del sonido»).",
   "sources": {
     "ost-b2w2": {
       "name": "Pokémon Black 2 & Pokémon White 2: Super Music Collection",
@@ -17,16 +17,16 @@
     }
   },
   "music": [
-    { "id": "gym-kanto", "source": "ost-b2w2", "file": "Disc 2/04 - Battle! (Gym Leader - Kanto).flac" },
-    { "id": "champion-kanto", "source": "ost-b2w2", "file": "Disc 2/05 - Battle! (Champion - Kanto).flac" },
-    { "id": "gym-johto", "source": "ost-b2w2", "file": "Disc 2/06 - Battle! (Gym Leader - Johto).flac" },
-    { "id": "champion-johto", "source": "ost-b2w2", "file": "Disc 2/07 - Battle! (Champion - Johto).flac" },
-    { "id": "gym-hoenn", "source": "ost-b2w2", "file": "Disc 2/08 - Battle! (Gym Leader - Hoenn).flac" },
-    { "id": "champion-hoenn", "source": "ost-b2w2", "file": "Disc 2/09 - Battle! (Champion - Hoenn).flac" },
-    { "id": "gym-sinnoh", "source": "ost-b2w2", "file": "Disc 2/10 - Battle! (Gym Leader - Sinnoh).flac" },
-    { "id": "champion-sinnoh", "source": "ost-b2w2", "file": "Disc 2/11 - Battle! (Champion - Sinnoh).flac" },
-    { "id": "gym-unova", "source": "ost-b2w2", "file": "Disc 1/49 - Battle! (Gym Leader).flac" },
-    { "id": "champion-unova", "source": "ost-b2w2", "file": "Disc 3/31 - Battle! (Champion).flac", "_nota": "Tema de Iris; es el de Mirto (decisión de Jose)" },
+    { "id": "gym-kanto", "source": "ost-b2w2", "file": "Disc 2/04 - Battle! (Gym Leader - Kanto).flac", "loopStartSec": 26.27, "loopEndSec": 70.6291 },
+    { "id": "champion-kanto", "source": "ost-b2w2", "file": "Disc 2/05 - Battle! (Champion - Kanto).flac", "loopStartSec": 45.04, "loopEndSec": 105.0537 },
+    { "id": "gym-johto", "source": "ost-b2w2", "file": "Disc 2/06 - Battle! (Gym Leader - Johto).flac", "loopStartSec": 61.98, "loopEndSec": 122.6397 },
+    { "id": "champion-johto", "source": "ost-b2w2", "file": "Disc 2/07 - Battle! (Champion - Johto).flac", "loopStartSec": 44.36, "loopEndSec": 88.7191 },
+    { "id": "gym-hoenn", "source": "ost-b2w2", "file": "Disc 2/08 - Battle! (Gym Leader - Hoenn).flac", "loopStartSec": 44.42, "loopEndSec": 108.7629 },
+    { "id": "champion-hoenn", "source": "ost-b2w2", "file": "Disc 2/09 - Battle! (Champion - Hoenn).flac", "loopStartSec": 59.52, "loopEndSec": 113.871 },
+    { "id": "gym-sinnoh", "source": "ost-b2w2", "file": "Disc 2/10 - Battle! (Gym Leader - Sinnoh).flac", "loopStartSec": 61.52, "loopEndSec": 138.496 },
+    { "id": "champion-sinnoh", "source": "ost-b2w2", "file": "Disc 2/11 - Battle! (Champion - Sinnoh).flac", "loopStartSec": 73.77, "loopEndSec": 148.7872 },
+    { "id": "gym-unova", "source": "ost-b2w2", "file": "Disc 1/49 - Battle! (Gym Leader).flac", "loopStartSec": 70.95, "loopEndSec": 144.6023 },
+    { "id": "champion-unova", "source": "ost-b2w2", "file": "Disc 3/31 - Battle! (Champion).flac", "_nota": "Tema de Iris; es el de Mirto (decisión de Jose)", "loopStartSec": 71.29, "loopEndSec": 163.8112 },
     { "id": "victory-pwt", "source": "ost-b2w2", "file": "Disc 2/13 - Winning in the PWT!.flac", "_nota": "Jingle de victoria en Resultado" }
   ],
   "sfx": [

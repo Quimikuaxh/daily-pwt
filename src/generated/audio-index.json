@@ -2,43 +2,63 @@
   "music": {
     "gym-kanto": {
       "path": "audio/music/gym-kanto.m4a",
-      "durationSec": 112
+      "durationSec": 112,
+      "loopStartSec": 26.27,
+      "loopEndSec": 70.6291
     },
     "champion-kanto": {
       "path": "audio/music/champion-kanto.m4a",
-      "durationSec": 143
+      "durationSec": 143,
+      "loopStartSec": 45.04,
+      "loopEndSec": 105.0537
     },
     "gym-johto": {
       "path": "audio/music/gym-johto.m4a",
-      "durationSec": 144
+      "durationSec": 144,
+      "loopStartSec": 61.98,
+      "loopEndSec": 122.6397
     },
     "champion-johto": {
       "path": "audio/music/champion-johto.m4a",
-      "durationSec": 122
+      "durationSec": 122,
+      "loopStartSec": 44.36,
+      "loopEndSec": 88.7191
     },
     "gym-hoenn": {
       "path": "audio/music/gym-hoenn.m4a",
-      "durationSec": 151
+      "durationSec": 151,
+      "loopStartSec": 44.42,
+      "loopEndSec": 108.7629
     },
     "champion-hoenn": {
       "path": "audio/music/champion-hoenn.m4a",
-      "durationSec": 129
+      "durationSec": 129,
+      "loopStartSec": 59.52,
+      "loopEndSec": 113.871
     },
     "gym-sinnoh": {
       "path": "audio/music/gym-sinnoh.m4a",
-      "durationSec": 176
+      "durationSec": 176,
+      "loopStartSec": 61.52,
+      "loopEndSec": 138.496
     },
     "champion-sinnoh": {
       "path": "audio/music/champion-sinnoh.m4a",
-      "durationSec": 167
+      "durationSec": 167,
+      "loopStartSec": 73.77,
+      "loopEndSec": 148.7872
     },
     "gym-unova": {
       "path": "audio/music/gym-unova.m4a",
-      "durationSec": 173
+      "durationSec": 173,
+      "loopStartSec": 70.95,
+      "loopEndSec": 144.6023
     },
     "champion-unova": {
       "path": "audio/music/champion-unova.m4a",
-      "durationSec": 205
+      "durationSec": 205,
+      "loopStartSec": 71.29,
+      "loopEndSec": 163.8112
     },
     "victory-pwt": {
       "path": "audio/music/victory-pwt.m4a",

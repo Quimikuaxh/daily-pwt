@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { existsInRoot, importScript, readJson } from '../src/test-utils/paths'
 
-type Manifest = { sources: Record<string, unknown>; music: { id: string; source: string; file: string }[]; sfx: { id: string; source: string; entry: string }[] }
-type Index = Record<'music' | 'sfx', Record<string, { path: string; durationSec: number }>>
+type Manifest = { sources: Record<string, unknown>; music: { id: string; source: string; file: string; loopStartSec?: number; loopEndSec?: number }[]; sfx: { id: string; source: string; entry: string }[] }
+type Index = Record<'music' | 'sfx', Record<string, { path: string; durationSec: number; loopStartSec?: number; loopEndSec?: number }>>
 type Trainer = { id: string; category: 'leader' | 'champion'; region: string }
 
 const manifest = (): Manifest => readJson('data', 'audio.json')
@@ -24,6 +24,23 @@ describe('scripts/build-audio.mjs', () => {
     expect(() => planAudio({ ...base, music: [first, first] })).toThrow(/duplicado/)
     expect(() => planAudio({ ...base, music: [{ ...first, id: '../x' }] })).toThrow(/no válido/)
     expect(() => planAudio({ ...base, sfx: [{ ...base.sfx[0], source: 'inventado' }] })).toThrow(/Origen desconocido/)
+    expect(() => planAudio({ ...base, music: [{ ...first, loopEndSec: undefined }] })).toThrow(/bucle/)
+    expect(() => planAudio({ ...base, music: [{ ...first, loopStartSec: 30, loopEndSec: 20 }] })).toThrow(/bucle/)
+  })
+
+  // UT-75 · Puntos de bucle (DEC-57).
+  it('las 10 pistas de combate tienen puntos de bucle dentro de la pista y fuera del fundido; el jingle de victoria, no', () => {
+    const index = readJson<Index>('src', 'generated', 'audio-index.json')
+    for (const [id, entry] of Object.entries(index.music)) {
+      if (id === 'victory-pwt') {
+        expect(entry.loopStartSec, id).toBeUndefined()
+        continue
+      }
+      const { loopStartSec = NaN, loopEndSec = NaN, durationSec } = entry
+      expect(loopEndSec - loopStartSec, id).toBeGreaterThan(40)
+      expect(loopStartSec, id).toBeGreaterThan(5)
+      expect(loopEndSec, id).toBeLessThan(durationSec - 10)
+    }
   })
 
   it('cada entrenador tiene su tema (`gym-<región>` o `champion-<región>`) y todo el audio está generado', () => {
