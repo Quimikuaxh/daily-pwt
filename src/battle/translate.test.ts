@@ -94,8 +94,18 @@ describe('translateLine: líneas con texto (UT-45)', () => {
 
   it('una baya que sube una característica lo dice en el mensaje; otros objetos, el mensaje de siempre (decisión de Jose)', () => {
     expect(tr('|-enditem|p2a: Garchomp|Salac Berry|[eat]')).toBeNull()
-    expect(tr('|-boost|p2a: Garchomp|spe|1|[from] item: Salac Berry')).toBe('¡La Baya Aslac ha subido la Velocidad de Garchomp de Camila!')
+    expect(tr('|-boost|p2a: Garchomp|spe|1|[from] item: Salac Berry')).toBe('¡La Baya Aslac ha subido la Velocidad del Garchomp de Camila!')
     expect(tr('|-boost|p1a: Garchomp|atk|2|[from] item: Weakness Policy')).toBe('¡El Ataque de Garchomp ha subido mucho!')
+  })
+
+  // Decisión de Jose (23/10/2026): «El Garchomp de Cintia…», como en N2/B2; «a el» y «de el» se contraen.
+  it('los Pokémon rivales llevan artículo, con mayúscula al empezar la frase y contraído tras «a» y «de»', () => {
+    expect(tr('|move|p2a: Starmie|Surf|p1a: Garchomp')).toMatch(/^¡El Starmie de Camila /)
+    expect(tr('|faint|p2a: Starmie')).toMatch(/^¡El Starmie de Camila /)
+    expect(tr('|-damage|p2a: Starmie|50/100|[from] Sandstorm')).toMatch(/ al Starmie de Camila!$/)
+    expect(tr('|-boost|p2a: Starmie|atk|1')).toBe('¡El Ataque del Starmie de Camila ha subido!')
+    expect(tr('|-boost|p1a: Garchomp|atk|1')).toBe('¡El Ataque de Garchomp ha subido!')
+    expect(tr('|move|p1a: Garchomp|Earthquake|p2a: Starmie')).not.toMatch(/\bel Starmie|\bEl Starmie/)
   })
 
   it('el objeto no deja su nombre inglés', () => {

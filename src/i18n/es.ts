@@ -456,7 +456,8 @@ export const es = {
     unknownItem: 'un objeto',
     unknownAbility: 'una habilidad',
     unknownMon: 'el Pokémon',
-    rivalMon: (mon: string, trainer: string) => `${mon} de ${trainer}`,
+    /** «el Garchomp de Cintia», como en N2/B2 (decisión de Jose); `translateLine` contrae «a el»/«de el» y pone la mayúscula. */
+    rivalMon: (mon: string, trainer: string) => `el ${mon} de ${trainer}`,
     yourTeam: 'tu equipo',
     rivalTeam: 'el equipo rival',
 

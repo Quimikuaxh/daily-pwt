@@ -331,11 +331,19 @@ function translateKnownLine(f: Fields, ctx: TranslateContext): string | null | u
 }
 
 /** Traduce una línea del registro del simulador. `null` = sin texto (protocolo, barras de PS, descartada). Nunca devuelve inglés ni ids. */
+/**
+ * Los Pokémon rivales van con artículo («el Garchomp de Cintia»): «a el» y «de el» se contraen y, al principio de la frase, va en
+ * mayúscula («¡El Garchomp de Cintia usó Terremoto!»).
+ */
+function withArticles(text: string): string {
+  return text.replace(/\b([Aa]|[Dd]e) el /g, '$1l ').replace(/(^|[¡¿] ?)el /, '$1El ')
+}
+
 export function translateLine(line: string, ctx: TranslateContext): string | null {
   const fields = parseLine(line)
   if (SILENT_TYPES.has(fields.type)) return null
   const known = translateKnownLine(fields, ctx)
-  return known === undefined ? log.generic : known
+  return known === undefined ? log.generic : known === null ? null : withArticles(known)
 }
 
 export function translateLines(lines: string[], ctx: TranslateContext): string[] {
