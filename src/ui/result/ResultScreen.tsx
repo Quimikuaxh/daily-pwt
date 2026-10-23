@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+import { getAudio, VICTORY_MUSIC } from '../../audio/audio'
 import { MAX_TURNS } from '../../config'
 import type { EngineEnd } from '../../battle/protocol'
 import { TEAM_SIZE } from '../../core/constants'
@@ -42,6 +44,13 @@ function OfficialSummary({ store, date }: { store: GameStore; date: string }) {
 
 export function ResultScreen({ ended, onBackToToday, onRematch, mode, store, date, menu }: ResultScreenProps) {
   const won = ended.result === 'win'
+  // Jingle de victoria (DEC-57): una vez si se gana (perder o rendirse no suena); se corta al salir de Resultado.
+  useEffect(() => {
+    if (!won) return
+    const audio = getAudio()
+    audio.playMusic(VICTORY_MUSIC)
+    return () => audio.stopMusic()
+  }, [won])
   const countdown = useCountdown()
 
   return (
