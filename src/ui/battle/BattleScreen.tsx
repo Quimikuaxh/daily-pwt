@@ -21,6 +21,7 @@ import { partyMembers, rivalMembers } from './party/partyModel'
 import { TouchScreen, type TouchMode } from './TouchScreen'
 import { canChoose, hasOnlyForcedMove, isForcedSwitch, moveOptions, switchBlockedReason, switchOptions } from './battleModel'
 import { avatarForSeed } from './introAssets'
+import { menuSoundFor } from './menuSounds'
 import { SCREEN_HEIGHT, SCREEN_WIDTH, STAGE_HEIGHT, useStageScale } from './useStageScale'
 import './battle.css'
 
@@ -183,7 +184,14 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
           {/* Marco de consola (DS sencilla) en escritorio, solo si cabe sin bajar la escala: carcasa, bisel y bisagra a los lados. */}
           <div className="bt-console" data-frame={frame || undefined}>
           <div className="bt-stage" style={stageStyle}>
-            <div className="bt-ds" style={{ width: SCREEN_WIDTH, height: STAGE_HEIGHT }}>
+            <div
+              className="bt-ds"
+              style={{ width: SCREEN_WIDTH, height: STAGE_HEIGHT }}
+              onClickCapture={(event) => {
+                const sound = menuSoundFor(event.target)
+                if (sound) getAudio().playSfx(sound)
+              }}
+            >
               <span data-testid="battle-mode" data-mode={mode} className={`bt-mode bt-mode-${mode}`} role="img" aria-label={es.battle.modeLabel(mode === 'official')}>
                 {mode === 'official' ? es.battle.modeOfficial : es.battle.modePractice}
               </span>

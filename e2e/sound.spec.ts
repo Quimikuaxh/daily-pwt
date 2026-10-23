@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { TodayPage } from './pages/TodayPage'
+import audioIndex from '../src/generated/audio-index.json' with { type: 'json' }
 import { startBattle } from './support'
 
 // F3 · Sonido (DEC-57, RF-87..RF-92).
@@ -37,7 +38,7 @@ test.describe('Sonido', () => {
     expect(saved).toMatchObject({ sound: false, volume: 75 })
   })
 
-  test('E2E-69 sin tocar la página no se descarga audio ni hay errores; el combate pide solo la pista de su rival y los 6 efectos', async ({ page }) => {
+  test('E2E-69 sin tocar la página no se descarga audio ni hay errores; el combate pide solo la pista de su rival y los efectos', async ({ page }) => {
     const errors: string[] = []
     page.on('pageerror', (error) => errors.push(error.message))
     page.on('console', (message) => {
@@ -57,7 +58,8 @@ test.describe('Sonido', () => {
     const music = audio.filter((path) => path.includes('/audio/music/'))
     expect(music).toHaveLength(1)
     expect(music[0]).toMatch(/\/audio\/music\/(gym|champion)-(kanto|johto|hoenn|sinnoh|unova)\.m4a$/)
-    expect(new Set(audio.filter((path) => path.includes('/audio/sfx/'))).size).toBe(6)
+    // Los efectos que haya en el índice (6, y 8 cuando estén los del menú).
+    expect(new Set(audio.filter((path) => path.includes('/audio/sfx/'))).size).toBe(Object.keys(audioIndex.sfx).length)
     expect(errors).toEqual([])
   })
 })

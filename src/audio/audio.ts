@@ -2,7 +2,9 @@ import audioIndex from '../generated/audio-index.json'
 import { createAudioEngine, type AudioContextLike, type AudioEngine, type AudioIndex } from './audioEngine'
 
 /** Música y efectos de cada momento (PRD §0, «Fuentes y temas del sonido»). */
-export const SFX_IDS = ['hit-super', 'hit-neutral', 'hit-weak', 'ball-throw', 'ball-open', 'faint'] as const
+// `menu-select` y `menu-cancel` (botones del menú de batalla) los añade Jose desde el ZIP (PENDIENTE.md): hasta entonces no están en el
+// índice y el motor los ignora.
+export const SFX_IDS = ['hit-super', 'hit-neutral', 'hit-weak', 'ball-throw', 'ball-open', 'faint', 'menu-select', 'menu-cancel'] as const
 export type SfxId = (typeof SFX_IDS)[number]
 export const VICTORY_MUSIC = 'victory-pwt'
 
