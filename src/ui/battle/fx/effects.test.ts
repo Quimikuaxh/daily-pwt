@@ -62,8 +62,9 @@ describe('efectos de movimientos', () => {
     }
   })
 
-  it('41 movimientos con animación propia (dos tandas de 20 y Maldición); el resto usa la genérica de su clase (Poder Oculto de cualquier tipo, la suya)', () => {
-    expect(Object.keys(CUSTOM_EFFECTS)).toHaveLength(41)
+  it('61 movimientos con animación propia (tres tandas de 20 y Maldición); el resto usa la genérica de su clase (Poder Oculto de cualquier tipo, la suya)', () => {
+    expect(Object.keys(CUSTOM_EFFECTS)).toHaveLength(61)
+    expect(effectFor('flamethrower', 'shot', 'Fire')).toBe(CUSTOM_EFFECTS.flamethrower)
     expect(effectFor('crunch', 'bite', 'Dark')).toBe(CUSTOM_EFFECTS.crunch)
     expect(effectFor('earthquake', 'hit')).toBe(CUSTOM_EFFECTS.earthquake)
     expect(effectFor('hiddenpowerfire', 'shot')).toBe(CUSTOM_EFFECTS.hiddenpower)
@@ -95,10 +96,11 @@ describe('efectos de movimientos', () => {
   it('los ataques especiales sin animación propia usan la de su tipo (cada tipo, la suya; Lanzallamas no son bolas)', () => {
     expect(Object.keys(SPECIAL_BY_TYPE).sort()).toEqual([...TYPES].sort())
     expect(new Set(Object.values(SPECIAL_BY_TYPE)).size).toBe(TYPES.length)
-    expect(effectFor('flamethrower', 'shot', 'Fire')).toBe(SPECIAL_BY_TYPE.Fire)
-    expect(effectFor('surf', 'shot', 'Water')).toBe(SPECIAL_BY_TYPE.Water)
+    // Lanzallamas y Surf tienen animación propia desde la tercera tanda (23/10/2026): de ejemplo, Onda Ígnea y Agua Lodosa.
+    expect(effectFor('heatwave', 'shot', 'Fire')).toBe(SPECIAL_BY_TYPE.Fire)
+    expect(effectFor('muddywater', 'shot', 'Water')).toBe(SPECIAL_BY_TYPE.Water)
     expect(effectFor('icebeam', 'shot', 'Ice')).toBe(CUSTOM_EFFECTS.icebeam)
-    expect(effectFor('flamethrower', 'shot')).toBe(GENERIC_EFFECTS.shot)
+    expect(effectFor('heatwave', 'shot')).toBe(GENERIC_EFFECTS.shot)
   })
 
   it('move-fx.json: cada movimiento tiene una clase conocida y los de estado están bien clasificados', () => {

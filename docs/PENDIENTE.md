@@ -60,6 +60,7 @@ Pasos, en este orden (cada uno depende del anterior):
 ## Animaciones de movimientos (PRD §0, DEC-53)
 - **Hecho**: genéricas por tipo y clase y 20 propias, por código en píxel, con interruptor en Ajustes. Mejora (22/10/2026): físicos según cómo golpean (mordisco, puñetazo, patada, corte, golpe) y especiales con un efecto distinto por tipo (chorro de llamas, zigzag eléctrico, hojas, cristales…).
 - **Segunda tanda hecha:** 20 propias más (Enfado, Triturar, A Bocajarro, Tierra Viva, Ventisca, Respiro, Escaldar, Paz Mental, Gigadrenado, Retribución, Tijera X, Corpulencia, Rayo Señal, Fuego Fatuo, Megacuerno, Voltio Cruel, Acróbata, Onda Trueno, Tajo Aéreo y Cascada); 40 en total. Revisar con Jose el aspecto en partidas reales; más tandas, por orden de uso, si él quiere.
+- **Tercera tanda hecha (rama `feature/animaciones-3`, 23/10/2026, acordada con Jose):** las 20 siguientes por uso: Mofa, Surf, Psicocarga, Divide Dolor, Hierba Lazo, Voltiocambio, Lanzallamas, Danza Lluvia, Pájaro Osado, Somnífero, Descanso, Hipnosis, Púas, Espacio Raro, Puño Drenaje, Tajo Umbrío, Recuperación, Giro Bola, Trueno y Cabezazo Zen; 60 en total. Revisar con Jose en partidas reales.
 - **Estados, características, bayas y golpes (23/10/2026, DEC-55):** hecho. Revisar con Jose en partidas reales.
 
 ## Pantalla de equipo y de datos
@@ -77,6 +78,7 @@ Pasos, en este orden (cada uno depende del anterior):
 - **`translate="no"`** está en los nombres propios de Hoy; revisar que no falte en nombres de entrenadores y Pokémon de otras pantallas.
 - **Enlace "saltar al contenido"** solo existe en Hoy.
 - **`forced-colors` (alto contraste):** el combate se captura (VIS-14) pero los gráficos ripeados no se adaptan.
+- **E2E-05 «plubio semilla c» en la batería completa (23/10/2026):** falla por tiempo (4 min) en tres tandas seguidas (webkit y chromium), y pasa sola en 24-30 s. No es solo carga: investigar con la traza (`test-results/`) si se queda esperando en algún paso cuando corre en paralelo.
 - **Navegadores:** Firefox sin probar (se activa con `E2E_FIREFOX=1`); Safari iOS real y móviles modestos, prueba manual.
 
 ## Sustituir la fuente (Pokémon Black and White 2 de FontStruct)
