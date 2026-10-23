@@ -1,0 +1,11 @@
+
+  VITE v8.3.4  ready in 1048 ms
+
+  ➜  Local:   http://127.0.0.1:5181/
+1:21:11 PM [vite] (client) page reload src/ui/battle/fx/effects.ts
+1:21:59 PM [vite] (client) hmr update /src/index.css
+1:22:00 PM [vite] (client) hmr update /src/index.css
+1:22:29 PM [vite] (client) page reload src/ui/battle/fx/effects.ts
+1:22:29 PM [vite] (client) hmr update /src/index.css, /src/ui/battle/BattleScreen.tsx, /src/ui/battle/DataBox.tsx
+1:22:29 PM [vite] (client) hmr update /src/index.css
+1:22:29 PM [vite] (client) hmr update /src/index.css

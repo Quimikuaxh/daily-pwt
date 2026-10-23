@@ -485,6 +485,9 @@ export const es = {
     statLabels: STAT_LABELS,
     statRose: (stat: string, mon: string, stages: number) =>
       `¡${stat} de ${mon} ${stages >= 3 ? 'ha subido muchísimo' : stages === 2 ? 'ha subido mucho' : 'ha subido'}!`,
+    /** «¡La Baya Aslac ha subido la Velocidad de Garchomp!» (las bayas son todas femeninas). */
+    berryStatRose: (berry: string, stat: string, mon: string, stages: number) =>
+      `¡La ${berry} ha subido ${stages >= 3 ? 'muchísimo ' : stages === 2 ? 'mucho ' : ''}${stat.charAt(0).toLowerCase()}${stat.slice(1)} de ${mon}!`,
     statFell: (stat: string, mon: string, stages: number) =>
       `¡${stat} de ${mon} ${stages >= 3 ? 'ha bajado muchísimo' : stages === 2 ? 'ha bajado mucho' : 'ha bajado'}!`,
     statMaxed: (stat: string, mon: string) => `¡${stat} de ${mon} ha llegado al máximo!`,

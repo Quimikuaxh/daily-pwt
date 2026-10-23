@@ -7,7 +7,7 @@ import { deferFaintUntilFaintLine } from '../battle/faintOrder'
 import { deferHitMessages } from '../battle/messageOrder'
 import { SPEEDS, type BattleSpeed } from '../storage/settings'
 import { viewReducer } from '../battle/viewReducer'
-import { toId } from '../core/id'
+import { conditionFx, createMultiHitTracker, usedMove, type FxCue } from './moveFxCues'
 import type { MoveFxEvent } from '../ui/battle/fx/MoveFx'
 
 export type { BattleSpeed }
@@ -21,6 +21,8 @@ const HP_BAR_PAUSE_MS = HP_BAR_ANIMATION_MS + 100
 /** Con el mensaje «se ha debilitado» ya en pantalla, el sprite espera este tiempo antes de caer. */
 const FAINT_MESSAGE_LEAD_MS = 400
 const FINISH_PAUSE_MS = 1500
+/** En un movimiento de varios golpes, desde el segundo se repite su animación y se espera a que llegue al objetivo antes de bajar la vida. */
+const MULTI_HIT_LEAD_MS = 450
 
 /**
  * Fases de la intro (PRD §10.2.1) y lo que dura cada una a x1. Las animaciones CSS de battle.css (`[data-intro]`) deben
@@ -118,18 +120,6 @@ function stepsFor(update: Update, isFirstUpdate: boolean, params: BattleParams):
 
 const lineType = (line: string): string => line.split('|')[1] ?? ''
 
-/**
- * `|move|p1a: X|Earthquake|p2a: Y` -> el movimiento y quién lo usa, para animarlo a la vez que «X usó Y» (decisión de Jose). No se anima si
- * falla (`[miss]`), si no hace nada visible en este turno (`[still]`, carga) o si no hay objetivo (`[notarget]`).
- */
-export function usedMove(line: string): { moveId: string; user: 'player' | 'rival' } | null {
-  const [, type, actor = '', name = '', ...rest] = line.split('|')
-  if (type !== 'move' || rest.some((part) => /^\[(miss|still|notarget)\]/.test(part))) return null
-  const side = /^p([12])/.exec(actor)?.[1]
-  if (!side || !name) return null
-  return { moveId: toId(name), user: side === '1' ? 'player' : 'rival' }
-}
-
 /** `|switch|p1a: ...` (no `drag`: arrastrar no lleva bola): bando y si el Pokémon que sale seguía en pie (hay retirada). */
 function switchAnimationFor(line: string, view: BattleView): SwitchAnimation | null {
   if (lineType(line) !== 'switch') return null
@@ -209,8 +199,14 @@ export function useBattle(params: BattleParams): BattleController {
         wakeRef.current = skippable ? finish : null
       })
 
+    const playFx = (cue: FxCue) => {
+      moveFxCount.current += 1
+      setMoveFx({ key: moveFxCount.current, ...cue })
+    }
+
     async function present(update: Update) {
       const steps = stepsFor(update, isFirstUpdate, paramsRef.current)
+      const multiHit = createMultiHitTracker()
       let shown: BattleView = isFirstUpdate ? update.view : (shownView ?? update.view)
       setView(shown)
       isFirstUpdate = false
@@ -225,6 +221,12 @@ export function useBattle(params: BattleParams): BattleController {
         if (switching) {
           setSwitchAnim(switching)
           if (!switching.endsWith('-send')) await pause(SWITCH_DURATIONS_MS.recall, false, false)
+          if (cancelled) return
+        }
+        const repeatedHit = !replaying && step.line !== null ? multiHit.next(step.line) : null
+        if (repeatedHit) {
+          playFx(repeatedHit)
+          await pause(MULTI_HIT_LEAD_MS)
           if (cancelled) return
         }
         const isFaintLine = step.line !== null && lineType(step.line) === 'faint' && step.text !== null
@@ -251,11 +253,8 @@ export function useBattle(params: BattleParams): BattleController {
           setLog((previous) => [...previous, text])
         } else if (step.text !== null) {
           const text = step.text
-          const used = !replaying && step.line !== null ? usedMove(step.line) : null
-          if (used) {
-            moveFxCount.current += 1
-            setMoveFx({ key: moveFxCount.current, ...used })
-          }
+          const cue = !replaying && step.line !== null ? (usedMove(step.line) ?? conditionFx(step.line)) : null
+          if (cue) playFx(cue)
           setLog((previous) => [...previous, text])
           setMessage(text)
           await pause(step.wait ?? TEXT_PAUSE_MS, step.phase !== undefined)

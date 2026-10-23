@@ -7,6 +7,8 @@ const OUTPUT_PATH = fromRoot('src', 'generated', 'move-fx.json')
 
 const HEALING = new Set(['recover', 'roost', 'softboiled', 'milkdrink', 'moonlight', 'morningsun', 'synthesis', 'slackoff', 'healorder', 'rest', 'wish', 'aquaring', 'ingrain'])
 const SELF_TARGETS = new Set(['self', 'allySide', 'allyTeam', 'adjacentAllyOrSelf'])
+// Suben características por código y no por `boosts` en los datos (Tambor, Reserva, Acupresión).
+const STAT_RAISERS = new Set(['bellydrum', 'stockpile', 'acupressure'])
 
 /**
  * Animación genérica de cada movimiento según lo que hace: los físicos por cómo golpean (mordisco, puñetazo, corte, patada u otro golpe),
@@ -29,8 +31,9 @@ export function fxKindOf(move) {
   if (move.sideCondition) return move.target === 'foeSide' ? 'hazard' : 'screen'
   if (HEALING.has(move.id) || move.heal || move.flags?.heal) return 'heal'
   const selfTarget = SELF_TARGETS.has(move.target)
-  if ((move.boosts && selfTarget) || move.self?.boosts) return 'boost'
-  if (move.boosts) return 'drop'
+  if ((move.boosts && selfTarget) || move.self?.boosts || STAT_RAISERS.has(move.id)) return 'boost'
+  // Al rival: bajarle (Encanto, Chirrido…) o subirle para confundirlo (Contoneo, que no es bajar).
+  if (move.boosts) return Object.values(move.boosts).some((stages) => stages < 0) ? 'drop' : 'status'
   if (move.status || move.volatileStatus) return selfTarget ? 'self' : 'status'
   return selfTarget ? 'self' : 'foe'
 }

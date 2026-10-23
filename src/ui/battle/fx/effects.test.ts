@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import moveFxKinds from '../../../generated/move-fx.json'
 import { Prng } from '../../../core/prng'
-import { CUSTOM_EFFECTS, effectFor, GENERIC_EFFECTS, SPECIAL_BY_TYPE, type Effect, type FxKind } from './effects'
+import { CONDITION_EFFECTS, CUSTOM_EFFECTS, effectFor, GENERIC_EFFECTS, SPECIAL_BY_TYPE, type Effect, type FxKind } from './effects'
 import { fxColorsFor } from './fxColors'
 
 // UT-69 · Animaciones de movimientos (DEC-53).
@@ -11,6 +11,7 @@ const all: [string, Effect][] = [
   ...Object.entries(GENERIC_EFFECTS),
   ...Object.entries(SPECIAL_BY_TYPE).map(([type, effect]): [string, Effect] => [`especial ${type}`, effect]),
   ...Object.entries(CUSTOM_EFFECTS),
+  ...Object.entries(CONDITION_EFFECTS),
 ]
 
 function drawn(effect: Effect, progress: number, seed = 'x') {
@@ -61,14 +62,34 @@ describe('efectos de movimientos', () => {
     }
   })
 
-  it('40 movimientos con animación propia (dos tandas de 20); el resto usa la genérica de su clase (Poder Oculto de cualquier tipo, la suya)', () => {
-    expect(Object.keys(CUSTOM_EFFECTS)).toHaveLength(40)
+  it('41 movimientos con animación propia (dos tandas de 20 y Maldición); el resto usa la genérica de su clase (Poder Oculto de cualquier tipo, la suya)', () => {
+    expect(Object.keys(CUSTOM_EFFECTS)).toHaveLength(41)
     expect(effectFor('crunch', 'bite', 'Dark')).toBe(CUSTOM_EFFECTS.crunch)
     expect(effectFor('earthquake', 'hit')).toBe(CUSTOM_EFFECTS.earthquake)
     expect(effectFor('hiddenpowerfire', 'shot')).toBe(CUSTOM_EFFECTS.hiddenpower)
     expect(effectFor('tackle', 'hit')).toBe(GENERIC_EFFECTS.hit)
     expect(effectFor('nastyplot', 'boost')).toBe(GENERIC_EFFECTS.boost)
     expect(effectFor('firefang', 'bite', 'Fire')).toBe(GENERIC_EFFECTS.bite)
+  })
+
+  // UT-74 · Estados y bayas (decisiones de Jose del 23/10/2026).
+  it('cada estado, la baya y las subidas y bajadas de características tienen su animación', () => {
+    expect(Object.keys(CONDITION_EFFECTS).sort()).toEqual(['item:berry', 'stat:down', 'stat:up', 'status:brn', 'status:confusion', 'status:frz', 'status:par', 'status:psn', 'status:slp'])
+    expect(effectFor('status:brn', 'foe')).toBe(CONDITION_EFFECTS['status:brn'])
+    expect(effectFor('item:berry', 'foe')).toBe(CONDITION_EFFECTS['item:berry'])
+  })
+
+  it('Maldición sin ser Fantasma se dibuja sobre el propio usuario; siendo Fantasma, sobre el objetivo', () => {
+    const at = (user: { x: number; y: number }, target: { x: number; y: number }) => {
+      const dots: { x: number; y: number }[] = []
+      const prng = new Prng('c')
+      CUSTOM_EFFECTS.curse.draw({ dot: (x, y) => dots.push({ x, y }) }, 0.4, { user, target, type: 'Ghost', ...fxColorsFor('Ghost'), random: () => prng.next() })
+      return dots
+    }
+    const user = { x: 62, y: 110 }
+    const rival = { x: 186, y: 78 }
+    expect(at(user, user).every((dot) => Math.abs(dot.x - user.x) < 40)).toBe(true)
+    expect(at(user, rival).every((dot) => Math.abs(dot.x - rival.x) < 40)).toBe(true)
   })
 
   it('los ataques especiales sin animación propia usan la de su tipo (cada tipo, la suya; Lanzallamas no son bolas)', () => {

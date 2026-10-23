@@ -14,7 +14,7 @@ const names: NamesEs = {
   species: { garchomp: 'Garchomp', starmie: 'Starmie', gengar: 'Gengar' },
   moves: { earthquake: 'Terremoto', surf: 'Surf', swordsdance: 'Danza Espada', stealthrock: 'Trampa Rocas', protect: 'Protección', fly: 'Vuelo', thunderbolt: 'Rayo' },
   abilities: { intimidate: 'Intimidación', drizzle: 'Llovizna', levitate: 'Levitación' },
-  items: { leftovers: 'Restos', lifeorb: 'Vidasfera', sitrusberry: 'Baya Zidra' },
+  items: { leftovers: 'Restos', lifeorb: 'Vidasfera', sitrusberry: 'Baya Zidra', salacberry: 'Baya Aslac', weaknesspolicy: 'Seguro Debilidad' },
   types: { Water: 'Agua', Ground: 'Tierra' },
 }
 const ctx = { names, trainer: { nameEs: 'Camila', category: 'leader' as const, gender: 'F' as const } }
@@ -90,6 +90,12 @@ describe('translateLine: líneas con texto (UT-45)', () => {
 
   it('la habilidad no deja su nombre inglés', () => {
     expect(tr('|-ability|p2a: Starmie|Intimidate|boost')).not.toMatch(/Intimidate/)
+  })
+
+  it('una baya que sube una característica lo dice en el mensaje; otros objetos, el mensaje de siempre (decisión de Jose)', () => {
+    expect(tr('|-enditem|p2a: Garchomp|Salac Berry|[eat]')).toBeNull()
+    expect(tr('|-boost|p2a: Garchomp|spe|1|[from] item: Salac Berry')).toBe('¡La Baya Aslac ha subido la Velocidad de Garchomp de Camila!')
+    expect(tr('|-boost|p1a: Garchomp|atk|2|[from] item: Weakness Policy')).toBe('¡El Ataque de Garchomp ha subido mucho!')
   })
 
   it('el objeto no deja su nombre inglés', () => {

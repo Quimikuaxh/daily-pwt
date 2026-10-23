@@ -378,9 +378,12 @@
   left: 82px;
 }
 
-/* A la altura de la barra de PS (barra en y 8..13, icono de 6 px en y 8..14), en su columna fija (decisión de Jose). */
+/*
+ * A la altura de la barra de PS, en su columna fija (decisión de Jose). El rótulo «HP» de la placa ocupa y 7..11 y la barra y 8..12: el icono
+ * (6 px) va en y 7..12, de arriba del rótulo a abajo de la barra (en y 8 quedaba 1 px por debajo).
+ */
 .bt-databox-status {
-  top: 8px;
+  top: 7px;
 }
 
 .bt-databox-rival .bt-databox-status {

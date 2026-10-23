@@ -2,6 +2,8 @@
 
 Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
+**Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). Lo siguiente, la música, lo hace Jose en su ordenador en una rama nueva desde `main` (`feature/f3-sonido`).
+
 ## Para F2 (resto)
 - **Fijar `LAUNCH_DATE` el día del lanzamiento real** (`src/core/launch.ts`, provisional 2026-10-19; decisión de Jose: se cambia a la fecha real cuando se lance la aplicación, no antes) y regenerar el snapshot `src/core/__snapshots__/challenge.reference.json` (README, «Lanzamiento»). Con los 53 barajados juntos, la secuencia depende solo del índice de día: con la fecha actual los días 19 a 21 de octubre son Hiedra, Fredo y Antón (con 6 fueron Plubio, Misty y Máximo) y Máximo toca el día #39 (2026-11-26, `D + 38`). Cambiar fecha o roster cambia lo ya publicado (rival, variante, equipo, `#N`). Propuesta y alternativas descartadas en `docs/F2-DATOS.md`, «Calendario». `scripts/capture-vis.mjs` ya usa `?trainer=` con `e2e/scenarios.json` (DEC-50).
 - **Calibrar la dificultad** (PRD §14, criterio 19) con el roster completo. Resultado preliminar (INT-14, solo los 5 de F1) con el jugador de prueba "mejor daño" y los IV del jugador iguales a los del rival (RF-16): Brock 100 %, Misty 70 %, Camila 70 %, Plubio 50 %, Rojo 0 %. Brock y Rojo siguen fuera del rango 40-80 %.
@@ -12,13 +14,13 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 ## Orden de trabajo
 1. **F3** (sección «Para F3»): estadísticas y rachas (el almacenamiento `daily-pwt:v1` ya guarda el historial por día), compartir, Ayuda (créditos y aviso legal) y Ajustes; después música y efectos de sonido.
-2. **Resto de F2** que no depende de Jose: minis de entrenador (en local, ver arriba). E2E en CI y capturas con `?trainer=`, hechos (rama `feature/f2-ci-vis`).
+2. **Resto de F2** que no depende de Jose: minis de entrenador (en local, ver arriba). E2E en CI y capturas con `?trainer=`, hechos.
 3. **Necesitan a Jose**: calibrar la dificultad (partidas de prueba), verificar en Windows y Safari iOS reales, fijar `LAUNCH_DATE` al lanzar.
 4. **Fases futuras**: modo PWT, logros con login; las animaciones de movimientos, lo último.
 
 ## Para F3
-- **Hecho** (rama `feature/f3-estadisticas`, DEC-47): estadísticas y rachas, compartir.
-- **Hecho** (rama `feature/f3-ayuda-ajustes`, DEC-48 y DEC-49): Ayuda, Ajustes (velocidad guardada, borrar datos locales), marco de consola en escritorio, clima en la pantalla táctil con turnos restantes y nombres de la caja de PS alineados al nivel.
+- **Hecho** (DEC-47): estadísticas y rachas, compartir.
+- **Hecho** (DEC-48 y DEC-49): Ayuda, Ajustes (velocidad guardada, borrar datos locales), marco de consola en escritorio, clima en la pantalla táctil con turnos restantes y nombres de la caja de PS alineados al nivel.
 - **Aparcado** (`feature/f3-sonido`, decisión de Jose del 22/10/2026): música y efectos de sonido, hasta poder descargarlos (desde la nube YouTube, The Sounds Resource, KHInsider e Internet Archive están bloqueados). Ya decidido: sonido activado por defecto (nada suena hasta la primera interacción), música solo en combate (en Resultado, el jingle de victoria si se gana), silencio y volumen en Ajustes; el tema de Mirto lo confirma Jose al hacer la música.
 - **Contrastar con el juego real:** posición y aspecto del indicador de clima (DEC-48).
 
@@ -48,12 +50,13 @@ Pistas del PWT disponibles para otras pantallas: "PWT - Final Round!" (`70ebcCUX
 Golpe supereficaz, poco eficaz y neutro al atacar, y los básicos del combate (lanzar y abrir Poké Ball, debilitado). Ripeados de N2/B2 (p. ej. The Sounds Resource), con script reproducible y créditos. Mismo control de silencio y volumen que la música, y nada suena hasta la primera interacción del usuario.
 
 ## Animaciones de movimientos (PRD §0, DEC-53)
-- **Hecho** (rama `feature/animaciones`): genéricas por tipo y clase y 20 propias, por código en píxel, con interruptor en Ajustes. Mejora (22/10/2026): físicos según cómo golpean (mordisco, puñetazo, patada, corte, golpe) y especiales con un efecto distinto por tipo (chorro de llamas, zigzag eléctrico, hojas, cristales…).
+- **Hecho**: genéricas por tipo y clase y 20 propias, por código en píxel, con interruptor en Ajustes. Mejora (22/10/2026): físicos según cómo golpean (mordisco, puñetazo, patada, corte, golpe) y especiales con un efecto distinto por tipo (chorro de llamas, zigzag eléctrico, hojas, cristales…).
 - **Segunda tanda hecha:** 20 propias más (Enfado, Triturar, A Bocajarro, Tierra Viva, Ventisca, Respiro, Escaldar, Paz Mental, Gigadrenado, Retribución, Tijera X, Corpulencia, Rayo Señal, Fuego Fatuo, Megacuerno, Voltio Cruel, Acróbata, Onda Trueno, Tajo Aéreo y Cascada); 40 en total. Revisar con Jose el aspecto en partidas reales; más tandas, por orden de uso, si él quiere.
+- **Estados, características, bayas y golpes (23/10/2026, DEC-55):** hecho. Revisar con Jose en partidas reales.
 
 ## Pantalla de equipo y de datos
 - **Poder Oculto y los IV del jugador:** como los IV del jugador son iguales en las seis características, su Poder Oculto es siempre Lucha 30, Siniestro 30 o Lucha 70 (DEC-54), aunque el set de Smogon pensara en otro tipo. Si se quiere respetar el tipo previsto habría que darle IV distintos (decisión de producto, ver PRD §0 «IVs, EVs y naturaleza del jugador»).
-- **Mochila = equipo rival:** hecho (rama `feature/mochila-rival`, DEC-52).
+- **Mochila = equipo rival:** hecho (DEC-52).
 - **Fondo de la pantalla de datos de N2/B2:** el actual es el de Negro/Blanco (limpiado por script de capturas de Bulbagarden Archives). Si aparece un rip limpio de N2/B2, sustituir las URLs de `battle/summary/*` en `data/ui-assets.json` y quitar sus `cleanups`.
 - **Descripciones en español:** son de Pokémon X/Y (primera edición con español en PokeAPI), no de N2/B2.
 - **Rival:** sin animación de lanzamiento ripeada (los sprites de entrenador son estáticos); la bola sale de una mano estimada a partir del tamaño de su sprite.

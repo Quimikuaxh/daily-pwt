@@ -208,34 +208,59 @@ const shot: Effect = {
   shake: shakeTarget(0.55, 0.9),
 }
 
-/** Sube características: flechas que suben alrededor del usuario. */
+/** Sube características (Maquinación, Danza Dragón…): un aura del color del tipo late alrededor del usuario. Las flechas van con el mensaje («ha subido»). */
 const boost: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    for (let k = 0; k < 3; k += 1) {
+      const t = phase(progress, k * 0.2, k * 0.2 + 0.5)
+      if (t > 0 && t < 1) ring(paint, c.user, 30 - t * 18, k % 2 ? c.light : c.color, 3, 18, progress * 4)
+    }
+    if (inPhase(progress, 0.6, 0.8)) orb(paint, c.user, 8, c.light, '#ffffff')
+  },
+}
+
+/** Baja características del rival (Encanto, Chirrido…): ondas del color del tipo van del usuario al objetivo. Las flechas van con el mensaje («ha bajado»). */
+const drop: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    for (let k = 0; k < 4; k += 1) {
+      const t = phase(progress, k * 0.1, k * 0.1 + 0.55)
+      if (t <= 0 || t >= 1) continue
+      const at = lerpPoint(c.user, c.target, t)
+      for (let i = -2; i <= 2; i += 1) paint.dot(at.x + i * 3, at.y + Math.abs(i) * 3 - 3, 3, k % 2 ? c.light : c.color)
+    }
+  },
+  shake: shakeTarget(0.6, 0.9),
+}
+
+/** Flecha en píxel de 6 de alto, hacia arriba (`up`) o hacia abajo. */
+function arrow(paint: Painter, at: Point, up: boolean, color: string): void {
+  for (let k = 0; k < 6; k += 1) {
+    const y = up ? at.y + k : at.y - k
+    paint.dot(at.x - k, y, 3, color)
+    paint.dot(at.x + k, y, 3, color)
+  }
+}
+
+/** Ha subido una característica: flechas rojas que suben por el Pokémon (con el mensaje). */
+const statUp: Effect = {
   duration: 700,
   draw(paint, progress, c) {
     for (let i = 0; i < 5; i += 1) {
       const t = (progress * 1.6 + i * 0.2) % 1
-      const x = c.user.x - 28 + i * 14
-      const y = c.user.y + 22 - t * 50
-      for (let k = 0; k < 6; k += 1) {
-        paint.dot(x - k, y + k, 3, '#f85848')
-        paint.dot(x + k, y + k, 3, '#f85848')
-      }
+      arrow(paint, { x: c.target.x - 28 + i * 14, y: c.target.y + 22 - t * 50 }, true, t < 0.6 ? '#f85848' : '#f8a888')
     }
   },
 }
 
-/** Baja características del rival: flechas azules que caen sobre el objetivo. */
-const drop: Effect = {
+/** Ha bajado una característica: flechas azules que caen sobre el Pokémon (con el mensaje). */
+const statDown: Effect = {
   duration: 700,
   draw(paint, progress, c) {
     for (let i = 0; i < 5; i += 1) {
       const t = (progress * 1.6 + i * 0.2) % 1
-      const x = c.target.x - 28 + i * 14
-      const y = c.target.y - 28 + t * 50
-      for (let k = 0; k < 6; k += 1) {
-        paint.dot(x - k, y - k, 3, '#4890f8')
-        paint.dot(x + k, y - k, 3, '#4890f8')
-      }
+      arrow(paint, { x: c.target.x - 28 + i * 14, y: c.target.y - 28 + t * 50 }, false, t < 0.6 ? '#4890f8' : '#98c0f8')
     }
   },
 }
@@ -1124,22 +1149,13 @@ const xscissor: Effect = {
   shake: shakeTarget(0.35, 0.8),
 }
 
-/** Corpulencia: el usuario se hincha; pulsos naranjas salen de él y flechas rojas suben a los lados. */
+/** Corpulencia: el usuario se hincha y salen de él pulsos naranjas (las flechas, con el mensaje). */
 const bulkup: Effect = {
   duration: 900,
   draw(paint, progress, c) {
     for (let k = 0; k < 3; k += 1) {
       const t = phase(progress, k * 0.25, k * 0.25 + 0.35)
       if (t > 0 && t < 1) ring(paint, c.user, 14 + t * 22, k % 2 ? '#f8c060' : '#f88830', 3, 18)
-    }
-    for (const side of [-1, 1]) {
-      const t = (progress * 1.5) % 1
-      const x = c.user.x + side * 36
-      const y = c.user.y + 18 - t * 40
-      for (let k = 0; k < 5; k += 1) {
-        paint.dot(x - k, y + k, 3, '#f85848')
-        paint.dot(x + k, y + k, 3, '#f85848')
-      }
     }
   },
   shake: (progress) => (inPhase(progress, 0.1, 0.8) ? { who: 'user', dx: 0, dy: Math.round(Math.sin(progress * 40) * 2) } : null),
@@ -1315,7 +1331,155 @@ const waterfall: Effect = {
   shake: shakeTarget(0.35, 0.8, 3),
 }
 
-/** Los 40 movimientos con animación propia (los más usados entre rivales y pool del jugador, en dos tandas de 20, 22/10/2026). */
+// ---------- estados y objetos (sobre el Pokémon que los sufre: `user` y `target` son él; decisiones de Jose del 23/10/2026) ----------
+
+/** Quemado: llamas que suben por el Pokémon, que se encoge de dolor. */
+const burned: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 16)
+    for (let i = 0; i < 6; i += 1) {
+      const t = phase(progress, seeds[i] * 0.4, seeds[i] * 0.4 + 0.55)
+      if (t <= 0 || t >= 1) continue
+      const x = c.target.x - 22 + seeds[i + 6] * 44
+      const height = 8 + Math.round(seeds[i + 10 > 15 ? i : i + 10] * 8)
+      for (let y = 0; y < height; y += 3) {
+        const color = y > height - 4 ? '#f8e050' : y > height / 2 ? '#f88830' : '#e04020'
+        paint.dot(x + Math.round(Math.sin(y + progress * 30)), c.target.y + 20 - t * 34 - y, 3, color)
+      }
+    }
+  },
+  shake: shakeTarget(0.1, 0.7),
+}
+
+/** Paralizado: chispas amarillas que crepitan alrededor del Pokémon, que se queda rígido y tiembla. */
+const paralyzed: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    if (Math.floor(progress * 20) % 3 === 2 || progress > 0.9) return
+    const seeds = seedsFor(c, 12)
+    for (let i = 0; i < 4; i += 1) {
+      const angle = seeds[i] * Math.PI * 2 + Math.floor(progress * 6)
+      let from = { x: c.target.x + Math.cos(angle) * 24, y: c.target.y + Math.sin(angle) * 20 }
+      for (let k = 0; k < 3; k += 1) {
+        const to = { x: from.x + (k % 2 ? -5 : 5), y: from.y + 6 }
+        beam(paint, from, to, 1, '#f8e030', '#f8f8a8', 2)
+        from = to
+      }
+    }
+  },
+  shake: (progress) => (progress < 0.85 ? { who: 'target', dx: Math.round(Math.sin(progress * 120)), dy: 0 } : null),
+}
+
+/** Letra Z en píxel. */
+function sleepZ(paint: Painter, at: Point, size: number, color: string): void {
+  for (let i = 0; i < 4; i += 1) {
+    paint.dot(at.x + i * size, at.y, size, color)
+    paint.dot(at.x + i * size, at.y + 3 * size, size, color)
+    paint.dot(at.x + (3 - i) * size, at.y + i * size, size, color)
+  }
+}
+
+/** Dormido: zetas que salen de la cabeza y suben meciéndose. */
+const asleep: Effect = {
+  duration: 950,
+  draw(paint, progress, c) {
+    for (let i = 0; i < 3; i += 1) {
+      const t = phase(progress, i * 0.2, i * 0.2 + 0.6)
+      if (t <= 0 || t >= 1) continue
+      sleepZ(paint, { x: c.target.x + 10 + t * 18 + Math.sin(t * 7) * 3, y: c.target.y - 22 - t * 26 }, 2 + Math.round(t), t < 0.7 ? '#f8f8f8' : '#a8b8f8')
+    }
+  },
+}
+
+/** Congelado: cristales de hielo que encierran al Pokémon y brillan. */
+const frozen: Effect = {
+  duration: 850,
+  draw(paint, progress, c) {
+    const grow = phase(progress, 0, 0.45)
+    for (let i = 0; i < 8; i += 1) {
+      const angle = (i / 8) * Math.PI * 2
+      const radius = 30 - grow * 8
+      diamond(paint, { x: c.target.x + Math.cos(angle) * radius, y: c.target.y + Math.sin(angle) * radius * 0.8 }, 2 + Math.round(grow * 3), '#98d8f8', '#f8f8f8')
+    }
+    if (inPhase(progress, 0.5, 0.65)) orb(paint, c.target, 10, '#c8f0f8', '#ffffff')
+  },
+  shake: shakeTarget(0.45, 0.7),
+}
+
+/** Confuso: pájaros (estrellitas) que giran sobre la cabeza; el Pokémon se tambalea. */
+const confused: Effect = {
+  duration: 900,
+  draw(paint, progress, c) {
+    if (progress > 0.92) return
+    for (let i = 0; i < 3; i += 1) {
+      const angle = progress * Math.PI * 4 + (i / 3) * Math.PI * 2
+      star(paint, { x: c.target.x + Math.cos(angle) * 20, y: c.target.y - 30 + Math.sin(angle) * 6 }, 4, i % 2 ? '#f8e050' : '#f8f8c8')
+    }
+  },
+  shake: (progress) => (progress < 0.85 ? { who: 'target', dx: Math.round(Math.sin(progress * 18) * 3), dy: 0 } : null),
+}
+
+/** Baya en píxel con un mordisco de `bites` (0 entera, 3 casi comida). */
+function berryArt(paint: Painter, center: Point, bites: number): void {
+  const rows = ['...##...', '..####..', '.######.', '########', '########', '.######.', '..####..']
+  rows.forEach((row, y) => {
+    for (let x = 0; x < row.length; x += 1) {
+      if (row[x] !== '#' || x >= 8 - bites * 2) continue
+      paint.dot(center.x + (x - 4) * 2, center.y + (y - 3) * 2, 2, y < 2 ? '#f8a8b8' : '#e83858')
+    }
+  })
+  if (bites < 3) paint.dot(center.x - 1, center.y - 10, 2, '#48b048')
+}
+
+/** Baya que sube una característica: aparece sobre el Pokémon, se la come a bocados y le suben las flechas rojas. */
+const berry: Effect = {
+  duration: 1000,
+  draw(paint, progress, c) {
+    if (progress < 0.5) berryArt(paint, { x: c.target.x, y: c.target.y - 34 }, Math.floor(phase(progress, 0.15, 0.5) * 4))
+    const rise = phase(progress, 0.5, 1)
+    if (rise > 0 && rise < 1) statUp.draw(paint, rise, c)
+  },
+}
+
+/** Maldición: sin ser Fantasma, un aura oscura sobre el usuario (las subidas y la bajada salen con sus mensajes); siendo Fantasma, un clavo maldito cae sobre el objetivo. */
+const curse: Effect = {
+  duration: 950,
+  draw(paint, progress, c) {
+    const self = c.user.x === c.target.x && c.user.y === c.target.y
+    if (self) {
+      // Las flechas de subir y bajar van con sus mensajes: aquí, un aura oscura que se cierra sobre el usuario.
+      for (let k = 0; k < 3; k += 1) {
+        const t = phase(progress, k * 0.2, k * 0.2 + 0.5)
+        if (t > 0 && t < 1) ring(paint, c.user, 30 - t * 20, k % 2 ? '#9870c8' : '#583878', 3, 16, progress * 3)
+      }
+      return
+    }
+    const fall = phase(progress, 0.1, 0.5)
+    if (progress < 0.75) {
+      const tip = { x: c.target.x, y: lerp(c.target.y - 70, c.target.y - 6, fall) }
+      for (let y = 0; y < 22; y += 2) paint.dot(tip.x - 1, tip.y - y, 3, y < 4 ? '#d0d0e0' : '#787088')
+      for (let x = -4; x <= 4; x += 2) paint.dot(tip.x + x, tip.y - 22, 3, '#9870c8')
+    }
+    burst(paint, c.target, phase(progress, 0.5, 0.9), '#583878', '#9870c8', 8, 26)
+  },
+  shake: (progress) => (progress > 0.5 && progress < 0.9 ? { who: 'target', dx: Math.round(Math.sin(progress * 90) * 2), dy: 0 } : null),
+}
+
+/** Estados (`status:<id>`), bayas (`item:berry`) y cambios de características (`stat:up`, `stat:down`): se animan con su mensaje sobre quien los sufre. */
+export const CONDITION_EFFECTS: Record<string, Effect> = {
+  'status:brn': burned,
+  'status:psn': toxic,
+  'status:par': paralyzed,
+  'status:slp': asleep,
+  'status:frz': frozen,
+  'status:confusion': confused,
+  'item:berry': berry,
+  'stat:up': statUp,
+  'stat:down': statDown,
+}
+
+/** Los movimientos con animación propia: los 40 más usados entre rivales y pool del jugador (dos tandas de 20, 22/10/2026) y Maldición. */
 export const CUSTOM_EFFECTS: Record<string, Effect> = {
   earthquake,
   stoneedge,
@@ -1357,6 +1521,7 @@ export const CUSTOM_EFFECTS: Record<string, Effect> = {
   thunderwave,
   airslash,
   waterfall,
+  curse,
 }
 
 /**
@@ -1364,6 +1529,8 @@ export const CUSTOM_EFFECTS: Record<string, Effect> = {
  * resto según su clase.
  */
 export function effectFor(moveId: string, kind: FxKind, type?: string): Effect {
+  const condition = CONDITION_EFFECTS[moveId]
+  if (condition) return condition
   const custom = CUSTOM_EFFECTS[moveId.startsWith('hiddenpower') ? 'hiddenpower' : moveId]
   if (custom) return custom
   if (kind === 'shot' && type && SPECIAL_BY_TYPE[type]) return SPECIAL_BY_TYPE[type]

@@ -4,8 +4,12 @@ import { Prng } from '../../../core/prng'
 import { effectFor, SELF_KINDS, type FxContext, type FxKind, type Painter, type Point } from './effects'
 import { fxColorsFor } from './fxColors'
 
-/** Un movimiento que se está usando: lo pone useBattle al mostrar «X usó Y». `key` cambia en cada uso (el mismo movimiento dos veces se anima dos veces). */
-export type MoveFxEvent = { key: number; moveId: string; user: 'player' | 'rival' }
+/**
+ * Un movimiento que se está usando (lo pone useBattle al mostrar «X usó Y», y otra vez por cada golpe de más) o un estado o baya sobre un
+ * Pokémon (`status:brn`, `item:berry`…). `target` es quien lo recibe según el simulador (el propio usuario en Maldición o Danza Espada);
+ * sin él, se deduce de la clase del movimiento. `key` cambia en cada uso (el mismo movimiento dos veces se anima dos veces).
+ */
+export type MoveFxEvent = { key: number; moveId: string; user: 'player' | 'rival'; target: 'player' | 'rival' | null }
 
 type MoveFxProps = {
   event: MoveFxEvent | null
@@ -61,7 +65,7 @@ export function MoveFx({ event, type, points, speed, fieldRef }: MoveFxProps) {
     const effect = effectFor(event.moveId, kind, moveType ?? undefined)
     const opponent = event.user === 'player' ? 'rival' : 'player'
     const user = at[event.user]
-    const target = SELF_KINDS.has(kind) ? at[event.user] : at[opponent]
+    const target = event.target ? at[event.target] : SELF_KINDS.has(kind) ? at[event.user] : at[opponent]
     const colors = fxColorsFor(moveType ?? 'Normal')
     const paint = painterFor(context)
     const duration = effect.duration / rate

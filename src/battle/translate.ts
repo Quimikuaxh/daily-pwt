@@ -105,6 +105,10 @@ function translateBoost(f: Fields, ctx: TranslateContext, direction: 'up' | 'dow
   const stat = (log.statLabels as Record<string, string>)[f.args[1]]
   if (!stat) return null
   const stages = Number(f.args[2]) || 1
+  // Bayas que suben una característica (Aslac, Lichi…): el mensaje dice que ha sido la baya (decisión de Jose). Su `-enditem [eat]` no se enseña.
+  const from = f.tags.get('from') ?? ''
+  const berry = direction === 'up' && /^item:/.test(from) && toId(from.replace(/^item:\s*/, '')).endsWith('berry')
+  if (berry) return log.berryStatRose(itemName(ctx, from.replace(/^item:\s*/, '')), stat, mon, stages)
   return direction === 'up' ? log.statRose(stat, mon, stages) : log.statFell(stat, mon, stages)
 }
 
