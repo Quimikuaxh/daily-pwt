@@ -58,7 +58,7 @@ test.describe('Sonido', () => {
     const music = audio.filter((path) => path.includes('/audio/music/'))
     expect(music).toHaveLength(1)
     expect(music[0]).toMatch(/\/audio\/music\/(gym|champion)-(kanto|johto|hoenn|sinnoh|unova)\.m4a$/)
-    // Los efectos que haya en el índice (6, y 8 cuando estén los del menú).
+    // Todos los efectos del índice.
     expect(new Set(audio.filter((path) => path.includes('/audio/sfx/'))).size).toBe(Object.keys(audioIndex.sfx).length)
     expect(errors).toEqual([])
   })

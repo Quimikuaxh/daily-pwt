@@ -1,9 +1,21 @@
-import type { BattleRequest, RequestPokemon } from '../../battle/protocol'
+import type { BattleRequest, BattleView, RequestPokemon } from '../../battle/protocol'
 import type { GameData, NamesEs, ResolvedSet } from '../../core/types'
 import { es } from '../../i18n/es'
 import { toId } from '../../core/id'
 import { isFaintedCondition } from '../../battle/condition'
 
+/** El verde baja a amarillo y rojo por umbral, como en el juego. */
+export const fillFor = (percent: number): 'green' | 'yellow' | 'red' => (percent > 50 ? 'green' : percent > 20 ? 'yellow' : 'red')
+
+/**
+ * El Pokémon activo del jugador tiene la barra en rojo y sigue en pie: suena el pitido de vida baja (decisión de Jose, como en N2/B2:
+ * nunca por el rival, y se corta al debilitarse).
+ */
+export function playerInPinch(view: BattleView | null): boolean {
+  const active = view?.player.active
+  const mon = active == null ? null : view?.player.team[active]
+  return !!mon && !mon.fainted && mon.hpPercent > 0 && fillFor(mon.hpPercent) === 'red'
+}
 
 const STRUGGLE_ID = 'struggle'
 

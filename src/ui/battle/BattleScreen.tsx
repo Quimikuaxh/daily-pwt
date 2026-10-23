@@ -4,7 +4,7 @@ import type { BattleClient } from '../../battle/client'
 import type { AiKind, BattleRequest, EngineEnd } from '../../battle/protocol'
 import { MAX_TURNS } from '../../config'
 import type { Challenge, GameData } from '../../core/types'
-import { useBattle, type BattleParams } from '../../hooks/useBattle'
+import { HP_BAR_ANIMATION_MS, useBattle, type BattleParams } from '../../hooks/useBattle'
 import type { BattleMode } from '../../storage/gameStore'
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
 import { es } from '../../i18n/es'
@@ -19,7 +19,7 @@ import { PartyScreen } from './party/PartyScreen'
 import { PARTY_SCREEN_IMAGES, useImagesReady } from './preloadAssets'
 import { partyMembers, rivalMembers } from './party/partyModel'
 import { TouchScreen, type TouchMode } from './TouchScreen'
-import { canChoose, hasOnlyForcedMove, isForcedSwitch, moveOptions, switchBlockedReason, switchOptions } from './battleModel'
+import { canChoose, hasOnlyForcedMove, isForcedSwitch, moveOptions, playerInPinch, switchBlockedReason, switchOptions } from './battleModel'
 import { avatarForSeed } from './introAssets'
 import { menuSoundFor } from './menuSounds'
 import { SCREEN_HEIGHT, SCREEN_WIDTH, STAGE_HEIGHT, useStageScale } from './useStageScale'
@@ -111,6 +111,20 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
     audio.playMusic(music)
     return () => audio.stopMusic()
   }, [musicOn, music])
+
+  // Pitido de vida baja: mientras el Pokémon del jugador tiene la barra en rojo, desde que la barra termina de bajar; se corta al curarse,
+  // al cambiarlo, al debilitarse (PS a 0), al terminar el combate y al salir.
+  const pinch = musicOn && playerInPinch(battle.view)
+  const barMs = HP_BAR_ANIMATION_MS / battle.speed
+  useEffect(() => {
+    if (!pinch) return
+    const audio = getAudio()
+    const timer = setTimeout(() => audio.setLoopSfx('low-hp'), barMs)
+    return () => {
+      clearTimeout(timer)
+      audio.setLoopSfx(null)
+    }
+  }, [pinch, barMs])
 
   const autoChosenFor = useRef(request)
   useEffect(() => {

@@ -147,6 +147,24 @@ describe('motor de sonido', () => {
     expect(fake.sources.filter((source) => source.started)).toHaveLength(3)
   })
 
+  it('el pitido de vida baja va en bucle hasta pedir null; pedido antes de la interacción, empieza al tocar', async () => {
+    const { engine, fake, interact, settle } = setup()
+    engine.setLoopSfx('faint')
+    await settle()
+    expect(fake.sources).toHaveLength(0)
+    interact()
+    await settle()
+    expect(fake.sources[0]).toMatchObject({ loop: true, started: true })
+    expect(engine.state().loop).toBe('faint')
+    engine.setLoopSfx('faint')
+    await settle()
+    expect(fake.sources).toHaveLength(1)
+    engine.setLoopSfx(null)
+    await settle()
+    expect(fake.sources[0].stoppedAt).not.toBeNull()
+    expect(engine.state().loop).toBeNull()
+  })
+
   it('sin Web Audio no hace nada ni lanza; un audio que no se descarga se queda mudo', async () => {
     const { engine, interact, settle } = setup(false)
     interact()

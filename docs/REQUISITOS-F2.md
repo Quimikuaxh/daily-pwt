@@ -12,7 +12,7 @@ F2 carga el roster completo (PRD §7.3, 53 entrenadores), valida los datos en CI
 | §6 Pool del jugador | Sets de los 53 rivales (varios por especie) más Smogon | Hecho |
 | §8.3 Validación | `npm run validate:data` y `.github/workflows/ci.yml` | Hecho |
 | §10.7 Sprites | Entrenadores N2/B2 (`.gif` y `-mini.png`) y especies nuevas (frente y espalda) | Hecho (ver README) |
-| §6 Equilibrio del equipo del jugador | Suma de estadísticas base >= 2800 y <= 3 Pokémon por tipo (RF-13b, RF-13c; DEC-41) | Hecho |
+| §6 Equilibrio del equipo del jugador | Suma de estadísticas base >= 2860 y <= 2 Pokémon por tipo (antes 2800 y 3; cambio del 23/10/2026) (RF-13b, RF-13c; DEC-41) | Hecho |
 | §4.3 y §11 Oficial único, reanudar y práctica (adelantado de F3, PRD §0) | RF-79 a RF-86; DEC-43 | Hecho |
 | §9 IA / §14.19 Calibración | Calibrar la dificultad con el roster completo | Pendiente (PENDIENTE.md) |
 | Calendario | Fijar `LAUNCH_DATE` | Pendiente: la fija Jose al final |
@@ -33,9 +33,9 @@ F2 carga el roster completo (PRD §7.3, 53 entrenadores), valida los datos en CI
 - RF-87 Nada suena hasta la primera interacción con la página (toque, clic o tecla); lo que se pidió antes (la música de un combate reanudado) empieza entonces.
 - RF-88 Música solo en combate: el tema del rival (`gym-<región>` los líderes, `champion-<región>` los campeones; Mirto, el de Iris) en bucle desde el iris de la intro, o desde el principio al reanudar un oficial; se funde al terminar el combate o al salir. La velocidad del combate no la cambia.
 - RF-89 En Resultado, «Winning in the PWT!» una vez si se gana; nada si se pierde o se rinde. Se corta al salir de Resultado.
-- RF-90 Efectos: golpe neutro, supereficaz o poco eficaz al bajar la barra por un movimiento (uno por golpe en los múltiples), lanzar y abrir la Poké Ball en la intro y en los cambios, y debilitado al caer el sprite; los botones del menú de batalla (pantalla táctil, equipo y datos) suenan a «elegir», y los de volver o cerrar, a «cancelar», y cada estado (quemado, envenenado, paralizado, dormido, congelado, confuso) suena con su mensaje y su animación (decisiones de Jose). Nunca al reproducir un combate guardado.
+- RF-90 Efectos: golpe neutro, supereficaz o poco eficaz al bajar la barra por un movimiento (uno por golpe en los múltiples), lanzar y abrir la Poké Ball en la intro y en los cambios, y el pitido de vida baja en bucle mientras el Pokémon activo del jugador tiene la barra en rojo (nunca por el rival; se corta al curarse, al cambiarlo, al debilitarse y al terminar; cambio de requisito del 23/10/2026), y debilitado al caer el sprite; los botones del menú de batalla (pantalla táctil, equipo y datos) suenan a «elegir», y los de volver o cerrar, a «cancelar», cada estado (quemado, envenenado, paralizado, dormido, congelado, confuso) suena con su mensaje y su animación, y también comerse una baya y subir o bajar una característica (decisiones de Jose; las tres últimas, cambio de requisito del 23/10/2026). Nunca al reproducir un combate guardado.
 - RF-91 Ajustes: Activado/Silenciado y un deslizador de volumen (0-100 %, 70 por defecto) que valen para música y efectos, se aplican al instante y se guardan en el navegador; también se cambian en combate con el botón Sonido (decisión de Jose); los ajustes guardados antes de existir se leen activado y a 70.
-- RF-92 Cada combate descarga solo la pista de su rival y los 6 efectos, nunca toda la música; sin Web Audio, o si falla una descarga, el juego sigue mudo y sin errores.
+- RF-92 Cada combate descarga solo la pista de su rival y los efectos, nunca toda la música; sin Web Audio, o si falla una descarga, el juego sigue mudo y sin errores.
 
 ## 2. Criterios de aceptación (PRD §14)
 

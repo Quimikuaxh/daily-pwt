@@ -20,10 +20,15 @@ export function hitSoundAt(lines: readonly (string | null)[], index: number): Sf
   return 'hit-neutral'
 }
 
-/** Sonido de un estado con su animación (decisión de Jose): `status:brn` -> `status-brn`; el resto de animaciones, ninguno. */
-export function statusSoundFor(moveId: string): SfxId | null {
+const CONDITION_SOUNDS: Record<string, SfxId> = { 'item:berry': 'berry', 'stat:up': 'stat-up', 'stat:down': 'stat-down' }
+
+/**
+ * Sonido que acompaña a una animación de DEC-55 (decisiones de Jose): cada estado (`status:brn` -> `status-brn`), comerse una baya y
+ * subir o bajar una característica. Las animaciones de movimientos no llevan sonido propio.
+ */
+export function conditionSoundFor(moveId: string): SfxId | null {
   const status = /^status:(brn|psn|par|slp|frz|confusion)$/.exec(moveId)?.[1]
-  return status ? (`status-${status}` as SfxId) : null
+  return status ? (`status-${status}` as SfxId) : (CONDITION_SOUNDS[moveId] ?? null)
 }
 
 /**

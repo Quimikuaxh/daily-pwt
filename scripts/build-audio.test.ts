@@ -12,7 +12,7 @@ describe('scripts/build-audio.mjs', () => {
     const { planAudio } = await importScript('scripts/build-audio.mjs')
     const plans = planAudio(manifest())
     expect(plans.filter((plan: { kind: string }) => plan.kind === 'music')).toHaveLength(11)
-    expect(plans.filter((plan: { kind: string }) => plan.kind === 'sfx')).toHaveLength(6)
+    expect(plans.filter((plan: { kind: string }) => plan.kind === 'sfx')).toHaveLength(18)
     const kanto = plans.find((plan: { id: string }) => plan.id === 'gym-kanto')
     expect(kanto.url).toBe('https://archive.org/download/pkmn-bw2-soundtrack/Disc%202/04%20-%20Battle!%20(Gym%20Leader%20-%20Kanto).flac')
   })

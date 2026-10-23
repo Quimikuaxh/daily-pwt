@@ -88,7 +88,55 @@
     },
     "faint": {
       "path": "audio/sfx/faint.m4a",
+      "durationSec": 0.583
+    },
+    "low-hp": {
+      "path": "audio/sfx/low-hp.m4a",
       "durationSec": 0.535
+    },
+    "menu-select": {
+      "path": "audio/sfx/menu-select.m4a",
+      "durationSec": 0.479
+    },
+    "menu-cancel": {
+      "path": "audio/sfx/menu-cancel.m4a",
+      "durationSec": 0.284
+    },
+    "status-slp": {
+      "path": "audio/sfx/status-slp.m4a",
+      "durationSec": 0.874
+    },
+    "status-psn": {
+      "path": "audio/sfx/status-psn.m4a",
+      "durationSec": 0.904
+    },
+    "status-brn": {
+      "path": "audio/sfx/status-brn.m4a",
+      "durationSec": 0.192
+    },
+    "status-frz": {
+      "path": "audio/sfx/status-frz.m4a",
+      "durationSec": 0.67
+    },
+    "status-par": {
+      "path": "audio/sfx/status-par.m4a",
+      "durationSec": 0.691
+    },
+    "status-confusion": {
+      "path": "audio/sfx/status-confusion.m4a",
+      "durationSec": 0.156
+    },
+    "berry": {
+      "path": "audio/sfx/berry.m4a",
+      "durationSec": 0.234
+    },
+    "stat-up": {
+      "path": "audio/sfx/stat-up.m4a",
+      "durationSec": 1.223
+    },
+    "stat-down": {
+      "path": "audio/sfx/stat-down.m4a",
+      "durationSec": 1.284
     }
   }
 }

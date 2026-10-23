@@ -44,8 +44,8 @@ export function teamViolations(dex: DexData, team: ResolvedSet[], rival: Resolve
   if (new Set(team.map((p) => p.item)).size !== team.length) out.push('RF-12 objeto repetido')
   if (team.some((p) => isForbidden(p.species))) out.push('RF-12 prohibido')
   if (distinctTypes(dex, team).length < 4) out.push('RF-13 <4 tipos')
-  if (!relaxed.includes('RF-13b') && baseStatTotal(dex, team) < 2800) out.push('RF-13b suma < 2800')
-  if (maxSharingAType(dex, team) > 3) out.push('RF-13c >3 del mismo tipo')
+  if (!relaxed.includes('RF-13b') && baseStatTotal(dex, team) < 2860) out.push('RF-13b suma < 2860')
+  if (maxSharingAType(dex, team) > 2) out.push('RF-13c >2 del mismo tipo')
   if (!relaxed.includes('RF-14') && !hasSuperEffectiveMove(dex, team, rival)) out.push('RF-14 sin x2')
   if (team.some((p) => p.level !== 50)) out.push('RF-16 nivel')
   const rivalIv = rival[0]?.ivs.hp

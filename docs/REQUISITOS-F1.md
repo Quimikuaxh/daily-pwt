@@ -62,8 +62,8 @@ Lo marcado **[F1, se amplía]** es alcance de F1 y crece en F2/F3. Lo marcado **
 - RF-11c Los PS numéricos del jugador bajan o suben a la par de la barra (lineal, 700 ms a x1, enteros en cada fotograma, sin animación con `prefers-reduced-motion`) y terminan en el PS exacto (DEC-34).
 - RF-12 Sin Pokémon evolucionables, especies repetidas, objetos repetidos ni legendarios prohibidos (lista de PRD §6).
 - RF-13 Al menos 4 tipos distintos.
-- RF-13b (F2, PRD §0) Suma de estadísticas base (`baseStats` del dex, como el total de las tarjetas de Hoy) de los 6 Pokémon >= 2800.
-- RF-13c (F2, PRD §0) Como máximo 3 Pokémon que compartan un mismo tipo (cada tipo de un Pokémon de doble tipo cuenta).
+- RF-13b (F2, PRD §0) Suma de estadísticas base (`baseStats` del dex, como el total de las tarjetas de Hoy) de los 6 Pokémon >= 2860 (antes 2800; cambio de requisito del 23/10/2026).
+- RF-13c (F2, PRD §0) Como máximo 2 Pokémon (antes 3; cambio de requisito del 23/10/2026) que compartan un mismo tipo (cada tipo de un Pokémon de doble tipo cuenta).
 - RF-14 Al menos un movimiento de daño ×2 o más por tipos contra algún Pokémon del rival.
 - RF-15 Si la tirada incumple, se repite con el siguiente valor del PRNG (regla 7 de §2).
 - RF-16 IV iguales a los del rival del día (20 contra líderes, 25 contra campeones, 30 contra Rojo; `buildPlayerTeam` los toma de `rivalTeam[0].ivs`, función pura), EV 0, Nv. 50 y naturaleza Seria (regla 4). Hoy (tarjetas), la pantalla de datos y el motor usan estos IV a través del `ResolvedSet` del jugador.

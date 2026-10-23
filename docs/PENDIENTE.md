@@ -29,7 +29,7 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 - **Logros con login opcional:** requiere backend (cuentas y almacenamiento); el daily sigue sin cuenta. Con sesión, racha diaria y logros en la cuenta; sin sesión, racha en local. Por definir: servicio, qué logros, migración de las estadísticas locales.
 
 ## Sonido: plan de implementación (F3, PRD §0)
-Recursos ya en el repo (DEC-56): `public/audio/music/*.m4a` (11 pistas completas), `public/audio/sfx/*.m4a` (6 efectos) y `src/generated/audio-index.json` (ruta y duración). Fuente y manifiesto: `data/audio.json`; cómo se regeneran: README, «Sonido». No hace falta red para implementar: todo lo necesario está versionado.
+Recursos ya en el repo (DEC-56): `public/audio/music/*.m4a` (11 pistas completas), `public/audio/sfx/*.m4a` (18 efectos) y `src/generated/audio-index.json` (ruta y duración). Fuente y manifiesto: `data/audio.json`; cómo se regeneran: README, «Sonido». No hace falta red para implementar: todo lo necesario está versionado.
 
 Decisiones que aplican (PRD §0, «Sonido» y «Fuentes y temas del sonido»): activado por defecto; nada suena hasta la primera interacción; música solo en combate y, en Resultado, el jingle de victoria si se gana; silencio y volumen en Ajustes, compartidos por música y efectos.
 
@@ -50,23 +50,11 @@ Pasos, en este orden (cada uno depende del anterior):
 6. **Hecho (DEC-57, `src/hooks/battleSfx.ts`).** Plan original: **Efectos** (`useBattle`, nunca durante la reproducción de un combate guardado):
    - Golpe: en el `-damage` sin `[from]` que baja la barra del objetivo. El sonido depende de si en esa acción llega `-supereffective` o `-resisted` para ese objetivo (`deferHitMessages` los coloca después del daño, así que hay que mirar adelante en los pasos de la acción, hasta la siguiente línea de `ACTION_END` de `moveFxCues.ts`). Sin ninguno de los dos, `hit-neutral`. En golpes múltiples, uno por golpe.
    - Poké Ball: `ball-throw` al lanzarla y `ball-open` al abrirse, con los tiempos del CSS divididos por la velocidad. Intro: rival lanza a 100 ms y se abre a 520 ms de la fase `rivalSend`; jugador, 650 y 1070 ms de `playerSend`. Cambios (`switchAnim`): lanza a 800 ms y se abre a 1120 ms, menos 500 ms si no hay retirada (`-send`, `--switch-skip`). Si se salta la intro, no suenan los de la intro.
-   - Debilitado: `faint` cuando cae el sprite (tras `FAINT_MESSAGE_LEAD_MS`, donde se aplica la línea `faint`).
+   - Debilitado: `faint` (`SEQ_SE_DEAD`) cuando cae el sprite. Vida baja: `low-hp` en bucle con el Pokémon del jugador en rojo (DEC-57).
 7. **Hecho.** Plan original: **Créditos en Ayuda** (`es.help.credits`): música (Super Music Collection de N2/B2, Internet Archive) y efectos (The Sounds Resource). En el README ya están.
 8. **Hecho (UT-75..UT-78, E2E-68, E2E-69, RF-87..RF-92, DEC-57).** El Chromium de Playwright no decodifica AAC: los E2E comprueban descargas y errores, no que suene. Plan original: **Tests y documentación**: unitarios del motor de audio con un `AudioContext` falso (desbloqueo, volumen, silencio, bucle, caché), de los ajustes nuevos y de los disparadores de efectos en `useBattle` (qué sonido por línea; ninguno al reproducir); E2E: Ajustes guarda silencio y volumen, y la página no da errores sin interacción. Requisitos numerados, casos en `PLAN-PRUEBAS-F1.md`, DEC nueva para el motor y Ayuda/README si cambia el uso.
-9. **Efectos que faltan (pendiente de Jose, en local con el ZIP).** El código ya los pide; solo faltan los ficheros. Mientras no estén en el índice, el motor los ignora y no suena nada (los tests y E2E-69 se adaptan solos al índice). Para cada uno: buscarlo en el ZIP (`unzip -l "scripts/.cache/sfx/<ZIP>"`, escucharlo con `unzip -p … | ffplay -nodisp -autoexit -`), añadir a `sfx` de `data/audio.json` `{ "id": "<id>", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/<nombre>.wav", "_nota": "…" }`, `npm run gen:audio` y probar en Chrome.
+9. **Hecho (23/10/2026): efectos de menú, estados, baya y características.** Elegidos por Jose a oído en el ZIP: `menu-select` `SEQ_SE_DECIDE1`, `menu-cancel` `SEQ_SE_CANCEL1`; de `SEQ_SE_BE_SE_*`, 01 dormido, 02 envenenado, 03 quemado, 04 congelado, 05 paralizado, 06 confuso, 10 comerse una baya (`berry`), 12 subir característica (`stat-up`) y 13 bajarla (`stat-down`). Baya y características suenan con su animación de DEC-55 (cambio de requisito de Jose). Falta revisarlos en partidas reales.
 
-   | Id | Cuándo suena | Dónde buscar |
-   |---|---|---|
-   | `menu-select` | Cualquier botón del menú de batalla (táctil, equipo, datos) | `SEQ_SE_DECIDE1` o `SEQ_SE_SELECT1` (`grep -i -E "decide|select"`) |
-   | `menu-cancel` | Volver y cerrar en esos menús | `SEQ_SE_CANCEL1` (`grep -i cancel`) |
-   | `status-brn` | Quemado: al quemarse y con el daño de la quemadura | Efecto de fuego corto del ZIP |
-   | `status-psn` | Envenenado (también gravemente): al envenenarse y con el daño | Burbujas o veneno |
-   | `status-par` | Paralizado: al paralizarse y cuando no se puede mover | Chispazo eléctrico corto |
-   | `status-slp` | Dormido: al dormirse y cuando sigue dormido | Ronquido o «zzz» |
-   | `status-frz` | Congelado: al congelarse y cuando sigue congelado | Hielo o cristal |
-   | `status-confusion` | Confuso: al confundirse y cuando sigue confuso | Pájaros o mareo |
-
-   Suenan a la vez que su mensaje y su animación (DEC-55, DEC-57). Si para algún estado no hay un efecto que encaje, basta con no añadirlo.
 10. **Revisar con Jose a oído**: costuras de los bucles, efecto elegido para abrir la Poké Ball (`SEQ_SE_BOWA2`; alternativas en el ZIP: `BOWA1`, `BOWA3`) y volumen relativo de música y efectos.
 
 ## Animaciones de movimientos (PRD §0, DEC-53)

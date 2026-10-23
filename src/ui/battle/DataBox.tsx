@@ -4,6 +4,7 @@ import { es } from '../../i18n/es'
 import { uiAsset } from './introAssets'
 import { HP_BAR_ANIMATION_MS } from '../../hooks/useBattle'
 import { useAnimatedValue } from './useAnimatedValue'
+import { fillFor } from './battleModel'
 
 type DataBoxProps = {
   side: 'player' | 'rival'
@@ -19,8 +20,6 @@ type DataBoxProps = {
 const BAR_WIDTH = 50
 const LEVEL = 50
 
-/** El verde baja a amarillo y rojo por umbral, como en el juego. */
-const fillFor = (percent: number): 'green' | 'yellow' | 'red' => (percent > 50 ? 'green' : percent > 20 ? 'yellow' : 'red')
 
 const digitsOf = (value: number): number[] => String(Math.max(0, Math.trunc(value))).split('').map(Number)
 

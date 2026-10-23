@@ -63,6 +63,9 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
   /** Pista pedida (suene ya o espere a la interacción o a la descarga). */
   let wantedMusic: string | null = null
   let playing: { id: string; source: AudioBufferSourceNode; gain: GainNode } | null = null
+  /** Efecto en bucle pedido (el pitido de vida baja) y el que suena. */
+  let wantedLoop: string | null = null
+  let looping: { id: string; source: AudioBufferSourceNode } | null = null
   const bytes = new Map<string, Promise<ArrayBuffer | null>>()
   const buffers = new Map<string, Promise<AudioBuffer | null>>()
 
@@ -147,6 +150,32 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
     }
   }
 
+  function startWantedLoop() {
+    const id = wantedLoop
+    if (!id || !unlocked || !context || looping?.id === id) return
+    void bufferOf(`sfx:${id}`).then((buffer) => {
+      const ctx = context
+      if (!buffer || !ctx || !master || wantedLoop !== id || looping?.id === id) return
+      stopLooping()
+      const source = ctx.createBufferSource()
+      source.buffer = buffer
+      source.loop = true
+      source.connect(master)
+      source.start()
+      looping = { id, source }
+    })
+  }
+
+  function stopLooping() {
+    const current = looping
+    looping = null
+    try {
+      current?.source.stop()
+    } catch {
+      // Ya parado.
+    }
+  }
+
   function unlock() {
     if (unlocked) return
     if (!context) {
@@ -166,6 +195,7 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
     for (const type of UNLOCK_EVENTS) unlockTarget?.removeEventListener(type, unlock)
     void context.resume().catch(() => undefined)
     startWantedMusic()
+    startWantedLoop()
   }
 
   for (const type of UNLOCK_EVENTS) unlockTarget?.addEventListener(type, unlock)
@@ -206,8 +236,17 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
         source.start()
       })
     },
+    /**
+     * Efecto en bucle hasta que se pida otro o `null` (el pitido de vida baja). Si se pide antes de la primera interacción, empieza en
+     * cuanto la haya: es un estado del combate, no un suceso.
+     */
+    setLoopSfx(id: string | null) {
+      wantedLoop = id
+      if (id === null || looping?.id !== id) stopLooping()
+      startWantedLoop()
+    },
     /** Para los tests y la depuración. */
-    state: () => ({ unlocked, volume, muted, music: playing?.id ?? null, wantedMusic }),
+    state: () => ({ unlocked, volume, muted, music: playing?.id ?? null, wantedMusic, loop: looping?.id ?? null }),
   }
 }
 

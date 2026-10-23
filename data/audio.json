@@ -35,6 +35,18 @@
     { "id": "hit-weak", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_KOUKA_L.wav", "_nota": "Golpe poco eficaz" },
     { "id": "ball-throw", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_NAGERU.wav", "_nota": "Lanzar la Poké Ball" },
     { "id": "ball-open", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_BOWA2.wav", "_nota": "Abrir la Poké Ball (sale el Pokémon)" },
-    { "id": "faint", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_HINSHI.wav", "_nota": "Debilitado" }
+    { "id": "faint", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_DEAD.wav", "_nota": "Debilitado, al caer el sprite" },
+    { "id": "low-hp", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_HINSHI.wav", "_nota": "Pitido de vida baja, en bucle mientras el Pokémon del jugador está en rojo (hinshi: «a punto de caer»)" },
+    { "id": "menu-select", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_DECIDE1.wav", "_nota": "Elegir en el menú de batalla" },
+    { "id": "menu-cancel", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_CANCEL1.wav", "_nota": "Volver o cerrar en el menú de batalla" },
+    { "id": "status-slp", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_01.wav", "_nota": "Dormido" },
+    { "id": "status-psn", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_02.wav", "_nota": "Envenenado" },
+    { "id": "status-brn", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_03.wav", "_nota": "Quemado" },
+    { "id": "status-frz", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_04.wav", "_nota": "Congelado" },
+    { "id": "status-par", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_05.wav", "_nota": "Paralizado" },
+    { "id": "status-confusion", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_06.wav", "_nota": "Confuso" },
+    { "id": "berry", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_10.wav", "_nota": "Comerse una baya" },
+    { "id": "stat-up", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_12.wav", "_nota": "Subir una característica" },
+    { "id": "stat-down", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_13.wav", "_nota": "Bajar una característica" }
   ]
 }

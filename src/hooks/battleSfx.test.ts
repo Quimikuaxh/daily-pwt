@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { BALL_SFX_MS, hitSoundAt, statusSoundFor, switchBallTimes } from './battleSfx'
+import { BALL_SFX_MS, hitSoundAt, conditionSoundFor, switchBallTimes } from './battleSfx'
 
 // UT-78 · Qué efecto de sonido toca a cada línea (DEC-57).
 describe('hitSoundAt', () => {
@@ -36,13 +36,13 @@ describe('Poké Ball', () => {
   })
 })
 
-describe('statusSoundFor', () => {
-  it('cada estado suena con su animación (quemado, envenenado, paralizado, dormido, congelado, confuso); lo demás, no', () => {
-    expect(['brn', 'psn', 'par', 'slp', 'frz', 'confusion'].map((status) => statusSoundFor(`status:${status}`))).toEqual([
+describe('conditionSoundFor', () => {
+  // Cambio de requisito (23/10/2026, Jose): la baya y las subidas y bajadas de características también suenan.
+  it('cada estado, la baya y las subidas y bajadas suenan con su animación; los movimientos, no', () => {
+    expect(['brn', 'psn', 'par', 'slp', 'frz', 'confusion'].map((status) => conditionSoundFor(`status:${status}`))).toEqual([
       'status-brn', 'status-psn', 'status-par', 'status-slp', 'status-frz', 'status-confusion',
     ])
-    expect(statusSoundFor('item:berry')).toBeNull()
-    expect(statusSoundFor('stat:up')).toBeNull()
-    expect(statusSoundFor('earthquake')).toBeNull()
+    expect(['item:berry', 'stat:up', 'stat:down'].map(conditionSoundFor)).toEqual(['berry', 'stat-up', 'stat-down'])
+    expect(conditionSoundFor('earthquake')).toBeNull()
   })
 })
