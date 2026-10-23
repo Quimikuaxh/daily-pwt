@@ -8,6 +8,9 @@ export const SPEEDS: readonly BattleSpeed[] = [1, 2, 4]
  */
 export type Settings = { speed: BattleSpeed; moveAnimations: boolean; sound: boolean; volume: number }
 
+/** Lo que cambia el control de sonido (Ajustes y botón Sonido del combate). */
+export type SoundPrefs = Pick<Settings, 'sound' | 'volume'>
+
 export const SETTINGS_KEY = 'daily-pwt:settings'
 const SCHEMA_VERSION = 1
 export const DEFAULT_SETTINGS: Settings = { speed: 1, moveAnimations: true, sound: true, volume: 70 }

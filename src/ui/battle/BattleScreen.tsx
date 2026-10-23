@@ -11,7 +11,7 @@ import { es } from '../../i18n/es'
 import { Dialog } from '../common/Dialog'
 import { Modal } from '../common/Modal'
 import { SoundSettings } from '../menu/SoundSettings'
-import type { Settings } from '../../storage/settings'
+import type { SoundPrefs } from '../../storage/settings'
 import { HistoryDialog } from './HistoryDialog'
 import { RemainingIndicator } from './RemainingIndicator'
 import { TopScreen } from './TopScreen'
@@ -44,8 +44,8 @@ type BattleScreenProps = {
   /** Animaciones de movimientos (Ajustes, por defecto activadas). */
   moveAnimations?: boolean
   /** Sonido y volumen de Ajustes; con `onSoundChange`, el botón Sonido los cambia desde el combate (decisión de Jose, DEC-57). */
-  sound?: Pick<Settings, 'sound' | 'volume'>
-  onSoundChange?: (sound: Pick<Settings, 'sound' | 'volume'>) => void
+  sound?: SoundPrefs
+  onSoundChange?: (sound: SoundPrefs) => void
   onFinish: (ended: EngineEnd) => void
   onExit: () => void
 }

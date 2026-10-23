@@ -1,11 +1,11 @@
 import { es } from '../../i18n/es'
-import type { Settings } from '../../storage/settings'
+import type { SoundPrefs } from '../../storage/settings'
 
 const text = es.settings
 
 type SoundSettingsProps = {
-  settings: Pick<Settings, 'sound' | 'volume'>
-  onChange: (sound: Pick<Settings, 'sound' | 'volume'>) => void
+  settings: SoundPrefs
+  onChange: (sound: SoundPrefs) => void
   /** Sin el rótulo «Sonido» cuando la ventana ya se llama así (botón Sonido del combate). */
   showTitle?: boolean
 }
