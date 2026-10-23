@@ -67,7 +67,7 @@ export function conditionFx(line: string): FxCue | null {
 }
 
 /** Líneas que terminan una acción: tras ellas, un `-damage` ya no es otro golpe del mismo movimiento. */
-const ACTION_END = new Set(['move', 'turn', 'upkeep', 'switch', 'drag', 'cant', 'faint', 'win', 'tie', ''])
+export const ACTION_END: ReadonlySet<string> = new Set(['move', 'turn', 'upkeep', 'switch', 'drag', 'cant', 'faint', 'win', 'tie', ''])
 
 /**
  * Golpes de un movimiento de varios golpes (Pedrada, Doble Patada…): el simulador manda un `-damage` sin `[from]` por golpe. Desde el

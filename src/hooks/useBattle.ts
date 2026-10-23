@@ -8,6 +8,8 @@ import { deferHitMessages } from '../battle/messageOrder'
 import { SPEEDS, type BattleSpeed } from '../storage/settings'
 import { viewReducer } from '../battle/viewReducer'
 import { conditionFx, createMultiHitTracker, usedMove, type FxCue } from './moveFxCues'
+import { BALL_SFX_MS, hitSoundAt, switchBallTimes } from './battleSfx'
+import { getAudio, type SfxId } from '../audio/audio'
 import type { MoveFxEvent } from '../ui/battle/fx/MoveFx'
 
 export type { BattleSpeed }
@@ -67,6 +69,8 @@ export type BattleParams = {
   /** Velocidad guardada en Ajustes (por defecto x1) y aviso al cambiarla desde el combate, para guardarla. */
   initialSpeed?: BattleSpeed
   onSpeedChange?: (speed: BattleSpeed) => void
+  /** Efectos de sonido (DEC-57); por defecto, el motor de la página. Nunca suenan al reproducir un combate guardado. */
+  playSfx?: (id: SfxId) => void
 }
 
 export type BattleController = {
@@ -199,6 +203,19 @@ export function useBattle(params: BattleParams): BattleController {
         wakeRef.current = skippable ? finish : null
       })
 
+    const sfx = (id: SfxId) => {
+      if (!replaying) (paramsRef.current.playSfx ?? ((sound: SfxId) => getAudio().playSfx(sound)))(id)
+    }
+    /** Efecto a `milliseconds` (a x1) de ahora; los de la intro no suenan si se salta. */
+    const sfxLater = (id: SfxId, milliseconds: number, intro: boolean) => {
+      if (replaying || (intro && skipIntroRef.current)) return
+      const timer = setTimeout(() => {
+        timers.delete(timer)
+        if (!cancelled && !(intro && skipIntroRef.current)) sfx(id)
+      }, milliseconds / speedRef.current)
+      timers.add(timer)
+    }
+
     const playFx = (cue: FxCue) => {
       moveFxCount.current += 1
       setMoveFx({ key: moveFxCount.current, ...cue })
@@ -211,15 +228,23 @@ export function useBattle(params: BattleParams): BattleController {
       setView(shown)
       isFirstUpdate = false
 
-      for (const step of steps) {
+      const lines = steps.map((step) => step.line)
+      for (const [index, step] of steps.entries()) {
         if (cancelled) return
         if (step.phase) {
           setIntroPhase(skipIntroRef.current ? 'done' : step.phase)
           if (step.phase === 'done') introRunningRef.current = false
+          if (step.phase === 'rivalSend' || step.phase === 'playerSend') {
+            sfxLater('ball-throw', BALL_SFX_MS[step.phase].throw, true)
+            sfxLater('ball-open', BALL_SFX_MS[step.phase].open, true)
+          }
         }
         const switching = !replaying && step.line !== null && !step.phase ? switchAnimationFor(step.line, shown) : null
         if (switching) {
           setSwitchAnim(switching)
+          const ball = switchBallTimes(switching.endsWith('-send'))
+          sfxLater('ball-throw', ball.throw, false)
+          sfxLater('ball-open', ball.open, false)
           if (!switching.endsWith('-send')) await pause(SWITCH_DURATIONS_MS.recall, false, false)
           if (cancelled) return
         }
@@ -231,6 +256,8 @@ export function useBattle(params: BattleParams): BattleController {
         }
         const isFaintLine = step.line !== null && lineType(step.line) === 'faint' && step.text !== null
         if (step.line !== null && !isFaintLine) {
+          const hit = hitSoundAt(lines, index)
+          if (hit) sfx(hit)
           const reduced = viewReducer(shown, { type: 'lines', lines: [step.line] })
           shown = deferFaintUntilFaintLine(shown, reduced, step.line)
           setView(shown)
@@ -244,6 +271,7 @@ export function useBattle(params: BattleParams): BattleController {
           if (cancelled) return
           shown = viewReducer(shown, { type: 'lines', lines: [step.line as string] })
           setView(shown)
+          sfx('faint')
           await pause(TEXT_PAUSE_MS - FAINT_MESSAGE_LEAD_MS)
           continue
         }

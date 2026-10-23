@@ -30,7 +30,7 @@ function engineClient(): BattleClient {
   }
 }
 
-type Overrides = Partial<Pick<BattleParams, 'replay' | 'onDecision' | 'onSettled' | 'onReplayFailed' | 'onFinish'>>
+type Overrides = Partial<Pick<BattleParams, 'replay' | 'onDecision' | 'onSettled' | 'onReplayFailed' | 'onFinish' | 'playSfx'>>
 function mount(over: Overrides = {}) {
   const params: BattleParams = {
     client: engineClient(),
@@ -142,5 +142,30 @@ describe('reproducción de un combate guardado (DEC-43)', () => {
     act(() => live.result.current.forfeit())
     await settle(5000)
     expect(decisions).toEqual([{ type: 'forfeit' }])
+  })
+})
+
+// UT-78 · Efectos de sonido del combate (DEC-57): suenan en vivo y nunca al reproducir.
+describe('efectos de sonido del combate', () => {
+  it('en vivo: las dos Poké Ball de la intro (lanzar y abrir) y un golpe por cada daño de movimiento', async () => {
+    const playSfx = vi.fn()
+    const live = mount({ playSfx })
+    await settle(8000)
+    const intro = playSfx.mock.calls.map(([id]) => id)
+    expect(intro).toEqual(['ball-throw', 'ball-open', 'ball-throw', 'ball-open'])
+    act(() => live.result.current.choose({ type: 'move', slot: 1 }))
+    await settle(12_000)
+    const hits = playSfx.mock.calls.map(([id]) => id).filter((id) => id.startsWith('hit-'))
+    const damage = live.result.current.log.filter((text) => /usó|ha usado/.test(text)).length
+    expect(hits.length).toBeGreaterThan(0)
+    expect(hits.length).toBeLessThanOrEqual(damage * 5)
+  })
+
+  it('al reproducir un combate guardado no suena nada', async () => {
+    const { decisions, settled } = await playLive(2)
+    const playSfx = vi.fn()
+    mount({ replay: { decisions, expected: settled.at(-1)! }, playSfx })
+    await settle(50)
+    expect(playSfx).not.toHaveBeenCalled()
   })
 })
