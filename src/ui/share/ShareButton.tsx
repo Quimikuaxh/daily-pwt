@@ -4,7 +4,7 @@ import { shareResult, type ShareOutcome } from './shareText'
 
 const MESSAGES: Partial<Record<ShareOutcome, string>> = { copied: es.share.copied, failed: es.share.failed }
 
-/** «Compartir»: panel del sistema en móvil o copia al portapapeles. Si no se puede copiar, deja el texto a la vista para copiarlo a mano. */
+/** «Copiar»: copia el resultado al portapapeles. Si no se puede, deja el texto a la vista para copiarlo a mano. */
 export function ShareButton({ text }: { text: string }) {
   const [outcome, setOutcome] = useState(null as ShareOutcome | null)
   const message = outcome ? MESSAGES[outcome] : undefined

@@ -98,7 +98,7 @@ describe('ResultScreen con historial (F3: estadísticas y compartir)', () => {
   }
   const official: EngineEnd = { result: 'win', reason: 'faint', turns: 23, playerAlive: 4, rivalFainted: 6, playerFainted: [false, true, false, false, true, false] }
 
-  it('oficial: estadísticas actualizadas y botón Compartir que copia el texto sin spoilers', async () => {
+  it('oficial: estadísticas actualizadas y botón Copiar que copia el texto sin spoilers', async () => {
     const store = finishOfficial(official)
     const user = userEvent.setup()
     const writeText = vi.fn().mockResolvedValue(undefined)
@@ -106,16 +106,16 @@ describe('ResultScreen con historial (F3: estadísticas y compartir)', () => {
     render(<ResultScreen ended={official} mode="official" store={store} date="2026-10-22" menu={testMenu(store)} onBackToToday={vi.fn()} onRematch={vi.fn()} />)
     expect(screen.getByTestId('stats-played')).toHaveTextContent('1')
     expect(screen.getByTestId('stats-win-streak')).toHaveTextContent('1')
-    await user.click(screen.getByRole('button', { name: 'Compartir' }))
+    await user.click(screen.getByRole('button', { name: 'Copiar' }))
     expect(writeText).toHaveBeenCalledWith(expect.stringContaining('Daily PWT #4\n✅ Victoria en 23 turnos\n🟩🟥🟩🟩🟥🟩\n🔥 Racha: 1'))
     expect(await screen.findByRole('status')).toHaveTextContent(/copiado/i)
   })
 
-  it('práctica: sin estadísticas en el panel ni Compartir, pero con el acceso a Estadísticas', async () => {
+  it('práctica: sin estadísticas en el panel ni Copiar, pero con el acceso a Estadísticas', async () => {
     const store = finishOfficial(official)
     const user = userEvent.setup()
     render(<ResultScreen ended={official} mode="practice" store={store} date="2026-10-22" menu={testMenu(store)} onBackToToday={vi.fn()} onRematch={vi.fn()} />)
-    expect(screen.queryByRole('button', { name: 'Compartir' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Copiar' })).toBeNull()
     await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
     expect(screen.getByRole('dialog', { name: 'Estadísticas' })).toBeInTheDocument()
     expect(screen.getByTestId('stats-played')).toHaveTextContent('1')

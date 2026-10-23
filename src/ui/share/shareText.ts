@@ -24,18 +24,13 @@ export function shareTextFor(days: readonly DayRecord[], date: string): string |
   return shareText(record, computeStats(days.filter((day) => day.date <= date), date).winStreak)
 }
 
-export type ShareOutcome = 'shared' | 'copied' | 'cancelled' | 'failed'
+export type ShareOutcome = 'copied' | 'failed'
 
-/** Web Share API si el navegador la tiene (móvil); si no, o si falla, al portapapeles. Cancelar el panel de compartir no es un error. */
+/**
+ * Copia el resultado al portapapeles, también en móvil (decisión de Jose, 23/10/2026: «Copiar» directamente, sin el panel de compartir del
+ * sistema). Si el navegador no deja, `failed` y la pantalla enseña el texto para copiarlo a mano.
+ */
 export async function shareResult(content: string, nav: Navigator = navigator): Promise<ShareOutcome> {
-  if (typeof nav.share === 'function') {
-    try {
-      await nav.share({ text: content })
-      return 'shared'
-    } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') return 'cancelled'
-    }
-  }
   try {
     await nav.clipboard.writeText(content)
     return 'copied'

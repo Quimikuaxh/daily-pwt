@@ -53,7 +53,20 @@ Pasos, en este orden (cada uno depende del anterior):
    - Debilitado: `faint` cuando cae el sprite (tras `FAINT_MESSAGE_LEAD_MS`, donde se aplica la línea `faint`).
 7. **Hecho.** Plan original: **Créditos en Ayuda** (`es.help.credits`): música (Super Music Collection de N2/B2, Internet Archive) y efectos (The Sounds Resource). En el README ya están.
 8. **Hecho (UT-75..UT-78, E2E-68, E2E-69, RF-87..RF-92, DEC-57).** El Chromium de Playwright no decodifica AAC: los E2E comprueban descargas y errores, no que suene. Plan original: **Tests y documentación**: unitarios del motor de audio con un `AudioContext` falso (desbloqueo, volumen, silencio, bucle, caché), de los ajustes nuevos y de los disparadores de efectos en `useBattle` (qué sonido por línea; ninguno al reproducir); E2E: Ajustes guarda silencio y volumen, y la página no da errores sin interacción. Requisitos numerados, casos en `PLAN-PRUEBAS-F1.md`, DEC nueva para el motor y Ayuda/README si cambia el uso.
-9. **Efectos de los botones del menú (pendiente de Jose, en local con el ZIP).** El código ya los pide (`menu-select` al elegir y `menu-cancel` al volver o cerrar, DEC-57); faltan los ficheros. Pasos: `unzip -l "scripts/.cache/sfx/<ZIP>" | grep -i -E "decide|select|cancel"` para ver los nombres (probables: `SEQ_SE_DECIDE1` o `SEQ_SE_SELECT1` para elegir y `SEQ_SE_CANCEL1` para cancelar), añadir a `sfx` de `data/audio.json` `{ "id": "menu-select", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/<nombre>.wav" }` y lo mismo con `menu-cancel`, `npm run gen:audio`, y probar en Chrome. Los tests (`build-audio.test.ts`, E2E-69) se adaptan solos al índice.
+9. **Efectos que faltan (pendiente de Jose, en local con el ZIP).** El código ya los pide; solo faltan los ficheros. Mientras no estén en el índice, el motor los ignora y no suena nada (los tests y E2E-69 se adaptan solos al índice). Para cada uno: buscarlo en el ZIP (`unzip -l "scripts/.cache/sfx/<ZIP>"`, escucharlo con `unzip -p … | ffplay -nodisp -autoexit -`), añadir a `sfx` de `data/audio.json` `{ "id": "<id>", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/<nombre>.wav", "_nota": "…" }`, `npm run gen:audio` y probar en Chrome.
+
+   | Id | Cuándo suena | Dónde buscar |
+   |---|---|---|
+   | `menu-select` | Cualquier botón del menú de batalla (táctil, equipo, datos) | `SEQ_SE_DECIDE1` o `SEQ_SE_SELECT1` (`grep -i -E "decide|select"`) |
+   | `menu-cancel` | Volver y cerrar en esos menús | `SEQ_SE_CANCEL1` (`grep -i cancel`) |
+   | `status-brn` | Quemado: al quemarse y con el daño de la quemadura | Efecto de fuego corto del ZIP |
+   | `status-psn` | Envenenado (también gravemente): al envenenarse y con el daño | Burbujas o veneno |
+   | `status-par` | Paralizado: al paralizarse y cuando no se puede mover | Chispazo eléctrico corto |
+   | `status-slp` | Dormido: al dormirse y cuando sigue dormido | Ronquido o «zzz» |
+   | `status-frz` | Congelado: al congelarse y cuando sigue congelado | Hielo o cristal |
+   | `status-confusion` | Confuso: al confundirse y cuando sigue confuso | Pájaros o mareo |
+
+   Suenan a la vez que su mensaje y su animación (DEC-55, DEC-57). Si para algún estado no hay un efecto que encaje, basta con no añadirlo.
 10. **Revisar con Jose a oído**: costuras de los bucles, efecto elegido para abrir la Poké Ball (`SEQ_SE_BOWA2`; alternativas en el ZIP: `BOWA1`, `BOWA3`) y volumen relativo de música y efectos.
 
 ## Animaciones de movimientos (PRD §0, DEC-53)

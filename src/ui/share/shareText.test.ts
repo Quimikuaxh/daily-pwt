@@ -43,24 +43,17 @@ describe('shareText', () => {
 describe('shareResult', () => {
   const nav = (over: Record<string, unknown>) => over as unknown as Navigator
 
-  it('con Web Share API comparte el texto', async () => {
-    const share = vi.fn().mockResolvedValue(undefined)
-    expect(await shareResult('hola', nav({ share, clipboard: { writeText: vi.fn() } }))).toBe('shared')
-    expect(share).toHaveBeenCalledWith({ text: 'hola' })
-  })
-
-  it('cancelar el panel de compartir no copia ni da error', async () => {
-    const writeText = vi.fn()
-    const share = vi.fn().mockRejectedValue(new DOMException('cancelado', 'AbortError'))
-    expect(await shareResult('hola', nav({ share, clipboard: { writeText } }))).toBe('cancelled')
-    expect(writeText).not.toHaveBeenCalled()
-  })
-
-  it('sin Web Share API (o si falla) copia al portapapeles', async () => {
+  // Cambio de requisito (23/10/2026, Jose): «Copiar» directamente; antes, el panel de compartir del sistema si lo había.
+  it('copia al portapapeles aunque el navegador tenga panel de compartir, sin abrirlo', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined)
-    expect(await shareResult('hola', nav({ clipboard: { writeText } }))).toBe('copied')
-    expect(await shareResult('hola', nav({ share: vi.fn().mockRejectedValue(new Error('no')), clipboard: { writeText } }))).toBe('copied')
+    const share = vi.fn()
+    expect(await shareResult('hola', nav({ share, clipboard: { writeText } }))).toBe('copied')
     expect(writeText).toHaveBeenCalledWith('hola')
+    expect(share).not.toHaveBeenCalled()
+  })
+
+  it('si el portapapeles rechaza la escritura: failed', async () => {
+    expect(await shareResult('hola', nav({ clipboard: { writeText: vi.fn().mockRejectedValue(new Error('no')) } }))).toBe('failed')
   })
 
   it('sin portapapeles: failed', async () => {

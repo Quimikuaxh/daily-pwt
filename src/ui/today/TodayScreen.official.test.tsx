@@ -147,7 +147,7 @@ describe('avisos', () => {
 })
 
 describe('Estadísticas desde Hoy (F3)', () => {
-  it('el botón de la cabecera abre Estadísticas con el historial y, si el oficial de hoy terminó, Compartir', async () => {
+  it('el botón de la cabecera abre Estadísticas con el historial y, si el oficial de hoy terminó, Copiar', async () => {
     const store = savedStore()
     store.finishOfficial(LAUNCH, WIN, new Date().toISOString())
     const { user } = mount(store)
@@ -155,13 +155,13 @@ describe('Estadísticas desde Hoy (F3)', () => {
     const dialog = screen.getByRole('dialog', { name: 'Estadísticas' })
     expect(dialog).toHaveTextContent(/Jugados\s*1/)
     expect(screen.getByTestId('stats-win-percent')).toHaveTextContent('100')
-    expect(screen.getByRole('button', { name: 'Compartir' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Copiar' })).toBeInTheDocument()
   })
 
-  it('sin oficiales terminados: mensaje de vacío y sin Compartir', async () => {
+  it('sin oficiales terminados: mensaje de vacío y sin Copiar', async () => {
     const { user } = mount(new LocalStorageStore(new MemoryStorage()))
     await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
     expect(screen.getByRole('dialog')).toHaveTextContent(/Aún no has terminado ningún combate oficial/)
-    expect(screen.queryByRole('button', { name: 'Compartir' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Copiar' })).toBeNull()
   })
 })

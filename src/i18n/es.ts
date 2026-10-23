@@ -440,7 +440,7 @@ export const es = {
   },
 
   share: {
-    button: 'Compartir',
+    button: 'Copiar',
     copied: 'Resultado copiado al portapapeles.',
     failed: 'No se ha podido copiar. Selecciona el texto y cópialo a mano.',
     title: (number: number) => `Daily PWT #${number}`,

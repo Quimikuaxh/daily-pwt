@@ -118,7 +118,7 @@ test.describe('Combate oficial: un intento por día', () => {
     expect(await storedDays(page), 'las prácticas no tocan lo guardado').toEqual(saved)
   })
 
-  test('E2E-60 tras el oficial: estadísticas actualizadas y Compartir copia el texto sin spoilers; Estadísticas también desde Hoy @smoke', async ({ page, context, browserName }) => {
+  test('E2E-60 tras el oficial: estadísticas actualizadas y Copiar copia el texto sin spoilers; Estadísticas también desde Hoy @smoke', async ({ page, context, browserName }) => {
     const { battle, today } = await startBattle(page, { seed: 'a' })
     await battle.maxSpeed()
     await battle.waitForActionOrResult()
@@ -126,10 +126,10 @@ test.describe('Combate oficial: un intento por día', () => {
     await expect(page.getByTestId('stats-played')).toHaveText('1')
     await expect(page.getByTestId('stats-win-percent')).toHaveText('0')
     await expect(page.getByTestId('stats-day-streak')).toHaveText('1')
-    // Sin Web Share API en escritorio: va al portapapeles (permiso solo concedible en Chromium).
+    // Copia al portapapeles (permiso solo concedible en Chromium).
     if (browserName === 'chromium') {
       await context.grantPermissions(['clipboard-read', 'clipboard-write'])
-      await page.getByRole('button', { name: 'Compartir' }).click()
+      await page.getByRole('button', { name: 'Copiar' }).click()
       await expect(page.getByRole('status').filter({ hasText: /copiado/i })).toBeVisible()
       const copied = await page.evaluate(() => navigator.clipboard.readText())
       expect(copied).toMatch(/^Daily PWT #\d+\n❌ Derrota \(\d\/6 rivales debilitados\)\n[🟩🟥]{6}\n🔥 Racha: 0\nhttps:\/\/quimikuaxh\.github\.io\/daily-pwt\/$/u)

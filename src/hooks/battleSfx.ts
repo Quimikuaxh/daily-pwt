@@ -20,6 +20,12 @@ export function hitSoundAt(lines: readonly (string | null)[], index: number): Sf
   return 'hit-neutral'
 }
 
+/** Sonido de un estado con su animación (decisión de Jose): `status:brn` -> `status-brn`; el resto de animaciones, ninguno. */
+export function statusSoundFor(moveId: string): SfxId | null {
+  const status = /^status:(brn|psn|par|slp|frz|confusion)$/.exec(moveId)?.[1]
+  return status ? (`status-${status}` as SfxId) : null
+}
+
 /**
  * Poké Ball: cuándo se lanza y cuándo se abre, en ms a x1 desde que empieza la fase de la intro o el cambio (los mismos tiempos que el
  * CSS de battle.css). Sin retirada (`-send`) el cambio arranca `skipMs` más tarde en su animación.

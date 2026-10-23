@@ -8,7 +8,7 @@ import { deferHitMessages } from '../battle/messageOrder'
 import { SPEEDS, type BattleSpeed } from '../storage/settings'
 import { viewReducer } from '../battle/viewReducer'
 import { conditionFx, createMultiHitTracker, usedMove, type FxCue } from './moveFxCues'
-import { BALL_SFX_MS, hitSoundAt, switchBallTimes } from './battleSfx'
+import { BALL_SFX_MS, hitSoundAt, statusSoundFor, switchBallTimes } from './battleSfx'
 import { getAudio, type SfxId } from '../audio/audio'
 import type { MoveFxEvent } from '../ui/battle/fx/MoveFx'
 
@@ -283,6 +283,8 @@ export function useBattle(params: BattleParams): BattleController {
           const text = step.text
           const cue = !replaying && step.line !== null ? (usedMove(step.line) ?? conditionFx(step.line)) : null
           if (cue) playFx(cue)
+          const statusSound = cue ? statusSoundFor(cue.moveId) : null
+          if (statusSound) sfx(statusSound)
           setLog((previous) => [...previous, text])
           setMessage(text)
           await pause(step.wait ?? TEXT_PAUSE_MS, step.phase !== undefined)
