@@ -28,6 +28,15 @@ F2 carga el roster completo (PRD §7.3, 53 entrenadores), valida los datos en CI
 - RF-85 Persistencia local versionada (`daily-pwt:v1`) con historial por día detrás de la interfaz `GameStore`; tolera almacenamiento bloqueado, cuota llena, JSON corrupto y otra versión del esquema; sin almacenamiento el sitio funciona y avisa de que no se guardará.
 - RF-86 Estadísticas, rachas, compartir, Ayuda y Ajustes siguen en F3; el almacenamiento solo deja preparado el historial.
 
+## 1c. Requisitos funcionales del sonido (F3, PRD §0 «Sonido» y «Fuentes y temas del sonido»; DEC-56, DEC-57)
+
+- RF-87 Nada suena hasta la primera interacción con la página (toque, clic o tecla); lo que se pidió antes (la música de un combate reanudado) empieza entonces.
+- RF-88 Música solo en combate: el tema del rival (`gym-<región>` los líderes, `champion-<región>` los campeones; Mirto, el de Iris) en bucle desde el iris de la intro, o desde el principio al reanudar un oficial; se funde al terminar el combate o al salir. La velocidad del combate no la cambia.
+- RF-89 En Resultado, «Winning in the PWT!» una vez si se gana; nada si se pierde o se rinde. Se corta al salir de Resultado.
+- RF-90 Efectos: golpe neutro, supereficaz o poco eficaz al bajar la barra por un movimiento (uno por golpe en los múltiples), lanzar y abrir la Poké Ball en la intro y en los cambios, y debilitado al caer el sprite. Nunca al reproducir un combate guardado.
+- RF-91 Ajustes: Activado/Silenciado y un deslizador de volumen (0-100 %, 70 por defecto) que valen para música y efectos, se aplican al instante y se guardan en el navegador; los ajustes guardados antes de existir se leen activado y a 70.
+- RF-92 Cada combate descarga solo la pista de su rival y los 6 efectos, nunca toda la música; sin Web Audio, o si falla una descarga, el juego sigue mudo y sin errores.
+
 ## 2. Criterios de aceptación (PRD §14)
 
 - 12: los 53 entrenadores tienen ≥ 1 variante y los líderes ≥ 2 (regional y Mundial). Los 46 líderes tienen exactamente 2 (el Supertorneo Tipo repite el Mundial y se deduplica); ninguno tiene una sola. Comprobado por `validate:data` y UT-27.
