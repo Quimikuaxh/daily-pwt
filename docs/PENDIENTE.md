@@ -2,7 +2,7 @@
 
 Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
-**Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). Lo siguiente, la música, lo hace Jose en su ordenador en una rama nueva desde `main` (`feature/f3-sonido`).
+**Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). El sonido va en `feature/f3-sonido` (desde `main`): los audios ya están descargados y versionados (se descargaron en local, desde la nube las fuentes están bloqueadas); falta implementarlo según «Sonido: plan de implementación».
 
 ## Para F2 (resto)
 - **Fijar `LAUNCH_DATE` el día del lanzamiento real** (`src/core/launch.ts`, provisional 2026-10-19; decisión de Jose: se cambia a la fecha real cuando se lance la aplicación, no antes) y regenerar el snapshot `src/core/__snapshots__/challenge.reference.json` (README, «Lanzamiento»). Con los 53 barajados juntos, la secuencia depende solo del índice de día: con la fecha actual los días 19 a 21 de octubre son Hiedra, Fredo y Antón (con 6 fueron Plubio, Misty y Máximo) y Máximo toca el día #39 (2026-11-26, `D + 38`). Cambiar fecha o roster cambia lo ya publicado (rival, variante, equipo, `#N`). Propuesta y alternativas descartadas en `docs/F2-DATOS.md`, «Calendario». `scripts/capture-vis.mjs` ya usa `?trainer=` con `e2e/scenarios.json` (DEC-50).
@@ -21,33 +21,39 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 ## Para F3
 - **Hecho** (DEC-47): estadísticas y rachas, compartir.
 - **Hecho** (DEC-48 y DEC-49): Ayuda, Ajustes (velocidad guardada, borrar datos locales), marco de consola en escritorio, clima en la pantalla táctil con turnos restantes y nombres de la caja de PS alineados al nivel.
-- **Aparcado** (`feature/f3-sonido`, decisión de Jose del 22/10/2026): música y efectos de sonido, hasta poder descargarlos (desde la nube YouTube, The Sounds Resource, KHInsider e Internet Archive están bloqueados). Ya decidido: sonido activado por defecto (nada suena hasta la primera interacción), música solo en combate (en Resultado, el jingle de victoria si se gana), silencio y volumen en Ajustes; el tema de Mirto lo confirma Jose al hacer la música.
+- **En curso** (`feature/f3-sonido`, 23/10/2026): música y efectos de sonido. Decidido: sonido activado por defecto (nada suena hasta la primera interacción), música solo en combate (en Resultado, el jingle de victoria si se gana), silencio y volumen en Ajustes; temas y fuentes en PRD §0, «Fuentes y temas del sonido». Audios en el repo; los pasos que faltan, en «Sonido: plan de implementación».
 - **Contrastar con el juego real:** posición y aspecto del indicador de clima (DEC-48).
 
 ## Fases futuras (tras F3; PRD §0)
 - **Modo PWT:** 7 entrenadores aleatorios seguidos con el mismo equipo. Libre y repetible sin límite (no es diario). Por definir: curación entre combates, si cuenta para estadísticas.
 - **Logros con login opcional:** requiere backend (cuentas y almacenamiento); el daily sigue sin cuenta. Con sesión, racha diaria y logros en la cuenta; sin sesión, racha en local. Por definir: servicio, qué logros, migración de las estadísticas locales.
 
-## Música de combate (F3, PRD §0)
-Fuente: catálogo de `../pokemon-heardle/scripts/catalog/data/catalog.json` (OST de N2/B2 en YouTube). Descargar, recortar el silencio inicial, comprimir (Opus/AAC) y guardar en `public/` con script reproducible y créditos.
+## Sonido: plan de implementación (F3, PRD §0)
+Recursos ya en el repo (DEC-56): `public/audio/music/*.m4a` (11 pistas completas), `public/audio/sfx/*.m4a` (6 efectos) y `src/generated/audio-index.json` (ruta y duración). Fuente y manifiesto: `data/audio.json`; cómo se regeneran: README, «Sonido». No hace falta red para implementar: todo lo necesario está versionado.
 
-| Rival | Pista | YouTube |
-|---|---|---|
-| Líderes de Kanto | Battle! (Gym Leader - Kanto Version) | `18J3t-I_n68` |
-| Líderes de Johto | Battle! (Gym Leader - Johto Version) | `QKrY93YyBfA` |
-| Líderes de Hoenn | Battle! (Gym Leader - Hoenn Version) | `31otaUCI-Qg` |
-| Líderes de Sinnoh | Battle! (Gym Leader - Sinnoh Version) | `Xn0olebv8Vg` |
-| Líderes de Teselia | Battle! (Gym Leader) | `NsZq1ISUB4Y` |
-| Campeones de Kanto (Rojo, Azul) | Battle! (Champion - Kanto Version) | `hzXDNA7eZfA` |
-| Campeón de Johto (Lance) | Battle! (Champion - Johto Version) | `z_Z-YmQY_Pw` |
-| Campeones de Hoenn (Máximo, Plubio) | Battle! (Champion - Hoenn Version) | `ssi6SEg0pxk` |
-| Campeona de Sinnoh (Cintia) | Battle! (Champion - Sinnoh Version) | `YeEESIQ-6uY` |
-| Campeón de Teselia (Mirto) | **Sin confirmar**: verificar qué tema usa en el PWT; no está en el catálogo del Heardle | — |
+Decisiones que aplican (PRD §0, «Sonido» y «Fuentes y temas del sonido»): activado por defecto; nada suena hasta la primera interacción; música solo en combate y, en Resultado, el jingle de victoria si se gana; silencio y volumen en Ajustes, compartidos por música y efectos.
 
-Pistas del PWT disponibles para otras pantallas: "PWT - Final Round!" (`70ebcCUXjEE`), "Winning In The PWT!" (`eqgbyzLRsRs`), "PWT Victor!" (`lZOXxRaWDfQ`), "The PWT" (`d2BpRKyuw8A`), "Pokémon World Tournament (PWT)" (`nmo9CHFfV1A`). Antes de implementar, confirmar contra Bulbapedia qué tema suena con cada entrenador en el PWT.
+| Rival | Pista |
+|---|---|
+| Líderes | `gym-<región>` (Teselia: `gym-unova`, «Battle! (Gym Leader)») |
+| Campeones | `champion-<región>`: Rojo y Azul `champion-kanto`, Lance `champion-johto`, Máximo y Plubio `champion-hoenn`, Cintia `champion-sinnoh`, Mirto `champion-unova` (tema de Iris) |
+| Victoria (Resultado) | `victory-pwt` («Winning in the PWT!») |
 
-## Efectos de sonido (F3, PRD §0)
-Golpe supereficaz, poco eficaz y neutro al atacar, y los básicos del combate (lanzar y abrir Poké Ball, debilitado). Ripeados de N2/B2 (p. ej. The Sounds Resource), con script reproducible y créditos. Mismo control de silencio y volumen que la música, y nada suena hasta la primera interacción del usuario.
+La regla `category` + `region` de `data/trainers.json` cubre a los 53; `scripts/build-audio.test.ts` lo comprueba.
+
+Pasos, en este orden (cada uno depende del anterior):
+1. **Puntos de bucle** de las 10 pistas de combate: `loopStartSec`/`loopEndSec` en `data/audio.json`, que `gen:audio` copia a `audio-index.json` (o un script aparte que los detecte sobre los `.m4a`, ya que el FLAC no se puede bajar desde la nube). Cada pista trae introducción + bucle ×2 + fundido. Primera prueba (23/10/2026), correlación normalizada en una sola ventana de 4 s situada 6 s antes del fundido: solo clara en `champion-kanto` (L = 60,014 s, ncc 0,997), `champion-sinnoh` (75,017 s, 0,999), `champion-unova` (92,52 s, 0,957) y `gym-unova` (75,017 s, 0,935); en las demás la ventana caía mal. Siguiente intento: barrer la posición de la ventana por toda la pista y quedarse con el desfase que más se repite, comprobando el residuo de la costura (< −30 dB). Si no sale, ajustarlos a oído con Jose. `victory-pwt` no hace bucle: suena una vez.
+2. **Motor de audio** (`src/audio/`): un `AudioContext` creado o reanudado en el primer `pointerdown`/`keydown` (política de autoplay y decisión de Jose), un `GainNode` maestro con el volumen de Ajustes, carga perezosa con `fetch` + `decodeAudioData` y caché por id, `playMusic(id)` con `AudioBufferSourceNode` (`loop`, `loopStart`, `loopEnd`), `stopMusic(fadeMs)` y `playSfx(id)`. Rutas con `import.meta.env.BASE_URL` (el sitio vive en `/daily-pwt/`). Sin `AudioContext` (tests, navegador sin Web Audio) no hace nada ni lanza. Precargar solo la pista del rival al entrar al combate y los 6 efectos; nunca toda la música.
+3. **Ajustes** (`src/storage/settings.ts`, `SettingsDialog.tsx`, `es.settings`): `sound` (activado/silenciado) y `volume` (0-100). Los ajustes guardados sin esos campos se leen con los valores por defecto, como `moveAnimations`. Volumen por defecto: preguntar a Jose (propuesta: 70). Cambiar el volumen afecta al instante a lo que suena.
+4. **Música en combate** (`BattleScreen` o `App`): empieza con la intro (fase `iris`) y también al reanudar un oficial (sin intro); para con un fundido corto al salir, al terminar (`onFinish`) y al desmontar. La velocidad x2/x4 no cambia la música.
+5. **Jingle en Resultado** (`ResultScreen`): `victory-pwt` una vez si se gana; nada si se pierde o se rinde. Se corta al salir de Resultado (Hoy o revancha).
+6. **Efectos** (`useBattle`, nunca durante la reproducción de un combate guardado):
+   - Golpe: en el `-damage` sin `[from]` que baja la barra del objetivo. El sonido depende de si en esa acción llega `-supereffective` o `-resisted` para ese objetivo (`deferHitMessages` los coloca después del daño, así que hay que mirar adelante en los pasos de la acción, hasta la siguiente línea de `ACTION_END` de `moveFxCues.ts`). Sin ninguno de los dos, `hit-neutral`. En golpes múltiples, uno por golpe.
+   - Poké Ball: `ball-throw` al lanzarla y `ball-open` al abrirse, con los tiempos del CSS divididos por la velocidad. Intro: rival lanza a 100 ms y se abre a 520 ms de la fase `rivalSend`; jugador, 650 y 1070 ms de `playerSend`. Cambios (`switchAnim`): lanza a 800 ms y se abre a 1120 ms, menos 500 ms si no hay retirada (`-send`, `--switch-skip`). Si se salta la intro, no suenan los de la intro.
+   - Debilitado: `faint` cuando cae el sprite (tras `FAINT_MESSAGE_LEAD_MS`, donde se aplica la línea `faint`).
+7. **Créditos en Ayuda** (`es.help.credits`): música (Super Music Collection de N2/B2, Internet Archive) y efectos (The Sounds Resource). En el README ya están.
+8. **Tests y documentación**: unitarios del motor de audio con un `AudioContext` falso (desbloqueo, volumen, silencio, bucle, caché), de los ajustes nuevos y de los disparadores de efectos en `useBattle` (qué sonido por línea; ninguno al reproducir); E2E: Ajustes guarda silencio y volumen, y la página no da errores sin interacción. Requisitos numerados, casos en `PLAN-PRUEBAS-F1.md`, DEC nueva para el motor y Ayuda/README si cambia el uso.
+9. **Revisar con Jose a oído**: costuras de los bucles, efecto elegido para abrir la Poké Ball (`SEQ_SE_BOWA2`; alternativas en el ZIP: `BOWA1`, `BOWA3`) y volumen relativo de música y efectos.
 
 ## Animaciones de movimientos (PRD §0, DEC-53)
 - **Hecho**: genéricas por tipo y clase y 20 propias, por código en píxel, con interruptor en Ajustes. Mejora (22/10/2026): físicos según cómo golpean (mordisco, puñetazo, patada, corte, golpe) y especiales con un efecto distinto por tipo (chorro de llamas, zigzag eléctrico, hojas, cristales…).

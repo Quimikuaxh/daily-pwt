@@ -1,0 +1,40 @@
+{
+  "_nota": "Fuente de verdad de scripts/build-audio.mjs (npm run gen:audio). Música: pistas completas del OST oficial (FLAC de Internet Archive), codificadas a AAC en public/audio/music/. Efectos: entradas del ZIP de The Sounds Resource (descarga manual a scripts/.cache/sfx/, el sitio tiene reto de Cloudflare), sin silencio al principio ni al final, en public/audio/sfx/. Tema por rival: `gym-<región>` para líderes y `champion-<región>` para campeones (PRD §0, «Fuentes y temas del sonido»).",
+  "sources": {
+    "ost-b2w2": {
+      "name": "Pokémon Black 2 & Pokémon White 2: Super Music Collection",
+      "page": "https://archive.org/details/pkmn-bw2-soundtrack",
+      "baseUrl": "https://archive.org/download/pkmn-bw2-soundtrack/",
+      "credit": "Música de Pokémon Negro 2 / Blanco 2 (Shota Kageyama, Go Ichinose, Junichi Masuda y otros) © Nintendo / Creatures Inc. / GAME FREAK inc., del Super Music Collection alojado en Internet Archive",
+      "license": "Música propiedad de sus titulares, usada como fan project no oficial (mismo riesgo asumido que con los sprites, PRD §0)."
+    },
+    "tsr-sfx-b2w2": {
+      "name": "The Sounds Resource - Pokémon Black 2 / White 2 - Miscellaneous - Sound Effects",
+      "page": "https://sounds.spriters-resource.com/ds_dsi/pokemonblack2white2/",
+      "zip": "DS _ DSi - Pokemon Black 2 _ White 2 - Miscellaneous - Sound Effects.zip",
+      "credit": "Efectos de sonido de Pokémon Negro 2 / Blanco 2 © Nintendo / Creatures Inc. / GAME FREAK inc., ripeados en The Sounds Resource",
+      "license": "Sonidos propiedad de sus titulares; sin licencia abierta."
+    }
+  },
+  "music": [
+    { "id": "gym-kanto", "source": "ost-b2w2", "file": "Disc 2/04 - Battle! (Gym Leader - Kanto).flac" },
+    { "id": "champion-kanto", "source": "ost-b2w2", "file": "Disc 2/05 - Battle! (Champion - Kanto).flac" },
+    { "id": "gym-johto", "source": "ost-b2w2", "file": "Disc 2/06 - Battle! (Gym Leader - Johto).flac" },
+    { "id": "champion-johto", "source": "ost-b2w2", "file": "Disc 2/07 - Battle! (Champion - Johto).flac" },
+    { "id": "gym-hoenn", "source": "ost-b2w2", "file": "Disc 2/08 - Battle! (Gym Leader - Hoenn).flac" },
+    { "id": "champion-hoenn", "source": "ost-b2w2", "file": "Disc 2/09 - Battle! (Champion - Hoenn).flac" },
+    { "id": "gym-sinnoh", "source": "ost-b2w2", "file": "Disc 2/10 - Battle! (Gym Leader - Sinnoh).flac" },
+    { "id": "champion-sinnoh", "source": "ost-b2w2", "file": "Disc 2/11 - Battle! (Champion - Sinnoh).flac" },
+    { "id": "gym-unova", "source": "ost-b2w2", "file": "Disc 1/49 - Battle! (Gym Leader).flac" },
+    { "id": "champion-unova", "source": "ost-b2w2", "file": "Disc 3/31 - Battle! (Champion).flac", "_nota": "Tema de Iris; es el de Mirto (decisión de Jose)" },
+    { "id": "victory-pwt", "source": "ost-b2w2", "file": "Disc 2/13 - Winning in the PWT!.flac", "_nota": "Jingle de victoria en Resultado" }
+  ],
+  "sfx": [
+    { "id": "hit-super", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_KOUKA_H.wav", "_nota": "Golpe supereficaz" },
+    { "id": "hit-neutral", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_KOUKA_M.wav", "_nota": "Golpe neutro" },
+    { "id": "hit-weak", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_KOUKA_L.wav", "_nota": "Golpe poco eficaz" },
+    { "id": "ball-throw", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_NAGERU.wav", "_nota": "Lanzar la Poké Ball" },
+    { "id": "ball-open", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_BOWA2.wav", "_nota": "Abrir la Poké Ball (sale el Pokémon)" },
+    { "id": "faint", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_HINSHI.wav", "_nota": "Debilitado" }
+  ]
+}

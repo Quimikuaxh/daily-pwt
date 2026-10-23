@@ -55,8 +55,9 @@ npm install
 | `npm run gen:pwt-raw` / `npm run gen:pwt` | Extraen los equipos del PWT de Bulbapedia, Serebii y WikiDex y los fusionan (ver [docs/F2-DATOS.md](docs/F2-DATOS.md)). `npm run gen:pwt -- --write` además escribe `data/trainers.json`. |
 | `npm run gen:sprites` | Descarga a `public/sprites/` los sprites que falten (requiere red). |
 | `npm run gen:ui` | Descarga y recorta a `public/ui/` los gráficos de interfaz de N2/B2 (`--force` los rehace todos). Requiere red. |
+| `npm run gen:audio` | Codifica a `public/audio/` la música (OST de N2/B2, se descarga) y los efectos de sonido (ZIP descargado a mano) y escribe `src/generated/audio-index.json` (`--force` los rehace todos). Requiere `ffmpeg`, `ffprobe` y `unzip`. Ver «Sonido». |
 
-`gen:sprites`, `gen:ui`, `gen:pwt-raw` y `gen:pwt` no forman parte de `npm run gen`. Tras cargar o cambiar entrenadores: `npm run gen:pwt -- --write`, `npm run gen`, `npm run gen:sprites` (si faltan sprites), `npm run gen:sprite-boxes`, `gen:icon-index`, `gen:descriptions`, `gen:ui-index` (si cambian sprites o especies) y `npm run validate:data`.
+`gen:sprites`, `gen:ui`, `gen:audio`, `gen:pwt-raw` y `gen:pwt` no forman parte de `npm run gen`. Tras cargar o cambiar entrenadores: `npm run gen:pwt -- --write`, `npm run gen`, `npm run gen:sprites` (si faltan sprites), `npm run gen:sprite-boxes`, `gen:icon-index`, `gen:descriptions`, `gen:ui-index` (si cambian sprites o especies) y `npm run validate:data`.
 
 ## Validación de datos y CI
 
@@ -196,6 +197,13 @@ Traducciones manuales que prevalecen sobre las de PokeAPI.
 - Fuente del juego: `public/fonts/pokemon-dp.ttf`, descrita en la sección `fonts` del manifest y descargada por el mismo script. Una sola `@font-face` y una sola variable CSS (`--font-game`) en `src/index.css`: para cambiar de fuente se sustituye el fichero.
 - Los rótulos ingleses BAG/RUN de `touch/` se tapan en el asset con `clone` (copia de una caja del propio PNG repitiendo el patrón de puntos de periodo 5); la UI dibuja los rótulos en español.
 
+### Sonido (`public/audio/`)
+
+- `data/audio.json` es la fuente de verdad: cada pista y efecto con su origen, crédito y licencia. Destino: `public/audio/music/<id>.m4a` y `public/audio/sfx/<id>.m4a`, en AAC a 48 kHz estéreo (música a 128 kbps, efectos a 96 kbps). `src/generated/audio-index.json` lista ruta y duración de cada uno.
+- **Música**: pistas completas del *Super Music Collection* de N2/B2 en FLAC (Internet Archive, `pkmn-bw2-soundtrack`). El script las descarga a `scripts/.cache/audio/` (ignorado) y las codifica sin recortar: cada pista trae introducción, el bucle dos veces y el fundido final. Tema de cada rival: `gym-<región>` para líderes y `champion-<región>` para campeones (Mirto usa `champion-unova`, el tema de Iris); `victory-pwt` es el jingle de victoria.
+- **Efectos**: salen del ZIP «Miscellaneous - Sound Effects» de [The Sounds Resource](https://sounds.spriters-resource.com/ds_dsi/pokemonblack2white2/). El sitio tiene reto de Cloudflare y no deja descargar por script: hay que bajar el ZIP con el navegador y dejarlo, sin descomprimir, en `scripts/.cache/sfx/` con el nombre que indica `sources.tsr-sfx-b2w2.zip`. El script extrae las entradas del manifiesto (nombres internos del juego: `SEQ_SE_KOUKA_H/M/L` golpe supereficaz/neutro/poco eficaz, `SEQ_SE_NAGERU` lanzar, `SEQ_SE_BOWA2` abrir la Poké Ball, `SEQ_SE_HINSHI` debilitado) y les quita el silencio del principio y del final.
+- Para añadir un efecto: entrada nueva en `sfx` de `data/audio.json` (`entry` es la ruta dentro del ZIP; `unzip -l` las lista) y `npm run gen:audio`.
+
 ### Sprites (`public/sprites/`)
 
 - Pokémon: sprites animados de Gen 5 de Pokémon Showdown (`gen5ani` para el frente, `gen5ani-back` para la espalda). Nombre de fichero: `<spriteId>.gif`.
@@ -269,6 +277,8 @@ npm run vis
 - **Internet Archive**: copia de los sprites de WikiDex cuando su CDN no responde.
 - **hexparrot/pokemon-assets**: `Pokemon-DP.ttf` (MIT), réplica fan de la fuente de Pokémon Diamante/Perla, en `public/fonts/` (`npm run gen:ui`). Provisional hasta sustituirla por una réplica de la de Negro 2 / Blanco 2.
 - **Bulbagarden Archives**, **The Spriters Resource** (vía Internet Archive) y **Pokémon Showdown**: gráficos de interfaz de combate de Negro 2 / Blanco 2 (`public/ui/`, ver `data/ui-assets.json`).
+- **Internet Archive** (*Pokémon Black 2 & Pokémon White 2: Super Music Collection*): música de combate de Negro 2 / Blanco 2 (`public/audio/music/`).
+- **The Sounds Resource**: efectos de sonido de Negro 2 / Blanco 2 (`public/audio/sfx/`, ver `data/audio.json`).
 
 ## Aviso legal
 

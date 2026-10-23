@@ -1,0 +1,74 @@
+{
+  "music": {
+    "gym-kanto": {
+      "path": "audio/music/gym-kanto.m4a",
+      "durationSec": 112
+    },
+    "champion-kanto": {
+      "path": "audio/music/champion-kanto.m4a",
+      "durationSec": 143
+    },
+    "gym-johto": {
+      "path": "audio/music/gym-johto.m4a",
+      "durationSec": 144
+    },
+    "champion-johto": {
+      "path": "audio/music/champion-johto.m4a",
+      "durationSec": 122
+    },
+    "gym-hoenn": {
+      "path": "audio/music/gym-hoenn.m4a",
+      "durationSec": 151
+    },
+    "champion-hoenn": {
+      "path": "audio/music/champion-hoenn.m4a",
+      "durationSec": 129
+    },
+    "gym-sinnoh": {
+      "path": "audio/music/gym-sinnoh.m4a",
+      "durationSec": 176
+    },
+    "champion-sinnoh": {
+      "path": "audio/music/champion-sinnoh.m4a",
+      "durationSec": 167
+    },
+    "gym-unova": {
+      "path": "audio/music/gym-unova.m4a",
+      "durationSec": 173
+    },
+    "champion-unova": {
+      "path": "audio/music/champion-unova.m4a",
+      "durationSec": 205
+    },
+    "victory-pwt": {
+      "path": "audio/music/victory-pwt.m4a",
+      "durationSec": 38
+    }
+  },
+  "sfx": {
+    "hit-super": {
+      "path": "audio/sfx/hit-super.m4a",
+      "durationSec": 1.325
+    },
+    "hit-neutral": {
+      "path": "audio/sfx/hit-neutral.m4a",
+      "durationSec": 0.676
+    },
+    "hit-weak": {
+      "path": "audio/sfx/hit-weak.m4a",
+      "durationSec": 0.435
+    },
+    "ball-throw": {
+      "path": "audio/sfx/ball-throw.m4a",
+      "durationSec": 0.676
+    },
+    "ball-open": {
+      "path": "audio/sfx/ball-open.m4a",
+      "durationSec": 0.427
+    },
+    "faint": {
+      "path": "audio/sfx/faint.m4a",
+      "durationSec": 0.535
+    }
+  }
+}
