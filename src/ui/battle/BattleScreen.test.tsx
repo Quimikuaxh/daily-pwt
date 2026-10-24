@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { act, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { BattleScreen } from './BattleScreen'
+import type { AnimationMode } from '../../storage/settings'
 import { getDailyChallenge } from '../../core/challenge'
 import { makeGameData } from '../../test-utils/fixtures'
 import { MOVES, mkUpdate, mockClient, sidePokemon } from '../../test-utils/clientMock'
@@ -27,13 +28,13 @@ const RSIX = ['snorlax', 'tyranitar', 'heatran', 'lapras', 'starmie', 'gyarados'
 const sixView = (o: Parameters<typeof mkView>[0] = {}) => mkView({ player: SIX.map((s) => pMon(s, 150, 150)), rival: RSIX.map((s) => rMon(s)), ...o })
 const mv = (id: string) => data.names.moves[id]
 
-function mount(over: { lead?: number; moveAnimations?: boolean } = {}) {
+function mount(over: { lead?: number; animations?: AnimationMode } = {}) {
   const client = mockClient()
   const onFinish = vi.fn()
   const onExit = vi.fn()
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
   const utils = render(
-    <BattleScreen client={client as any} data={data} challenge={challenge} playerLead={over.lead ?? 0} battleSeed="seed-1" moveAnimations={over.moveAnimations} onFinish={onFinish} onExit={onExit} />,
+    <BattleScreen client={client as any} data={data} challenge={challenge} playerLead={over.lead ?? 0} battleSeed="seed-1" animations={over.animations} onFinish={onFinish} onExit={onExit} />,
   )
   return { client, onFinish, onExit, user, ...utils }
 }
@@ -454,7 +455,7 @@ describe('campo de batalla (CMP-18, RF-44)', () => {
     await settle()
     expect(document.querySelector('.bt-fx')).toHaveAttribute('data-move', 'earthquake')
     on.unmount()
-    const off = mount({ moveAnimations: false })
+    const off = mount({ animations: 'never' })
     off.client.emit(mkUpdate({ lines }))
     await settle()
     expect(document.querySelector('.bt-fx')).not.toHaveAttribute('data-move')
@@ -642,9 +643,25 @@ describe('velocidad y movimiento reducido (CMP-21, RF-52)', () => {
     expect(fast).toBeLessThan(slow)
   })
 
-  it('con prefers-reduced-motion marca la raíz con data-reduced-motion', async () => {
+  // Animaciones (24/10/2026, Jose): por defecto «Siempre»; el sistema solo cuenta con «Según el sistema» (cambio de requisito: antes
+  // «reducir movimiento» del sistema quitaba siempre las animaciones).
+  it('con «Siempre» (por defecto) anima aunque el sistema pida reducir movimiento', async () => {
     mockMatchMedia(true)
     await ready()
+    expect(screen.getByTestId('battle-screen')).not.toHaveAttribute('data-reduced-motion', 'true')
+  })
+
+  it('con «Según el sistema» y prefers-reduced-motion marca la raíz con data-reduced-motion', async () => {
+    mockMatchMedia(true)
+    mount({ animations: 'system' })
+    await settle()
+    expect(screen.getByTestId('battle-screen')).toHaveAttribute('data-reduced-motion', 'true')
+  })
+
+  it('con «Nunca» no anima aunque el sistema no lo pida', async () => {
+    mockMatchMedia(false)
+    mount({ animations: 'never' })
+    await settle()
     expect(screen.getByTestId('battle-screen')).toHaveAttribute('data-reduced-motion', 'true')
   })
 

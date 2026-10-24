@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { es } from '../../i18n/es'
-import { SPEEDS, type Settings } from '../../storage/settings'
+import { ANIMATION_MODES, SPEEDS, type Settings } from '../../storage/settings'
 import { Dialog } from '../common/Dialog'
 import { Modal } from '../common/Modal'
 import { SoundSettings } from './SoundSettings'
@@ -43,15 +43,15 @@ export function SettingsDialog({ settings, onChange, onClearData, onClose }: Set
         <section className="settings-section">
           <h3 className="help-title" id="settings-animations">{text.animationsTitle}</h3>
           <div className="settings-options" role="group" aria-labelledby="settings-animations">
-            {[true, false].map((on) => (
+            {ANIMATION_MODES.map((mode) => (
               <button
-                key={String(on)}
+                key={mode}
                 type="button"
                 className="btn btn-small settings-option"
-                aria-pressed={settings.moveAnimations === on}
-                onClick={() => onChange({ ...settings, moveAnimations: on })}
+                aria-pressed={settings.animations === mode}
+                onClick={() => onChange({ ...settings, animations: mode })}
               >
-                {on ? text.animationsOn : text.animationsOff}
+                {text.animationModes[mode]}
               </button>
             ))}
           </div>

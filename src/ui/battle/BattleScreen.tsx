@@ -6,12 +6,12 @@ import { MAX_TURNS } from '../../config'
 import type { Challenge, GameData } from '../../core/types'
 import { HP_BAR_ANIMATION_MS, useBattle, type BattleParams } from '../../hooks/useBattle'
 import type { BattleMode } from '../../storage/gameStore'
-import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion'
+import { useReducedMotion } from '../../hooks/usePrefersReducedMotion'
 import { es } from '../../i18n/es'
 import { Dialog } from '../common/Dialog'
 import { Modal } from '../common/Modal'
 import { SoundSettings } from '../menu/SoundSettings'
-import type { SoundPrefs } from '../../storage/settings'
+import type { AnimationMode, SoundPrefs } from '../../storage/settings'
 import { HistoryDialog } from './HistoryDialog'
 import { RemainingIndicator } from './RemainingIndicator'
 import { TopScreen } from './TopScreen'
@@ -42,8 +42,8 @@ type BattleScreenProps = {
   /** Velocidad de Ajustes; al cambiarla con el botón del combate se avisa para guardarla. */
   initialSpeed?: BattleParams['initialSpeed']
   onSpeedChange?: BattleParams['onSpeedChange']
-  /** Animaciones de movimientos (Ajustes, por defecto activadas). */
-  moveAnimations?: boolean
+    /** Animaciones del combate (Ajustes): por defecto «Siempre», aunque el sistema pida reducir movimiento. */
+  animations?: AnimationMode
   /** Sonido y volumen de Ajustes; con `onSoundChange`, el botón Sonido los cambia desde el combate (decisión de Jose, DEC-57). */
   sound?: SoundPrefs
   onSoundChange?: (sound: SoundPrefs) => void
@@ -58,7 +58,7 @@ type TouchChoice = { request: BattleRequest | null; mode: TouchMode }
 
 const isInteractive = (target: EventTarget | null): boolean => target instanceof HTMLElement && target.closest('button, a, input, select, textarea, [role="dialog"]') !== null
 
-export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', replay, onDecision, onSettled, onReplayFailed, initialSpeed, onSpeedChange, moveAnimations = true, sound, onSoundChange, onFinish, onExit }: BattleScreenProps) {
+export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', replay, onDecision, onSettled, onReplayFailed, initialSpeed, onSpeedChange, animations = 'always', sound, onSoundChange, onFinish, onExit }: BattleScreenProps) {
   const { trainer, rivalTeam, playerTeam } = challenge
   const speciesName = (speciesId: string, fallback: string): string => data.names.species[speciesId] ?? fallback
 
@@ -79,7 +79,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
     onSpeedChange,
   })
 
-  const reducedMotion = usePrefersReducedMotion()
+  const reducedMotion = useReducedMotion(animations)
   const layoutRef = useRef(null as HTMLDivElement | null)
   const { scale, wide, frame } = useStageScale(layoutRef)
   const avatar = useMemo(() => avatarForSeed(battleSeed), [battleSeed])
@@ -231,7 +231,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                 />
               )}
               <div className="bt-underlay" inert={partyOpen || rivalOpen}>
-                <TopScreen view={battle.view} data={data} challenge={challenge} introPhase={battle.introPhase} switchAnim={battle.switchAnim} avatar={avatar} message={message} onAdvance={advance} speed={battle.speed} reducedMotion={reducedMotion} moveFx={moveAnimations && !reducedMotion ? battle.moveFx : null} />
+                <TopScreen view={battle.view} data={data} challenge={challenge} introPhase={battle.introPhase} switchAnim={battle.switchAnim} avatar={avatar} message={message} onAdvance={advance} speed={battle.speed} reducedMotion={reducedMotion} moveFx={reducedMotion ? null : battle.moveFx} />
                 {battle.failed ? (
                   <section role="alert" className="bt-touch bt-error" style={{ height: SCREEN_HEIGHT }}>
                     <p>{es.battle.failure}</p>

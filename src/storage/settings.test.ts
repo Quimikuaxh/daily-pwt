@@ -6,20 +6,33 @@ import { clearSettings, DEFAULT_SETTINGS, loadSettings, saveSettings, SETTINGS_K
 describe('ajustes en localStorage', () => {
   it('sin nada guardado, o sin almacenamiento, valen los de por defecto (x1)', () => {
     expect(loadSettings(new MemoryStorage())).toEqual(DEFAULT_SETTINGS)
-    expect(loadSettings(null)).toEqual({ speed: 1, moveAnimations: true, sound: true, volume: 70 })
+    expect(loadSettings(null)).toEqual({ speed: 1, animations: 'always', sound: true, volume: 70 })
   })
 
   it('guarda y recupera la velocidad', () => {
     const storage = new MemoryStorage()
-    saveSettings(storage, { speed: 4, moveAnimations: false, sound: false, volume: 35 })
-    expect(JSON.parse(storage.getItem(SETTINGS_KEY) as string)).toEqual({ version: 1, speed: 4, moveAnimations: false, sound: false, volume: 35 })
-    expect(loadSettings(storage)).toEqual({ speed: 4, moveAnimations: false, sound: false, volume: 35 })
+    saveSettings(storage, { speed: 4, animations: 'system', sound: false, volume: 35 })
+    expect(JSON.parse(storage.getItem(SETTINGS_KEY) as string)).toEqual({ version: 1, speed: 4, animations: 'system', sound: false, volume: 35 })
+    expect(loadSettings(storage)).toEqual({ speed: 4, animations: 'system', sound: false, volume: 35 })
   })
 
   it('ajustes guardados antes de existir las animaciones o el sonido: se leen con los de por defecto', () => {
     const storage = new MemoryStorage()
     storage.setItem(SETTINGS_KEY, JSON.stringify({ version: 1, speed: 2 }))
-    expect(loadSettings(storage)).toEqual({ speed: 2, moveAnimations: true, sound: true, volume: 70 })
+    expect(loadSettings(storage)).toEqual({ speed: 2, animations: 'always', sound: true, volume: 70 })
+  })
+
+  // UT-83 · Animaciones (24/10/2026, Jose): «Siempre» por defecto; los guardados con la opción antigua se traducen.
+  it('la opción antigua `moveAnimations: false` se lee como «Nunca»; `true` o un valor desconocido, como «Siempre»', () => {
+    const storage = new MemoryStorage()
+    const read = (saved: object) => {
+      storage.setItem(SETTINGS_KEY, JSON.stringify({ version: 1, speed: 1, ...saved }))
+      return loadSettings(storage).animations
+    }
+    expect(read({ moveAnimations: false })).toBe('never')
+    expect(read({ moveAnimations: true })).toBe('always')
+    expect(read({ animations: 'raro' })).toBe('always')
+    expect(read({ animations: 'system', moveAnimations: false })).toBe('system')
   })
 
   // UT-77 · Sonido y volumen (DEC-57).

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import type { AnimationMode } from '../storage/settings'
 
 const QUERY = '(prefers-reduced-motion: reduce)'
 
@@ -14,4 +15,10 @@ export function usePrefersReducedMotion(): boolean {
   }, [])
 
   return reduced
+}
+
+/** Sin animaciones en el combate: «Nunca», o «Según el sistema» con «reducir movimiento» activado (con «Siempre», nunca). */
+export function useReducedMotion(mode: AnimationMode): boolean {
+  const systemReduced = usePrefersReducedMotion()
+  return mode === 'never' || (mode === 'system' && systemReduced)
 }

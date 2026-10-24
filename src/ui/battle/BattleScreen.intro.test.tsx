@@ -12,10 +12,10 @@ const data = makeGameData()
 const challenge = getDailyChallenge('2026-10-17', data)
 const TURN_LINES = ['|move|p1a: Garchomp|Earthquake|p2a: Snorlax', '|-supereffective|p2a: Snorlax', '|move|p2a: Snorlax|Tackle|p1a: Garchomp']
 
-function mount() {
+function mount(animations: 'always' | 'system' | 'never' = 'always') {
   const client = mockClient()
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-  render(<BattleScreen client={client as any} data={data} challenge={challenge} playerLead={0} battleSeed="seed-1" onFinish={vi.fn()} onExit={vi.fn()} />)
+  render(<BattleScreen client={client as any} data={data} challenge={challenge} playerLead={0} battleSeed="seed-1" animations={animations} onFinish={vi.fn()} onExit={vi.fn()} />)
   return { client, user }
 }
 const phase = () => screen.getByTestId('field').getAttribute('data-intro')
@@ -122,10 +122,10 @@ describe('intro del combate (PRD §10.2.1)', () => {
     expect(new Set(lines).size).toBe(lines.length)
   })
 
-  it('con prefers-reduced-motion la intro sigue el mismo guion (solo cambia cómo se dibuja)', async () => {
+  it('con prefers-reduced-motion («Según el sistema») la intro sigue el mismo guion (solo cambia cómo se dibuja)', async () => {
     const { mockMatchMedia } = await import('../../test-utils/ui')
     mockMatchMedia(true)
-    const { client } = mount()
+    const { client } = mount('system')
     client.emit(mkUpdate())
     expect(await msUntil(() => phase() === 'done')).toBeLessThanOrEqual(5000)
     expect(screen.getByTestId('battle-screen')).toHaveAttribute('data-reduced-motion', 'true')

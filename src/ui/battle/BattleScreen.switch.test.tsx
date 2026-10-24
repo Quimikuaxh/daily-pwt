@@ -15,18 +15,18 @@ const challenge = getDailyChallenge('2026-10-17', data)
 const PLAYER_SWITCH = ['|switch|p1a: Starmie|Starmie, L50|150/150']
 const RIVAL_SWITCH = ['|switch|p2a: Tyranitar|Tyranitar, L50|100/100']
 
-function mount() {
+function mount(animations: 'always' | 'system' | 'never' = 'always') {
   const client = mockClient()
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-  render(<BattleScreen client={client as any} data={data} challenge={challenge} playerLead={0} battleSeed="seed-1" onFinish={vi.fn()} onExit={vi.fn()} />)
+  render(<BattleScreen client={client as any} data={data} challenge={challenge} playerLead={0} battleSeed="seed-1" animations={animations} onFinish={vi.fn()} onExit={vi.fn()} />)
   return { client, user }
 }
 const attribute = () => screen.getByTestId('field').getAttribute('data-switch')
 const message = () => screen.getByRole('status').textContent
 const fight = () => screen.getByRole('button', { name: /luchar/i })
 const step = (ms: number) => settle(ms)
-async function afterIntro() {
-  const context = mount()
+async function afterIntro(animations: 'always' | 'system' | 'never' = 'always') {
+  const context = mount(animations)
   context.client.emit(mkUpdate())
   await step(8000)
   return context
@@ -132,10 +132,10 @@ describe('animación de cambio de Pokémon (RF-72)', () => {
     expect(attribute()).toBeNull()
   })
 
-  it('con prefers-reduced-motion el guion es el mismo (el CSS solo hace fundidos)', async () => {
+  it('con prefers-reduced-motion («Según el sistema») el guion es el mismo (el CSS solo hace fundidos)', async () => {
     const { mockMatchMedia } = await import('../../test-utils/ui')
     mockMatchMedia(true)
-    const { client } = await afterIntro()
+    const { client } = await afterIntro('system')
     client.emit(afterSwitchView(PLAYER_SWITCH, { pActive: 1 }))
     await step(100)
     expect(attribute()).toBe('player')

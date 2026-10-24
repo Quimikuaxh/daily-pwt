@@ -1210,14 +1210,24 @@ img.sprite,
   justify-content: center;
 }
 
+/* «Reducir movimiento»: con «Según el sistema» (sin data-motion) si el sistema lo pide, y siempre con «Nunca» (data-motion="reduced");
+   con «Siempre» (data-motion="full") no se aplica. */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  :root:not([data-motion]) *,
+  :root:not([data-motion]) *::before,
+  :root:not([data-motion]) *::after {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
   }
+}
+
+:root[data-motion="reduced"] *,
+:root[data-motion="reduced"] *::before,
+:root[data-motion="reduced"] *::after {
+  scroll-behavior: auto !important;
+  transition-duration: 0.01ms !important;
+  animation-duration: 0.01ms !important;
 }
 
 /* Al ocultar los sets del rival se sube a este panel; el margen deja libre la cabecera fija. */

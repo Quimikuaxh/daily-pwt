@@ -186,13 +186,24 @@ test.describe('Cambio animado', () => {
 test.describe('Cambio animado con movimiento reducido', () => {
   test.use({ reducedMotion: 'reduce' })
 
-  test('E2E-35 con prefers-reduced-motion no se dibujan ni entrenador ni bola', async ({ page }) => {
+  test('E2E-35 con prefers-reduced-motion y Animaciones «Según el sistema» no se dibujan ni entrenador ni bola', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('daily-pwt:settings', JSON.stringify({ version: 1, speed: 1, animations: 'system' })))
     const { battle } = await startBattle(page, { seed: 'a' })
     await battle.waitForActionOrResult()
     await openParty(page)
     await battle.chooseSubstitute()
     await expect(page.getByTestId('field')).toHaveAttribute('data-switch', 'player')
     expect(await page.locator('.bt-intro').evaluate((element) => getComputedStyle(element).display)).toBe('none')
+  })
+
+  // Animaciones (24/10/2026, Jose): por defecto «Siempre», aunque el sistema pida reducir movimiento.
+  test('E2E-71 con prefers-reduced-motion y Animaciones «Siempre» (por defecto) el combate sí se anima', async ({ page }) => {
+    const { battle } = await startBattle(page, { seed: 'a' })
+    await battle.waitForActionOrResult()
+    await expect(page.getByTestId('battle-screen')).not.toHaveAttribute('data-reduced-motion', 'true')
+    expect(await page.evaluate(() => document.documentElement.dataset.motion)).toBe('full')
+    const duration = await page.locator('.bt-sprite').first().evaluate((element) => getComputedStyle(element).animationDuration)
+    expect(duration, 'la regla global de reducir movimiento no se aplica').not.toBe('0.00001s')
   })
 })
 

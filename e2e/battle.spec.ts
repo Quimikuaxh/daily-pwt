@@ -322,7 +322,7 @@ test.describe('Animaciones de movimientos (DEC-53)', () => {
     })
     expect(painted, 'el lienzo pinta algo durante la animación').toBe(true)
 
-    await page.evaluate(() => localStorage.setItem('daily-pwt:settings', JSON.stringify({ version: 1, speed: 1, moveAnimations: false })))
+    await page.evaluate(() => localStorage.setItem('daily-pwt:settings', JSON.stringify({ version: 1, speed: 1, animations: 'never' })))
     const again = await startBattle(page, { seed: 'b', mode: 'practice' })
     await again.battle.waitForActionOrResult()
     await again.battle.chooseFirstMove()

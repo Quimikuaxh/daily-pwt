@@ -51,6 +51,13 @@ export default function App({ data, createClient, store: injectedStore }: AppPro
   const [battlesStarted, setBattlesStarted] = useState(0)
 
   useEffect(() => preloadBattleImages(), [])
+  // Animaciones (Ajustes): la regla global de «reducir movimiento» de index.css solo se aplica con «Según el sistema»; «Siempre» la
+  // anula y «Nunca» la fuerza.
+  useEffect(() => {
+    const motion = settings.animations === 'always' ? 'full' : settings.animations === 'never' ? 'reduced' : null
+    if (motion) document.documentElement.dataset.motion = motion
+    else delete document.documentElement.dataset.motion
+  }, [settings.animations])
   // Volumen y silencio de Ajustes, al instante en lo que suene (DEC-57).
   useEffect(() => getAudio().configure({ volume: settings.volume, muted: !settings.sound }), [settings.volume, settings.sound])
 
@@ -140,7 +147,7 @@ export default function App({ data, createClient, store: injectedStore }: AppPro
         onSettled={official ? (state) => store.recordCheckpoint(date, { ...state, decisions: store.getDay(date)?.battle?.decisions.length ?? 0 }) : undefined}
         onReplayFailed={official ? () => abandonUnresumable(store.getDay(date) as DayRecord, 'replayFailed') : undefined}
         initialSpeed={settings.speed}
-        moveAnimations={settings.moveAnimations}
+        animations={settings.animations}
         sound={settings}
         onSoundChange={(sound) => changeSettings({ ...settings, ...sound })}
         onSpeedChange={(speed) => changeSettings({ ...settings, speed })}
