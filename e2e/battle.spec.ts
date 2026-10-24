@@ -9,8 +9,9 @@ test.describe('Partida completa contra la IA trivial', () => {
   for (const scenario of REF_SCENARIOS) {
     for (const seed of SEEDS) {
       test(`E2E-05 ${scenario.trainer} semilla ${seed}: llega a Resultado con registro en español`, async ({ page }) => {
-        // Hay partidas de 60 turnos con intro y mensajes uno a uno: con 4 trabajadores en paralelo superan los 120 s por defecto.
-        test.setTimeout(240_000)
+        // Hay partidas de 60 turnos con intro y mensajes uno a uno: con 4 trabajadores en paralelo superan los 120 s por defecto. Desde
+        // que los equipos son más fuertes (suma de estadísticas base ≥ 3060) las de Plubio duran ~1 min solas y rozaban los 240 s en paralelo.
+        test.setTimeout(420_000)
         const { battle } = await startBattle(page, { scenario, seed })
         await battle.maxSpeed()
         await battle.playToResult()

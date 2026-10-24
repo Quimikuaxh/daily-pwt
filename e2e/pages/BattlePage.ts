@@ -48,8 +48,11 @@ export class BattlePage {
   async waitForActionOrResult(): Promise<'moves' | 'switch' | 'result'> {
     await this.resultTitle.or(this.enabledMoves.first()).or(this.fightButton.and(this.page.locator(':enabled'))).or(this.enabledSwitchOptions.first()).first().waitFor({ timeout: 60_000 })
     if (await this.resultTitle.isVisible()) return 'result'
-    // La pantalla de equipo cubre las dos pantallas: si está abierta y hay sustituto elegible, es el cambio forzado.
-    return (await this.page.locator('.bt-party').count()) > 0 && (await this.enabledSwitchOptions.count()) > 0 ? 'switch' : 'moves'
+    // La pantalla de equipo cubre las dos pantallas: si está abierta es el cambio forzado. Con la máquina cargada sus placas pueden tardar
+    // en estar listas (esperan a sus imágenes) mientras Luchar sigue activo debajo: se espera a ellas en vez de intentar pulsar Luchar.
+    if ((await this.page.locator('.bt-party').count()) === 0) return 'moves'
+    await this.enabledSwitchOptions.first().waitFor({ timeout: 60_000 })
+    return 'switch'
   }
 
   /** Elige el primer sustituto disponible en la pantalla de equipo: placa y, en el menú, Cambiar. */

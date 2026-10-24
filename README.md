@@ -214,6 +214,7 @@ Traducciones manuales que prevalecen sobre las de PokeAPI.
 - Datos generados nuevos: `npm run gen:sprite-boxes` (caja visible de cada GIF, en `src/generated/sprite-boxes.json`), `npm run gen:icon-index` (posición de cada especie en la hoja de iconos) y `npm run gen:descriptions` (descripciones de movimientos y habilidades en español, texto de Pokémon X/Y de PokeAPI; descarga y cachea los CSV en `scripts/.cache/`). Se regeneran en memoria en `src/data/generated.test.ts`.
 - `npm run gen:sprites` (`scripts/fetch-sprites.mjs`) descarga solo los ficheros que faltan o no tienen cabecera GIF/PNG válida. Requiere red, espera entre peticiones (lento) y termina con código de error si falta algún sprite.
 - Los sprites se versionan en el repositorio. La aplicación no los descarga en caliente.
+- **Sin parpadeo (Lanturn):** el GIF de Showdown encendía y apagaba el halo de las antenas cada 50 ms (riesgo de epilepsia fotosensible). Se dejan solo los fotogramas con halo, a 100 ms: `convert <gif> -coalesce -delete "$(seq -s, 0 2 125)" -set delay 10 -loop 0 -layers OptimizeTransparency <gif>` (ImageMagick, en `front` y `back`). Si se borra y se vuelve a descargar, hay que repetirlo; UT-80 lo avisa.
 - `npm run gen:sprite-boxes` (`scripts/build-sprite-boxes.mjs`, decodificador GIF propio en `scripts/lib/gif.mjs`) escribe `src/generated/sprite-boxes.json` con la caja visible (no transparente) de cada GIF; la UI ancla el sprite del jugador con ella (`src/ui/battle/playerSpriteAnchor.ts`). Hay que regenerarlo si cambian los sprites.
 
 ## Tests

@@ -76,3 +76,23 @@ describe('el propio comprobador de cabeceras', () => {
     expect([isGif(Buffer.from('GIF89a....')), isPng(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])), isGif(Buffer.from('<html>..'))]).toEqual([true, true, false])
   })
 })
+
+// UT-80 · Lanturn sin parpadeo (PRD §0, 24/10/2026): el GIF de Showdown encendía y apagaba el halo de las antenas cada 50 ms (10 Hz,
+// riesgo para personas con epilepsia fotosensible). Se dejan solo los fotogramas con halo, a 100 ms. Si se vuelve a descargar el sprite
+// (`gen:sprites` solo baja los que faltan), este test avisa de que vuelve el parpadeo.
+describe('sprites sin parpadeo', () => {
+  /** Retardos (en centésimas) de las Graphic Control Extension del GIF. */
+  const frameDelays = (buffer: Buffer): number[] => {
+    const delays: number[] = []
+    for (let i = 0; i + 5 < buffer.length; i += 1) {
+      if (buffer[i] === 0x21 && buffer[i + 1] === 0xf9 && buffer[i + 2] === 0x04) delays.push(buffer[i + 4] | (buffer[i + 5] << 8))
+    }
+    return delays
+  }
+
+  it.each(['front', 'back'])('Lanturn (%s): ningún fotograma dura menos de 100 ms', (side) => {
+    const delays = frameDelays(readFileSync(fromRoot('public', 'sprites', 'pokemon', side, 'lanturn.gif')))
+    expect(delays.length).toBeGreaterThan(10)
+    expect(Math.min(...delays)).toBeGreaterThanOrEqual(10)
+  })
+})
