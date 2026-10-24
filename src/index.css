@@ -114,6 +114,11 @@ img.sprite,
   .page-main .rival-stage .sprite-natural {
     zoom: 1;
   }
+
+  /* Cabecera de las tarjetas (tu equipo y los sets del rival): la columna del sprite crece con él. */
+  .page-main .player-card-head {
+    grid-template-columns: 200px 1fr;
+  }
 }
 
 .sprite-fallback {

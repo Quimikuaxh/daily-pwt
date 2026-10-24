@@ -258,6 +258,12 @@ test.describe('Hoy en pantallas anchas', () => {
       expect(Math.round(sprite?.width ?? 0)).toBe(expected)
       const main = await page.locator('.page-main').boundingBox()
       expect(main?.width ?? 0).toBeLessThanOrEqual(1600)
+      // Tus tarjetas: el sprite cabe en su columna y no se monta sobre el nombre (se cortaba con la columna de 100 px).
+      const head = page.locator('.player-card .player-card-head').first()
+      const own = await head.locator('.sprite-natural').boundingBox()
+      const title = await head.locator('.player-card-title').boundingBox()
+      expect(Math.round(own?.width ?? 0)).toBe(expected)
+      expect((own?.x ?? 0) + (own?.width ?? 0)).toBeLessThanOrEqual(title?.x ?? 0)
     })
   }
 })
