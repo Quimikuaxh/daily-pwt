@@ -99,6 +99,23 @@ img.sprite,
   object-fit: scale-down;
 }
 
+/* Pantallas anchas (decisión de Jose, 24/10/2026): Hoy llega hasta 100rem y sus sprites (rival, equipo rival y tu equipo) se ven al doble;
+   `zoom` escala la caja entera, así el sprite sigue nítido (pixelated) y ocupa su sitio. */
+@media (min-width: 1400px) {
+  .page-main .sprite-natural {
+    zoom: 2;
+  }
+
+  /* El entrenador va dentro de su escenario de 124x120: crece el escenario entero (con su fondo), no solo el sprite. */
+  .page-main .rival-stage {
+    zoom: 2;
+  }
+
+  .page-main .rival-stage .sprite-natural {
+    zoom: 1;
+  }
+}
+
 .sprite-fallback {
   display: inline-flex;
   align-items: center;
@@ -545,7 +562,7 @@ img.sprite,
   grid-template-areas: "logo info menu";
   align-items: center;
   gap: 6px 16px;
-  max-width: 72rem;
+  max-width: 100rem;
   margin: 0 auto;
   padding: 8px 12px;
 }
@@ -669,7 +686,7 @@ img.sprite,
 .page-main {
   flex: 1;
   width: 100%;
-  max-width: 72rem;
+  max-width: 100rem;
   margin: 0 auto;
   padding: 16px 12px;
   box-sizing: border-box;

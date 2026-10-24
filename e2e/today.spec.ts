@@ -246,3 +246,18 @@ test.describe('Precarga de la interfaz y de los sprites del reto', () => {
     expect(await unloadedImages('.bt-summary'), 'datos, página 2').toEqual([])
   })
 })
+
+// PRD §0 (24/10/2026, decisión de Jose): en pantallas anchas Hoy llega hasta 100rem y sus sprites se ven al doble.
+test.describe('Hoy en pantallas anchas', () => {
+  for (const [width, expected] of [[1920, 200], [1366, 100]] as const) {
+    test(`E2E-72 a ${width} px los sprites de Hoy miden ${expected} px (y el contenido como mucho 1600 px)`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 })
+      const today = new TodayPage(page)
+      await today.goto()
+      const sprite = await page.locator('.rival-mon .sprite-natural').first().boundingBox()
+      expect(Math.round(sprite?.width ?? 0)).toBe(expected)
+      const main = await page.locator('.page-main').boundingBox()
+      expect(main?.width ?? 0).toBeLessThanOrEqual(1600)
+    })
+  }
+})
