@@ -13,3 +13,6 @@ scripts/.cache/
 dist-e2e/
 dist-e2e-prod/
 e2e-artifacts/
+
+# Registros de servidores y scripts locales
+*.log
