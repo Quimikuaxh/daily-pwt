@@ -159,6 +159,30 @@
   left: 212px;
 }
 
+.bt-party-rival {
+  /* Tapa la X y la flecha de la barra (en el cambio forzado no se puede salir): placa con el rótulo RIVAL de la pantalla táctil. */
+  position: absolute;
+  left: 199px;
+  top: 362px;
+  width: 56px;
+  height: 21px;
+  padding: 0;
+  border: 1px solid #585858;
+  background: linear-gradient(#383838, #101010);
+  color: #f8b838;
+  font: inherit;
+  font-size: 12px;
+  line-height: 19px;
+  text-transform: uppercase;
+  text-shadow: 1px 1px 0 #181818;
+  cursor: pointer;
+}
+
+.bt-party-rival:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 1px;
+}
+
 .bt-party-back:disabled,
 .bt-party-cancel:disabled {
   cursor: not-allowed;

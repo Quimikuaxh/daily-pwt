@@ -284,6 +284,14 @@ describe('cambio forzado (CMP-14, RF-49)', () => {
     expect(screen.getByRole('group', { name: /equipo/i })).toBeInTheDocument()
   })
 
+  // 27/10/2026: con la máquina cargada se podía pulsar Luchar por debajo mientras la pantalla de equipo cargaba sus imágenes.
+  it('Luchar y Pokémon de la pantalla táctil quedan desactivados', async () => {
+    await ready(forced())
+    const fight = document.querySelector('.bt-fight') as HTMLButtonElement | null
+    if (fight) expect(fight).toBeDisabled()
+    expect(document.querySelectorAll('.bt-touch button.bt-fight:enabled, .bt-touch button.bt-pokemon:enabled')).toHaveLength(0)
+  })
+
   it('no hay botón de cancelar ni de volver, y el aviso pide el siguiente', async () => {
     await ready(forced())
     expect(screen.queryByRole('button', { name: /cancelar|volver/i })).toBeNull()

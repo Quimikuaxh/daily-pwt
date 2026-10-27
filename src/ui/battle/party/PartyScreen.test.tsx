@@ -81,6 +81,19 @@ describe('pantalla de equipo', () => {
     expect(within(options()).getByRole('button', { name: 'Datos' })).toBeEnabled()
   })
 
+  // UT-86 · RIVAL en el cambio forzado (27/10/2026, Jose).
+  it('cambio forzado: el botón RIVAL abre el equipo del rival; fuera del cambio forzado no está', async () => {
+    const onRival = vi.fn()
+    const { user } = mount({ forced: true, onRival })
+    await user.click(screen.getByRole('button', { name: 'Ver el equipo rival' }))
+    expect(onRival).toHaveBeenCalledOnce()
+  })
+
+  it('sin cambio forzado no hay botón RIVAL aunque se pase onRival', () => {
+    mount({ forced: false, onRival: vi.fn() })
+    expect(screen.queryByRole('button', { name: 'Ver el equipo rival' })).toBeNull()
+  })
+
   it('los controles están desactivados si el turno no está abierto', () => {
     mount({ enabled: false })
     expect(panel(new RegExp(firstName))).toBeDisabled()

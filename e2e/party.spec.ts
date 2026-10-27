@@ -241,3 +241,25 @@ test.describe('Equipo: texto centrado en la placa', () => {
     }
   })
 })
+
+// RIVAL en el cambio forzado (27/10/2026, decisión de Jose): desde la pantalla de equipo se consulta al rival y se vuelve a elegir.
+test.describe('Cambio forzado', () => {
+  test('E2E-73 tras un KO, RIVAL abre el equipo del rival y Volver regresa a elegir sustituto', async ({ page }) => {
+    test.setTimeout(240_000)
+    const { battle } = await startBattle(page, { seed: 'a', mode: 'practice' })
+    await battle.maxSpeed()
+    let state = await battle.waitForActionOrResult()
+    for (let turn = 0; state === 'moves' && turn < 60; turn += 1) {
+      await battle.chooseFirstMove()
+      state = await battle.waitForActionOrResult()
+    }
+    test.skip(state !== 'switch', 'la partida acabó sin un cambio forzado del jugador')
+    await page.getByRole('region', { name: 'Equipo' }).getByRole('button', { name: 'Ver el equipo rival' }).click()
+    const rival = page.getByRole('region', { name: 'Equipo rival' })
+    await expect(rival.locator('.bt-party-panel')).toHaveCount(6)
+    await rival.getByRole('button', { name: 'Volver' }).click()
+    await expect(rival).toHaveCount(0)
+    await battle.chooseSubstitute()
+    await expect(page.locator('.bt-party')).toHaveCount(0)
+  })
+})

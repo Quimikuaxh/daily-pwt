@@ -87,6 +87,8 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   const [dialog, setDialog] = useState(null as PendingDialog)
   // Petición de cambio forzado ya contestada: la pantalla de equipo se cierra al elegir para que se vea el lanzamiento de la Poké Ball del nuevo Pokémon.
   const [answeredForcedRequest, setAnsweredForcedRequest] = useState(null as BattleRequest | null)
+  // Equipo rival abierto desde el cambio forzado (botón RIVAL de la pantalla de equipo): al volver, se sigue eligiendo sustituto.
+  const [rivalPeek, setRivalPeek] = useState(null as BattleRequest | null)
 
   const { request, lastChoiceRequest, choose, advance } = battle
   const menuRequest = request ?? lastChoiceRequest
@@ -97,7 +99,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   const blockedReason = menuRequest === null ? null : switchBlockedReason(menuRequest, switchOptions(menuRequest, data.names))
   const members = useMemo(() => partyMembers(menuRequest, battle.view, data, playerTeam), [menuRequest, battle.view, data, playerTeam])
   const rivals = useMemo(() => rivalMembers(battle.view, data, rivalTeam), [battle.view, data, rivalTeam])
-  const touchMode: TouchMode = forcedSwitchPending ? 'switch' : touchChoice.request === menuRequest ? touchChoice.mode : 'main'
+  const touchMode: TouchMode = forcedSwitchPending ? (rivalPeek === menuRequest ? 'rival' : 'switch') : touchChoice.request === menuRequest ? touchChoice.mode : 'main'
   const ended = battle.ended !== null
 
   // Música del rival (DEC-57): se descargan su pista y los efectos al entrar; suena desde el iris de la intro (o desde el principio al
@@ -217,6 +219,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                   enabled={canActNow}
                   onChoose={chooseSwitch}
                   onClose={closeToMain}
+                  onRival={forcedSwitchPending ? () => setRivalPeek(menuRequest) : undefined}
                 />
               )}
               {rivalOpen && (
@@ -226,7 +229,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                   forced={false}
                   enabled
                   onChoose={() => {}}
-                  onClose={closeToMain}
+                  onClose={forcedSwitchPending ? () => setRivalPeek(null) : closeToMain}
                   readOnly={{ prompt: es.battle.party.rivalPrompt(trainer.nameEs), label: es.battle.party.rivalLabel }}
                 />
               )}
@@ -240,7 +243,9 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                 ) : (
                   <TouchScreen
                     mode={touchMode}
-                    canAct={canActNow}
+                    // En un cambio forzado solo se elige sustituto: mientras la pantalla de equipo carga sus imágenes, Luchar y el resto no
+                    // deben poder pulsarse por debajo (un movimiento ahí no es una decisión válida).
+                    canAct={canActNow && !forcedSwitchPending}
                     forfeitEnabled={!ended}
                     moves={moves}
                     switchBlockedReason={blockedReason}

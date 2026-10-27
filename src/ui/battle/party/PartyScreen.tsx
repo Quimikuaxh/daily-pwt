@@ -17,6 +17,8 @@ type PartyScreenProps = {
   data: GameData
   /** Cambio forzado tras un KO (RF-49): no se puede cancelar. */
   forced: boolean
+  /** Solo en el cambio forzado: botón RIVAL en el hueco de Salir y Volver, para consultar el equipo rival antes de elegir (decisión de Jose). */
+  onRival?: () => void
   /** Los controles solo actúan cuando el turno está abierto (no durante animaciones ni el turno rival). */
   enabled: boolean
   onChoose: (slot: number) => void
@@ -88,7 +90,7 @@ function whyCannotSwitch(member: PartyMember): string | null {
  * Pantalla de equipo del combate (ocupa las dos pantallas, como en el juego): cuadrícula de 6 placas y, al elegir una,
  * el menú Cambiar / Datos / Cancelar. Datos abre la pantalla de datos del Pokémon. En el cambio forzado no hay Cancelar ni Volver.
  */
-export function PartyScreen({ members, data, forced, enabled, onChoose, onClose, readOnly }: PartyScreenProps) {
+export function PartyScreen({ members, data, forced, enabled, onChoose, onClose, onRival, readOnly }: PartyScreenProps) {
   const [selectedSlot, setSelectedSlot] = useState(null as number | null)
   const [summarySlot, setSummarySlot] = useState(null as number | null)
   const summaryReady = useImagesReady(SUMMARY_SCREEN_IMAGES, summarySlot !== null)
@@ -164,6 +166,11 @@ export function PartyScreen({ members, data, forced, enabled, onChoose, onClose,
 
       <img className="bt-party-toolbar" src={uiAsset('party/bar.png')} alt="" />
       <p className="bt-party-prompt" role="status">{prompt}</p>
+      {forced && onRival && (
+        <button type="button" className="bt-party-rival" aria-label={es.battle.rivalTeamAria} onClick={onRival}>
+          <span aria-hidden="true">{es.battle.rivalTeam}</span>
+        </button>
+      )}
       {!forced && (
         <>
           <button type="button" className="bt-party-cancel" disabled={!enabled} onClick={onClose}>
