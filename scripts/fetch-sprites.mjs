@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, relative, resolve } from 'node:path'
 import { isMain } from './lib/cli.mjs'
+import { cropImage, decodePng, encodePng, opaqueBox } from './lib/png.mjs'
 import { fromRoot } from './lib/paths.mjs'
 import { PWT_CACHE_DIR } from './lib/pwt-http.mjs'
 import { ROSTER } from './lib/pwt-roster.mjs'
@@ -121,15 +122,35 @@ async function fetchPokemonSprites(spriteIds) {
   return failures
 }
 
-/** El muñeco del sustituto de 5.ª gen. (Showdown), de frente y de espaldas: public/sprites/substitute/{front,back}.png. */
+/**
+ * Recorta un PNG a sus píxeles visibles. El muñeco de Showdown viene centrado en un lienzo de 96x96 con márgenes transparentes; los GIF de
+ * los Pokémon vienen ya recortados y la UI apoya el borde inferior de la imagen en la plataforma, así que el muñeco debe venir igual.
+ * Idempotente: un PNG ya recortado no cambia.
+ */
+export function cropPngToContent(buffer) {
+  const image = decodePng(buffer)
+  const box = opaqueBox(image)
+  if (!box || (box[0] === 0 && box[1] === 0 && box[2] === image.width && box[3] === image.height)) return buffer
+  return encodePng(cropImage(image, box))
+}
+
+/** El muñeco del sustituto de 5.ª gen. (Showdown), de frente y de espaldas, recortado: public/sprites/substitute/{front,back}.png. */
 async function fetchSubstituteSprites() {
   const failures = []
   for (const [side, directory] of [['front', 'gen5'], ['back', 'gen5-back']]) {
     const relativePath = `substitute/${side}.png`
-    if (hasValidImage(relativePath, 'png')) continue
-    const ok = await download(`${SHOWDOWN_SPRITES_URL}/substitutes/${directory}/substitute.png`, relativePath, 'png')
-    if (!ok) failures.push(relativePath)
-    await sleep(PAUSE_BETWEEN_REQUESTS_MS)
+    if (!hasValidImage(relativePath, 'png')) {
+      const ok = await download(`${SHOWDOWN_SPRITES_URL}/substitutes/${directory}/substitute.png`, relativePath, 'png')
+      await sleep(PAUSE_BETWEEN_REQUESTS_MS)
+      if (!ok) {
+        failures.push(relativePath)
+        continue
+      }
+    }
+    const target = resolveSpriteTarget(relativePath)
+    const original = readFileSync(target)
+    const cropped = cropPngToContent(original)
+    if (cropped !== original) writeFileSync(target, cropped)
   }
   return failures
 }
@@ -200,13 +221,18 @@ async function fetchTrainerSprites(trainers) {
   return failures
 }
 
-if (isMain(import.meta.url)) {
+async function fetchAll() {
   const { spriteIds, trainers } = loadTargets()
   console.log(`Pokémon: ${spriteIds.length} especies; entrenadores: ${trainers.length}`)
   const pokemonFailures = await fetchPokemonSprites(spriteIds)
   const trainerFailures = await fetchTrainerSprites(trainers)
   const substituteFailures = await fetchSubstituteSprites()
-  const failures = [...pokemonFailures, ...trainerFailures, ...substituteFailures]
+  return [...pokemonFailures, ...trainerFailures, ...substituteFailures]
+}
+
+// `--substitute`: solo el muñeco del sustituto (el resto tarda por los iconos de WikiDex que faltan).
+if (isMain(import.meta.url)) {
+  const failures = process.argv.includes('--substitute') ? await fetchSubstituteSprites() : await fetchAll()
   if (failures.length) {
     console.error(`Faltan ${failures.length} sprites: ${failures.join(', ')}`)
     process.exitCode = 1

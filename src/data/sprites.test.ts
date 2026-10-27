@@ -96,3 +96,25 @@ describe('sprites sin parpadeo', () => {
     expect(Math.min(...delays)).toBeGreaterThanOrEqual(10)
   })
 })
+
+// UT-89 · DEC-61 (Jose, 27/10/2026): el muñeco del sustituto viene recortado a su contenido, como los GIF de los Pokémon, para que sus pies
+// caigan en la plataforma; sprite-boxes.json guarda su caja.
+describe('muñeco del sustituto', () => {
+  it.each(['front', 'back'])('%s.png no tiene márgenes transparentes y su caja está en sprite-boxes.json', async (side) => {
+    const { decodePng, opaqueBox } = await importScript('scripts/lib/png.mjs')
+    const image = decodePng(readFileSync(fromRoot('public', 'sprites', 'substitute', `${side}.png`)))
+    expect(opaqueBox(image)).toEqual([0, 0, image.width, image.height])
+    expect(readJson('src', 'generated', 'sprite-boxes.json').substitute[side]).toEqual([0, 0, image.width, image.height, image.width, image.height])
+  })
+
+  it('gen:sprites recorta el PNG de Showdown (96x96 con el muñeco centrado) y no toca uno ya recortado', async () => {
+    const { encodePng, decodePng } = await importScript('scripts/lib/png.mjs')
+    const { cropPngToContent } = await importScript('scripts/fetch-sprites.mjs')
+    const rgba = new Uint8Array(6 * 6 * 4)
+    for (const [x, y] of [[2, 1], [3, 3]]) rgba[(y * 6 + x) * 4 + 3] = 255
+    const cropped = decodePng(cropPngToContent(encodePng({ width: 6, height: 6, rgba })))
+    expect([cropped.width, cropped.height]).toEqual([2, 3])
+    const again = cropPngToContent(encodePng(cropped))
+    expect(decodePng(again).width).toBe(2)
+  })
+})

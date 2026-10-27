@@ -85,4 +85,13 @@ describe('scripts/lib/png.mjs', () => {
     expect([pixel(strip, 0, 0), pixel(strip, 1, 1)]).toEqual([[3, 0, 0], [0, 0, 0]])
     expect(() => stripImage(image, [[0, 0, 1, 2], [1, 0, 2, 2]])).toThrow(/mismo tamaño|medir lo mismo/)
   })
+
+  it('opaqueBox da la caja de los píxeles con alfa y null si todo es transparente', async () => {
+    const { opaqueBox } = await importScript('scripts/lib/png.mjs')
+    expect(opaqueBox(twoByTwo())).toEqual([0, 0, 2, 2])
+    const rgba = new Uint8Array(3 * 3 * 4)
+    expect(opaqueBox({ width: 3, height: 3, rgba })).toBeNull()
+    rgba[(2 * 3 + 1) * 4 + 3] = 1
+    expect(opaqueBox({ width: 3, height: 3, rgba })).toEqual([1, 2, 1, 1])
+  })
 })

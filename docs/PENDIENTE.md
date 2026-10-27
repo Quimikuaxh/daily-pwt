@@ -64,7 +64,7 @@ Pasos, en este orden (cada uno depende del anterior):
 - **Estados, características, bayas y golpes (23/10/2026, DEC-55):** hecho. Revisar con Jose en partidas reales.
 
 ## Sustituto (27/10/2026, DEC-61)
-- **Pendiente de Jose, en local:** `npm run gen:sprites` baja `public/sprites/substitute/{front,back}.png` (Showdown está bloqueado desde la nube). Después, revisar en un combate con Sustituto que el muñeco se ve en su sitio y a buen tamaño (de frente el rival, de espaldas el jugador al doble); si no, ajustar `.bt-substitute` en `battle.css`. Hasta entonces se ve el Pokémon.
+- **Muñeco del sustituto** (27/10/2026): en el repo (lo bajó Jose) y recortado a su contenido para que pise la plataforma como los Pokémon (DEC-61, UT-89). Revisado con captura: rival y jugador en su sitio.
 
 ## Pantalla de equipo y de datos
 - **Poder Oculto y los IV del jugador:** como los IV del jugador son iguales en las seis características, su Poder Oculto es siempre Lucha 30, Siniestro 30 o Lucha 70 (DEC-54), aunque el set de Smogon pensara en otro tipo. Si se quiere respetar el tipo previsto habría que darle IV distintos (decisión de producto, ver PRD §0 «IVs, EVs y naturaleza del jugador»).
