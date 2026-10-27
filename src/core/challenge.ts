@@ -1,6 +1,6 @@
 import { NEUTRAL_NATURE } from './constants'
 import { LAUNCH_DATE, LAUNCH_OPENING } from './launch'
-import { rivalForDay } from './bag'
+import { rivalForDay, type TrainerTraits } from './bag'
 import { challengeNumber, dayIndex } from './date'
 import { DataError } from './errors'
 import { Prng, deriveSeed } from './prng'
@@ -58,10 +58,21 @@ function putLeadFirst(team: ResolvedSet[], trainer: Trainer, leadRng: Prng): Res
 /** Qué reto construir: entrenador y variante opcional se eligen por id; la fecha aporta número y semillas (DEC-17). */
 export type ChallengeSelection = { date: string; trainerId: string; variantId?: string }
 
-/** Reto del día: función pura de (fecha, datos). El entrenador sale de la bolsa (DEC-03). */
+// Rasgos de cada entrenador para el reparto de la bolsa (DEC-62), uno por juego de datos (la bolsa los memoriza por identidad).
+const traitsCache = new WeakMap<readonly Trainer[], TrainerTraits>()
+function trainerTraits(trainers: readonly Trainer[]): TrainerTraits {
+  let traits = traitsCache.get(trainers)
+  if (!traits) {
+    traits = Object.fromEntries(trainers.map((trainer) => [trainer.id, { champion: trainer.category === 'champion', region: trainer.region }]))
+    traitsCache.set(trainers, traits)
+  }
+  return traits
+}
+
+/** Reto del día: función pura de (fecha, datos). El entrenador sale de la bolsa (DEC-03) con el reparto de DEC-62. */
 export function getDailyChallenge(date: string, data: GameData): Challenge {
   const dayNumber = Math.max(0, dayIndex(date, LAUNCH_DATE))
-  return challengeFor({ date, trainerId: rivalForDay(dayNumber, data.rosterSchedule, LAUNCH_OPENING) }, data)
+  return challengeFor({ date, trainerId: rivalForDay(dayNumber, data.rosterSchedule, LAUNCH_OPENING, trainerTraits(data.trainers)) }, data)
 }
 
 /**
