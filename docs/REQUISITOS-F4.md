@@ -6,7 +6,7 @@ Base: [PRD](PRD.md) §0, «Cuentas, rachas y rankings» (decisiones de Jose del 
 
 | Tema | En F4 |
 |---|---|
-| Login | Opcional, con Google. Sin sesión, el juego sigue exactamente como hoy (todo en local) |
+| Login | Opcional, con Google. Sin sesión, el juego sigue como hoy (historial en local), pero su oficial también cuenta para la dificultad del día (RF-104b) |
 | Perfil | Nickname único, cambiable sin límite |
 | Rachas | Con sesión, el historial y las rachas viven en la cuenta (el historial local se sube al entrar) |
 | Rankings | Puntos del mes y racha actual, global y entre amigos |
@@ -35,6 +35,7 @@ Base: [PRD](PRD.md) §0, «Cuentas, rachas y rankings» (decisiones de Jose del 
 ### Puntos y dificultad
 - RF-103 Puntos de un día = Pokémon del jugador sin debilitar al acabar el oficial × multiplicador del día. Perder o rendirse da 0 (no quedan supervivientes que cuenten). Un `void` (RF-83) da 0. Las prácticas no cuentan.
 - RF-104 Multiplicador del día = 1 + (6 − media) / 6, con media = media de supervivientes de todos los oficiales terminados y validados de ese día (las derrotas cuentan como 0). Va de ×1 (todos acaban con 6) a ×2 (media 0).
+- RF-104b Los oficiales de quien juega **sin cuenta** también entran en la media del día (decisión de Jose, 27/10/2026), con la misma validación por estados que los de cuenta (RF-100, RF-101) bajo una sesión anónima del navegador que el jugador no ve. No dan puntos ni aparecen en rankings. Si el servicio no responde, se juega igual y ese oficial no cuenta. Al iniciar sesión con Google, ese navegador pasa a ser la cuenta (sus oficiales anónimos no se duplican en la media).
 - RF-105 El día se cierra a medianoche de Madrid (el mismo momento que el cambio de reto). Al cerrar se calcula y se fija el multiplicador; hasta entonces los puntos de ese día se muestran como provisionales. Un oficial empezado el día N y terminado tras medianoche cuenta para N (RF-80) y entra en el cálculo si llega antes del cierre de N (ver «Por definir»).
 
 ### Rankings
