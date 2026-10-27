@@ -16,7 +16,7 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 1. **F3** (sección «Para F3»): estadísticas y rachas (el almacenamiento `daily-pwt:v1` ya guarda el historial por día), compartir, Ayuda (créditos y aviso legal) y Ajustes; después música y efectos de sonido.
 2. **Resto de F2** que no depende de Jose: minis de entrenador (en local, ver arriba). E2E en CI y capturas con `?trainer=`, hechos.
 3. **Necesitan a Jose**: calibrar la dificultad (partidas de prueba), verificar en Windows y Safari iOS reales.
-4. **Fases futuras**: modo PWT, logros con login; las animaciones de movimientos, lo último.
+4. **Fases futuras**: F4 cuentas y rankings (descrita, sin empezar), modo PWT, logros; las animaciones de movimientos, lo último.
 
 ## Para F3
 - **Hecho** (DEC-47): estadísticas y rachas, compartir.
@@ -26,6 +26,7 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 ## Fases futuras (tras F3; PRD §0)
 - **Modo PWT:** 7 entrenadores aleatorios seguidos con el mismo equipo. Libre y repetible sin límite (no es diario). Por definir: curación entre combates, si cuenta para estadísticas.
+- **F4 · Cuentas y rankings** (PRD §0, 27/10/2026; rama `feature/cuentas`): descripción en [REQUISITOS-F4.md](REQUISITOS-F4.md) y diseño propuesto en DEC-63. **No empezar el desarrollo hasta que Jose lo diga** y responda REQUISITOS-F4 §3. Jose crea el proyecto de Supabase y el cliente OAuth de Google (REQUISITOS-F4 §4).
 - **Logros con login opcional:** requiere backend (cuentas y almacenamiento); el daily sigue sin cuenta. Con sesión, racha diaria y logros en la cuenta; sin sesión, racha en local. Por definir: servicio, qué logros, migración de las estadísticas locales.
 
 ## Sonido: plan de implementación (F3, PRD §0)

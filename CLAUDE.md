@@ -21,7 +21,7 @@ Juego web diario estilo Daily Red contra los entrenadores del Pokémon World Tou
 | Qué | Dónde |
 |---|---|
 | Requisitos y decisiones de producto (con fecha, motivo y alternativas descartadas) | `docs/PRD.md` §0 manda sobre el resto del PRD |
-| Requisitos funcionales numerados | `docs/REQUISITOS-F1.md`, `docs/REQUISITOS-F2.md` |
+| Requisitos funcionales numerados | `docs/REQUISITOS-F1.md`, `docs/REQUISITOS-F2.md`, `docs/REQUISITOS-F4.md` (cuentas y rankings) |
 | Decisiones técnicas (DEC-xx) y alternativas descartadas | `docs/ARQUITECTURA.md` |
 | Casos de prueba (UT-xx, E2E-xx, VIS-xx) | `docs/PLAN-PRUEBAS-F1.md` |
 | Qué falta, en qué orden y por qué | `docs/PENDIENTE.md` (empezar siempre leyéndolo) |
