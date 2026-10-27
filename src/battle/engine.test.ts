@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { createBattleEngine } from './engine'
+import { viewReducer } from './viewReducer'
+import type { BattleView } from './protocol'
 import { calcStats } from '../core/stats'
 import { gen5, toId } from '../test-utils/dex'
 import { filler, harmlessTeam, mon, withLead, attackers } from '../test-utils/teams'
@@ -502,5 +504,24 @@ describe('fin del combate (INT-09, INT-10, INT-11, UT-50)', () => {
     const e = make()
     e.start()
     expect(e.forfeit().request).toBeNull()
+  })
+})
+
+// UT-84 · Formas en el registro (27/10/2026): con el nombre de la especie, el simulador quitaba la forma («Rotom-Mow» -> «Rotom») y la
+// barra de PS no bajaba hasta el final del turno (un Rotom Corte debilitado de un golpe se quedaba con la vida llena y caía). El nombre
+// en el simulador es el id de la especie, así cada línea casa con su Pokémon.
+describe('formas en el registro', () => {
+  it('el golpe a un Rotom Corte baja su barra en la propia línea de daño, en los dos bandos', () => {
+    for (const side of ['player', 'rival'] as const) {
+      const rotom = mon('rotommow', ['leafstorm', 'thunderbolt', 'willowisp', 'trick'], { item: 'choicescarf', ability: 'levitate' })
+      const ice = mon('abomasnow', ['blizzard', 'blizzard', 'blizzard', 'blizzard'], { item: 'choicespecs', ability: 'snowwarning' })
+      const engine = createBattleEngine({ battleSeed: 'r', player: [side === 'player' ? rotom : ice], playerLead: 0, rival: [side === 'player' ? ice : rotom], ai: 'trivial', maxTurns: 50 } as any)
+      let view = engine.start().view as BattleView
+      const update = engine.choose({ type: 'move', slot: 1 })
+      const hit = update.lines.find((line) => line.startsWith(`|-damage|p${side === 'player' ? 1 : 2}a:`))
+      expect(hit, side).toMatch(/\|-damage\|p[12]a: rotommow\|0 fnt/)
+      view = viewReducer(view, { type: 'lines', lines: [hit as string] })
+      expect(view[side].team[0]).toMatchObject({ species: 'rotommow', hpPercent: 0, fainted: true })
+    }
   })
 })

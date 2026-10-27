@@ -1,4 +1,5 @@
 import { Battle, Dex, extractChannelMessages, type Pokemon, type PokemonSet, type Side } from '@pkmn/sim'
+import { toId } from '../core/id'
 import { Prng } from '../core/prng'
 import type { ResolvedSet } from '../core/types'
 import { buildAiState } from './ai/state'
@@ -24,10 +25,15 @@ export type BattleEngine = {
   forfeit(): EngineUpdate
 }
 
+/**
+ * El nombre del Pokémon en el simulador es el id de su especie (`rotommow`): con el nombre de la especie, el simulador quita la forma
+ * («Rotom-Mow» -> «Rotom») y el registro no casaba con la especie (la barra de PS no bajaba y los mensajes decían «Rotom»). Con el id,
+ * `toId` de la línea da la especie exacta y su nombre en español.
+ */
 function toSimSet(set: ResolvedSet): PokemonSet {
   const speciesName = Dex.species.get(set.species).name || set.species
   return {
-    name: speciesName,
+    name: toId(set.species),
     species: speciesName,
     item: set.item,
     ability: set.ability,
