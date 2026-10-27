@@ -12,7 +12,7 @@ import { resolveHiddenPowerId } from '../../core/hiddenPower'
 import type { MoveFxEvent } from './fx/MoveFx'
 import { genderOfSpecies, speciesLabel } from './battleModel'
 import { uiAsset, type Avatar } from './introAssets'
-import { backSpriteHeight, PLAYER_SPRITE_SCALE, playerSpriteBottom, playerSpriteScale } from './playerSpriteAnchor'
+import { backSpriteHeight, PLAYER_SPRITE_SCALE, playerSpriteBottom, playerSpriteScale, substituteBackHeight } from './playerSpriteAnchor'
 import { playerHandPoint, playerLandingPoint, rivalHandPoint, rivalLandingPoint } from './throwGeometry'
 
 // Las animaciones de movimientos (DEC-53) van en su propio trozo: no pesan en la ruta crítica de Hoy (E2E-21) y se cargan durante la intro.
@@ -36,8 +36,7 @@ type TopScreenProps = {
 
 const FALLBACK_BOX = 96
 
-function playerSpriteStyle(spriteId: string): CSSProperties {
-  const spriteHeight = backSpriteHeight(spriteId)
+function playerSpriteStyle(spriteHeight: number): CSSProperties {
   return { top: playerSpriteBottom(spriteHeight), '--player-scale': playerSpriteScale(spriteHeight) } as CSSProperties
 }
 
@@ -71,6 +70,8 @@ export function TopScreen({ view, data, challenge, introPhase, switchAnim, avata
   const playerMon = view ? activeMon(view.player) : null
   const playerSpriteId = playerMon ? data.dex.species[playerMon.species]?.spriteId ?? playerMon.species : ''
   const rivalSpriteId = rivalMon ? data.dex.species[rivalMon.species]?.spriteId ?? rivalMon.species : ''
+  // Con un sustituto en pie se ve el muñeco: el jugador se apoya por su alto (DEC-61).
+  const playerSpriteHeight = playerMon?.substitute ? substituteBackHeight() : backSpriteHeight(playerSpriteId)
 
   return (
     <section ref={fieldRef} data-testid="field" className="bt-top bt-field" data-intro={introPhase} data-switch={switchAnim ?? undefined} aria-label={es.battle.fieldLabel}>
@@ -82,7 +83,7 @@ export function TopScreen({ view, data, challenge, introPhase, switchAnim, avata
         </div>
       )}
       {playerMon && (
-        <div className="bt-mon bt-mon-player" data-fainted={playerMon.fainted} data-oversize={playerSpriteScale(backSpriteHeight(playerSpriteId)) < PLAYER_SPRITE_SCALE || undefined} style={playerSpriteStyle(playerSpriteId)}>
+        <div className="bt-mon bt-mon-player" data-fainted={playerMon.fainted} data-oversize={playerSpriteScale(playerSpriteHeight) < PLAYER_SPRITE_SCALE || undefined} style={playerSpriteStyle(playerSpriteHeight)}>
           <MonSprite mon={playerMon} side="back" data={data} />
         </div>
       )}

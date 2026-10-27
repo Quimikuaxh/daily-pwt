@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import spriteBoxes from '../../generated/sprite-boxes.json'
-import { MESSAGE_BOX_TOP, SCREEN_BOTTOM, backSpriteHeight, playerSpriteScale, playerSpriteVisibleSpan } from './playerSpriteAnchor'
+import { MESSAGE_BOX_TOP, SCREEN_BOTTOM, backSpriteHeight, playerSpriteScale, playerSpriteVisibleSpan, substituteBackHeight } from './playerSpriteAnchor'
 
 const backBoxes = (spriteBoxes as { back: Record<string, number[]> }).back
 
@@ -36,5 +36,16 @@ describe('escala del sprite del jugador', () => {
     expect(playerSpriteScale(80)).toBe(2)
     expect(playerSpriteScale(98)).toBeCloseTo(SCREEN_BOTTOM / 98)
     expect(playerSpriteVisibleSpan(98).top).toBeGreaterThanOrEqual(0)
+  })
+})
+
+// UT-89 · con un sustituto en pie, el jugador se apoya por el alto del muñeco (de sprite-boxes.json), no por el del Pokémon.
+describe('ancla del muñeco del sustituto', () => {
+  it('usa el alto real del muñeco de espaldas y queda sobre la caja como un Pokémon', () => {
+    const height = (spriteBoxes as unknown as { substitute: { back: number[] } }).substitute.back[3]
+    expect(substituteBackHeight()).toBe(height)
+    const span = playerSpriteVisibleSpan(height)
+    expect(span.top).toBeLessThan(MESSAGE_BOX_TOP)
+    expect(span.bottom).toBeLessThanOrEqual(SCREEN_BOTTOM)
   })
 })

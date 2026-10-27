@@ -2,6 +2,7 @@ import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { isMain } from './lib/cli.mjs'
 import { gifOpaqueBox } from './lib/gif.mjs'
 import { fromRoot } from './lib/paths.mjs'
+import { decodePng, opaqueBox } from './lib/png.mjs'
 
 const SIDES = ['front', 'back']
 const OUTPUT_PATH = fromRoot('src', 'generated', 'sprite-boxes.json')
@@ -16,7 +17,7 @@ function boxesIn(directory) {
 }
 
 /**
- * Caja visible (no transparente) de cada sprite animado de Pokémon y de entrenador: `{ front|back|trainer: { spriteId: [x, y, w, h, anchoTotal, altoTotal] } }`.
+ * Caja visible (no transparente) de cada sprite animado de Pokémon y de entrenador: `{ front|back|trainer: { spriteId: [x, y, w, h, anchoTotal, altoTotal] }, substitute: { front|back: [...] } }`.
  * Los GIF de Showdown traen márgenes transparentes distintos por especie; la UI ancla el sprite por esta caja, no por el GIF.
  */
 export function buildSpriteBoxes() {
@@ -26,6 +27,12 @@ export function buildSpriteBoxes() {
     boxes[side] = boxesIn(directory)
   }
   boxes.trainer = boxesIn(fromRoot('public', 'sprites', 'trainers'))
+  // El muñeco del sustituto (PNG, recortado por gen:sprites): el jugador lo apoya por su alto, como a los Pokémon.
+  boxes.substitute = {}
+  for (const side of SIDES) {
+    const image = decodePng(readFileSync(fromRoot('public', 'sprites', 'substitute', `${side}.png`)))
+    boxes.substitute[side] = [...opaqueBox(image), image.width, image.height]
+  }
   return boxes
 }
 

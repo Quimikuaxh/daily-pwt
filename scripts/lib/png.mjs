@@ -141,6 +141,21 @@ export function cropImage(image, [x, y, width, height]) {
   return { width, height, rgba }
 }
 
+/** Caja [x, y, ancho, alto] de los píxeles con alfa > 0; `null` si la imagen es transparente entera. */
+export function opaqueBox(image) {
+  let [left, top, right, bottom] = [image.width, image.height, -1, -1]
+  for (let y = 0; y < image.height; y++) {
+    for (let x = 0; x < image.width; x++) {
+      if (image.rgba[(y * image.width + x) * 4 + 3] === 0) continue
+      left = Math.min(left, x)
+      right = Math.max(right, x)
+      top = Math.min(top, y)
+      bottom = Math.max(bottom, y)
+    }
+  }
+  return right < 0 ? null : [left, top, right - left + 1, bottom - top + 1]
+}
+
 /** Pone alfa 0 a los píxeles cuyo color RGB coincide con alguno de `colors` ([r, g, b]). */
 export function makeColorsTransparent(image, colors) {
   const rgba = new Uint8Array(image.rgba)

@@ -17,6 +17,11 @@ const FALLBACK_HEIGHT = 96
 
 type SpriteBoxTable = Record<string, Record<string, number[]>>
 
+/** Alto del muñeco del sustituto de espaldas: con un sustituto en pie, el jugador se apoya por él y no por el Pokémon (DEC-61). */
+export function substituteBackHeight(): number {
+  return (spriteBoxes as SpriteBoxTable).substitute?.back?.[3] ?? FALLBACK_HEIGHT
+}
+
 /** Alto visible (píxeles del GIF) del sprite de espaldas; los GIF de Showdown vienen recortados al contenido, y el manifest lo verifica. */
 export function backSpriteHeight(spriteId: string): number {
   const box = (spriteBoxes as SpriteBoxTable).back?.[spriteId]
