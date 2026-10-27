@@ -525,3 +525,27 @@ describe('formas en el registro', () => {
     }
   })
 })
+
+// UT-85 · Drenadoras contra Muro Mágico (27/10/2026, Jose): el simulador no dice nada; el motor añade su línea antes de `|upkeep`.
+describe('Drenadoras contra Muro Mágico', () => {
+  const seeded = (ability: string) => {
+    const seeder = mon('venusaur', ['leechseed', 'sludgebomb', 'leechseed', 'leechseed'], { ability: 'overgrow' })
+    const target = mon('clefable', ['calmmind', 'calmmind', 'calmmind', 'calmmind'], { ability })
+    const engine = createBattleEngine({ battleSeed: 's', player: [seeder], playerLead: 0, rival: [target], ai: 'trivial', maxTurns: 50 } as any)
+    engine.start()
+    return engine.choose({ type: 'move', slot: 1 }).lines
+  }
+
+  it('con Muro Mágico, una línea propia justo antes de cerrar el turno', () => {
+    const lines = seeded('magicguard')
+    const index = lines.indexOf('|-activate|p2a: clefable|ability: Magic Guard|[leechseed]')
+    expect(index).toBeGreaterThan(0)
+    expect(lines[index + 1]).toBe('|upkeep')
+  })
+
+  it('sin Muro Mágico drena como siempre y no hay línea propia', () => {
+    const lines = seeded('unaware')
+    expect(lines.some((line) => line.includes('Magic Guard'))).toBe(false)
+    expect(lines.some((line) => /^\|-damage\|p2a: clefable\|.*\[from\] Leech Seed/.test(line))).toBe(true)
+  })
+})

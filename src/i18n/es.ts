@@ -541,6 +541,9 @@ export const es = {
     substituteTookHit: (mon: string) => `¡El sustituto de ${mon} ha absorbido el daño!`,
     substituteFaded: (mon: string) => `¡El sustituto de ${mon} se ha desvanecido!`,
     effectStarted: (mon: string, effect: string) => `¡${mon} se ve afectado por ${effect}!`,
+    seeded: (mon: string) => `¡${mon} ha sido infectado!`,
+    /** No es del juego (N2/B2 no dice nada): aviso de que Muro Mágico evita el drenaje (decisión de Jose). */
+    magicGuardBlocksLeechSeed: (ability: string, mon: string, move: string) => `¡${ability} protege a ${mon} de ${move}!`,
     effectEnded: (mon: string, effect: string) => `¡${mon} ya no se ve afectado por ${effect}!`,
     effectActivated: (mon: string, effect: string) => `¡${effect} de ${mon} se ha activado!`,
     protectedItself: (mon: string) => `¡${mon} se ha protegido!`,

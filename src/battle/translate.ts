@@ -136,6 +136,7 @@ function translateStart(f: Fields, ctx: TranslateContext): string | null {
   const id = toId(effect.replace(/^(move|ability|item):\s*/, ''))
   if (id === 'confusion') return f.tags.has('silent') ? null : log.confused(mon)
   if (id === 'substitute') return log.substituteCreated(mon)
+  if (id === 'leechseed') return log.seeded(mon)
   const named = effectName(ctx, effect)
   return named ? log.effectStarted(mon, named) : null
 }
@@ -157,6 +158,8 @@ function translateActivate(f: Fields, ctx: TranslateContext): string | null {
   if (id === 'protect' || id === 'detect') return log.protectedBy(mon, moveName(ctx, id))
   if (id === 'confusion') return log.confusionActive(mon)
   if (id === 'substitute') return f.tags.has('damage') ? log.substituteTookHit(mon) : null
+  // Línea propia del motor: Muro Mágico evita el drenaje de Drenadoras.
+  if (id === 'magicguard' && f.tags.has('leechseed')) return log.magicGuardBlocksLeechSeed(abilityName(ctx, 'Magic Guard'), mon, moveName(ctx, 'Leech Seed'))
   const named = effectName(ctx, effect)
   return named ? log.effectActivated(mon, named) : null
 }

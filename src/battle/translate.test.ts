@@ -12,8 +12,8 @@ import type { NamesEs } from '../test-utils/types'
 // TODO-CONTRATO: los textos exactos de las plantillas no se fijan aquí salvo los de RF-53; se comprueba el contenido clave en español.
 const names: NamesEs = {
   species: { garchomp: 'Garchomp', starmie: 'Starmie', gengar: 'Gengar' },
-  moves: { earthquake: 'Terremoto', surf: 'Surf', swordsdance: 'Danza Espada', stealthrock: 'Trampa Rocas', protect: 'Protección', fly: 'Vuelo', thunderbolt: 'Rayo' },
-  abilities: { intimidate: 'Intimidación', drizzle: 'Llovizna', levitate: 'Levitación' },
+  moves: { leechseed: 'Drenadoras', earthquake: 'Terremoto', surf: 'Surf', swordsdance: 'Danza Espada', stealthrock: 'Trampa Rocas', protect: 'Protección', fly: 'Vuelo', thunderbolt: 'Rayo' },
+  abilities: { magicguard: 'Muro Mágico', intimidate: 'Intimidación', drizzle: 'Llovizna', levitate: 'Levitación' },
   items: { leftovers: 'Restos', lifeorb: 'Vidasfera', sitrusberry: 'Baya Zidra', salacberry: 'Baya Aslac', weaknesspolicy: 'Seguro Debilidad' },
   types: { Water: 'Agua', Ground: 'Tierra' },
 }
@@ -106,6 +106,13 @@ describe('translateLine: líneas con texto (UT-45)', () => {
     expect(tr('|-boost|p2a: Starmie|atk|1')).toBe('¡El Ataque del Starmie de Camila ha subido!')
     expect(tr('|-boost|p1a: Garchomp|atk|1')).toBe('¡El Ataque de Garchomp ha subido!')
     expect(tr('|move|p1a: Garchomp|Earthquake|p2a: Starmie')).not.toMatch(/\bel Starmie|\bEl Starmie/)
+  })
+
+  // UT-85 · Drenadoras (27/10/2026, Jose).
+  it('Drenadoras: «ha sido infectado» al sembrar y, con Muro Mágico, el aviso propio del motor', () => {
+    expect(tr('|-start|p2a: Starmie|move: Leech Seed')).toBe('¡El Starmie de Camila ha sido infectado!')
+    expect(tr('|-activate|p2a: Starmie|ability: Magic Guard|[leechseed]')).toBe('¡Muro Mágico protege al Starmie de Camila de Drenadoras!')
+    expect(tr('|-activate|p1a: Garchomp|ability: Magic Guard|[leechseed]')).toBe('¡Muro Mágico protege a Garchomp de Drenadoras!')
   })
 
   it('el objeto no deja su nombre inglés', () => {

@@ -92,11 +92,30 @@ export function createBattleEngine(init: EngineInit): BattleEngine {
   let forfeited = false
   let finalUpdate: EngineUpdate | null = null
 
+  /**
+   * Muro Mágico evita el daño de Drenadoras sin que el simulador lo diga: el turno acababa sin ningún mensaje y no se entendía por qué
+   * no drenaba (decisión de Jose, 27/10/2026). Línea propia, antes de `|upkeep`, por cada Pokémon activo sembrado, con Muro Mágico y con
+   * quien lo sembró aún en pie (las mismas condiciones del drenaje en el simulador).
+   */
+  function magicGuardLeechSeedLines(): string[] {
+    return [playerSide, rivalSide].flatMap((side) => {
+      const pokemon = side.active[0]
+      const seed = pokemon?.volatiles['leechseed']
+      if (!pokemon || !seed || pokemon.fainted || pokemon.hp <= 0 || !pokemon.hasAbility('magicguard')) return []
+      const source = battle.getAtSlot(seed.sourceSlot)
+      if (!source || source.fainted || source.hp <= 0) return []
+      return [`|-activate|${pokemon.getSlot()}: ${pokemon.name}|ability: Magic Guard|[leechseed]`]
+    })
+  }
+
   function takeNewLines(): string[] {
     const chunk = battle.log.slice(sentLogPosition).join('\n')
     sentLogPosition = battle.log.length
     if (!chunk) return []
-    return extractChannelMessages(chunk, [PLAYER_VIEWER_CHANNEL])[PLAYER_VIEWER_CHANNEL].filter((line) => !DROPPED_LINE.test(line))
+    const lines = extractChannelMessages(chunk, [PLAYER_VIEWER_CHANNEL])[PLAYER_VIEWER_CHANNEL].filter((line) => !DROPPED_LINE.test(line))
+    const upkeep = lines.indexOf('|upkeep')
+    if (upkeep >= 0) lines.splice(upkeep, 0, ...magicGuardLeechSeedLines())
+    return lines
   }
 
   function sideView(side: Side, roster: Pokemon[], species: Map<Pokemon, string>, exact: boolean): EngineBattleView['player'] {
