@@ -131,6 +131,7 @@ export function createBattleEngine(init: EngineInit): BattleEngine {
         view.hp = pokemon.hp
         view.maxHp = pokemon.maxhp
       }
+      if (pokemon.volatiles['substitute']) view.substitute = true
       // PP de los dos bandos (los del rival, para el botón RIVAL: decisión de Jose). Los del simulador ya cuentan Presión.
       view.moves = pokemon.moveSlots.map((slot) => ({ id: slot.id, pp: slot.pp, maxPp: slot.maxpp }))
       return view

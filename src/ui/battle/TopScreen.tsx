@@ -1,9 +1,9 @@
-import { Suspense, lazy, useRef, type CSSProperties } from 'react'
+import { Suspense, lazy, useRef, useState, type CSSProperties } from 'react'
 import type { BattleView, MonView } from '../../battle/protocol'
 import type { Challenge, GameData } from '../../core/types'
 import type { IntroPhase, SwitchAnimation } from '../../hooks/useBattle'
 import { Sprite } from '../common/Sprite'
-import { speciesSprite, trainerSprite } from '../common/spriteUrls'
+import { speciesSprite, substituteSprite, trainerSprite } from '../common/spriteUrls'
 import { es } from '../../i18n/es'
 import { DataBox } from './DataBox'
 import { IntroLayer, IrisWipe } from './IntroLayer'
@@ -51,6 +51,19 @@ function moveFxType(event: MoveFxEvent, mon: MonView | null, team: Challenge['pl
   return data.dex.moves[resolveHiddenPowerId(event.moveId, set?.ivs)]?.type ?? null
 }
 
+
+/**
+ * Sprite del Pokémon en el campo o, si tiene un sustituto en pie, el muñeco del sustituto (como N2/B2; decisión de Jose). Si el muñeco no
+ * está descargado (`gen:sprites`), se sigue viendo el Pokémon.
+ */
+function MonSprite({ mon, side, data }: { mon: MonView; side: 'front' | 'back'; data: GameData }) {
+  const [substituteMissing, setSubstituteMissing] = useState(false)
+  if (mon.substitute && !substituteMissing) {
+    return <img className="bt-sprite bt-substitute" src={substituteSprite(side)} alt={es.battle.substitute(speciesLabel(data.names, mon.species))} onError={() => setSubstituteMissing(true)} />
+  }
+  return <Sprite src={speciesSprite(data.dex, mon.species, side)} name={speciesLabel(data.names, mon.species)} width={FALLBACK_BOX} height={FALLBACK_BOX} className="bt-sprite" />
+}
+
 /** Pantalla superior (256x192): fondo del PWT, Pokémon, cajas de datos, clima y caja de mensajes. */
 export function TopScreen({ view, data, challenge, introPhase, switchAnim, avatar, message, onAdvance, speed, reducedMotion, moveFx = null }: TopScreenProps) {
   const fieldRef = useRef(null as HTMLElement | null)
@@ -65,12 +78,12 @@ export function TopScreen({ view, data, challenge, introPhase, switchAnim, avata
 
       {rivalMon && (
         <div className="bt-mon bt-mon-rival" data-fainted={rivalMon.fainted}>
-          <Sprite src={speciesSprite(data.dex, rivalMon.species, 'front')} name={speciesLabel(data.names, rivalMon.species)} width={FALLBACK_BOX} height={FALLBACK_BOX} className="bt-sprite" />
+          <MonSprite mon={rivalMon} side="front" data={data} />
         </div>
       )}
       {playerMon && (
         <div className="bt-mon bt-mon-player" data-fainted={playerMon.fainted} data-oversize={playerSpriteScale(backSpriteHeight(playerSpriteId)) < PLAYER_SPRITE_SCALE || undefined} style={playerSpriteStyle(playerSpriteId)}>
-          <Sprite src={speciesSprite(data.dex, playerMon.species, 'back')} name={speciesLabel(data.names, playerMon.species)} width={FALLBACK_BOX} height={FALLBACK_BOX} className="bt-sprite" />
+          <MonSprite mon={playerMon} side="back" data={data} />
         </div>
       )}
 

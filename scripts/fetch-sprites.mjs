@@ -121,6 +121,19 @@ async function fetchPokemonSprites(spriteIds) {
   return failures
 }
 
+/** El muñeco del sustituto de 5.ª gen. (Showdown), de frente y de espaldas: public/sprites/substitute/{front,back}.png. */
+async function fetchSubstituteSprites() {
+  const failures = []
+  for (const [side, directory] of [['front', 'gen5'], ['back', 'gen5-back']]) {
+    const relativePath = `substitute/${side}.png`
+    if (hasValidImage(relativePath, 'png')) continue
+    const ok = await download(`${SHOWDOWN_SPRITES_URL}/substitutes/${directory}/substitute.png`, relativePath, 'png')
+    if (!ok) failures.push(relativePath)
+    await sleep(PAUSE_BETWEEN_REQUESTS_MS)
+  }
+  return failures
+}
+
 /**
  * URLs del CDN de WikiDex que aparecen en las páginas de entrenadores ya descargadas por `gen:pwt-raw`
  * (scripts/.cache/pwt/wikidex__*.html): permiten localizar los sprites sin la API, que a veces da error.
@@ -192,7 +205,8 @@ if (isMain(import.meta.url)) {
   console.log(`Pokémon: ${spriteIds.length} especies; entrenadores: ${trainers.length}`)
   const pokemonFailures = await fetchPokemonSprites(spriteIds)
   const trainerFailures = await fetchTrainerSprites(trainers)
-  const failures = [...pokemonFailures, ...trainerFailures]
+  const substituteFailures = await fetchSubstituteSprites()
+  const failures = [...pokemonFailures, ...trainerFailures, ...substituteFailures]
   if (failures.length) {
     console.error(`Faltan ${failures.length} sprites: ${failures.join(', ')}`)
     process.exitCode = 1

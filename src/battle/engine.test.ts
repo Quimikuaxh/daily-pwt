@@ -549,3 +549,16 @@ describe('Drenadoras contra Muro Mágico', () => {
     expect(lines.some((line) => /^\|-damage\|p2a: clefable\|.*\[from\] Leech Seed/.test(line))).toBe(true)
   })
 })
+
+// UT-87 · Sustituto en la instantánea del motor.
+describe('sustituto en la vista', () => {
+  it('tras usar Sustituto, el Pokémon activo lleva substitute en la vista', () => {
+    const user = mon('garchomp', ['substitute', 'substitute', 'substitute', 'substitute'], { ability: 'roughskin' })
+    const foe = mon('clefable', ['calmmind', 'calmmind', 'calmmind', 'calmmind'], { ability: 'unaware' })
+    const engine = createBattleEngine({ battleSeed: 's', player: [user], playerLead: 0, rival: [foe], ai: 'trivial', maxTurns: 50 } as any)
+    expect(engine.start().view.player.team[0].substitute).toBeUndefined()
+    const update = engine.choose({ type: 'move', slot: 1 })
+    expect(update.lines).toContain('|-start|p1a: garchomp|Substitute')
+    expect(update.view.player.team[0].substitute).toBe(true)
+  })
+})

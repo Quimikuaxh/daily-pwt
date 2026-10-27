@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { act, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { BattleScreen } from './BattleScreen'
 import type { AnimationMode } from '../../storage/settings'
@@ -716,5 +716,20 @@ describe('estructura accesible', () => {
   it('los nombres de Pokémon del campo no se traducen automáticamente', async () => {
     await ready({ view: sixView() })
     for (const el of document.querySelectorAll('.hp-mon')) expect(el).toHaveAttribute('translate', 'no')
+  })
+})
+
+// UT-87 · Sustituto en el campo (27/10/2026, Jose).
+describe('sustituto', () => {
+  it('con un sustituto en pie se ve el muñeco en vez del Pokémon; si su imagen no está, se sigue viendo el Pokémon', async () => {
+    await ready({ view: mkView({ rival: [rMon('snorlax', 100, { substitute: true }), rMon('tyranitar'), rMon('heatran')] }) })
+    const doll = document.querySelector('.bt-mon-rival img.bt-substitute') as HTMLImageElement
+    expect(doll).not.toBeNull()
+    expect(doll.getAttribute('src')).toMatch(/sprites\/substitute\/front\.png$/)
+    expect(doll.alt).toMatch(/^Sustituto de /)
+    expect(document.querySelector('.bt-mon-player img.bt-substitute')).toBeNull()
+    fireEvent.error(doll)
+    expect(document.querySelector('.bt-mon-rival img.bt-substitute')).toBeNull()
+    expect(document.querySelector('.bt-mon-rival .bt-sprite')).not.toBeNull()
   })
 })

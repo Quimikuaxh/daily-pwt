@@ -234,6 +234,7 @@ export const es = {
     rivalTeamAria: 'Ver el equipo rival',
     history: 'Registro',
     sound: 'Sonido',
+    substitute: (mon: string) => `Sustituto de ${mon}`,
     historyClose: 'Cerrar',
     historyTitle: 'Registro del combate',
     historyEmpty: 'Todavía no ha pasado nada.',

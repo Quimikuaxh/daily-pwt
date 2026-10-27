@@ -11,6 +11,9 @@ export function pokemonSpriteUrl(dex: DexData, speciesId: string, side: PokemonS
   return `${baseUrl}sprites/pokemon/${side}/${species.spriteId}.gif`
 }
 
+/** public/sprites/substitute/{front,back}.png: el muñeco del sustituto (Showdown, `substitutes/gen5` y `gen5-back`; `gen:sprites`). */
+export const substituteSpriteUrl = (side: PokemonSide, baseUrl = DEFAULT_BASE_URL): string => `${baseUrl}sprites/substitute/${side}.png`
+
 /** public/sprites/trainers/<sprite>.gif (animado N2/B2). */
 export const trainerSpriteUrl = (sprite: string, baseUrl = DEFAULT_BASE_URL): string => `${baseUrl}sprites/trainers/${sprite}.gif`
 

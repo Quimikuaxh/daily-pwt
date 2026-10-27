@@ -63,6 +63,9 @@ Pasos, en este orden (cada uno depende del anterior):
 - **Tercera tanda hecha (rama `feature/animaciones-3`, 23/10/2026, acordada con Jose):** las 20 siguientes por uso: Mofa, Surf, Psicocarga, Divide Dolor, Hierba Lazo, Voltiocambio, Lanzallamas, Danza Lluvia, Pájaro Osado, Somnífero, Descanso, Hipnosis, Púas, Espacio Raro, Puño Drenaje, Tajo Umbrío, Recuperación, Giro Bola, Trueno y Cabezazo Zen; 60 en total. Revisar con Jose en partidas reales.
 - **Estados, características, bayas y golpes (23/10/2026, DEC-55):** hecho. Revisar con Jose en partidas reales.
 
+## Sustituto (27/10/2026, DEC-61)
+- **Pendiente de Jose, en local:** `npm run gen:sprites` baja `public/sprites/substitute/{front,back}.png` (Showdown está bloqueado desde la nube). Después, revisar en un combate con Sustituto que el muñeco se ve en su sitio y a buen tamaño (de frente el rival, de espaldas el jugador al doble); si no, ajustar `.bt-substitute` en `battle.css`. Hasta entonces se ve el Pokémon.
+
 ## Pantalla de equipo y de datos
 - **Poder Oculto y los IV del jugador:** como los IV del jugador son iguales en las seis características, su Poder Oculto es siempre Lucha 30, Siniestro 30 o Lucha 70 (DEC-54), aunque el set de Smogon pensara en otro tipo. Si se quiere respetar el tipo previsto habría que darle IV distintos (decisión de producto, ver PRD §0 «IVs, EVs y naturaleza del jugador»).
 - **Mochila = equipo rival:** hecho (DEC-52).

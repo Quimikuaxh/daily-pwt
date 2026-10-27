@@ -145,3 +145,22 @@ describe('viewReducer: reconciliación con el snapshot', () => {
     expect(mkView({ player: six }).player.remaining).toBe(6)
   })
 })
+
+// UT-87 · Sustituto (27/10/2026, Jose): el campo enseña el muñeco mientras dura.
+describe('viewReducer: sustituto', () => {
+  it('aparece con su -start y se va con su -end', () => {
+    const on = viewReducer(mkView(), lines('|-start|p2a: Snorlax|Substitute'))
+    expect(on.rival.team[0].substitute).toBe(true)
+    expect(viewReducer(on, lines('|-end|p2a: Snorlax|Substitute')).rival.team[0].substitute).toBeUndefined()
+  })
+
+  it('otros efectos que empiezan no lo ponen', () => {
+    expect(viewReducer(mkView(), lines('|-start|p1a: Garchomp|confusion')).player.team[0].substitute).toBeUndefined()
+  })
+
+  it('se pierde al cambiar de Pokémon y al debilitarse', () => {
+    const on = viewReducer(mkView(), lines('|-start|p1a: Garchomp|Substitute'))
+    expect(viewReducer(on, lines('|switch|p1a: Starmie|Starmie, L50|160/160')).player.team[0].substitute).toBeUndefined()
+    expect(viewReducer(on, lines('|faint|p1a: Garchomp')).player.team[0].substitute).toBeUndefined()
+  })
+})

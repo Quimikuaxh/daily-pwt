@@ -1,5 +1,5 @@
 /** Fixtures de BattleView (forma documentada en src/test-utils/harness.ts). */
-export type MonView = { species: string; hpPercent: number; status: string | null; fainted: boolean; hp?: number; maxHp?: number }
+export type MonView = { species: string; hpPercent: number; status: string | null; fainted: boolean; hp?: number; maxHp?: number; substitute?: boolean }
 export type SideView = { remaining: number; active: number | null; team: MonView[] }
 export type BattleView = { turn: number; weather: string | null; weatherTurns?: number | null; player: SideView; rival: SideView }
 

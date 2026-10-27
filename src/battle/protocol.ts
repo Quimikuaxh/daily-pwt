@@ -49,6 +49,8 @@ export type MonView = {
   hpPercent: number
   status: string | null
   fainted: boolean
+  /** Tiene un sustituto en pie (solo el activo): en el campo se ve el muñeco en vez del Pokémon (decisión de Jose, 27/10/2026). */
+  substitute?: boolean
   /** Solo el bando del jugador conoce los PS reales. */
   hp?: number
   maxHp?: number

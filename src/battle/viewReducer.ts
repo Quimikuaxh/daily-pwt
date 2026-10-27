@@ -78,6 +78,8 @@ function applyLine(view: BattleView, line: string): void {
       const detailsSpecies = toId((fields[3] ?? '').split(',')[0])
       const index = indexOfMon(side, detailsSpecies || target.name, true)
       if (index < 0) return
+      // El que se va pierde el sustituto (con Relevo pasa al nuevo: lo trae la instantánea del final del turno).
+      if (side.active !== null && side.team[side.active]) delete side.team[side.active].substitute
       side.active = index
       const condition = parseCondition(fields[4])
       if (condition) applyCondition(side, side.team[index], condition, target.side === 'player')
@@ -89,6 +91,7 @@ function applyLine(view: BattleView, line: string): void {
       const side = view[target.side]
       const index = indexOfMon(side, target.name, false)
       if (index < 0) return
+      delete side.team[index].substitute
       applyCondition(side, side.team[index], { hp: 0, maxHp: 0, fainted: true, status: null }, target.side === 'player')
       return
     }
@@ -102,6 +105,19 @@ function applyLine(view: BattleView, line: string): void {
       const index = indexOfMon(side, target.name, false)
       if (index < 0) return
       applyCondition(side, side.team[index], condition, target.side === 'player')
+      return
+    }
+    case '-start':
+    case '-end': {
+      // Sustituto: el muñeco aparece y se va con su mensaje (el resto de `-start`/`-end` no cambian la vista).
+      if (toId((fields[3] ?? '').replace(/^move:\s*/, '')) !== 'substitute') return
+      const target = parseTarget(fields[2])
+      if (!target) return
+      const side = view[target.side]
+      const index = indexOfMon(side, target.name, false)
+      if (index < 0) return
+      if (type === '-start') side.team[index].substitute = true
+      else delete side.team[index].substitute
       return
     }
     case '-status':

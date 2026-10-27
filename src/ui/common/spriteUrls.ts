@@ -1,4 +1,4 @@
-import { pokemonSpriteUrl, trainerSpriteUrl, type PokemonSide } from '../../data/sprites'
+import { pokemonSpriteUrl, substituteSpriteUrl, trainerSpriteUrl, type PokemonSide } from '../../data/sprites'
 import type { DexData } from '../../core/types'
 
 const baseUrl = import.meta.env.BASE_URL
@@ -13,3 +13,5 @@ export function speciesSprite(dex: DexData, speciesId: string, side: PokemonSide
 }
 
 export const trainerSprite = (sprite: string): string => trainerSpriteUrl(sprite, baseUrl)
+
+export const substituteSprite = (side: PokemonSide): string => substituteSpriteUrl(side, baseUrl)
