@@ -1,0 +1,233 @@
+/* Visor de repeticiones (F5): controles en la pantalla táctil, a escala nativa (256 × 192) como el resto del combate. */
+.bt-replay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rp-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  color: #383838;
+}
+
+.rp-turn {
+  margin: 0;
+  font-size: 12px;
+  text-align: center;
+}
+
+.rp-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rp-group {
+  display: flex;
+  gap: 4px;
+}
+
+.rp-icon {
+  display: block;
+}
+
+/* Botones como los del menú táctil de N2/B2: claros, con borde oscuro y esquinas redondeadas. Con `.bt-replay` delante: la pantalla
+   táctil coloca todos sus botones en posición absoluta y sin fondo (`.bt-touch button`, battle.css). */
+.bt-replay .rp-button {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  font: inherit;
+  font-size: 12px;
+  color: #383838;
+  background: linear-gradient(#f8f8f8, #d0d0d8);
+  border: 2px solid #585868;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.bt-replay .rp-play {
+  background: linear-gradient(#f8e0e8, #e09098);
+}
+
+.bt-replay .rp-button:disabled {
+  color: #a8a8b0;
+  border-color: #a8a8b0;
+  cursor: default;
+}
+
+.bt-replay .rp-button:focus-visible,
+.bt-replay .rp-text-button:focus-visible {
+  outline: 2px solid #f8c830;
+  outline-offset: 1px;
+}
+
+.rp-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.bt-replay .rp-text-button {
+  position: static;
+  min-height: 28px;
+  padding: 0 10px;
+  font: inherit;
+  font-size: 11px;
+  color: #f8f8f8;
+  background: #585868;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.bt-replay .rp-danger {
+  background: #b81840;
+}
+
+.bt-mode-replay {
+  background: rgb(56 136 248 / 0.85);
+}
+
+/* Ventana Historial. */
+.history-items {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.history-item {
+  padding: 10px 0;
+  border-top: 2px solid #585858;
+}
+
+.history-item-title {
+  margin: 0;
+  font-size: 18px;
+}
+
+.history-item-result {
+  margin: 2px 0 6px;
+  color: #d0d0d0;
+}
+
+/* Una rejilla por combate: sprite del rival (columna fija, igual con el de mapa que con el de combate), texto con el equipo debajo y los
+   botones a la derecha. En el móvil, botones en columna y equipo a todo el ancho debajo, para que quepan los 6 en una línea. */
+.history-list-dialog {
+  width: min(100%, 38rem);
+}
+
+.history-item-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 4px;
+}
+
+.history-item-head[data-art] {
+  grid-template-columns: 64px 1fr auto;
+}
+
+.history-trainer-slot {
+  grid-row: 1 / span 2;
+  display: flex;
+  justify-content: center;
+}
+
+.history-item-text {
+  grid-column: -3 / -2;
+  min-width: 0;
+}
+
+.history-item-team {
+  grid-column: -3 / -2;
+}
+
+.history-item-actions {
+  grid-column: -2 / -1;
+  grid-row: 1 / span 2;
+}
+
+/* Sprites de mapa de 24 × 32 a escala 2, pixelados. */
+.history-trainer {
+  width: 48px;
+  height: 64px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.history-trainer-battle {
+  width: 64px;
+  height: 64px;
+}
+
+.history-item-team {
+  display: flex;
+  gap: 2px;
+}
+
+.history-item-team .bt-member-icon {
+  display: inline-block;
+  flex: none;
+  image-rendering: pixelated;
+}
+
+@media (max-width: 640px) {
+  .history-item-head[data-art] {
+    grid-template-columns: 48px 1fr auto;
+  }
+
+  .history-trainer-slot {
+    grid-row: 1;
+  }
+
+  .history-trainer {
+    width: 36px;
+    height: 48px;
+  }
+
+  .history-trainer-battle {
+    width: 48px;
+    height: 48px;
+  }
+
+  .history-item-actions {
+    grid-row: 1;
+    flex-direction: column;
+  }
+
+  .history-item-team {
+    grid-column: 1 / -1;
+    margin-top: 6px;
+  }
+}
+
+/* Botones cuadrados con icono. */
+.history-item-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.history-icon-button {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.history-link {
+  overflow-wrap: anywhere;
+  user-select: all;
+}

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { getAudio, VICTORY_MUSIC } from '../../audio/audio'
 import { MAX_TURNS } from '../../config'
 import type { EngineEnd } from '../../battle/protocol'
@@ -9,8 +9,11 @@ import { useCountdown } from '../../hooks/useToday'
 import { computeStats } from '../../storage/playerStats'
 import { AppMenu, type MenuContext } from '../menu/AppMenu'
 import { ShareButton } from '../share/ShareButton'
-import { shareTextFor } from '../share/shareText'
+import { shareResult, shareTextFor } from '../share/shareText'
 import { StatsPanel } from '../stats/StatsPanel'
+
+/** Crea el enlace de la repetición y lo devuelve. */
+type ShareReplay = { (): Promise<string> }
 
 type ResultScreenProps = {
   ended: EngineEnd
@@ -23,8 +26,42 @@ type ResultScreenProps = {
   date?: string
   /** Estadísticas, Ayuda y Ajustes. */
   menu?: MenuContext
+  /**
+   * F5, RF-135: repetición del oficial que acaba de terminar. `onShare` (solo con sesión) crea el enlace y lo devuelve.
+   */
+  replay?: { onWatch: () => void; onShare?: ShareReplay }
 }
 
+
+/** «Ver repetición» y «Compartir» (copia el enlace; si no se puede, lo deja a la vista para copiarlo a mano). */
+function ReplayActions({ replay }: { replay: NonNullable<ResultScreenProps['replay']> }) {
+  const [status, setStatus] = useState(null as { message: string; link?: string } | null)
+
+  async function share(onShare: ShareReplay) {
+    setStatus({ message: es.result.replaySharing })
+    try {
+      const link = await onShare()
+      const outcome = await shareResult(link)
+      setStatus(outcome === 'copied' ? { message: es.result.replayCopied } : { message: es.result.replayCopyFailed, link })
+    } catch {
+      setStatus({ message: es.result.replayShareFailed })
+    }
+  }
+
+  return (
+    <div className="result-replay">
+      <div className="result-actions">
+        <button type="button" className="btn btn-secondary" onClick={replay.onWatch}>{es.result.watchReplay}</button>
+        {replay.onShare && (
+          <button type="button" className="btn btn-secondary" onClick={() => void share(replay.onShare as ShareReplay)}>{es.result.shareReplay}</button>
+        )}
+      </div>
+      <p className="share-status" role="status">
+        {status?.message} {status?.link && <span className="result-replay-link">{status.link}</span>}
+      </p>
+    </div>
+  )
+}
 
 function defeatReason(ended: EngineEnd): string {
   const reasons = es.result.defeatReasons
@@ -42,7 +79,7 @@ function OfficialSummary({ store, date }: { store: GameStore; date: string }) {
   )
 }
 
-export function ResultScreen({ ended, onBackToToday, onRematch, mode, store, date, menu }: ResultScreenProps) {
+export function ResultScreen({ ended, onBackToToday, onRematch, mode, store, date, menu, replay }: ResultScreenProps) {
   const won = ended.result === 'win'
   // Jingle de victoria (DEC-57): una vez si se gana (perder o rendirse no suena); se corta al salir de Resultado.
   useEffect(() => {
@@ -74,6 +111,7 @@ export function ResultScreen({ ended, onBackToToday, onRematch, mode, store, dat
           <span className="countdown-label">{es.today.nextChallengeIn}</span>{' '}
           <time className="plate countdown-value">{countdown}</time>
         </p>
+        {replay && <ReplayActions replay={replay} />}
         <div className="result-actions">
           <button type="button" className="btn btn-primary" onClick={onRematch}>{es.result.rematch}</button>
           <button type="button" className="btn btn-secondary" onClick={onBackToToday}>{es.result.backToToday}</button>

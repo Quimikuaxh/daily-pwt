@@ -518,6 +518,56 @@ img.sprite,
 }
 
 /* ---------- Cuenta, rankings y amigos (F4) ---------- */
+/* RF-96b: con cuenta de Google, tick sobre el icono Cuenta y, en pantallas anchas, el nickname (cortado con «…» si no cabe). */
+.header-verified {
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+}
+
+.header-nickname {
+  /* Encoge (con «…») si no cabe, pero no crece: el tick va pegado detrás del nombre. */
+  flex: 0 1 auto;
+  min-width: 0;
+  margin-left: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  /* Como el «#5» de la cabecera: con 18 px, las minúsculas de la fuente de píxel se ven más pequeñas que las cifras de la cuenta atrás. */
+  font-size: 22px;
+}
+
+/* Con cuenta, en pantallas de 1024 px o más: ancho fijo (no cambia con el nombre; el largo se corta con «…») y tick detrás del nombre.
+   Por debajo no cabe junto al logo, el reto y la cuenta atrás: solo el icono con el tick. */
+@media (min-width: 1024px) {
+  .header-account {
+    width: 250px;
+    justify-content: flex-start;
+  }
+
+  .header-verified {
+    /* La fuente de píxel lleva el texto un poco por debajo del centro de su caja: el tick baja 2 px para quedar a su altura. */
+    position: relative;
+    top: 2px;
+    flex: none;
+    margin-left: 4px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .header-nickname {
+    display: none;
+  }
+}
+
+/* F5, RF-124: el Historial va en la cabecera en pantallas anchas y en la ventana Cuenta en el móvil; nunca en los dos. */
+@media (min-width: 641px) {
+  .account-history-mobile {
+    display: none;
+  }
+}
+
 .header-badge {
   /* Dentro del botón (sus esquinas cortadas recortan lo que sobresale). */
   position: absolute;
@@ -700,6 +750,11 @@ img.sprite,
  * siguen para lectores de pantalla. Iconos de 44 px de ancho (el mínimo táctil), sin relleno de sobra.
  */
 @media (max-width: 640px) {
+  /* F5, RF-124: el Historial no cabe en la cabecera del móvil; se abre desde Cuenta. */
+  .header-action-wide {
+    display: none;
+  }
+
   .today-header-inner {
     grid-template-columns: auto 1fr auto;
     gap: 8px;

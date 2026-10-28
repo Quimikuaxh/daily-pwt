@@ -96,6 +96,21 @@ Opcional: sin configurar, el juego funciona entero en local (sin cuentas ni rank
 2. En local: copiar `.env.example` a `.env.local` y rellenar `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` (Project Settings → API). Los e2e (`playwright.config.ts`) construyen siempre sin estas variables: no usan Supabase aunque exista `.env.local`.
 3. En GitHub: secretos del repositorio `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` (Settings → Secrets and variables → Actions); `deploy.yml` los pasa al build.
 
+### Supabase en local
+
+Copia de Supabase en tu equipo (Docker) para probar cuentas, rankings, historial y repeticiones sin tocar producción. `npm run dev` la usa en cuanto existe `.env.development.local`, que manda sobre `.env.local` (producción) solo en desarrollo; el build y el despliegue no la leen.
+
+```sh
+npx supabase start          # arranca (la primera vez descarga 2-3 GB de imágenes) y aplica supabase/migrations/ en orden
+npx supabase status         # direcciones: API http://127.0.0.1:54321, panel (Studio) http://127.0.0.1:54323
+npx supabase db reset       # borra los datos y vuelve a aplicar las migraciones
+npx supabase stop           # para los contenedores (conserva los datos)
+```
+
+1. Tras el primer `start`, crear `.env.development.local` (ignorado por git) con `VITE_SUPABASE_URL=http://127.0.0.1:54321` y `VITE_SUPABASE_ANON_KEY=` la clave `ANON_KEY` de `npx supabase status -o env`. Sin este fichero, `npm run dev` usa producción.
+2. Login con Google en local: `supabase/.env` (ignorado por git) con `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID` y `SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET` (los del cliente OAuth de producción), y en ese cliente de Google, `http://127.0.0.1:54321/auth/v1/callback` en «URI de redireccionamiento autorizados». Sin esto, en local se juega sin cuenta (sesión anónima) igual.
+3. La configuración local está en `supabase/config.toml` (sesiones anónimas, esquema `pwt` publicado, Google, redirección a `http://localhost:5173/`). Producción no la lee: se configura en su panel.
+
 La clave `anon` es pública por diseño: las tablas tienen RLS sin políticas y el cliente solo puede llamar a las funciones de la API del esquema `pwt`, que comprueban quién llama.
 
 ## Estructura
@@ -115,6 +130,7 @@ daily-pwt/
     battle/                  Motor de combate (Web Worker con @pkmn/sim), IA rival, traducción del registro
     storage/                 Progreso guardado: interfaz GameStore y LocalStorageStore (oficial del día, decisiones para reanudar)
     cloud/                   Cuentas (F4): sesión, caché de la cuenta y envío del oficial a Supabase (cola en el navegador)
+    replay/                  Repeticiones (F5): grabación de los pasos del oficial, compresión y reproductor sin worker
     ui/                      Componentes de Hoy, Combate y Resultado
     generated/              Datos precalculados (no editar a mano)
     i18n/es.ts               Textos de la interfaz
@@ -304,7 +320,7 @@ npm run vis
 - **Internet Archive**: copia de los sprites de WikiDex cuando su CDN no responde.
 - **hexparrot/pokemon-assets**: `Pokemon-DP.ttf` (MIT), réplica fan de la fuente de Pokémon Diamante/Perla, en `public/fonts/` (`npm run gen:ui`). Provisional hasta sustituirla por una réplica de la de Negro 2 / Blanco 2.
 - **Bulbagarden Archives**, **The Spriters Resource** (vía Internet Archive) y **Pokémon Showdown**: gráficos de interfaz de combate de Negro 2 / Blanco 2 (`public/ui/`, ver `data/ui-assets.json`).
-- **Internet Archive** (*Pokémon Black 2 & Pokémon White 2: Super Music Collection*): música de combate de Negro 2 / Blanco 2 (`public/audio/music/`).
+- **Internet Archive** (*Pokémon Black 2 & Pokémon White 2: Super Music Collection* y *Pokémon Black & Pokémon White: Super Music Collection*): música de combate de Negro 2 / Blanco 2 y, para Mirto y Cheren, sus temas de Negro / Blanco (`public/audio/music/`).
 - **The Sounds Resource**: efectos de sonido de Negro 2 / Blanco 2 (`public/audio/sfx/`, ver `data/audio.json`).
 
 ## Aviso legal

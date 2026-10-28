@@ -4,6 +4,15 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 **Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). El sonido va en `feature/f3-sonido` (desde `main`): los audios ya están descargados y versionados (se descargaron en local, desde la nube las fuentes están bloqueadas); falta implementarlo según «Sonido: plan de implementación».
 
+## Siguiente: oficial a medias al cambiar de día (decisión de Jose, 28/10/2026)
+- **Qué:** a medianoche de Madrid, un oficial sin terminar **cuenta como derrota** (como rendirse: 0 puntos, corta la racha de victorias, queda en el historial). Si se está en la pantalla de combate al cambiar el día, aviso y vuelta a Hoy con el reto nuevo. Sustituye a RF-80 en lo que toca al oficial sin terminar: hoy se puede seguir jugando (cuenta para su día) y, si se está dentro del combate, no hay forma de llegar al reto nuevo sin terminarlo o salir.
+- **Por qué:** era un reto diario (hubo todo el día) y así nadie juega el de ayer sabiendo cómo le fue al resto, que ya ha cerrado su día en los rankings. *Descartado:* seguir permitiéndolo con un aviso y anularlo (sin victoria ni derrota).
+- **Dónde:** cliente (Hoy y el combate en curso, también al reanudar) y servidor (`close_days` o una tarea a medianoche: los `inProgress` de días ya cerrados pasan a derrota, para que no queden abiertos en la cuenta ni en otros dispositivos). Rama nueva desde `main`, tras el despliegue de F5.
+
+## Siguiente: resultado visual en el Historial (petición de Jose, 28/10/2026)
+- **Qué (propuesta, por confirmar el diseño):** en cada combate del Historial, en vez de la palabra «Victoria» / «Derrota», un distintivo de color (copa dorada y borde dorado si se ganó; Poké Ball gris y borde rojo si se perdió), con los turnos y los Pokémon en pie debajo; los Pokémon del equipo que acabaron debilitados, apagados (como en la pantalla de equipo). Para lectores de pantalla sigue diciendo «Victoria» o «Derrota».
+- **Hace falta:** que `my_history` devuelva también `player_fainted` (nueva migración: la de F5 ya estará aplicada).
+
 ## Antes de desplegar `feature/cuentas`
 - **`TEAM_RULES_2_FROM`** (`src/core/launch.ts`, RF-12b y RF-13d, DEC-64 y DEC-66) vale `2026-10-29`: ponerlo al día siguiente del despliegue, o los días ya publicados entre esa fecha y el despliegue cambiarían de equipo si tenían formas repetidas. Volver a lanzar UT-17 (snapshot), UT-102 y UT-103; el snapshot solo debe cambiar en las fechas desde ese día.
 
@@ -12,7 +21,7 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 - **Calibrar la dificultad** (PRD §14, criterio 19) con el roster completo. Resultado preliminar (INT-14, solo los 5 de F1) con el jugador de prueba "mejor daño" y los IV del jugador iguales a los del rival (RF-16): Brock 100 %, Misty 70 %, Camila 70 %, Plubio 50 %, Rojo 0 %. Brock y Rojo siguen fuera del rango 40-80 %.
 - **Stunfisk de Camila (Mundial):** Juego Sucio según Bulbapedia y Serebii, Impresionar según WikiDex; se usa Juego Sucio (resolución manual en `data/pwt-raw/resolutions.json`).
 - **Ruta crítica 230 KB gzip (decidido: se deja así).** Con el roster de 53 el chunk principal pasa a 208 KB (era 182) y la carga sigue < 3 s en 4G (2,1-2,5 s). Optimización futura, solo si hace falta: carga por entrenador (JSON por entrenador, `GameData` asíncrono) o recortar dex/names.
-- **Iconos `-mini.png` ausentes (11):** Millo, Zeo, Maíz, Aloe, Camus, Yakón, Gerania, Junco, Lirio, Cintia y Mirto; la API de WikiDex daba 503 y sus páginas en caché no los enlazan. La app no los usa; `TRAINER_MINIS_MISSING_ALLOWED` (`scripts/validate-data.mjs`) los admite. Reintentar con `npm run gen:sprites` y vaciar la lista. Desde la nube no se puede: WikiDex y Internet Archive están bloqueados por la red del entorno (22/10/2026); hay que lanzarlo en local.
+- **Iconos `-mini.png`:** completos (28/10/2026). A los 11 que faltaban, WikiDex los guarda como `<Nombre>_mini.png` o `<Nombre>_mini_NB.png` en vez de `<Nombre>_N2B2_mini.png`; `gen:sprites` prueba los tres nombres (`miniFileCandidates`). Se usan en el Historial (F5).
 - **E2E en CI:** hecho, humo en Chromium (`e2e-smoke`, DEC-50). La batería completa sigue siendo local.
 
 ## Orden de trabajo
@@ -37,6 +46,7 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
   - **Supabase configurado (28/10/2026)** en el proyecto `xvkvzrdvtcnjnbhtydfn`: Google, sesiones anónimas, enlace de identidades, URL de redirección, `pg_cron` con `pwt-close-days` y `pwt-release-nicknames`, migración aplicada y `pwt` publicado. `.env.local` (ignorado) apunta a él.
   - **Falta:** los secretos `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` en GitHub (Jose); después, probar el flujo real (login, enlace de la sesión anónima, dos dispositivos, cierre del día con `pg_cron`) y añadir un e2e contra el proyecto real o simulado si hace falta.
   - **Ruta crítica:** el JS principal queda en 224,4 KB gzip, como antes de F4 (medido por Vite; E2E-21 mide HTML + CSS + JS y su límite es 230). Para que quepa, van en ficheros aparte la cuenta (`Account`, `supabase-js`), las ventanas de la cabecera (Estadísticas, Ayuda, Ajustes, que se traen en reposo), los textos de Ayuda (`esHelp.ts`) y de cuenta, rankings y amigos (`esCloud.ts`) y su CSS (`ui/stats/cloud.css`).
+- **F5 · Historial y repeticiones** (28/10/2026; rama `feature/historial-repeticiones`): descripción en [REQUISITOS-F5.md](REQUISITOS-F5.md). Desarrollado (DEC-67, DEC-68; UT-105 a UT-108). Al desplegar, aplicar en Supabase de producción `supabase/migrations/20261029000000_pwt_repeticiones.sql` **antes** de publicar la web (sin ella, el historial da error y las repeticiones se quedan en la cola del navegador). Para probar en local: Supabase local (README, «Supabase en local»). Las repeticiones se guardan a partir del despliegue: los oficiales anteriores no tienen.
 - **Logros con login opcional:** requiere backend (cuentas y almacenamiento); el daily sigue sin cuenta. Con sesión, racha diaria y logros en la cuenta; sin sesión, racha en local. Por definir: servicio, qué logros, migración de las estadísticas locales.
 
 ## Sonido: plan de implementación (F3, PRD §0)

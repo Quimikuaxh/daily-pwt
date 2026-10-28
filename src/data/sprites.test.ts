@@ -42,7 +42,7 @@ describe('sprites de Pokémon', () => {
   })
 })
 
-// Algunos -mini.png de WikiDex no se han podido descargar (la app no los usa; ver TRAINER_MINIS_MISSING_ALLOWED en scripts/validate-data.mjs).
+// Los -mini.png están todos (el Historial los usa); TRAINER_MINIS_MISSING_ALLOWED (scripts/validate-data.mjs) queda para algún entrenador nuevo cuyo mini no se pueda descargar.
 const { TRAINER_MINIS_MISSING_ALLOWED } = await importScript('scripts/validate-data.mjs')
 
 describe('sprites de entrenadores', () => {

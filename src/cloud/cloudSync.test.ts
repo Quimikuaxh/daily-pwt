@@ -84,6 +84,19 @@ describe('CloudSync (UT-97)', () => {
     expect(api.saveTurn).toHaveBeenCalled()
   })
 
+  it('F5: la repetición va detrás del final y se reintenta como el resto', async () => {
+    const storage = new MemoryStorage()
+    const offline = fakeApi({ finishOfficial: async () => Promise.reject(networkError()) })
+    const sync = new CloudSync(offline, storage, KEY)
+    void sync.enqueue({ kind: 'finish', date: DATE, ended: WIN, decisions: [move(0)] })
+    await sync.enqueue({ kind: 'replay', date: DATE, data: 'H4sI' })
+    expect(offline.saveReplay).not.toHaveBeenCalled()
+    const online = fakeApi()
+    await new CloudSync(online, storage, KEY).flush()
+    expect(online.finishOfficial.mock.invocationCallOrder[0]).toBeLessThan(online.saveReplay.mock.invocationCallOrder[0])
+    expect(online.saveReplay).toHaveBeenCalledWith(DATE, 'H4sI')
+  })
+
   it('sin almacenamiento funciona en memoria', async () => {
     const api = fakeApi()
     const sync = new CloudSync(api, null, KEY)

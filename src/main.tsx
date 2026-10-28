@@ -5,6 +5,7 @@ import { createWorkerClient } from './battle/client'
 import { createWarmClientFactory } from './battle/warmClient'
 import { cloudConfig } from './cloud/config'
 import { loadGameData } from './data/gameData'
+import { loadBattleScreen } from './ui/battle/battleScreenLoader'
 import type { GameData } from './core/types'
 
 function loadDataOrNull(): GameData | null {
@@ -25,8 +26,9 @@ function loadCloudIfConfigured() {
 const clients = createWarmClientFactory(createWorkerClient)
 const idle = window.requestIdleCallback ?? ((callback: () => void) => window.setTimeout(callback, 800))
 idle(() => clients.warmUp())
-// Las ventanas de la cabecera van aparte (E2E-21); se traen en reposo para que abrirlas sea inmediato.
+// La pantalla de combate y las ventanas de la cabecera van aparte (E2E-21); se traen en reposo para que abrirlas sea inmediato.
 idle(() => {
+  void loadBattleScreen()
   void import('./ui/stats/StatsDialog')
   void import('./ui/menu/HelpDialog')
   void import('./ui/menu/SettingsDialog')

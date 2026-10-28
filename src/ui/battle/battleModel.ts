@@ -43,7 +43,8 @@ export function moveOptions(request: BattleRequest | null, data: GameData): Move
     const shownId = shownMoveId(move)
     const info = data.dex.moves[shownId]
     const outOfPp = move.pp !== undefined && move.pp <= 0
-    const name = move.id === STRUGGLE_ID ? es.battle.struggle : data.names.moves[shownId] ?? data.names.moves[toId(move.move)] ?? es.battle.unknownMove
+    // Poder Oculto: el tipo real va en el icono y el color; el nombre, sin el tipo (decisión de Jose, 28/10/2026).
+    const name = move.id === STRUGGLE_ID ? es.battle.struggle : data.names.moves[move.id] ?? data.names.moves[shownId] ?? data.names.moves[toId(move.move)] ?? es.battle.unknownMove
     return {
       slot: index + 1,
       id: move.id,

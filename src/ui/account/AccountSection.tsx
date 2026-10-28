@@ -10,10 +10,17 @@ const text = esCloud.account
 const NICKNAME = /^[A-Za-z0-9_]{3,16}$/
 
 /** Ventana «Cuenta» del icono de la cabecera (RF-93 a RF-96): iniciar sesión con Google, cambiar el nickname y cerrar sesión. */
-export function AccountDialog({ account, state, onClose }: { account: Account; state: AccountState; onClose: () => void }) {
+export function AccountDialog({ account, state, onClose, onOpenHistory }: { account: Account; state: AccountState; onClose: () => void; onOpenHistory?: () => void }) {
+  const player = state.status === 'signedIn' || state.status === 'guest'
   return (
     <Modal title={text.title} onClose={onClose} className="account-dialog">
-      {state.status === 'signedIn' || state.status === 'guest' ? <Player account={account} state={state} /> : <Unavailable state={state} />}
+      {player ? <Player account={account} state={state} /> : <Unavailable state={state} />}
+      {/* F5, RF-124: solo en el móvil (en pantallas anchas está el icono de la cabecera); el CSS lo oculta en las anchas. */}
+      {player && onOpenHistory && (
+        <div className="account-actions account-history-mobile">
+          <button type="button" className="btn btn-small" onClick={onOpenHistory}>{text.history}</button>
+        </div>
+      )}
     </Modal>
   )
 }

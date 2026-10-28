@@ -29,6 +29,12 @@ export function fakeApi(over: Partial<CloudApi> = {}): CloudApi & { [K in keyof 
     cancelFriendRequest: async () => undefined,
     removeFriend: async () => undefined,
     listFriends: async () => [],
+    saveReplay: async () => undefined,
+    myHistory: async () => [],
+    getMyReplay: async () => '',
+    shareReplay: async () => 'abcdefghij',
+    getSharedReplay: async (id) => ({ id, nickname: 'Jose', date: '2026-10-29', challengeNumber: 6, trainerId: 'misty', data: '', mine: false }),
+    deleteSharedReplay: async () => undefined,
     ...over,
   }
   return Object.fromEntries(Object.entries(api).map(([name, method]) => [name, vi.fn(method)])) as never

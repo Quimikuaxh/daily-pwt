@@ -66,7 +66,7 @@ export const esHelp = {
     'Sprites animados de Pokémon de 5.ª generación, iconos de equipo y efectos: Pokémon Showdown.',
     'Sprites de entrenadores de Negro 2 y Blanco 2: WikiDex (con copia en Internet Archive).',
     'Gráficos de la interfaz de combate de Negro 2 y Blanco 2: Bulbagarden Archives y The Spriters Resource (ripeados por GameMaster12, Ploaj, redblueyellow y Floofy Panthar).',
-    'Música de Negro 2 y Blanco 2: Super Music Collection (Internet Archive). Efectos de sonido: The Sounds Resource.',
+    'Música de Negro 2 y Blanco 2 y, para Mirto y Cheren, de Negro y Blanco: Super Music Collection (Internet Archive). Efectos de sonido: The Sounds Resource.',
     'Fuente: réplica fan de la de Pokémon Diamante y Perla, de hexparrot/pokemon-assets (MIT).',
     'Motor de combate y datos: @pkmn/sim, @pkmn/dex y @pkmn/data (Pokémon Showdown); cálculo de daño: @smogon/calc.',
     'Sets del equipo del jugador: Smogon University.',

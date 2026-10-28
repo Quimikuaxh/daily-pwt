@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest'
 import type { EngineEnd } from '../battle/protocol'
 import type { NewOfficial } from '../storage/gameStore'
 import { accountStorageKey, LocalStorageStore } from '../storage/localStorageStore'
-import { cloudDay, fakeApi, fakeAuth, fakeCloud, networkError } from '../test-utils/cloud'
+import { cloudDay, fakeApi, fakeAuth, fakeCloud, networkError, serverError } from '../test-utils/cloud'
 import { MemoryStorage } from '../test-utils/memoryStorage'
-import { Account, GUEST_CLAIM_KEY } from './account'
+import { Account, ACCOUNT_SESSION_KEY, GUEST_CLAIM_KEY } from './account'
 import { cloudConfig } from './config'
 
 // UT-98 · F4 (RF-93 a RF-99, RF-104b; DEC-63): sesión, almacén de cada modo y réplica del oficial.
@@ -158,5 +158,36 @@ describe('Account (UT-98)', () => {
     await account.start()
     expect(account.getState()).toMatchObject({ status: 'signedIn' })
     expect(storage.getItem(GUEST_CLAIM_KEY)).toBeNull()
+  })
+
+  it('RF-96b: un fallo de red al renovar la sesión no la sustituye por una anónima (se sigue en local)', async () => {
+    const cloud = fakeCloud(GOOGLE, fakeApi(), fakeAuth(GOOGLE, { getSession: async () => Promise.reject(networkError()) }))
+    const { account } = setup(cloud)
+    await account.start()
+    expect(account.getState()).toEqual({ status: 'offline' })
+    expect(cloud.auth.signInAnonymously).not.toHaveBeenCalled()
+    expect(account.sessionLost).toBe(false)
+  })
+
+  it('RF-96b: con cuenta queda la marca; si al volver la sesión ya no vale, se avisa y se juega sin cuenta; cerrar sesión no avisa', async () => {
+    const { account, storage, local } = setup(fakeCloud(GOOGLE))
+    await account.start()
+    expect(storage.getItem(ACCOUNT_SESSION_KEY)).toBe('g1')
+
+    const rejected = fakeCloud(null, fakeApi(), fakeAuth(null, { getSession: async () => Promise.reject(serverError('refresh_token_not_found')) }))
+    const reopened = new Account(Promise.resolve(rejected), storage, local)
+    await reopened.start()
+    expect(reopened.sessionLost).toBe(true)
+    expect(reopened.getState()).toMatchObject({ status: 'guest' })
+    expect(storage.getItem(ACCOUNT_SESSION_KEY)).toBeNull()
+
+    // Sin la marca (nunca hubo cuenta aquí, o se cerró sesión a propósito), no hay aviso.
+    const again = new Account(Promise.resolve(fakeCloud(null)), storage, local)
+    await again.start()
+    expect(again.sessionLost).toBe(false)
+    const signedIn = new Account(Promise.resolve(fakeCloud(GOOGLE)), storage, local)
+    await signedIn.start()
+    await signedIn.signOut()
+    expect(storage.getItem(ACCOUNT_SESSION_KEY)).toBeNull()
   })
 })

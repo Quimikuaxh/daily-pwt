@@ -21,7 +21,7 @@ Juego web diario estilo Daily Red contra los entrenadores del Pokémon World Tou
 | Qué | Dónde |
 |---|---|
 | Requisitos y decisiones de producto (con fecha, motivo y alternativas descartadas) | `docs/PRD.md` §0 manda sobre el resto del PRD |
-| Requisitos funcionales numerados | `docs/REQUISITOS-F1.md`, `docs/REQUISITOS-F2.md`, `docs/REQUISITOS-F4.md` (cuentas y rankings) |
+| Requisitos funcionales numerados | `docs/REQUISITOS-F1.md`, `docs/REQUISITOS-F2.md`, `docs/REQUISITOS-F4.md` (cuentas y rankings), `docs/REQUISITOS-F5.md` (historial y repeticiones) |
 | Decisiones técnicas (DEC-xx) y alternativas descartadas | `docs/ARQUITECTURA.md` |
 | Casos de prueba (UT-xx, E2E-xx, VIS-xx) | `docs/PLAN-PRUEBAS-F1.md` |
 | Qué falta, en qué orden y por qué | `docs/PENDIENTE.md` (empezar siempre leyéndolo) |
@@ -32,6 +32,7 @@ Juego web diario estilo Daily Red contra los entrenadores del Pokémon World Tou
 
 - `npm run dev` · `npm run build` · `npm test` (vitest) · `npm run lint` · `npx tsc -b`
 - `npm run validate:data`: valida datos (PRD §8.3); también corre en CI.
+- `npx supabase start` / `stop` / `db reset`: Supabase en local (README, «Supabase en local»). Con `.env.development.local`, `npm run dev` usa la copia local; sin él, **producción**.
 - `npm run test:e2e:install` (una vez) y `npm run test:e2e`: Playwright en chromium, webkit y móvil 360 px; la tanda `@timing` va después en serie. Tarda ~20 min. Lánzala con la máquina quieta: con carga, los tests `@timing` y E2E-03 en webkit dan falsos fallos.
 - `npm run vis`: capturas visuales en `e2e-artifacts/vis/` (ignorado).
 - Scripts de datos `npm run gen:*` (ver README): descargan de fuentes externas y escriben ficheros versionados.
@@ -47,7 +48,7 @@ Juego web diario estilo Daily Red contra los entrenadores del Pokémon World Tou
 - **`scripts/.cache`** no se versiona: los tests que comparan nombres y descripciones con PokeAPI se omiten con aviso si falta. Regenerar con `npm run gen:names` (necesita red).
 - **Fuentes externas**: Bulbapedia responde 403 (Cloudflare) y se lee vía Internet Archive; WikiDex devuelve 503 a ratos. Todo lo descargado se guarda en el repo; la app no depende de nada externo en tiempo de ejecución.
 - **Sprites**: `public/` pesa ~39 MB, pero la web solo descarga los sprites del reto del día. No precargar el pool entero.
-- **Sonido**: `public/audio/` pesa ~25 MB (pistas completas, DEC-56). Cargar solo la pista del rival del combate en curso y los efectos; nunca toda la música. El ZIP de efectos no se puede descargar por script (Cloudflare): ver README, «Sonido».
+- **Sonido**: `public/audio/` pesa ~29 MB (pistas completas, DEC-56). Cargar solo la pista del rival del combate en curso y los efectos; nunca toda la música. El ZIP de efectos no se puede descargar por script (Cloudflare): ver README, «Sonido».
 - **Fuente**: `pokemon-dp.ttf` trae métricas `hhea` erróneas; los `*-override` de su `@font-face` en `src/index.css` son los que evitan el descuadre en Windows y Firefox. No quitarlos.
 - **Estética**: el combate y los menús replican N2/B2 con assets ripeados; reconstruir solo lo que el juego pinta en ejecución y comparar siempre con capturas reales.
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { battleMusicFor, getAudio, SFX_IDS } from '../../audio/audio'
 import type { BattleClient } from '../../battle/client'
 import type { AiKind, BattleRequest, EngineEnd } from '../../battle/protocol'
@@ -32,8 +32,12 @@ type BattleScreenProps = {
   playerLead: number
   battleSeed: string
   ai?: AiKind
-  /** Etiqueta OFICIAL/PRÁCTICA y textos de salir y rendirse (PRD §10.2). Por defecto, práctica. */
-  mode?: BattleMode
+  /**
+   * Etiqueta OFICIAL/PRÁCTICA y textos de salir y rendirse (PRD §10.2). Por defecto, práctica. `replay` (F5, RF-127): repetición, sin menú
+   * de combate; en su lugar van `controls` y «Volver» sale sin confirmar.
+   */
+  mode?: BattleMode | 'replay'
+  controls?: ReactNode
   /** Reanudación de un oficial guardado: sin intro y con las decisiones ya tomadas reproducidas. */
   replay?: BattleParams['replay']
   onDecision?: BattleParams['onDecision']
@@ -58,7 +62,7 @@ type TouchChoice = { request: BattleRequest | null; mode: TouchMode }
 
 const isInteractive = (target: EventTarget | null): boolean => target instanceof HTMLElement && target.closest('button, a, input, select, textarea, [role="dialog"]') !== null
 
-export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', replay, onDecision, onSettled, onReplayFailed, initialSpeed, onSpeedChange, animations = 'always', sound, onSoundChange, onFinish, onExit }: BattleScreenProps) {
+export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', controls, replay, onDecision, onSettled, onReplayFailed, initialSpeed, onSpeedChange, animations = 'always', sound, onSoundChange, onFinish, onExit }: BattleScreenProps) {
   const { trainer, rivalTeam, playerTeam } = challenge
   const speciesName = (speciesId: string, fallback: string): string => data.names.species[speciesId] ?? fallback
 
@@ -182,7 +186,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
         <div ref={layoutRef} className="bt-layout" data-layout={wide ? 'wide' : 'stacked'}>
           <div className="bt-chrome">
             <div className="bt-chrome-buttons">
-              <button type="button" className="btn btn-secondary btn-small" onClick={() => setDialog('exit')}>{es.battle.exit}</button>
+              <button type="button" className="btn btn-secondary btn-small" onClick={() => (mode === 'replay' ? onExit() : setDialog('exit'))}>{mode === 'replay' ? es.battle.back : es.battle.exit}</button>
               <button type="button" className="btn btn-secondary btn-small" onClick={() => setDialog('history')}>{es.battle.history}</button>
               <button type="button" className="btn btn-secondary btn-small" onClick={battle.cycleSpeed}>{es.battle.speed(battle.speed)}</button>
               {sound && onSoundChange && (
@@ -208,8 +212,8 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                 if (sound) getAudio().playSfx(sound)
               }}
             >
-              <span data-testid="battle-mode" data-mode={mode} className={`bt-mode bt-mode-${mode}`} role="img" aria-label={es.battle.modeLabel(mode === 'official')}>
-                {mode === 'official' ? es.battle.modeOfficial : es.battle.modePractice}
+              <span data-testid="battle-mode" data-mode={mode} className={`bt-mode bt-mode-${mode}`} role="img" aria-label={mode === 'replay' ? es.battle.modeReplayLabel : es.battle.modeLabel(mode === 'official')}>
+                {mode === 'replay' ? es.battle.modeReplay : mode === 'official' ? es.battle.modeOfficial : es.battle.modePractice}
               </span>
               {partyOpen && (
                 <PartyScreen
@@ -241,6 +245,13 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                     <button type="button" className="btn btn-primary" onClick={onExit}>{es.battle.backToToday}</button>
                   </section>
                 ) : (
+                  <>
+                  {mode === 'replay' && (
+                    <section className="bt-touch bt-replay" style={{ height: SCREEN_HEIGHT }} aria-label={es.battle.modeReplayLabel}>
+                      {controls}
+                    </section>
+                  )}
+                  {mode !== 'replay' && (
                   <TouchScreen
                     mode={touchMode}
                     // En un cambio forzado solo se elige sustituto: mientras la pantalla de equipo carga sus imágenes, Luchar y el resto no
@@ -256,6 +267,8 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                     weather={battle.view?.weather ?? null}
                     weatherTurns={battle.view?.weatherTurns ?? null}
                   />
+                  )}
+                  </>
                 )}
               </div>
             </div>

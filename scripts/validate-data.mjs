@@ -18,7 +18,7 @@ const MIN_VARIANTS = { leader: 2, champion: 1 }
  * La aplicación no los usa (solo el GIF, PRD §10.7); son opcionales mientras estén en esta lista. `npm run gen:sprites` reintenta
  * la descarga; al conseguirlos hay que quitar el id de aquí.
  */
-export const TRAINER_MINIS_MISSING_ALLOWED = ['millo', 'zeo', 'maiz', 'aloe', 'camus', 'yakon', 'gerania', 'junco', 'lirio', 'cintia', 'mirto']
+export const TRAINER_MINIS_MISSING_ALLOWED = []
 const SAFE_ID = /^[a-z0-9-]+$/
 const GIF_HEADERS = ['GIF87a', 'GIF89a']
 const PNG_SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])

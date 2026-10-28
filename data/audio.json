@@ -14,39 +14,223 @@
       "zip": "DS _ DSi - Pokemon Black 2 _ White 2 - Miscellaneous - Sound Effects.zip",
       "credit": "Efectos de sonido de Pokémon Negro 2 / Blanco 2 © Nintendo / Creatures Inc. / GAME FREAK inc., ripeados en The Sounds Resource",
       "license": "Sonidos propiedad de sus titulares; sin licencia abierta."
+    },
+    "ost-bw": {
+      "name": "Pokémon Black & Pokémon White: Super Music Collection",
+      "page": "https://archive.org/details/pkmn-black-white-soundtrack",
+      "baseUrl": "https://archive.org/download/pkmn-black-white-soundtrack/",
+      "credit": "Música de Pokémon Negro / Blanco (Shota Kageyama, Junichi Masuda, Go Ichinose) © Nintendo / Creatures Inc. / GAME FREAK inc., del Super Music Collection alojado en Internet Archive",
+      "license": "Música propiedad de sus titulares, usada como fan project no oficial (mismo riesgo asumido que con los sprites, PRD §0)."
     }
   },
   "music": [
-    { "id": "gym-kanto", "source": "ost-b2w2", "file": "Disc 2/04 - Battle! (Gym Leader - Kanto).flac", "loopStartSec": 26.27, "loopEndSec": 70.6291 },
-    { "id": "champion-kanto", "source": "ost-b2w2", "file": "Disc 2/05 - Battle! (Champion - Kanto).flac", "loopStartSec": 45.04, "loopEndSec": 105.0537 },
-    { "id": "gym-johto", "source": "ost-b2w2", "file": "Disc 2/06 - Battle! (Gym Leader - Johto).flac", "loopStartSec": 61.98, "loopEndSec": 122.6397 },
-    { "id": "champion-johto", "source": "ost-b2w2", "file": "Disc 2/07 - Battle! (Champion - Johto).flac", "loopStartSec": 44.36, "loopEndSec": 88.7191 },
-    { "id": "gym-hoenn", "source": "ost-b2w2", "file": "Disc 2/08 - Battle! (Gym Leader - Hoenn).flac", "loopStartSec": 44.42, "loopEndSec": 108.7629 },
-    { "id": "champion-hoenn", "source": "ost-b2w2", "file": "Disc 2/09 - Battle! (Champion - Hoenn).flac", "loopStartSec": 59.52, "loopEndSec": 113.871 },
-    { "id": "gym-sinnoh", "source": "ost-b2w2", "file": "Disc 2/10 - Battle! (Gym Leader - Sinnoh).flac", "loopStartSec": 61.52, "loopEndSec": 138.496 },
-    { "id": "champion-sinnoh", "source": "ost-b2w2", "file": "Disc 2/11 - Battle! (Champion - Sinnoh).flac", "loopStartSec": 73.77, "loopEndSec": 148.7872 },
-    { "id": "gym-unova", "source": "ost-b2w2", "file": "Disc 1/49 - Battle! (Gym Leader).flac", "loopStartSec": 70.95, "loopEndSec": 144.6023 },
-    { "id": "champion-unova", "source": "ost-b2w2", "file": "Disc 3/31 - Battle! (Champion).flac", "_nota": "Tema de Iris; es el de Mirto (decisión de Jose)", "loopStartSec": 71.29, "loopEndSec": 163.8112 },
-    { "id": "victory-pwt", "source": "ost-b2w2", "file": "Disc 2/13 - Winning in the PWT!.flac", "_nota": "Jingle de victoria en Resultado" }
+    {
+      "id": "gym-kanto",
+      "source": "ost-b2w2",
+      "file": "Disc 2/04 - Battle! (Gym Leader - Kanto).flac",
+      "loopStartSec": 26.27,
+      "loopEndSec": 70.6291
+    },
+    {
+      "id": "champion-kanto",
+      "source": "ost-b2w2",
+      "file": "Disc 2/05 - Battle! (Champion - Kanto).flac",
+      "loopStartSec": 45.04,
+      "loopEndSec": 105.0537
+    },
+    {
+      "id": "gym-johto",
+      "source": "ost-b2w2",
+      "file": "Disc 2/06 - Battle! (Gym Leader - Johto).flac",
+      "loopStartSec": 61.98,
+      "loopEndSec": 122.6397
+    },
+    {
+      "id": "champion-johto",
+      "source": "ost-b2w2",
+      "file": "Disc 2/07 - Battle! (Champion - Johto).flac",
+      "loopStartSec": 44.36,
+      "loopEndSec": 88.7191
+    },
+    {
+      "id": "gym-hoenn",
+      "source": "ost-b2w2",
+      "file": "Disc 2/08 - Battle! (Gym Leader - Hoenn).flac",
+      "loopStartSec": 44.42,
+      "loopEndSec": 108.7629
+    },
+    {
+      "id": "champion-hoenn",
+      "source": "ost-b2w2",
+      "file": "Disc 2/09 - Battle! (Champion - Hoenn).flac",
+      "loopStartSec": 59.52,
+      "loopEndSec": 113.871
+    },
+    {
+      "id": "gym-sinnoh",
+      "source": "ost-b2w2",
+      "file": "Disc 2/10 - Battle! (Gym Leader - Sinnoh).flac",
+      "loopStartSec": 61.52,
+      "loopEndSec": 138.496
+    },
+    {
+      "id": "champion-sinnoh",
+      "source": "ost-b2w2",
+      "file": "Disc 2/11 - Battle! (Champion - Sinnoh).flac",
+      "loopStartSec": 73.77,
+      "loopEndSec": 148.7872
+    },
+    {
+      "id": "gym-unova",
+      "source": "ost-b2w2",
+      "file": "Disc 1/49 - Battle! (Gym Leader).flac",
+      "loopStartSec": 70.95,
+      "loopEndSec": 144.6023
+    },
+    {
+      "id": "champion-unova",
+      "source": "ost-b2w2",
+      "file": "Disc 3/31 - Battle! (Champion).flac",
+      "_nota": "Tema de Iris; es el de Mirto (decisión de Jose)",
+      "loopStartSec": 71.29,
+      "loopEndSec": 163.8112
+    },
+    {
+      "id": "champion-alder",
+      "source": "ost-bw",
+      "file": "Disc 4/17 - Battle! (Champion).flac",
+      "_nota": "Tema de Mirto (Alder) en Negro y Blanco (decisión de Jose, 28/10/2026)",
+      "loopStartSec": 29.54,
+      "loopEndSec": 79.2076
+    },
+    {
+      "id": "rival-cheren",
+      "source": "ost-bw",
+      "file": "Disc 1/08 - Battle! (Cheren-Bianca).flac",
+      "_nota": "Tema de Cheren como rival en Negro y Blanco (decisión de Jose, 28/10/2026)",
+      "loopStartSec": 45.72,
+      "loopEndSec": 83.911
+    },
+    {
+      "id": "victory-pwt",
+      "source": "ost-b2w2",
+      "file": "Disc 2/13 - Winning in the PWT!.flac",
+      "_nota": "Jingle de victoria en Resultado"
+    }
   ],
   "sfx": [
-    { "id": "hit-super", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_KOUKA_H.wav", "_nota": "Golpe supereficaz" },
-    { "id": "hit-neutral", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_KOUKA_M.wav", "_nota": "Golpe neutro" },
-    { "id": "hit-weak", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_KOUKA_L.wav", "_nota": "Golpe poco eficaz" },
-    { "id": "ball-throw", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_NAGERU.wav", "_nota": "Lanzar la Poké Ball" },
-    { "id": "ball-open", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_BOWA2.wav", "_nota": "Abrir la Poké Ball (sale el Pokémon)" },
-    { "id": "faint", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_DEAD.wav", "_nota": "Debilitado, al caer el sprite" },
-    { "id": "low-hp", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_HINSHI.wav", "_nota": "Pitido de vida baja, en bucle mientras el Pokémon del jugador está en rojo (hinshi: «a punto de caer»)" },
-    { "id": "menu-select", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_DECIDE1.wav", "_nota": "Elegir en el menú de batalla" },
-    { "id": "menu-cancel", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE/SEQ_SE_CANCEL1.wav", "_nota": "Volver o cerrar en el menú de batalla" },
-    { "id": "status-slp", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_01.wav", "_nota": "Dormido" },
-    { "id": "status-psn", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_02.wav", "_nota": "Envenenado" },
-    { "id": "status-brn", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_03.wav", "_nota": "Quemado" },
-    { "id": "status-frz", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_04.wav", "_nota": "Congelado" },
-    { "id": "status-par", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_05.wav", "_nota": "Paralizado" },
-    { "id": "status-confusion", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_06.wav", "_nota": "Confuso" },
-    { "id": "berry", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_10.wav", "_nota": "Comerse una baya" },
-    { "id": "stat-up", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_12.wav", "_nota": "Subir una característica" },
-    { "id": "stat-down", "source": "tsr-sfx-b2w2", "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_13.wav", "_nota": "Bajar una característica" }
-  ]
+    {
+      "id": "hit-super",
+      "source": "tsr-sfx-b2w2",
+      "entry": "Sound Effects/SEQ_SE/SEQ_SE_KOUKA_H.wav",
+      "_nota": "Golpe supereficaz"
+    },
+    {
+      "id": "hit-neutral",
+      "source": "tsr-sfx-b2w2",
+      "entry": "Sound Effects/SEQ_SE/SEQ_SE_KOUKA_M.wav",
+      "_nota": "Golpe neutro"
+    },
+    {
+      "id": "hit-weak",
+      "source": "tsr-sfx-b2w2",
+      "entry": "Sound Effects/SEQ_SE/SEQ_SE_KOUKA_L.wav",
+      "_nota": "Golpe poco eficaz"
+    },
+    {
+      "id": "ball-throw",
+      "source": "tsr-sfx-b2w2",
+      "entry": "Sound Effects/SEQ_SE/SEQ_SE_NAGERU.wav",
+      "_nota": "Lanzar la Poké Ball"
+    },
+    {
+      "id": "ball-open",
+      "source": "tsr-sfx-b2w2",
+      "entry": "Sound Effects/SEQ_SE/SEQ_SE_BOWA2.wav",
+      "_nota": "Abrir la Poké Ball (sale el Pokémon)"
+    },
+    {
+      "id": "faint",
+      "source": "tsr-sfx-b2w2",
+      "entry": "Sound Effects/SEQ_SE/SEQ_SE_DEAD.wav",
+      "_nota": "Debilitado, al caer el sprite"
+    },
+    {
+      "id": "low-hp",
+      "source": "tsr-sfx-b2w2",
+      "entry": "Sound Effects/SEQ_SE/SEQ_SE_HINSHI.wav",
+      "_nota": "Pitido de vida baja, en bucle mientras el Pokémon del jugador está en rojo (hinshi: «a punto de caer»)"
+    },
+    {
+      "id": "menu-select",
+      "source": "tsr-sfx-b2w2",
+      "entry": "Sound Effects/SEQ_SE/SEQ_SE_DECIDE1.wav",
+      "_nota": "Elegir en el menú de batalla"
+    },
+    {
+      "id": "menu-cancel",
+      "source": "tsr-sfx-b2w2",
+      "entry": "Sound Effects/SEQ_SE/SEQ_SE_CANCEL1.wav",
+      "_nota": "Volver o cerrar en el menú de batalla"
+    },
+    {
+      "id": "status-slp",
+      "source": "tsr-sfx-b2w2",
+      "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_01.wav",
+      "_nota": "Dormido"
+    },
+    {
+      "id": "status-psn",
+      "source": "tsr-sfx-b2w2",
+      "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_02.wav",
+      "_nota": "Envenenado"
+    },
+    {
+      "id": "status-brn",
+      "source": "tsr-sfx-b2w2",
+      "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_03.wav",
+      "_nota": "Quemado"
+    },
+    {
+      "id": "status-frz",
+      "source": "tsr-sfx-b2w2",
+      "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_04.wav",
+      "_nota": "Congelado"
+    },
+    {
+      "id": "status-par",
+      "source": "tsr-sfx-b2w2",
+      "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_05.wav",
+      "_nota": "Paralizado"
+    },
+    {
+      "id": "status-confusion",
+      "source": "tsr-sfx-b2w2",
+      "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_06.wav",
+      "_nota": "Confuso"
+    },
+    {
+      "id": "berry",
+      "source": "tsr-sfx-b2w2",
+      "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_10.wav",
+      "_nota": "Comerse una baya"
+    },
+    {
+      "id": "stat-up",
+      "source": "tsr-sfx-b2w2",
+      "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_12.wav",
+      "_nota": "Subir una característica"
+    },
+    {
+      "id": "stat-down",
+      "source": "tsr-sfx-b2w2",
+      "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_13.wav",
+      "_nota": "Bajar una característica"
+    }
+  ],
+  "trainers": {
+    "_nota": "Tema propio de un entrenador, en vez del de su categoría y región (gym-<región> o champion-<región>).",
+    "mirto": "champion-alder",
+    "cheren": "rival-cheren"
+  }
 }

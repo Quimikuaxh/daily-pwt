@@ -9,6 +9,8 @@ export type SyncOp =
   | { kind: 'turn'; date: string; decisions: Decision[]; state: TurnState }
   | { kind: 'finish'; date: string; ended: EngineEnd; decisions: Decision[] }
   | { kind: 'void'; date: string; reason: VoidReason }
+  /** F5: la repetición, tras el final del oficial (va detrás en la cola: el servidor solo la acepta de un oficial terminado). */
+  | { kind: 'replay'; date: string; data: string }
 
 export const outboxKey = (userId: string) => `daily-pwt:outbox:${userId}`
 
@@ -106,6 +108,8 @@ export class CloudSync {
         return
       case 'void':
         return this.api.voidOfficial(op.date, op.reason)
+      case 'replay':
+        return this.api.saveReplay(op.date, op.data)
     }
   }
 }

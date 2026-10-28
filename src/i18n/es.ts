@@ -310,6 +310,8 @@ export const es = {
     exitBodyOfficial: 'El combate oficial queda guardado: podrás reanudarlo desde Hoy. No cuenta como otro intento.',
     forfeitBodyOfficial: 'Si te rindes, el combate oficial cuenta como derrota y hoy no podrás repetirlo.',
     modeOfficial: 'OFICIAL',
+    modeReplay: 'REPETICIÓN',
+    modeReplayLabel: 'Repetición del combate',
     modePractice: 'PRÁCTICA',
     modeLabel: (official: boolean) => (official ? 'Combate oficial' : 'Combate de práctica'),
     exitConfirm: 'Sí, salir',
@@ -336,6 +338,12 @@ export const es = {
     rematch: 'Otro combate',
     officialRecorded: 'Combate oficial registrado. «Otro combate» es una práctica: no cuenta para nada.',
     practiceNote: 'Práctica: no cuenta para nada.',
+    watchReplay: 'Ver repetición',
+    shareReplay: 'Compartir repetición',
+    replaySharing: 'Creando el enlace…',
+    replayCopied: 'Enlace de la repetición copiado.',
+    replayCopyFailed: 'No se ha podido copiar; copia el enlace a mano:',
+    replayShareFailed: 'No se ha podido compartir: hace falta conexión con el servidor. Puedes hacerlo luego desde el Historial.',
   },
 
   stats: {
@@ -386,6 +394,14 @@ export const es = {
   // Cuenta, rankings y amigos (F4): aquí solo lo que se pinta al cargar; el resto, en `esCloud.ts`, fuera de la ruta crítica (E2E-21).
   account: {
     open: 'Cuenta',
+    verified: 'Con cuenta',
+    /** Nombre accesible del icono Cuenta con sesión de Google (RF-96b). */
+    openSignedIn: (nickname: string) => `Cuenta: ${nickname} (con cuenta de Google)`,
+    sessionLost: 'Se ha cerrado tu sesión de Google. Vuelve a iniciarla desde el icono Cuenta; mientras tanto, juegas sin cuenta.',
+  },
+
+  history: {
+    open: 'Historial',
   },
 
   ranking: {

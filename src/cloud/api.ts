@@ -22,6 +22,21 @@ export type StreakRow = { rank: number; nickname: string | null; verified: boole
 /** Una página de 20 de un ranking (RF-108). `myPage`: la página del jugador, o `null` si no aparece. */
 export type RankingPage<Row> = { page: number; pages: number; total: number; myPage: number | null; rows: Row[] }
 
+/** Un oficial del historial (F5, RF-124): su resultado y, si se compartió, el id del enlace. */
+export type HistoryItem = {
+  date: string
+  challengeNumber: number
+  trainerId: string
+  variantId: string
+  status: 'won' | 'lost'
+  turns: number | null
+  survivors: number | null
+  sharedId: string | null
+}
+
+/** Repetición compartida (RF-132). `mine`: la compartió quien la está viendo (puede borrarla, RF-133). */
+export type SharedReplay = { id: string; nickname: string | null; date: string; challengeNumber: number; trainerId: string; data: string; mine: boolean }
+
 /** Relación con otro jugador: amigo, solicitud recibida, solicitud enviada o ninguna. */
 export type Relation = 'friend' | 'incoming' | 'outgoing' | 'none'
 export type PlayerRow = { nickname: string; relation: Relation }
@@ -49,6 +64,14 @@ export interface CloudApi {
   cancelFriendRequest(nickname: string): Promise<void>
   removeFriend(nickname: string): Promise<void>
   listFriends(): Promise<PlayerRow[]>
+  /** F5: repetición comprimida del oficial de ese día (`encodeReplay`). */
+  saveReplay(date: string, data: string): Promise<void>
+  myHistory(): Promise<HistoryItem[]>
+  getMyReplay(date: string): Promise<string>
+  /** Crea el enlace (o devuelve el que hay) y da su id. */
+  shareReplay(date: string): Promise<string>
+  getSharedReplay(id: string): Promise<SharedReplay>
+  deleteSharedReplay(id: string): Promise<void>
 }
 
 /**

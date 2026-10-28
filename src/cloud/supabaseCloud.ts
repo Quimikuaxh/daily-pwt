@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { CloudError, type CloudApi, type CloudDay, type PlayerRow, type PointsRow, type RankingPage, type StreakRow, type Summary } from './api'
+import { CloudError, type CloudApi, type CloudDay, type HistoryItem, type PlayerRow, type PointsRow, type RankingPage, type SharedReplay, type StreakRow, type Summary } from './api'
 import type { Cloud } from './account'
 import { cloudConfig } from './config'
 import type { CloudAuth, Session } from './auth'
@@ -77,6 +77,12 @@ function supabaseApi(client: SupabaseClient): CloudApi {
     cancelFriendRequest: (nickname) => rpc('cancel_friend_request', { p_nickname: nickname }),
     removeFriend: (nickname) => rpc('remove_friend', { p_nickname: nickname }),
     listFriends: () => rpc<PlayerRow[]>('list_friends'),
+    saveReplay: (date, data) => rpc('save_replay', { p_date: date, p_data: data }),
+    myHistory: () => rpc<HistoryItem[]>('my_history'),
+    getMyReplay: (date) => rpc<string>('get_my_replay', { p_date: date }),
+    shareReplay: (date) => rpc<string>('share_replay', { p_date: date }),
+    getSharedReplay: (id) => rpc<SharedReplay>('get_shared_replay', { p_id: id }),
+    deleteSharedReplay: (id) => rpc('delete_shared_replay', { p_id: id }),
   }
 }
 
@@ -87,7 +93,9 @@ function supabaseAuth(client: SupabaseClient): CloudAuth {
 
   return {
     async getSession() {
-      const { data } = await client.auth.getSession()
+      // Con la sesión caducada, `getSession` la renueva. Si falla, el error dice por qué: red (se reintenta) o sesión que ya no vale.
+      const { data, error } = await client.auth.getSession()
+      if (error) throw toCloudError(error)
       return toSession(data.session?.user)
     },
     async signInAnonymously() {

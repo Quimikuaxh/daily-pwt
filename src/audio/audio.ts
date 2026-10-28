@@ -11,12 +11,15 @@ export const SFX_IDS = [
 export type SfxId = (typeof SFX_IDS)[number]
 export const VICTORY_MUSIC = 'victory-pwt'
 
+/** Temas propios por entrenador (`trainers` de `data/audio.json`): Mirto y Cheren, con los suyos de Negro y Blanco (Jose, 28/10/2026). */
+const TRAINER_MUSIC: Record<string, string> = (audioIndex as { trainers?: Record<string, string> }).trainers ?? {}
+
 /**
- * Tema del rival: `gym-<región>` para líderes y `champion-<región>` para campeones (los 53 tienen región, `build-audio.test.ts`). Sin
- * región, el de Teselia.
+ * Tema del rival: el suyo propio si lo tiene (`TRAINER_MUSIC`); si no, `gym-<región>` para líderes y `champion-<región>` para campeones
+ * (los 53 tienen región, `build-audio.test.ts`). Sin región, el de Teselia.
  */
-export const battleMusicFor = (trainer: { category: 'leader' | 'champion'; region: string | null }): string =>
-  `${trainer.category === 'leader' ? 'gym' : 'champion'}-${trainer.region ?? 'unova'}`
+export const battleMusicFor = (trainer: { id?: string; category: 'leader' | 'champion'; region: string | null }): string =>
+  (trainer.id ? TRAINER_MUSIC[trainer.id] : undefined) ?? `${trainer.category === 'leader' ? 'gym' : 'champion'}-${trainer.region ?? 'unova'}`
 
 function browserContext(): AudioContextLike | null {
   const Context = typeof window === 'undefined' ? undefined : (window.AudioContext ?? (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext)

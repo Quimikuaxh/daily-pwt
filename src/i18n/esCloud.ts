@@ -5,6 +5,7 @@
 export const esCloud = {
   account: {
     title: 'Cuenta',
+    history: 'Historial de combates',
     signIn: 'Iniciar sesión con Google',
     signingIn: 'Abriendo Google…',
     signInHint: 'Opcional. Con cuenta, tu historial y tus rachas se guardan en ella y te siguen en cualquier dispositivo, puedes añadir amigos y tu nombre lleva el tick de verificado y no caduca. Sin cuenta se juega igual y también sumas puntos.',
@@ -58,7 +59,6 @@ export const esCloud = {
     failed: 'No se ha podido cargar el ranking.',
     closedOnly: 'Solo cuentan los días ya cerrados: los puntos de hoy se suman a medianoche (hora de Madrid).',
     signInToAppear: 'Inicia sesión para ver el ranking de tus amigos y llevar el tick de verificado.',
-    verified: 'Con cuenta',
     noName: '(sin nombre)',
   },
 

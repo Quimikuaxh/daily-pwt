@@ -60,6 +60,18 @@
       "loopStartSec": 71.29,
       "loopEndSec": 163.8112
     },
+    "champion-alder": {
+      "path": "audio/music/champion-alder.m4a",
+      "durationSec": 136,
+      "loopStartSec": 29.54,
+      "loopEndSec": 79.2076
+    },
+    "rival-cheren": {
+      "path": "audio/music/rival-cheren.m4a",
+      "durationSec": 99,
+      "loopStartSec": 45.72,
+      "loopEndSec": 83.911
+    },
     "victory-pwt": {
       "path": "audio/music/victory-pwt.m4a",
       "durationSec": 38
@@ -138,5 +150,9 @@
       "path": "audio/sfx/stat-down.m4a",
       "durationSec": 1.284
     }
+  },
+  "trainers": {
+    "mirto": "champion-alder",
+    "cheren": "rival-cheren"
   }
 }

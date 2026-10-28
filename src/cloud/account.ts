@@ -1,7 +1,7 @@
 import type { EngineEnd } from '../battle/protocol'
 import type { Decision, GameStore, NewOfficial, VoidReason } from '../storage/gameStore'
 import { accountStorageKey, LocalStorageStore } from '../storage/localStorageStore'
-import { CloudError, type CloudApi, type StartResult } from './api'
+import { CloudError, isPermanent, type CloudApi, type StartResult } from './api'
 import type { CloudAuth, Session } from './auth'
 import { CloudSync, outboxKey, type TurnState } from './cloudSync'
 import { isPlayer, type AccountState } from './state'
@@ -9,6 +9,12 @@ import { isPlayer, type AccountState } from './state'
 export { isPlayer, type AccountState }
 
 export type Cloud = { api: CloudApi; auth: CloudAuth }
+
+/**
+ * Marca de que este navegador tenía abierta una sesión de Google (RF-96b). Si al abrir la web ya no está, la sesión se perdió (caducó, se
+ * cerró en otro sitio o falló su renovación) y se avisa, en vez de pasar sin decir nada a jugar sin cuenta. Se quita al cerrar sesión.
+ */
+export const ACCOUNT_SESSION_KEY = 'daily-pwt:account-session'
 
 /** Código para pasar a la cuenta lo jugado sin cuenta, guardado mientras se va a Google y se vuelve. */
 export const GUEST_CLAIM_KEY = 'daily-pwt:guest-claim'
@@ -25,6 +31,8 @@ export class Account {
   private readonly listeners = new Set<() => void>()
   private readonly conflictListeners = new Set<ConflictListener>()
   private cloud: Cloud | null = null
+  /** La sesión de Google de este navegador se perdió al abrir la web (RF-96b): App lo avisa en Hoy. */
+  sessionLost = false
   private sync: CloudSync | null = null
   private accountStore: LocalStorageStore | null = null
 
@@ -67,10 +75,29 @@ export class Account {
     try {
       this.cloud = await this.cloudLoader
       if (!this.cloud) return this.set({ status: 'disabled' })
-      const session = (await this.cloud.auth.getSession()) ?? (await this.cloud.auth.signInAnonymously())
-      await this.open(session)
+      // Un fallo de red al renovar la sesión no la sustituye por una anónima (perdería la de Google): se sigue en local (`offline`) y se
+      // reintenta en la próxima carga. Si el servidor la rechaza, ya no vale: se avisa y se juega sin cuenta.
+      let session: Session | null
+      try {
+        session = await this.cloud.auth.getSession()
+      } catch (error) {
+        if (!isPermanent(error)) throw error
+        session = null
+      }
+      if (!session) this.noteLostSession()
+      await this.open(session ?? (await this.cloud.auth.signInAnonymously()))
     } catch {
       this.set({ status: 'offline' })
+    }
+  }
+
+  private noteLostSession(): void {
+    try {
+      if (!this.storage || this.storage.getItem(ACCOUNT_SESSION_KEY) === null) return
+      this.storage.removeItem(ACCOUNT_SESSION_KEY)
+      this.sessionLost = true
+    } catch {
+      // Sin almacenamiento no hay marca: no se puede saber si había sesión.
     }
   }
 
@@ -92,6 +119,11 @@ export class Account {
     }
     const profile = await cloud.api.ensureProfile()
     const claimed = await this.claimGuest(cloud)
+    try {
+      this.storage?.setItem(ACCOUNT_SESSION_KEY, session.userId)
+    } catch {
+      // Sin almacenamiento no se podrá avisar si la sesión se pierde; nada más.
+    }
     this.accountStore = new LocalStorageStore(this.storage, undefined, accountStorageKey(session.userId))
     // Primero lo pendiente de enviar; luego se sube el historial del navegador (RF-97) y se baja el de la cuenta.
     await this.sync.flush()
@@ -175,6 +207,11 @@ export class Account {
   /** RF-96: vuelve al modo local (con una sesión anónima nueva); lo guardado en el navegador no se borra. */
   async signOut(): Promise<void> {
     if (!this.cloud) return
+    try {
+      this.storage?.removeItem(ACCOUNT_SESSION_KEY)
+    } catch {
+      // Sin almacenamiento no hay marca que quitar.
+    }
     await this.cloud.auth.signOut()
     this.accountStore = null
     this.sync = null
@@ -206,6 +243,22 @@ export class Account {
 
   officialFinished(date: string, ended: EngineEnd, decisions: Decision[]): void {
     void this.sync?.enqueue({ kind: 'finish', date, ended, decisions: [...decisions] }).then(() => this.refreshSummary())
+  }
+
+  /**
+   * F5, RF-135: enlace de la repetición de ese día. Antes envía lo pendiente (la repetición puede estar aún en la cola).
+   */
+  async shareReplay(date: string): Promise<string> {
+    const api = this.api
+    if (!api) throw new CloudError('offline', false)
+    await this.sync?.flush()
+    if ((this.sync?.pending ?? 0) > 0) throw new CloudError('offline', false)
+    return api.shareReplay(date)
+  }
+
+  /** F5: la repetición del oficial terminado (comprimida); se envía tras su final. */
+  replayRecorded(date: string, data: string): void {
+    void this.sync?.enqueue({ kind: 'replay', date, data })
   }
 
   officialVoided(date: string, reason: VoidReason): void {

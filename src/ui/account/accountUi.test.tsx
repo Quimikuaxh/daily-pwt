@@ -49,7 +49,10 @@ describe('cuenta en la interfaz (UT-100)', () => {
     expect(within(settings).getByText(/se guardan en tu cuenta/)).toBeInTheDocument()
     expect(within(settings).queryByLabelText('Nickname')).toBeNull()
     await user.click(within(settings).getByRole('button', { name: 'Cerrar' }))
-    await user.click(screen.getByRole('button', { name: 'Cuenta' }))
+    // RF-96b: con cuenta de Google, el icono lleva el tick y el nickname.
+    expect(screen.getByRole('button', { name: 'Cuenta: Jose (con cuenta de Google)' })).toHaveTextContent('Jose')
+    expect(within(screen.getByRole('navigation')).getByRole('img', { name: 'Con cuenta' })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /^Cuenta/ }))
     const dialog = await screen.findByRole('dialog', { name: 'Cuenta' })
     const input = await within(dialog).findByLabelText('Nickname')
     expect(within(dialog).getByText('Sesión iniciada con Google.')).toBeInTheDocument()

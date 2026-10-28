@@ -133,3 +133,38 @@ describe('ResultScreen con historial (F3: estadísticas y compartir)', () => {
     expect(screen.queryByRole('dialog')).toBeNull()
   })
 })
+
+// UT-109 · F5 (RF-135): «Ver repetición» y «Compartir repetición» en el resultado del oficial.
+describe('ResultScreen: repetición del oficial (UT-109)', () => {
+  const official = { result: 'win' as const, reason: 'faint' as const, turns: 12, playerAlive: 4, rivalFainted: 6, playerFainted: [false, true, false, false, true, false] }
+
+  it('«Ver repetición» la abre; «Compartir repetición» copia el enlace', async () => {
+    const user = userEvent.setup()
+    const writeText = vi.fn(async () => undefined)
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } })
+    const onWatch = vi.fn()
+    const onShare = vi.fn(async () => 'https://quimikuaxh.github.io/daily-pwt/?replay=abcde12345')
+    render(<ResultScreen ended={official} mode="official" onBackToToday={vi.fn()} onRematch={vi.fn()} replay={{ onWatch, onShare }} />)
+    await user.click(screen.getByRole('button', { name: 'Ver repetición' }))
+    expect(onWatch).toHaveBeenCalled()
+    await user.click(screen.getByRole('button', { name: 'Compartir repetición' }))
+    expect(writeText).toHaveBeenCalledWith('https://quimikuaxh.github.io/daily-pwt/?replay=abcde12345')
+    expect(await screen.findByText('Enlace de la repetición copiado.')).toBeInTheDocument()
+  })
+
+  it('sin sesión no hay «Compartir»; si compartir falla, avisa y remite al Historial', async () => {
+    const user = userEvent.setup()
+    const { unmount } = render(<ResultScreen ended={official} mode="official" onBackToToday={vi.fn()} onRematch={vi.fn()} replay={{ onWatch: vi.fn() }} />)
+    expect(screen.getByRole('button', { name: 'Ver repetición' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Compartir repetición' })).toBeNull()
+    unmount()
+    render(<ResultScreen ended={official} mode="official" onBackToToday={vi.fn()} onRematch={vi.fn()} replay={{ onWatch: vi.fn(), onShare: async () => Promise.reject(new Error('offline')) }} />)
+    await user.click(screen.getByRole('button', { name: 'Compartir repetición' }))
+    expect(await screen.findByText(/desde el Historial/)).toBeInTheDocument()
+  })
+
+  it('la práctica no tiene repetición', () => {
+    render(<ResultScreen ended={official} mode="practice" onBackToToday={vi.fn()} onRematch={vi.fn()} />)
+    expect(screen.queryByRole('button', { name: 'Ver repetición' })).toBeNull()
+  })
+})

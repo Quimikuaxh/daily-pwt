@@ -27,6 +27,17 @@ function loopOf(item) {
   return { loopStartSec: start, loopEndSec: end }
 }
 
+/**
+ * Tema propio de cada entrenador que no usa el de su categoría y región (`trainers` del manifiesto, sin las claves `_…`). Cada tema
+ * tiene que ser una pista de `music`.
+ */
+export function trainerMusicOf(manifest) {
+  const music = new Set(manifest.music.map((item) => item.id))
+  const entries = Object.entries(manifest.trainers ?? {}).filter(([trainerId]) => !trainerId.startsWith('_'))
+  for (const [trainerId, trackId] of entries) if (!music.has(trackId)) throw new Error(`Tema desconocido para ${trainerId}: ${trackId}`)
+  return Object.fromEntries(entries)
+}
+
 /** Valida el manifiesto y devuelve cada pista con su origen, su URL o entrada del ZIP y su destino en public/audio. */
 export function planAudio(manifest) {
   const seen = new Set()
@@ -81,7 +92,7 @@ function extractEntry(zip, entry) {
 async function main() {
   const force = process.argv.includes('--force')
   const manifest = JSON.parse(readFileSync(MANIFEST_PATH, 'utf8'))
-  const index = { music: {}, sfx: {} }
+  const index = { music: {}, sfx: {}, trainers: trainerMusicOf(manifest) }
   const failures = []
   for (const item of planAudio(manifest)) {
     const target = resolve(AUDIO_DIR, item.path.replace(/^audio\//, ''))

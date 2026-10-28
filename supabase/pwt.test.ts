@@ -423,3 +423,83 @@ describe('traspaso de la sesión anónima a la cuenta (UT-104)', () => {
     await expect(t.call(await t.user(true), `select pwt.claim_guest($1)`, [code])).rejects.toThrow('not_registered')
   })
 })
+
+// UT-105 · F5 (REQUISITOS-F5, DEC-67): historial de 20 repeticiones y compartidas (como máximo 20 por jugador).
+describe('historial y repeticiones (UT-105)', () => {
+  const finished = async (player: Caller & {}, date: string) => seedDay((player as { id: string }).id, date, 'won', 4)
+
+  it('guarda la repetición de un oficial propio terminado; al pasar de 20, la más antigua se borra y su resultado se queda', async () => {
+    const player = await t.user()
+    for (let offset = 0; offset < 22; offset++) {
+      const date = addDays(t.today, -30 + offset)
+      await finished(player, date)
+      await t.as(player, `select pwt.save_replay($1::date, $2)`, [date, `datos-${offset}`])
+    }
+    const history = await t.call<Array<Record<string, unknown>>>(player, `select pwt.my_history()`)
+    expect(history).toHaveLength(20)
+    expect(history[0]).toMatchObject({ date: addDays(t.today, -9), status: 'won', survivors: 4, trainerId: 'misty', sharedId: null })
+    expect(history.at(-1)?.date).toBe(addDays(t.today, -28))
+    expect(await t.admin(`select count(*)::int as days from pwt.day_results where user_id = $1`, [player.id])).toEqual([{ days: 22 }])
+    expect(await t.call(player, `select pwt.get_my_replay($1::date)`, [addDays(t.today, -9)])).toBe('datos-21')
+    await expect(t.call(player, `select pwt.get_my_replay($1::date)`, [addDays(t.today, -30)])).rejects.toThrow('replay_not_found')
+  })
+
+  it('no guarda de un día sin terminar, de otro jugador ni datos vacíos o enormes', async () => {
+    const [player, other] = [await t.user(), await t.user()]
+    await t.call(player, START, [t.today])
+    await expect(t.as(player, `select pwt.save_replay($1::date, 'x')`, [t.today])).rejects.toThrow('not_finished')
+    await finished(other, addDays(t.today, -1))
+    await expect(t.as(player, `select pwt.save_replay($1::date, 'x')`, [addDays(t.today, -1)])).rejects.toThrow('not_finished')
+    await finished(player, addDays(t.today, -1))
+    await expect(t.as(player, `select pwt.save_replay($1::date, '')`, [addDays(t.today, -1)])).rejects.toThrow('invalid_replay')
+    await expect(t.as(player, `select pwt.save_replay($1::date, $2)`, [addDays(t.today, -1), 'x'.repeat(70_000)])).rejects.toThrow('invalid_replay')
+    await expect(t.as(null, `select pwt.save_replay($1::date, 'x')`, [addDays(t.today, -1)])).rejects.toThrow()
+  })
+
+  it('compartir crea un enlace que se abre sin sesión, es el mismo si se repite y sobrevive al historial; su dueño lo puede borrar', async () => {
+    const [owner, stranger] = [await t.user(), await t.user()]
+    await t.call(owner, `select pwt.ensure_profile()`)
+    await t.call(owner, `select pwt.set_nickname('Comparte')`)
+    const date = addDays(t.today, -2)
+    await finished(owner, date)
+    await t.as(owner, `select pwt.save_replay($1::date, 'grabacion')`, [date])
+    const id = await t.call<string>(owner, `select pwt.share_replay($1::date)`, [date])
+    expect(id).toMatch(/^[a-z0-9]{10}$/)
+    expect(await t.call(owner, `select pwt.share_replay($1::date)`, [date])).toBe(id)
+    expect(await t.call(null, `select pwt.get_shared_replay($1)`, [id])).toMatchObject({ id, nickname: 'Comparte', date, challengeNumber: 1, trainerId: 'misty', data: 'grabacion', mine: false })
+    expect(await t.call(owner, `select pwt.get_shared_replay($1)`, [id])).toMatchObject({ mine: true })
+    expect((await t.call<Array<Record<string, unknown>>>(owner, `select pwt.my_history()`))[0]).toMatchObject({ sharedId: id })
+    // Sale del historial (se borra la repetición), pero el enlace sigue.
+    await t.admin(`delete from pwt.replays where user_id = $1`, [owner.id])
+    expect(await t.call(null, `select pwt.get_shared_replay($1)`, [id])).toMatchObject({ data: 'grabacion' })
+    await expect(t.as(stranger, `select pwt.delete_shared_replay($1)`, [id])).rejects.toThrow('replay_not_found')
+    await t.as(owner, `select pwt.delete_shared_replay($1)`, [id])
+    await expect(t.call(null, `select pwt.get_shared_replay($1)`, [id])).rejects.toThrow('replay_not_found')
+  })
+
+  it('como máximo 20 compartidas por jugador: la 21.ª borra la más antigua; las demás siguen en el historial con su enlace', async () => {
+    const owner = await t.user(true)
+    const ids: string[] = []
+    for (let offset = 0; offset < 21; offset++) {
+      const date = addDays(t.today, -60 + offset)
+      await finished(owner, date)
+      await t.as(owner, `select pwt.save_replay($1::date, 'g')`, [date])
+      ids.push(await t.call<string>(owner, `select pwt.share_replay($1::date)`, [date]))
+    }
+    expect(await t.admin(`select count(*)::int as shared from pwt.shared_replays where owner = $1`, [owner.id])).toEqual([{ shared: 20 }])
+    await expect(t.call(null, `select pwt.get_shared_replay($1)`, [ids[0]])).rejects.toThrow('replay_not_found')
+    expect(await t.call(null, `select pwt.get_shared_replay($1)`, [ids[1]])).toMatchObject({ id: ids[1] })
+    // El historial también guarda 20: el día de la primera ya no está; los demás conservan su enlace.
+    const history = await t.call<Array<Record<string, unknown>>>(owner, `select pwt.my_history()`)
+    expect(history).toHaveLength(20)
+    expect(history.find((item) => item.date === addDays(t.today, -60))).toBeUndefined()
+    expect(history.find((item) => item.date === addDays(t.today, -59))?.sharedId).toBe(ids[1])
+    expect(history.find((item) => item.date === addDays(t.today, -40))?.sharedId).toBe(ids[20])
+  })
+
+  it('las tablas no se leen desde la API', async () => {
+    const player = await t.user()
+    await expect(t.as(player, `select * from pwt.replays`)).rejects.toThrow()
+    await expect(t.as(null, `select * from pwt.shared_replays`)).rejects.toThrow()
+  })
+})

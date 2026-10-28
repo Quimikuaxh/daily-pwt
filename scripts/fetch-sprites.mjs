@@ -179,21 +179,27 @@ function wikidexFileStem(trainer) {
 }
 
 /**
- * WikiDex: <Nombre>_N2B2.gif y <Nombre>_N2B2_mini.png. La URL del CDN sale de las páginas en caché y, si falta, de la API;
+ * Nombres del sprite de mapa en WikiDex, por orden: `<Nombre>_N2B2_mini.png` y, para los de Teselia, que WikiDex guarda con otro nombre,
+ * `<Nombre>_mini_NB.png` (Mirto, Cintia; antes que `_mini`, que en Cintia es el de otra región) y `<Nombre>_mini.png` (Millo, Aloe…).
+ */
+export const miniFileCandidates = (stem) => [`${stem}_N2B2_mini.png`, `${stem}_mini_NB.png`, `${stem}_mini.png`]
+
+/**
+ * WikiDex: <Nombre>_N2B2.gif y su sprite de mapa (`miniFileCandidates`). La URL del CDN sale de las páginas en caché y, si falta, de la API;
  * si el CDN no responde (images.wikidexcdn.net no es alcanzable desde algunas redes) se usa la copia de Internet Archive de esa misma URL.
  */
 async function fetchTrainerSprites(trainers) {
   const files = trainers
     .flatMap((trainer) => [
-      { wikiFile: `${wikidexFileStem(trainer)}_N2B2.gif`, relativePath: `trainers/${trainer.sprite}.gif`, type: 'gif' },
-      { wikiFile: `${wikidexFileStem(trainer)}_N2B2_mini.png`, relativePath: `trainers/${trainer.sprite}-mini.png`, type: 'png' },
+      { wikiFiles: [`${wikidexFileStem(trainer)}_N2B2.gif`], relativePath: `trainers/${trainer.sprite}.gif`, type: 'gif' },
+      { wikiFiles: miniFileCandidates(wikidexFileStem(trainer)), relativePath: `trainers/${trainer.sprite}-mini.png`, type: 'png' },
     ])
     .filter((file) => !hasValidImage(file.relativePath, file.type))
   const urlByFileName = cdnUrlsFromCachedWikidexPages()
-  const filesWithoutUrl = files.filter((file) => !urlByFileName.has(file.wikiFile))
+  const namesWithoutUrl = files.flatMap((file) => file.wikiFiles).filter((name) => !urlByFileName.has(name))
   // La API de MediaWiki admite como mucho 50 títulos por consulta.
-  for (let start = 0; start < filesWithoutUrl.length; start += WIKIDEX_TITLES_PER_QUERY) {
-    const titles = filesWithoutUrl.slice(start, start + WIKIDEX_TITLES_PER_QUERY).map((file) => `Archivo:${file.wikiFile}`).join('|')
+  for (let start = 0; start < namesWithoutUrl.length; start += WIKIDEX_TITLES_PER_QUERY) {
+    const titles = namesWithoutUrl.slice(start, start + WIKIDEX_TITLES_PER_QUERY).map((name) => `Archivo:${name}`).join('|')
     const query = `${WIKIDEX_API_URL}?action=query&format=json&formatversion=2&prop=imageinfo&iiprop=url&titles=${encodeURIComponent(titles)}`
     try {
       const answer = JSON.parse((await fetchWithRetries(query, 2)).toString('utf8'))
@@ -209,7 +215,8 @@ async function fetchTrainerSprites(trainers) {
 
   const failures = []
   for (const file of files) {
-    const cdnUrl = urlByFileName.get(file.wikiFile)
+    // El primer nombre que existe en WikiDex.
+    const cdnUrl = file.wikiFiles.map((name) => urlByFileName.get(name)).find(Boolean)
     let ok = false
     if (cdnUrl) {
       ok = await download(cdnUrl, file.relativePath, file.type, { retries: 1 })
