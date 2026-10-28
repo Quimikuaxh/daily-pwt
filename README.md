@@ -87,9 +87,8 @@ Configuración única del repositorio: Settings > Pages > Source = **GitHub Acti
 Opcional: sin configurar, el juego funciona entero en local (sin cuentas ni rankings). Usa el proyecto de Supabase de claude-test, con todo lo de daily-pwt en el esquema `pwt` ([DEC-63](docs/ARQUITECTURA.md)).
 
 1. En el proyecto de Supabase:
-   - Authentication → Providers → **Google** activado (cliente OAuth de Google Cloud con los orígenes autorizados).
-   - Authentication → Sign In / Providers: **Allow anonymous sign-ins** activado (la sesión anónima hace contar el oficial sin cuenta en la media del día; al entrar con Google, lo jugado pasa a la cuenta con un código de un solo uso). «Enable manual linking» no hace falta.
-   - Authentication → URL Configuration → Redirect URLs: `https://quimikuaxh.github.io/daily-pwt/` y `http://localhost:5173/`.
+   - Authentication → Providers → **Google** activado con el ID y el secreto del cliente OAuth. El login usa el botón oficial de Google y `signInWithIdToken` ([DEC-70](docs/ARQUITECTURA.md)): en Google Cloud, el cliente necesita en «Orígenes de JavaScript autorizados» `https://quimikuaxh.github.io`, `http://localhost` y `http://localhost:5173`; no necesita URI de redirección ni el dominio de Supabase. El ID del cliente está en `src/cloud/config.ts` (`GOOGLE_CLIENT_ID`).
+   - Authentication → Sign In / Providers: proveedor **Email desactivado** (si no, cualquiera crearía cuentas con tick sin Google) y **Allow anonymous sign-ins** activado (la sesión anónima hace contar el oficial sin cuenta en la media del día; al entrar con Google, lo jugado pasa a la cuenta con un código de un solo uso). «Enable manual linking» no hace falta.
    - Database → Extensions: **pg_cron** activada (cierre del día cada hora y liberación diaria de los nombres de jugadores sin cuenta inactivos 30 días).
    - SQL Editor: ejecutar las migraciones de `supabase/migrations/` en orden de nombre (cada una se puede volver a ejecutar; crean lo que falte y redefinen las funciones). Con `pg_cron` activada, programa `pwt-close-days` y `pwt-release-nicknames`; si se activa después, volver a ejecutarla.
    - Project Settings → API → **Exposed schemas**: añadir `pwt`.
@@ -108,7 +107,7 @@ npx supabase stop           # para los contenedores (conserva los datos)
 ```
 
 1. Tras el primer `start`, crear `.env.development.local` (ignorado por git) con `VITE_SUPABASE_URL=http://127.0.0.1:54321` y `VITE_SUPABASE_ANON_KEY=` la clave `ANON_KEY` de `npx supabase status -o env`. Sin este fichero, `npm run dev` usa producción.
-2. Login con Google en local: `supabase/.env` (ignorado por git) con `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID` y `SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET` (los del cliente OAuth de producción), y en ese cliente de Google, `http://127.0.0.1:54321/auth/v1/callback` en «URI de redireccionamiento autorizados». Sin esto, en local se juega sin cuenta (sesión anónima) igual.
+2. Login con Google en local: `supabase/.env` (ignorado por git) con `SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID` y `SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET` (los del cliente OAuth de producción), y abrir la web en `http://localhost:5173` (no en `127.0.0.1`: el botón de Google solo funciona en los orígenes autorizados). Sin esto, en local se juega sin cuenta (sesión anónima) igual.
 3. La configuración local está en `supabase/config.toml` (sesiones anónimas, esquema `pwt` publicado, Google, redirección a `http://localhost:5173/`). Producción no la lee: se configura en su panel.
 
 La clave `anon` es pública por diseño: las tablas tienen RLS sin políticas y el cliente solo puede llamar a las funciones de la API del esquema `pwt`, que comprueban quién llama.

@@ -12,6 +12,12 @@
   font-size: 18px;
 }
 
+/* Botón de Google (DEC-70): su iframe trae `margin: -2px -10px`; el margen lo separa del texto como los demás botones. */
+.google-signin {
+  min-height: 44px;
+  margin-top: 12px;
+}
+
 .account-actions {
   margin-top: 16px;
 }

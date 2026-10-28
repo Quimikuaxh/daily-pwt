@@ -11,9 +11,6 @@ function toCloudError(error: { message?: string; code?: string } | null | undefi
   return new CloudError(permanent && code === 'P0001' ? (error?.message ?? code) : code || (error?.message ?? 'network'), permanent)
 }
 
-/** La página a la que vuelve Google: la misma, sin parámetros (funciona en Pages, `/daily-pwt/`, y en desarrollo). */
-const returnUrl = () => `${window.location.origin}${window.location.pathname}`
-
 function supabaseApi(client: SupabaseClient): CloudApi {
   async function rpc<T>(name: string, args: Record<string, unknown> = {}): Promise<T> {
     let result
@@ -89,7 +86,6 @@ function supabaseApi(client: SupabaseClient): CloudApi {
 function supabaseAuth(client: SupabaseClient): CloudAuth {
   const toSession = (user: { id: string; is_anonymous?: boolean } | null | undefined): Session | null =>
     user ? { userId: user.id, anonymous: user.is_anonymous ?? false } : null
-  const google = () => ({ provider: 'google' as const, options: { redirectTo: returnUrl() } })
 
   return {
     async getSession() {
@@ -104,9 +100,11 @@ function supabaseAuth(client: SupabaseClient): CloudAuth {
       if (error || !session) throw toCloudError(error)
       return session
     },
-    async signInWithGoogle() {
-      const { error } = await client.auth.signInWithOAuth(google())
-      if (error) throw toCloudError(error)
+    async signInWithGoogle({ token, nonce }) {
+      const { data, error } = await client.auth.signInWithIdToken({ provider: 'google', token, nonce })
+      const session = toSession(data.user)
+      if (error || !session) throw toCloudError(error)
+      return session
     },
     async signOut() {
       await client.auth.signOut()

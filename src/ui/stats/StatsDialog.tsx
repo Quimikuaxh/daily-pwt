@@ -33,10 +33,11 @@ export function StatsDialog({ store, today, onClose, account, accountState }: St
   const withAccount = Boolean(account && accountState && accountState.status !== 'disabled')
   const member = accountState?.status === 'signedIn'
   const pending = accountState && isPlayer(accountState) ? (accountState.summary?.incomingRequests ?? 0) : 0
-  const tabs: { id: Tab; label: string }[] = [
+  // RF-111: en «Amigos», una bolita naranja con las solicitudes pendientes (decisión de Jose, 28/10/2026; antes, «Amigos (2)»).
+  const tabs: { id: Tab; label: string; badge?: number; accessibleName?: string }[] = [
     { id: 'mine', label: es.ranking.tabMine },
     { id: 'rankings', label: es.ranking.tabRankings },
-    { id: 'friends', label: pending > 0 ? es.ranking.tabFriendsPending(pending) : es.ranking.tabFriends },
+    { id: 'friends', label: es.ranking.tabFriends, ...(pending > 0 && { badge: pending, accessibleName: es.ranking.tabFriendsPending(pending) }) },
   ]
 
   return (
@@ -52,9 +53,11 @@ export function StatsDialog({ store, today, onClose, account, accountState }: St
               aria-selected={tab === option.id}
               aria-controls="stats-tabpanel"
               className="stats-tab"
+              aria-label={option.accessibleName}
               onClick={() => setTab(option.id)}
             >
               {option.label}
+              {option.badge !== undefined && <span className="tab-badge" aria-hidden="true">{option.badge}</span>}
             </button>
           ))}
         </div>

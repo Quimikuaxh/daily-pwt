@@ -67,6 +67,27 @@ export function useToday(data: GameData | null, dateOverride?: string, rivalOver
   return { challenge, countdown: formatCountdown(msUntilNextChallenge(now)), error }
 }
 
+/**
+ * Fecha del reto de Madrid que cambia sola a medianoche (RF-80b), con un temporizador hasta entonces (no uno por segundo, como `useNow`).
+ * Con `override` (ganchos de prueba, `?date=`), esa fecha fija.
+ */
+export function useChallengeDay(override?: string): string {
+  const [date, setDate] = useState(() => challengeDate(new Date()))
+  useEffect(() => {
+    if (override !== undefined) return
+    let timer: ReturnType<typeof setTimeout>
+    const schedule = () => {
+      const now = new Date()
+      setDate(challengeDate(now))
+      // Un poco después de la medianoche, para caer ya en el día nuevo.
+      timer = setTimeout(schedule, msUntilNextChallenge(now) + 50)
+    }
+    timer = setTimeout(schedule, msUntilNextChallenge(new Date()) + 50)
+    return () => clearTimeout(timer)
+  }, [override])
+  return override ?? date
+}
+
 /** Solo la cuenta atrás hasta la próxima medianoche de Madrid (Resultado, PRD §10.3). */
 export function useCountdown(): string {
   return formatCountdown(msUntilNextChallenge(useNow()))

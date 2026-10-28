@@ -197,12 +197,12 @@ describe('prácticas', () => {
 })
 
 describe('el día es el del reto, no el de la hora de terminar', () => {
-  it('un oficial empezado el día N y terminado tras medianoche cuenta para N; Hoy muestra el reto nuevo con su oficial libre', async () => {
+  it('un oficial terminado justo antes de medianoche cuenta para N; el resultado sigue en pantalla y Hoy muestra el reto nuevo', async () => {
     const { user } = mountApp(LAUNCH, 23, 59, 50)
     await startOfficial(user)
-    await settle(20_000)
     clients[0].emit(mkUpdate({ request: null, ended: WIN }))
-    await settle()
+    await settle(20_000)
+    expect(screen.getByRole('button', { name: /volver a hoy/i })).toBeInTheDocument()
     expect(store().getDay(LAUNCH)).toMatchObject({ status: 'won' })
     expect(store().getDay(addDays(LAUNCH, 1))).toBeNull()
     await user.click(screen.getByRole('button', { name: /volver a hoy/i }))
@@ -210,20 +210,36 @@ describe('el día es el del reto, no el de la hora de terminar', () => {
     expect(official()).toHaveTextContent(/jugar/i)
   })
 
-  it('con el oficial sin terminar tras medianoche, Hoy ofrece reanudar el del día anterior y el nuevo sigue libre', async () => {
+  it('RF-80b: un oficial a medias a medianoche es derrota: sale del combate a Hoy, con el aviso, el reto nuevo y su oficial libre', async () => {
     const { user } = mountApp(LAUNCH, 23, 59, 50)
     await startOfficial(user)
+    store().recordCheckpoint(LAUNCH, { decisions: 0, turn: 4, playerRemaining: 5, rivalRemaining: 3 })
+    expect(screen.getByTestId('battle-screen')).toBeInTheDocument()
     await settle(20_000)
-    await exitBattle(user)
+    expect(screen.queryByTestId('battle-screen')).toBeNull()
+    expect(screen.getByRole('alert')).toHaveTextContent('Tu combate oficial del reto #1 se quedó sin terminar a medianoche: cuenta como derrota')
     expect(screen.getByRole('banner')).toHaveTextContent('#2')
     expect(official()).toHaveTextContent(/jugar/i)
-    expect(screen.getByRole('button', { name: /reanudar el combate oficial del reto #1/i })).toBeEnabled()
-    await user.click(screen.getByRole('button', { name: /reanudar el combate oficial del reto #1/i }))
-    expect(lastClient().init.mock.calls[0][0]).toMatchObject({ battleSeed: clients[0].init.mock.calls[0][0].battleSeed })
-    lastClient().emit(mkUpdate({ request: null, ended: WIN }))
-    await settle()
-    expect(store().getDay(LAUNCH)?.status).toBe('won')
-    expect(store().getDay(addDays(LAUNCH, 1))).toBeNull()
+    expect(store().getDay(LAUNCH)).toMatchObject({ status: 'lost', endReason: 'expired', turns: 4, survivors: 5, battle: null })
+    expect(screen.queryByRole('button', { name: /reanudar/i })).toBeNull()
+  })
+
+  it('RF-80b: al abrir la web otro día con el oficial anterior a medias, ya es derrota y se avisa', async () => {
+    const first = mountApp(LAUNCH, 20)
+    await startOfficial(first.user)
+    first.unmount()
+    mountApp(addDays(LAUNCH, 2), 9)
+    expect(store().getDay(LAUNCH)).toMatchObject({ status: 'lost', endReason: 'expired', turns: 0 })
+    expect(screen.getByRole('alert')).toHaveTextContent(/reto #1 se quedó sin terminar/)
+    expect(official()).toHaveTextContent(/jugar/i)
+  })
+
+  it('una práctica a medianoche sigue con su reto', async () => {
+    const { user } = mountApp(LAUNCH, 23, 59, 50)
+    await chooseLead(user)
+    await user.click(practice())
+    await settle(20_000)
+    expect(screen.getByTestId('battle-mode')).toHaveAttribute('data-mode', 'practice')
   })
 })
 

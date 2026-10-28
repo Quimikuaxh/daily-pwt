@@ -119,10 +119,10 @@ describe('navegación', () => {
   })
 })
 
-describe('medianoche en combate (REQUISITOS §5)', () => {
+describe('medianoche en una práctica (REQUISITOS §5; el oficial, RF-80b en App.official)', () => {
   it('con combate en curso sigue el reto con que empezó: la pantalla de combate no cambia', async () => {
     const user = mountApp(LAUNCH, 23, 59, 50)
-    await startBattle(user)
+    await startBattle(user, 2, 'practice')
     await settle(20_000)
     expect(screen.getByTestId('battle-screen')).toBeInTheDocument()
     expect(initCalls()).toHaveLength(1)
@@ -130,7 +130,7 @@ describe('medianoche en combate (REQUISITOS §5)', () => {
 
   it('el "Otro combate" tras la medianoche sigue usando el reto original', async () => {
     const user = mountApp(LAUNCH, 23, 59, 50)
-    await startBattle(user)
+    await startBattle(user, 2, 'practice')
     await settle(20_000)
     await finish()
     await user.click(screen.getByRole('button', { name: /otro combate/i }))
@@ -140,7 +140,7 @@ describe('medianoche en combate (REQUISITOS §5)', () => {
 
   it('al volver a Hoy se muestra el reto nuevo (#2)', async () => {
     const user = mountApp(LAUNCH, 23, 59, 50)
-    await startBattle(user)
+    await startBattle(user, 2, 'practice')
     await settle(20_000)
     await finish()
     await user.click(screen.getByRole('button', { name: /volver a hoy/i }))

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Account } from '../../cloud/account'
@@ -8,6 +8,17 @@ import { cloudDay, fakeApi, fakeCloud, rankingPage } from '../../test-utils/clou
 import { MemoryStorage } from '../../test-utils/memoryStorage'
 import { testMenu } from '../../test-utils/ui'
 import { AppMenu } from '../menu/AppMenu'
+
+// El botón real lo pinta Google (DEC-70): aquí, uno que devuelve una credencial al pulsarlo.
+vi.mock('../../cloud/googleIdentity', () => ({
+  renderGoogleButton: async (parent: HTMLElement, onCredential: (credential: { token: string; nonce: string }) => void) => {
+    const button = document.createElement('button')
+    button.textContent = 'Iniciar sesión con Google'
+    button.onclick = () => onCredential({ token: 'id-token', nonce: 'nonce' })
+    parent.replaceChildren(button)
+  },
+  releaseGoogleButton: () => undefined,
+}))
 
 // UT-100 · F4 (RF-93, RF-95, RF-103 a RF-111): cuenta en Ajustes y en la cabecera, rankings y amigos dentro de Estadísticas.
 const TODAY = '2026-10-27'
@@ -32,8 +43,10 @@ describe('cuenta en la interfaz (UT-100)', () => {
     expect(within(screen.getByRole('navigation')).getAllByRole('button').map((button) => button.getAttribute('aria-label'))).toEqual(['Cuenta', 'Estadísticas', 'Ayuda', 'Ajustes'])
     await user.click(screen.getByRole('button', { name: 'Cuenta' }))
     const dialog = await screen.findByRole('dialog', { name: 'Cuenta' })
-    await user.click(within(dialog).getByRole('button', { name: 'Iniciar sesión con Google' }))
-    expect(cloud.auth.signInWithGoogle).toHaveBeenCalled()
+    await user.click(await within(dialog).findByRole('button', { name: 'Iniciar sesión con Google' }))
+    expect(cloud.auth.signInWithGoogle).toHaveBeenCalledWith({ token: 'id-token', nonce: 'nonce' })
+    // Sin recargar: la sesión de Google se abre y la ventana pasa a la de la cuenta.
+    expect(await within(dialog).findByText('Sesión iniciada con Google.')).toBeInTheDocument()
   })
 
   it('las solicitudes pendientes se avisan en Estadísticas (RF-111)', async () => {
@@ -172,7 +185,10 @@ describe('cuenta en la interfaz (UT-100)', () => {
     })
     const { user } = await mount(GOOGLE, api)
     await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
-    await user.click(await screen.findByRole('tab', { name: 'Amigos (1)' }))
+    const friendsTab = await screen.findByRole('tab', { name: 'Amigos: 1 solicitud de amistad pendiente' })
+    // RF-111: bolita naranja con el número.
+    expect(friendsTab.querySelector('.tab-badge')).toHaveTextContent('1')
+    await user.click(friendsTab)
     const incoming = await screen.findByRole('heading', { name: 'Solicitudes recibidas' })
     await user.click(within(incoming.parentElement as HTMLElement).getByRole('button', { name: 'Aceptar' }))
     expect(api.respondFriendRequest).toHaveBeenCalledWith('Eva', true)

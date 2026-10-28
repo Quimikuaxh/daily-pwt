@@ -8,7 +8,7 @@ export const esHelp = {
       title: 'Cómo se juega',
       items: [
         'Cada día hay un reto nuevo: un rival del Torneo Mundial Pokémon (PWT) de Negro 2 y Blanco 2, con uno de sus equipos del torneo, y un equipo de 6 Pokémon para ti. Es el mismo para todos y cambia a medianoche, hora de Madrid (en Canarias, a la 1:00).',
-        'Elige qué Pokémon sacas primero y empieza el combate oficial. Solo hay uno al día: si sales o recargas la página, se reanuda donde lo dejaste, y rendirse cuenta como derrota.',
+        'Elige qué Pokémon sacas primero y empieza el combate oficial. Solo hay uno al día: si sales o recargas la página, se reanuda donde lo dejaste, y rendirse cuenta como derrota. Hay que terminarlo ese mismo día: a medianoche (hora de Madrid), uno sin terminar cuenta como derrota.',
         'Las prácticas son ilimitadas, con el mismo reto, antes o después del oficial, y no cuentan para nada.',
         'Ganas si debilitas a los 6 Pokémon del rival.',
       ],

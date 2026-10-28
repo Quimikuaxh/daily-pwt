@@ -3,6 +3,7 @@ import type { Decision, GameStore, NewOfficial, VoidReason } from '../storage/ga
 import { accountStorageKey, LocalStorageStore } from '../storage/localStorageStore'
 import { CloudError, isPermanent, type CloudApi, type StartResult } from './api'
 import type { CloudAuth, Session } from './auth'
+import type { GoogleCredential } from './googleIdentity'
 import { CloudSync, outboxKey, type TurnState } from './cloudSync'
 import { isPlayer, type AccountState } from './state'
 
@@ -16,7 +17,7 @@ export type Cloud = { api: CloudApi; auth: CloudAuth }
  */
 export const ACCOUNT_SESSION_KEY = 'daily-pwt:account-session'
 
-/** Código para pasar a la cuenta lo jugado sin cuenta, guardado mientras se va a Google y se vuelve. */
+/** Código para pasar a la cuenta lo jugado sin cuenta: se pide antes de abrir la sesión de Google y se canjea al abrirla. */
 export const GUEST_CLAIM_KEY = 'daily-pwt:guest-claim'
 
 /** Otro dispositivo ya había empezado el oficial de este día (RF-98): el de aquí no cuenta y se enseña el de la cuenta. */
@@ -188,10 +189,10 @@ export class Account {
   }
 
   /**
-   * Va a Google en un solo paso. Sin cuenta, antes envía lo pendiente y pide el código para pasar a la cuenta lo jugado en este
-   * navegador (`GUEST_CLAIM_KEY`); si falla, se inicia sesión igual y eso se queda en la sesión anónima.
+   * Abre la sesión de Google con la credencial del botón, sin recargar. Sin cuenta, antes envía lo pendiente y pide el código para pasar a
+   * la cuenta lo jugado en este navegador (`GUEST_CLAIM_KEY`); si falla, se inicia sesión igual y eso se queda en la sesión anónima.
    */
-  async signIn(): Promise<void> {
+  async signIn(credential: GoogleCredential): Promise<void> {
     if (!this.cloud) throw new CloudError('disabled', true)
     if (this.state.status === 'guest') {
       try {
@@ -201,7 +202,26 @@ export class Account {
         // Sin código: se entra en la cuenta sin traspaso.
       }
     }
-    return this.cloud.auth.signInWithGoogle()
+    let session: Session
+    try {
+      session = await this.cloud.auth.signInWithGoogle(credential)
+    } catch (error) {
+      try {
+        this.storage?.removeItem(GUEST_CLAIM_KEY)
+      } catch {
+        // Sin almacenamiento no había código.
+      }
+      throw error
+    }
+    this.accountStore = null
+    this.sync = null
+    this.set({ status: 'connecting' })
+    try {
+      await this.open(session)
+    } catch {
+      // La sesión de Google ya está guardada: la próxima carga la abre.
+      this.set({ status: 'offline' })
+    }
   }
 
   /** RF-96: vuelve al modo local (con una sesión anónima nueva); lo guardado en el navegador no se borra. */

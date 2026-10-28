@@ -159,7 +159,7 @@ test.describe('Combate oficial: un intento por día', () => {
     await expect(today.fightButton).toBeEnabled()
   })
 
-  test('E2E-56 un oficial empezado el día N y terminado tras medianoche cuenta para N, y Hoy enseña el reto nuevo con su oficial libre @timing', async ({ page }) => {
+  test('E2E-56 RF-80b: un oficial a medias a medianoche es derrota del día N; vuelve a Hoy con el aviso y el reto nuevo con su oficial libre @timing', async ({ page }) => {
     await page.clock.install({ time: new Date('2026-11-10T23:59:30+01:00') })
     const today = new TodayPage(page)
     const battle = new BattlePage(page)
@@ -176,12 +176,11 @@ test.describe('Combate oficial: un intento por día', () => {
     }).toPass({ timeout: 15_000 })
 
     await page.clock.runFor(40_000)
-    await battle.waitForActionOrResult()
-    await forfeit(page, battle)
-    expect(Object.keys((await storedDays(page)).days), 'cuenta para el día en que empezó').toEqual(['2026-11-10'])
-    expect(Object.values((await storedDays(page)).days)[0].status).toBe('lost')
-
-    await page.getByRole('button', { name: 'Volver a Hoy' }).click()
+    await expect(battle.root, 'sale del combate').toBeHidden()
+    await expect(page.getByRole('alert')).toContainText('se quedó sin terminar a medianoche: cuenta como derrota')
+    const days = (await storedDays(page)).days
+    expect(Object.keys(days), 'cuenta para el día en que empezó').toEqual(['2026-11-10'])
+    expect(Object.values(days)[0]).toMatchObject({ status: 'lost', endReason: 'expired' })
     await expect(today.challengeNumber, 'Hoy muestra el reto nuevo').toHaveText(`#${numberBefore + 1}`)
     await expect(today.officialStatus, 'el oficial del día nuevo está libre').toHaveText('Jugar')
     await expect(page.getByRole('button', { name: /Reanudar/ })).toHaveCount(0)

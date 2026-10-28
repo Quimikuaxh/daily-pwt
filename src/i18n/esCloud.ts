@@ -6,8 +6,8 @@ export const esCloud = {
   account: {
     title: 'Cuenta',
     history: 'Historial de combates',
-    signIn: 'Iniciar sesión con Google',
-    signingIn: 'Abriendo Google…',
+    signingIn: 'Iniciando sesión…',
+    googleUnavailable: 'No se ha podido cargar el botón de Google. Revisa la conexión o si algún bloqueador lo impide.',
     signInHint: 'Opcional. Con cuenta, tu historial y tus rachas se guardan en ella y te siguen en cualquier dispositivo, puedes añadir amigos y tu nombre lleva el tick de verificado y no caduca. Sin cuenta se juega igual y también sumas puntos.',
     guestNickname: 'Juegas sin cuenta.',
     guestNicknameHint: 'Sin cuenta, tu nombre queda libre si pasas 30 días sin jugar el combate oficial.',

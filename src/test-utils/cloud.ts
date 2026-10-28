@@ -45,7 +45,7 @@ export function fakeAuth(session: Session | null, over: Partial<CloudAuth> = {})
   const auth: CloudAuth = {
     getSession: async () => session,
     signInAnonymously: async () => ({ userId: `anon-${++anonymous}`, anonymous: true }),
-    signInWithGoogle: async () => undefined,
+    signInWithGoogle: async () => ({ userId: 'g1', anonymous: false }),
     signOut: async () => undefined,
     ...over,
   }

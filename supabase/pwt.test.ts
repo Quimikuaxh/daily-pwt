@@ -1,4 +1,4 @@
-// UT-90 a UT-96 · F4 (REQUISITOS-F4, DEC-63): la migración del esquema `pwt` sobre PGlite, con `auth` simulado.
+// UT-90 a UT-96 y UT-112 · F4 (REQUISITOS-F4, DEC-63): la migración del esquema `pwt` sobre PGlite, con `auth` simulado.
 import { beforeAll, describe, expect, it } from 'vitest'
 import { createTestDb, type Caller, type TestDb } from './testDb'
 
@@ -183,6 +183,43 @@ describe('oficial del día y validación por estados (UT-91)', () => {
     await expect(t.as(intruder, `select pwt.save_turn($1::date, $2::jsonb, 1, 6, 6)`, [t.today, decisions(1)])).rejects.toThrow('no_battle')
     await expect(t.as(intruder, `select * from pwt.day_results`)).rejects.toThrow()
     await expect(t.as(intruder, `select * from pwt.battle_states`)).rejects.toThrow()
+  })
+})
+
+describe('oficial sin terminar a medianoche (UT-112, RF-80b)', () => {
+  /** Oficial empezado hoy y movido a `date` (la API solo deja empezar el de hoy). */
+  async function startedOn(user: Caller & object, date: string, turns: number) {
+    await t.call(user, START, [t.today])
+    if (turns > 0) await t.as(user, `select pwt.save_turn($1::date, $2::jsonb, $3, 4, 2)`, [t.today, decisions(turns), turns])
+    await t.admin(`update pwt.day_results set date = $2::date where user_id = $1 and date = $3::date`, [user.id, date, t.today])
+  }
+
+  it('el cierre lo pasa a derrota con el último estado y cuenta en la media si se jugó algún turno; ya no admite turnos ni resultado', async () => {
+    const date = addDays(t.today, -60)
+    const [played, untouched, winner] = [await t.user(), await t.user(), await t.user()]
+    await startedOn(played, date, 3)
+    await startedOn(untouched, date, 0)
+    await seedDay(winner.id, date, 'won', 6)
+    await expect(t.as(played, `select pwt.save_turn($1::date, $2::jsonb, 4, 4, 2)`, [date, decisions(4)])).rejects.toThrow('day_closed')
+    await expect(t.call(played, `select pwt.finish_official($1::date, 'win', 'faint', 4, 4, $2::boolean[], 6, $3::jsonb)`, [date, fainted(2), decisions(4)])).rejects.toThrow('day_closed')
+    await expect(t.as(played, `select pwt.void_official($1::date, 'replayFailed')`, [date])).rejects.toThrow('day_closed')
+    await t.admin(`select pwt.close_days()`)
+    const days = await t.admin(`select user_id, status, end_reason, turns, survivors, rival_fainted, validated from pwt.day_results where date = $1::date order by status, validated desc`, [date])
+    expect(days).toEqual([
+      { user_id: played.id, status: 'lost', end_reason: 'expired', turns: 3, survivors: 4, rival_fainted: 4, validated: true },
+      { user_id: untouched.id, status: 'lost', end_reason: 'expired', turns: 0, survivors: 6, rival_fainted: 0, validated: false },
+      { user_id: winner.id, status: 'won', end_reason: null, turns: null, survivors: 6, rival_fainted: null, validated: true },
+    ])
+    expect(await t.admin(`select 1 from pwt.battle_states where date = $1::date`, [date])).toHaveLength(0)
+    // Media (6 + 0) / 2 = 3 → ×1,5: el que no llegó a jugar no cuenta.
+    expect(await t.admin(`select players, multiplier::float from pwt.day_difficulty where date = $1::date`, [date])).toEqual([{ players: 2, multiplier: 1.5 }])
+  })
+
+  it('el oficial de hoy en curso no se toca', async () => {
+    const user = await t.user()
+    await t.call(user, START, [t.today])
+    await t.admin(`select pwt.close_days()`)
+    expect(await t.admin(`select status from pwt.day_results where user_id = $1`, [user.id])).toEqual([{ status: 'inProgress' }])
   })
 })
 

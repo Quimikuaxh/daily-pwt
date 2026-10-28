@@ -58,6 +58,23 @@ describe('un oficial por día', () => {
     expect(store.getDay('2026-10-21')?.status).toBe('won')
   })
 
+  it('RF-80b: a medianoche, los oficiales en curso de días anteriores pasan a derrota con el último estado; el de hoy y los terminados no', () => {
+    const storage = new MemoryStorage()
+    const store = new LocalStorageStore(storage, clock)
+    store.startOfficial(entry('2026-10-19'))
+    store.recordCheckpoint('2026-10-19', { decisions: 0, turn: 7, playerRemaining: 2, rivalRemaining: 1 })
+    store.startOfficial(entry('2026-10-20'))
+    store.finishOfficial('2026-10-20', WIN, NOW.toISOString())
+    store.startOfficial(entry('2026-10-21'))
+    const expired = store.expireOfficials('2026-10-21', 'fin')
+    expect(expired.map((record) => record.date)).toEqual(['2026-10-19'])
+    expect(store.getDay('2026-10-19')).toMatchObject({ status: 'lost', endReason: 'expired', turns: 7, survivors: 2, finishedAt: 'fin', battle: null })
+    expect(store.getDay('2026-10-20')?.status).toBe('won')
+    expect(store.getDay('2026-10-21')?.status).toBe('inProgress')
+    expect(new LocalStorageStore(storage, clock).getDay('2026-10-19')?.status).toBe('lost')
+    expect(store.expireOfficials('2026-10-21', 'otra')).toEqual([])
+  })
+
   it('anular gasta el intento sin victoria ni derrota', () => {
     const store = new LocalStorageStore(new MemoryStorage(), clock)
     store.startOfficial(entry())

@@ -8,6 +8,7 @@ import type { AiKind, EngineEnd } from './battle/protocol'
 import { challengeFor } from './core/challenge'
 import type { Challenge, GameData } from './core/types'
 import type { ReplayPlan } from './hooks/useBattle'
+import { useChallengeDay } from './hooks/useToday'
 import { es } from './i18n/es'
 import { LocalStorageStore } from './storage/localStorageStore'
 import { clearSettings, DEFAULT_SETTINGS, loadSettings, saveSettings, type Settings } from './storage/settings'
@@ -93,8 +94,25 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
     return id ? { name: 'replay', source: { kind: 'shared', id } } : { name: 'today' }
   })
   const [battlesStarted, setBattlesStarted] = useState(0)
+  const today = useChallengeDay(hooks.date)
 
   useEffect(() => preloadBattleImages(), [])
+  // RF-80b: al abrir la web y a medianoche de Madrid, el oficial de un día anterior sin terminar pasa a derrota (en la cuenta lo cierra
+  // también el servidor, `close_days`). Si se estaba jugando, se vuelve a Hoy, con el reto nuevo y el aviso.
+  useEffect(() => {
+    const finishedAt = new Date().toISOString()
+    const expired = [...new Set([localStore, store])].flatMap((target) => target.expireOfficials(today, finishedAt))
+    if (expired.length === 0) return
+    const notice = es.today.official.expired(expired[expired.length - 1].challengeNumber)
+    // El historial vive en `localStorage` (fuera de React): primero se cierra ahí y, solo si cerró algo (al abrir o a medianoche), se
+    // cambia de pantalla. Un render más, una vez al día.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setScreen((current) => {
+      if (current.name === 'today') return { name: 'today', notice }
+      const stale = current.name === 'battle' && current.battle.mode === 'official' && current.battle.challenge.date < today
+      return stale ? { name: 'today', notice } : current
+    })
+  }, [today, store, localStore])
   useEffect(() => {
     if (!cloud) return
     let active = true

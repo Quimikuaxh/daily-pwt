@@ -122,11 +122,9 @@ describe('botón de práctica', () => {
 })
 
 describe('avisos', () => {
-  it('un oficial sin terminar de un día anterior se ofrece reanudar aparte', async () => {
-    const store = savedStore('2026-10-18')
-    const { user, onResume } = mount(store)
-    await user.click(screen.getByRole('button', { name: /reanudar el combate oficial del reto #1/i }))
-    expect(onResume).toHaveBeenCalledWith(expect.objectContaining({ date: '2026-10-18' }))
+  it('RF-80b: un oficial sin terminar de un día anterior no se ofrece reanudar (a medianoche es derrota, App lo cierra)', () => {
+    mount(savedStore('2026-10-18'))
+    expect(screen.queryByRole('button', { name: /reanudar/i })).toBeNull()
     expect(official()).toHaveTextContent('Jugar')
   })
 

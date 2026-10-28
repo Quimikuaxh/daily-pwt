@@ -15,6 +15,8 @@ export type Checkpoint = { decisions: number; turn: number; playerRemaining: num
  */
 export type DayStatus = 'inProgress' | 'won' | 'lost' | 'void'
 export type VoidReason = 'replayFailed' | 'dataChanged' | 'corrupt'
+/** Cómo acabó el oficial: los del motor y `expired`, el que quedó sin terminar a medianoche de Madrid (RF-80b): derrota. */
+export type DayEndReason = EndReason | 'expired'
 
 export type SavedBattle = {
   seed: string
@@ -41,7 +43,7 @@ export type DayRecord = {
   /** Debilitado o no cada Pokémon del jugador al terminar, en el orden del equipo (casillas de compartir). `null` en los días guardados antes de F3. */
   playerFainted: boolean[] | null
   rivalFainted: number | null
-  endReason: EndReason | null
+  endReason: DayEndReason | null
   voidReason: VoidReason | null
   /** Solo mientras está en curso: lo necesario para reanudar. Se borra al terminar. */
   battle: SavedBattle | null
@@ -74,6 +76,11 @@ export interface GameStore {
   recordCheckpoint(date: string, checkpoint: Checkpoint): void
   finishOfficial(date: string, ended: EngineEnd, finishedAt: string): void
   voidOfficial(date: string, reason: VoidReason, finishedAt: string): void
+  /**
+   * RF-80b: los oficiales en curso de días anteriores a `today` pasan a derrota (`expired`), con los turnos y los Pokémon en pie del último
+   * estado guardado. Devuelve los que ha cerrado.
+   */
+  expireOfficials(today: string, finishedAt: string): DayRecord[]
   /** «Borrar datos locales» (Ajustes): olvida todo el historial, también el oficial de hoy. */
   clear(): void
 }

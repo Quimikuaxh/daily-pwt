@@ -17,7 +17,7 @@ Base: [PRD](PRD.md) §0, «Cuentas, rachas y rankings» (decisiones de Jose del 
 ## 2. Requisitos funcionales
 
 ### Login y perfil
-- RF-93 El login es opcional: icono **Cuenta** en la cabecera (Hoy y Resultado), delante de Estadísticas, Ayuda y Ajustes, que abre la ventana «Cuenta»: nickname, «Iniciar sesión con Google» o «Cerrar sesión» (decisión de Jose, 28/10/2026; *descartado:* una sección dentro de Ajustes y un botón «Iniciar sesión» suelto en la cabecera). Sin sesión no cambia nada de lo que hay; jugar nunca exige cuenta. Si el servicio no responde, se juega en local y se avisa en español.
+- RF-93 El login es opcional: icono **Cuenta** en la cabecera (Hoy y Resultado), delante de Estadísticas, Ayuda y Ajustes, que abre la ventana «Cuenta»: nickname, el botón oficial «Iniciar sesión con Google» (sin salir de la página, DEC-70) o «Cerrar sesión» (decisión de Jose, 28/10/2026; *descartado:* una sección dentro de Ajustes y un botón «Iniciar sesión» suelto en la cabecera). Sin sesión no cambia nada de lo que hay; jugar nunca exige cuenta. Si el servicio no responde, se juega en local y se avisa en español.
 - RF-94 Todo jugador recibe un perfil con un nickname por defecto libre (`entrenador_` + 5 cifras) **al entrar en la web**, tenga cuenta o no (decisión de Jose, 27/10/2026; antes, solo al iniciar sesión y con 4 cifras: con un nombre por visitante, 10.000 se agotarían). Se puede cambiar al momento. Al iniciar sesión con Google, quien ya tenía nickname sin cuenta lo conserva.
 - RF-95 Nickname: de 3 a 16 caracteres, solo letras sin tilde, números y `_`. Único entre **todos** los jugadores, con o sin cuenta, sin distinguir mayúsculas (`Jose` y `jose` son el mismo); se muestra tal como se escribió. Se puede cambiar cuantas veces se quiera, con o sin cuenta; si está cogido (por quien sea), se avisa y no cambia: nadie puede quitarle el nombre a otro. El nickname anterior queda libre al instante.
 - RF-96 Cerrar sesión vuelve al modo local. Lo que haya en el navegador no se borra.
@@ -51,7 +51,7 @@ Base: [PRD](PRD.md) §0, «Cuentas, rachas y rankings» (decisiones de Jose del 
 
 ### Amigos
 - RF-110 Solo entre jugadores con cuenta: los que no tienen no salen en la búsqueda ni pueden enviar ni recibir solicitudes. Buscar por nickname (sin distinguir mayúsculas) y enviar solicitud. El otro la acepta o la rechaza; hasta aceptarla no hay amistad. Se puede cancelar una solicitud enviada y quitar a un amigo (desaparece para los dos).
-- RF-111 Pestaña de solicitudes recibidas, con aviso en la cabecera si hay alguna pendiente.
+- RF-111 Pestaña de solicitudes recibidas, con aviso en la cabecera si hay alguna pendiente, y una bolita naranja con su número en la pestaña «Amigos» (decisión de Jose, 28/10/2026; antes, «Amigos (2)»).
 
 ## 3. Decisiones de Jose (27/10/2026)
 - Días importados (RF-97): cuentan para racha y estadísticas, pero no para puntos ni para la media del día (no tienen estados validados).
@@ -61,7 +61,7 @@ Base: [PRD](PRD.md) §0, «Cuentas, rachas y rankings» (decisiones de Jose del 
 - Interfaz: rankings y amigos (con las solicitudes) van **dentro de la pantalla de Estadísticas**, como pestañas. *Descartado:* una pantalla nueva desde otro icono de la cabecera y dos pantallas separadas.
 
 ## 4. Lo que hace Jose
-- Usar el proyecto de Supabase de claude-test (DEC-63): pasar su URL y la clave pública `anon`, publicar el esquema `pwt` en «Project Settings → API → Exposed schemas», activar «Allow anonymous sign-ins», «Enable manual linking» (ya no hace falta desde el 28/10/2026: el traspaso de la sesión anónima no usa `linkIdentity`; puede quedarse activado) y la extensión `pg_cron`; después, ejecutar la migración `supabase/migrations/*.sql` en el editor SQL.
-- Crear en Google Cloud el cliente OAuth (pantalla de consentimiento y orígenes autorizados) y activarlo en Supabase, «Authentication → Providers → Google».
+- Usar el proyecto de Supabase de claude-test (DEC-63): pasar su URL y la clave pública `anon`, publicar el esquema `pwt` en «Project Settings → API → Exposed schemas», desactivar el proveedor «Email» (solo Google y sesiones anónimas) y activar «Allow anonymous sign-ins», «Enable manual linking» (ya no hace falta desde el 28/10/2026: el traspaso de la sesión anónima no usa `linkIdentity`; puede quedarse activado) y la extensión `pg_cron`; después, ejecutar la migración `supabase/migrations/*.sql` en el editor SQL.
+- Crear en Google Cloud el cliente OAuth (pantalla de consentimiento y orígenes de JavaScript autorizados, DEC-70) y activarlo en Supabase, «Authentication → Providers → Google».
 - Añadir en Supabase las URL de redirección: `https://quimikuaxh.github.io/daily-pwt/` y la de desarrollo (`http://localhost:5173/`).
 - Guardar la URL y la clave `anon` como secretos del repositorio para el despliegue.

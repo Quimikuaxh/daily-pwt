@@ -1,7 +1,8 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { CloudError } from '../../cloud/api'
 import type { Account } from '../../cloud/account'
 import type { AccountState } from '../../cloud/state'
+import { releaseGoogleButton, renderGoogleButton, type GoogleCredential } from '../../cloud/googleIdentity'
 import { esCloud } from '../../i18n/esCloud'
 import { Modal } from '../common/Modal'
 import '../stats/cloud.css'
@@ -25,23 +26,31 @@ export function AccountDialog({ account, state, onClose, onOpenHistory }: { acco
   )
 }
 
-/** Botón «Iniciar sesión con Google»: lleva a Google y vuelve a la página. */
+/**
+ * Botón oficial de Google (DEC-70): Google pinta el suyo y devuelve la credencial sin salir de la página. *Descartado:* el botón propio
+ * con redirección (`signInWithOAuth`): obligaba a dar de alta el dominio de Supabase en Google, que lo enseñaba al elegir la cuenta.
+ */
 function SignInButton({ account }: { account: Account }) {
-  const [status, setStatus] = useState('idle' as 'idle' | 'busy' | 'failed')
+  const slot = useRef(null as HTMLDivElement | null)
+  const [status, setStatus] = useState('idle' as 'idle' | 'busy' | 'failed' | 'unavailable')
+  useEffect(() => {
+    let active = true
+    const onCredential = (credential: GoogleCredential) => {
+      setStatus('busy')
+      account.signIn(credential).catch(() => active && setStatus('failed'))
+    }
+    if (slot.current) renderGoogleButton(slot.current, onCredential).catch(() => active && setStatus('unavailable'))
+    return () => {
+      active = false
+      releaseGoogleButton(onCredential)
+    }
+  }, [account])
   return (
     <>
-      <button
-        type="button"
-        className="btn btn-small"
-        disabled={status === 'busy'}
-        onClick={() => {
-          setStatus('busy')
-          account.signIn().catch(() => setStatus('failed'))
-        }}
-      >
-        {status === 'busy' ? text.signingIn : text.signIn}
-      </button>
+      <div ref={slot} className="google-signin" hidden={status === 'busy' || status === 'unavailable'} />
+      {status === 'busy' && <p className="settings-hint" role="status">{text.signingIn}</p>}
       {status === 'failed' && <p className="settings-status" role="alert">{text.signInFailed}</p>}
+      {status === 'unavailable' && <p className="settings-status" role="alert">{text.googleUnavailable}</p>}
     </>
   )
 }

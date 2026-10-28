@@ -612,6 +612,25 @@ img.sprite,
   text-shadow: 1px 1px 0 #181818;
 }
 
+/* Bolita naranja con las solicitudes de amistad pendientes (RF-111). */
+.tab-badge {
+  display: inline-block;
+  min-width: 20px;
+  height: 20px;
+  margin-left: 6px;
+  padding: 0 5px;
+  box-sizing: border-box;
+  font-size: 14px;
+  line-height: 18px;
+  text-align: center;
+  vertical-align: 2px;
+  color: #181818;
+  background: #f89030;
+  border: 1px solid #181818;
+  border-radius: 10px;
+  text-shadow: none;
+}
+
 .stats-tab:focus-visible {
   outline: 2px solid #f8c830;
   outline-offset: -2px;
@@ -1220,15 +1239,6 @@ img.sprite,
   .fight-buttons .btn-practice {
     flex-basis: 100px;
   }
-}
-
-.fight-earlier {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  color: #f8f8f8;
-  text-shadow: 1px 1px 0 #181818;
 }
 
 .fight-hint {

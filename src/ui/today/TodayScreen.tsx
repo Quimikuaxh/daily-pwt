@@ -13,9 +13,9 @@ import type { MenuContext } from '../menu/AppMenu'
 type TodayScreenProps = {
   data: GameData | null
   onStart: (challenge: Challenge, leadIndex: number, mode: BattleMode) => void
-  /** Reanuda un oficial en curso (el de hoy o uno de un día anterior sin terminar). */
+  /** Reanuda el oficial de hoy en curso (los de días anteriores ya son derrota, RF-80b). */
   onResume?: (record: DayRecord) => void
-  /** Progreso guardado: de él salen el estado del botón oficial y el aviso de un oficial anterior sin terminar. Sin él, nada está jugado. */
+  /** Progreso guardado: de él sale el estado del botón oficial. Sin él, nada está jugado. */
   store?: GameStore
   /** Aviso en español que deja la pantalla anterior (p. ej. un oficial que no se pudo reanudar). */
   notice?: string | null
@@ -43,17 +43,6 @@ function officialStatusText(record: DayRecord | null): string {
   return result(record.turns ?? 0, record.survivors ?? 0)
 }
 
-function findEarlierUnfinished(store: GameStore | undefined, today: string): DayRecord | null {
-  const unfinished = store?.listDays().filter(isUnfinishedBefore(today)) ?? []
-  return unfinished[0] ?? null
-}
-
-function isUnfinishedBefore(today: string) {
-  return function matches(record: DayRecord): boolean {
-    return record.status === 'inProgress' && record.date !== today
-  }
-}
-
 function TodayContent({ challenge, data, onStart, onResume, store }: TodayContentProps) {
   usePreloadChallengeSprites(challenge, data)
   const playerHeadingId = useId()
@@ -61,7 +50,6 @@ function TodayContent({ challenge, data, onStart, onResume, store }: TodayConten
   const [leadIndex, setLeadIndex] = useState(null as number | null)
   const canFight = leadIndex !== null
   const day = store?.getDay(challenge.date) ?? null
-  const earlierUnfinished = findEarlierUnfinished(store, challenge.date)
   const officialInProgress = day?.status === 'inProgress'
   const officialDone = day !== null && !officialInProgress
   const officialDisabled = officialDone || (!officialInProgress && !canFight)
@@ -81,14 +69,6 @@ function TodayContent({ challenge, data, onStart, onResume, store }: TodayConten
       </section>
 
       <div className="fight-bar">
-        {earlierUnfinished && onResume && (
-          <div className="fight-earlier" role="status">
-            <p>{es.today.official.earlierResume(earlierUnfinished.challengeNumber)}</p>
-            <button type="button" className="btn btn-secondary" onClick={() => onResume(earlierUnfinished)}>
-              {es.today.official.earlierResumeButton(earlierUnfinished.challengeNumber)}
-            </button>
-          </div>
-        )}
         <div className="fight-buttons">
           <button
             type="button"

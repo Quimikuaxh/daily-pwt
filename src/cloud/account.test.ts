@@ -12,6 +12,7 @@ const TODAY = '2026-10-27'
 const entry: NewOfficial = { date: TODAY, challengeNumber: 4, trainerId: 'misty', variantId: 'misty-1', dataVersion: 'v1', startedAt: 'x', battle: { seed: 's1', ai: 'heuristic', leadIndex: 0 } }
 const WIN: EngineEnd = { result: 'win', reason: 'faint', turns: 3, playerAlive: 6, rivalFainted: 6, playerFainted: [false, false, false, false, false, false] }
 const GOOGLE = { userId: 'g1', anonymous: false }
+const CREDENTIAL = { token: 'id-token', nonce: 'nonce' }
 
 function setup(cloud: ReturnType<typeof fakeCloud> | null) {
   const storage = new MemoryStorage()
@@ -120,23 +121,36 @@ describe('Account (UT-98)', () => {
     expect(account.getState()).toMatchObject({ nickname: 'Nuevo' })
   })
 
-  it('iniciar sesión sin cuenta: envía lo pendiente, pide el código y va a Google en un solo paso', async () => {
+  it('iniciar sesión sin cuenta (DEC-70): envía lo pendiente, pide el código, abre la sesión con la credencial y canjea el código sin recargar', async () => {
     const cloud = fakeCloud(null)
     const { account, storage } = setup(cloud)
     await account.start()
-    await account.signIn()
+    await account.signIn(CREDENTIAL)
     expect(cloud.api.createGuestClaim).toHaveBeenCalled()
-    expect(storage.getItem(GUEST_CLAIM_KEY)).toBe('codigo-1')
-    expect(cloud.auth.signInWithGoogle).toHaveBeenCalledTimes(1)
+    expect(cloud.auth.signInWithGoogle).toHaveBeenCalledWith(CREDENTIAL)
+    expect(cloud.api.claimGuest).toHaveBeenCalledWith('codigo-1')
+    expect(storage.getItem(GUEST_CLAIM_KEY)).toBeNull()
+    expect(cloud.api.createGuestClaim.mock.invocationCallOrder[0]).toBeLessThan(cloud.auth.signInWithGoogle.mock.invocationCallOrder[0])
+    expect(account.getState()).toMatchObject({ status: 'signedIn', userId: 'g1' })
+    expect(storage.getItem(ACCOUNT_SESSION_KEY)).toBe('g1')
   })
 
   it('si no se puede pedir el código, se inicia sesión igual', async () => {
     const cloud = fakeCloud(null, fakeApi({ createGuestClaim: async () => Promise.reject(networkError()) }))
+    const { account } = setup(cloud)
+    await account.start()
+    await account.signIn(CREDENTIAL)
+    expect(cloud.api.claimGuest).not.toHaveBeenCalled()
+    expect(account.getState()).toMatchObject({ status: 'signedIn' })
+  })
+
+  it('si Google o Supabase rechazan la credencial, lanza, borra el código y se sigue sin cuenta', async () => {
+    const cloud = fakeCloud(null, fakeApi(), fakeAuth(null, { signInWithGoogle: async () => Promise.reject(serverError('invalid_credentials')) }))
     const { account, storage } = setup(cloud)
     await account.start()
-    await account.signIn()
+    await expect(account.signIn(CREDENTIAL)).rejects.toThrow()
     expect(storage.getItem(GUEST_CLAIM_KEY)).toBeNull()
-    expect(cloud.auth.signInWithGoogle).toHaveBeenCalled()
+    expect(account.getState()).toMatchObject({ status: 'guest' })
   })
 
   it('al volver con la cuenta canjea el código una vez y, si la cuenta es nueva, se queda con el nombre del navegador', async () => {

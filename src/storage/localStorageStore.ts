@@ -224,6 +224,22 @@ export class LocalStorageStore implements GameStore {
     this.save()
   }
 
+  expireOfficials(today: string, finishedAt: string): DayRecord[] {
+    this.refresh()
+    const expired = Object.values(this.file.days).filter((record) => record.status === 'inProgress' && record.date < today)
+    for (const record of expired) {
+      const checkpoint = record.battle?.checkpoint ?? null
+      record.status = 'lost'
+      record.finishedAt = finishedAt
+      record.turns = checkpoint?.turn ?? 0
+      record.survivors = checkpoint?.playerRemaining ?? null
+      record.endReason = 'expired'
+      record.battle = null
+    }
+    if (expired.length > 0) this.save()
+    return expired
+  }
+
   /**
    * Pone el historial de la cuenta bajado de la base de datos (F4). Manda el servidor, salvo un oficial en curso de este navegador con más
    * decisiones que el del servidor para el mismo combate (aún por enviar). Los días que el servidor no tiene se quedan.
