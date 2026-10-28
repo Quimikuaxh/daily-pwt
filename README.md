@@ -15,6 +15,7 @@ El desarrollo se divide en tres fases (detalle en [docs/PRD.md](docs/PRD.md) §0
 | F1 (hecha) | Reto diario determinista; 6 entrenadores (Brock, Misty, Camila, Plubio, Rojo, Máximo) con 9 variantes de equipo; pool del jugador (sets de Smogon Gen 5 y de los rivales); combate 6 contra 6 con IA heurística; pantalla Hoy, combate (con intro, mensajes uno a uno e historial a demanda) y resultado, con el estilo de los menús de N2/B2 y del PWT. |
 | F2 (datos hechos; falta fijar `LAUNCH_DATE` y calibrar la dificultad) | Roster completo de 53 entrenadores (46 líderes y 7 campeones) con sus 99 variantes (594 sets, todos verificados con ≥ 2 fuentes), todos barajados juntos en la bolsa; pool del jugador con los sets de los 53 rivales y Smogon; sprites de todos los entrenadores y especies; validación de datos (`npm run validate:data`) y CI. |
 | F3 | Combate oficial único y prácticas, reanudar partida, estadísticas, compartir, pantallas Ayuda y Ajustes. |
+| F4 (en desarrollo, rama `feature/cuentas`) | Cuentas opcionales con Google (Supabase), historial y rachas en la cuenta, puntos del día, rankings y amigos ([docs/REQUISITOS-F4.md](docs/REQUISITOS-F4.md)). |
 
 En F1 no hay límite de un combate oficial al día ni persistencia: un mismo reto admite combates ilimitados.
 
@@ -81,6 +82,22 @@ El build de producción no incluye los ganchos de prueba (ver [Ganchos de prueba
 
 Configuración única del repositorio: Settings > Pages > Source = **GitHub Actions**.
 
+### Cuentas y rankings (Supabase, F4)
+
+Opcional: sin configurar, el juego funciona entero en local (sin cuentas ni rankings). Usa el proyecto de Supabase de claude-test, con todo lo de daily-pwt en el esquema `pwt` ([DEC-63](docs/ARQUITECTURA.md)).
+
+1. En el proyecto de Supabase:
+   - Authentication → Providers → **Google** activado (cliente OAuth de Google Cloud con los orígenes autorizados).
+   - Authentication → Sign In / Providers: **Allow anonymous sign-ins** y **Enable manual linking** activados (la sesión anónima hace contar el oficial sin cuenta en la media del día; al entrar con Google se enlaza a ese mismo usuario).
+   - Authentication → URL Configuration → Redirect URLs: `https://quimikuaxh.github.io/daily-pwt/` y `http://localhost:5173/`.
+   - Database → Extensions: **pg_cron** activada (cierre del día cada hora y liberación diaria de los nombres de jugadores sin cuenta inactivos 30 días).
+   - SQL Editor: ejecutar `supabase/migrations/20261027000000_pwt_cuentas.sql` (se puede volver a ejecutar; crea lo que falte y redefine las funciones). Con `pg_cron` activada, programa `pwt-close-days` y `pwt-release-nicknames`; si se activa después, volver a ejecutarla.
+   - Project Settings → API → **Exposed schemas**: añadir `pwt`.
+2. En local: copiar `.env.example` a `.env.local` y rellenar `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` (Project Settings → API).
+3. En GitHub: secretos del repositorio `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` (Settings → Secrets and variables → Actions); `deploy.yml` los pasa al build.
+
+La clave `anon` es pública por diseño: las tablas tienen RLS sin políticas y el cliente solo puede llamar a las funciones de la API del esquema `pwt`, que comprueban quién llama.
+
 ## Estructura
 
 ```
@@ -97,11 +114,13 @@ daily-pwt/
     core/                    Lógica pura del reto diario (sin React, DOM ni reloj): fechas, PRNG, equipos, LAUNCH_DATE
     battle/                  Motor de combate (Web Worker con @pkmn/sim), IA rival, traducción del registro
     storage/                 Progreso guardado: interfaz GameStore y LocalStorageStore (oficial del día, decisiones para reanudar)
+    cloud/                   Cuentas (F4): sesión, caché de la cuenta y envío del oficial a Supabase (cola en el navegador)
     ui/                      Componentes de Hoy, Combate y Resultado
     generated/              Datos precalculados (no editar a mano)
     i18n/es.ts               Textos de la interfaz
     config.ts                Reexporta LAUNCH_DATE y define MAX_TURNS (300)
     testHooks.ts             Ganchos de prueba ?date=, ?seed=, ?ai=, ?trainer=, ?variant=
+  supabase/migrations/       Esquema `pwt` de Supabase (F4): tablas, funciones de la API, cierre del día
 ```
 
 ## Combate (cómo se juega)
@@ -128,6 +147,7 @@ daily-pwt/
 - Archivo: `src/core/launch.ts` (`src/config.ts` lo reexporta). Valor: `2026-10-24`, fecha de lanzamiento fijada por Jose el 23/10/2026.
 - Efecto: fija el día `#1` del reto y, con él, el desplazamiento de la bolsa de entrenadores. Las fechas anteriores a `LAUNCH_DATE` muestran `#1`.
 - Cambiarlo altera el entrenador, la variante y el equipo de cada fecha y los números `#N`. La secuencia de rivales solo depende del índice de día (los 53 se barajan juntos desde el día 0): con esta fecha los días 2026-10-24 a 27 son Misty, Fredo, Antón y Mirto y Máximo toca el día `#49` (2026-12-11, `D + 48`). Esos cuatro son la apertura del lanzamiento (`LAUNCH_OPENING` en `src/core/launch.ts`): en el primer ciclo, los de esa lista pasan a los primeros días intercambiados con quien estaba, y el reparto no los mueve. Después, cada ciclo se reparte (DEC-62): campeones cada 7-8 días, nunca dos de la misma región seguidos y Millo, Maíz y Zeo a una semana como poco (`SPREAD_RULES` en `src/core/bag.ts`). Vaciar la lista quita la apertura. Para cambiarla: poner la nueva fecha `D` en `src/core/launch.ts`, mover las fechas de referencia de `src/test-utils/dates.ts` (D-1 … D+5 y D+365), regenerar el snapshot y revisarlo (pasos siguientes). Efecto completo y opciones descartadas en [docs/F2-DATOS.md](docs/F2-DATOS.md), «Calendario».
+- `DISTINCT_BASE_SPECIES_FROM` (mismo fichero): desde ese día, el equipo del jugador no lleva dos formas de la misma especie (RF-12b, DEC-64); los días anteriores conservan su equipo. Debe ser el día siguiente al despliegue de la regla.
 - Cambiar el roster (añadir o quitar entrenadores) rebaraja la bolsa igual que cambiar la fecha: regenerar el snapshot y avisar de que cambia lo ya publicado.
 
 Pasos al cambiarlo:
@@ -226,7 +246,9 @@ Traducciones manuales que prevalecen sobre las de PokeAPI.
 npm test
 ```
 
-Vitest con dos proyectos: `node` (`src/**/*.test.ts`, `scripts/**/*.test.ts`) y `jsdom` (`src/**/*.test.tsx`, React Testing Library). Las comparaciones de `names-es.json` y `descriptions-es.json` con su regeneración (`src/data/generated.test.ts`) necesitan `scripts/.cache/` (CSV de PokeAPI): sin esa carpeta (CI, clon limpio) se omiten con un aviso en la salida; para activarlas, `npm run gen:names` con red. `npm run validate:data` comprueba sin caché que cada nombre y descripción usados existen.
+Vitest con dos proyectos: `node` (`src/**/*.test.ts`, `scripts/**/*.test.ts`, `supabase/**/*.test.ts`) y `jsdom` (`src/**/*.test.tsx`, React Testing Library). Las comparaciones de `names-es.json` y `descriptions-es.json` con su regeneración (`src/data/generated.test.ts`) necesitan `scripts/.cache/` (CSV de PokeAPI): sin esa carpeta (CI, clon limpio) se omiten con un aviso en la salida; para activarlas, `npm run gen:names` con red. `npm run validate:data` comprueba sin caché que cada nombre y descripción usados existen.
+
+Las migraciones de `supabase/migrations/` se prueban en `supabase/pwt.test.ts` sobre **PGlite** (Postgres en WASM, sin Docker ni red), con un `auth` mínimo simulado en `supabase/testDb.ts` (roles `anon` y `authenticated`, `auth.uid()` y `auth.jwt()`).
 
 Comprobación de tipos y lint:
 

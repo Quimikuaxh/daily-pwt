@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
+import type { Account } from '../../cloud/account'
+import type { AccountState } from '../../cloud/state'
 import { es } from '../../i18n/es'
 import { ANIMATION_MODES, SPEEDS, type Settings } from '../../storage/settings'
 import { Dialog } from '../common/Dialog'
@@ -6,6 +8,8 @@ import { Modal } from '../common/Modal'
 import { SoundSettings } from './SoundSettings'
 
 const text = es.settings
+// Fuera de la ruta crítica (E2E-21).
+const AccountSection = lazy(() => import('../account/AccountSection').then((module) => ({ default: module.AccountSection })))
 
 type SettingsDialogProps = {
   settings: Settings
@@ -13,16 +17,23 @@ type SettingsDialogProps = {
   /** Borra el historial y los ajustes de este navegador. */
   onClearData: () => void
   onClose: () => void
+  account?: Account
+  accountState?: AccountState
 }
 
 /** Ajustes (PRD §10.6, decisiones del 22 y 23/10/2026): velocidad del combate, animaciones de movimientos, sonido y volumen, y «Borrar datos locales»; sin tema claro/oscuro. */
-export function SettingsDialog({ settings, onChange, onClearData, onClose }: SettingsDialogProps) {
+export function SettingsDialog({ settings, onChange, onClearData, onClose, account, accountState }: SettingsDialogProps) {
   const [confirming, setConfirming] = useState(false)
   const [cleared, setCleared] = useState(false)
 
   return (
     <>
       <Modal title={text.title} onClose={onClose} className="settings-dialog">
+        {account && accountState && accountState.status !== 'disabled' && (
+          <Suspense fallback={null}>
+            <AccountSection account={account} state={accountState} />
+          </Suspense>
+        )}
         <section className="settings-section">
           <h3 className="help-title" id="settings-speed">{text.speedTitle}</h3>
           <div className="settings-options" role="group" aria-labelledby="settings-speed">

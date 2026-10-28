@@ -1,0 +1,103 @@
+/* Cuenta, rankings y amigos (F4): se carga con su pestaña o con la Cuenta de Ajustes, fuera de la ruta crítica (E2E-21). */
+.nickname-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+}
+
+.nickname-form label {
+  flex-basis: 100%;
+}
+
+.text-input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 10px;
+  font: inherit;
+  color: #f8f8f8;
+  background: #181818;
+  border: 2px solid #585858;
+}
+
+.text-input:focus-visible {
+  outline: 2px solid #f8c830;
+  outline-offset: 1px;
+}
+
+.ranking-month {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.ranking-table {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: separate;
+  border-spacing: 0 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ranking-table th {
+  color: #d0d0d0;
+  text-align: left;
+  padding: 0 8px;
+}
+
+.ranking-table td {
+  padding: 2px 8px;
+  background: #181818;
+  border-top: 2px solid #585858;
+  border-bottom: 2px solid #585858;
+  overflow-wrap: anywhere;
+}
+
+.ranking-table td:first-child,
+.ranking-table th:first-child,
+.ranking-table td:last-child,
+.ranking-table th:last-child {
+  text-align: right;
+  width: 1%;
+  white-space: nowrap;
+}
+
+.ranking-verified {
+  margin-left: 4px;
+  vertical-align: -2px;
+}
+
+.ranking-me td {
+  background: #b81840;
+}
+
+.ranking-you {
+  color: #f8c830;
+}
+
+.friends-section {
+  margin-top: 14px;
+}
+
+.friends-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.friends-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.friends-list li > span:first-child {
+  flex: 1;
+  overflow-wrap: anywhere;
+}

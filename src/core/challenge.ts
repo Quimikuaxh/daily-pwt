@@ -1,5 +1,5 @@
 import { NEUTRAL_NATURE } from './constants'
-import { LAUNCH_DATE, LAUNCH_OPENING } from './launch'
+import { DISTINCT_BASE_SPECIES_FROM, LAUNCH_DATE, LAUNCH_OPENING } from './launch'
 import { rivalForDay, type TrainerTraits } from './bag'
 import { challengeNumber, dayIndex } from './date'
 import { DataError } from './errors'
@@ -97,7 +97,7 @@ export function challengeFor({ date, trainerId, variantId }: ChallengeSelection,
   const rivalTeam = putLeadFirst(resolvedTeam, trainer, new Prng(deriveSeed(daySeed, 'lead')))
 
   const pool = poolWithoutRival(data.playerSets, trainer.id)
-  const player = buildPlayerTeam(pool, rivalTeam, new Prng(deriveSeed(daySeed, 'player')), data.dex)
+  const player = buildPlayerTeam(pool, rivalTeam, new Prng(deriveSeed(daySeed, 'player')), data.dex, { distinctBaseSpecies: date >= DISTINCT_BASE_SPECIES_FROM })
   const playerTeam = player.team.map((member) => ({ ...member, nameEs: spanishName(data, member.species) }))
 
   const challengeTrainer: Challenge['trainer'] = {

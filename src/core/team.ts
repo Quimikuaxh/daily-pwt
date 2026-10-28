@@ -22,14 +22,18 @@ export function isForbiddenSpecies(speciesId: string): boolean {
 
 const ZERO_STATS = { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 }
 
-function pickDistinctSets(shuffled: readonly PokemonSet[]): PokemonSet[] {
+/** Clave de «misma especie» (RF-12): con `distinctBaseSpecies` (RF-12b), las formas cuentan como su especie base. */
+type SpeciesKey = (speciesId: string) => string
+
+function pickDistinctSets(shuffled: readonly PokemonSet[], speciesKey: SpeciesKey): PokemonSet[] {
   const chosen: PokemonSet[] = []
   const species = new Set<string>()
   const items = new Set<string>()
   for (const set of shuffled) {
-    if (species.has(set.species) || items.has(set.item)) continue
+    const key = speciesKey(set.species)
+    if (species.has(key) || items.has(set.item)) continue
     chosen.push(set)
-    species.add(set.species)
+    species.add(key)
     items.add(set.item)
     if (chosen.length === TEAM_SIZE) break
   }
@@ -82,6 +86,9 @@ function resolvePlayerSet(set: PokemonSet, dex: DexData, rng: Prng, ivs: StatsTa
 
 export type PlayerTeamResult = { team: ResolvedSet[]; attempts: number; relaxed: string[] }
 
+/** `distinctBaseSpecies`: RF-12b, sin dos formas de la misma especie (desde `DISTINCT_BASE_SPECIES_FROM`; antes, solo id distinto). */
+export type PlayerTeamOptions = { distinctBaseSpecies: boolean }
+
 /**
  * Elige 6 sets del pool con el PRNG dado (RF-10..16). Cada intento baraja de nuevo el pool con el mismo flujo.
  * Los IV del jugador son los del rival del día (20 contra líderes, 25 contra campeones, 30 contra Rojo; RF-16), EV 0 y naturaleza Seria.
@@ -89,13 +96,20 @@ export type PlayerTeamResult = { team: ResolvedSet[]; attempts: number; relaxed:
  * también RF-13b (suma de estadísticas base ≥ 3060; `relaxed` es `['RF-13b']` si el equipo sí tiene movimiento ×2, o `['RF-14', 'RF-13b']`). RF-12, RF-13 y RF-13c (máximo 2 Pokémon por tipo)
  * no se relajan nunca: sin solución, error de datos.
  */
-export function buildPlayerTeam(pool: readonly PokemonSet[], rivalTeam: readonly ResolvedSet[], rng: Prng, dex: DexData): PlayerTeamResult {
+export function buildPlayerTeam(
+  pool: readonly PokemonSet[],
+  rivalTeam: readonly ResolvedSet[],
+  rng: Prng,
+  dex: DexData,
+  options: PlayerTeamOptions = { distinctBaseSpecies: true },
+): PlayerTeamResult {
+  const speciesKey: SpeciesKey = options.distinctBaseSpecies ? (speciesId) => dex.species[speciesId]?.baseSpecies ?? speciesId : (speciesId) => speciesId
   const candidates = pool.filter((set) => {
     const species = dex.species[set.species]
     return species && !species.nfe && !isForbiddenSpecies(set.species)
   })
 
-  const distinctSpecies = new Set(candidates.map((set) => set.species)).size
+  const distinctSpecies = new Set(candidates.map((set) => speciesKey(set.species))).size
   const distinctItems = new Set(candidates.map((set) => set.item)).size
   if (distinctSpecies < TEAM_SIZE || distinctItems < TEAM_SIZE) {
     throw new DataError(
@@ -110,7 +124,7 @@ export function buildPlayerTeam(pool: readonly PokemonSet[], rivalTeam: readonly
   let withoutRf14: PokemonSet[] | undefined
   let withoutRf14AndRf13b: PokemonSet[] | undefined
   for (let attempt = 1; attempt <= MAX_TEAM_ATTEMPTS; attempt++) {
-    const team = pickDistinctSets(rng.shuffle(candidates))
+    const team = pickDistinctSets(rng.shuffle(candidates), speciesKey)
     if (team.length < TEAM_SIZE || distinctTypeCount(team, dex) < MIN_DISTINCT_TYPES) continue
     if (maxPokemonSharingAType(team, dex) > MAX_POKEMON_PER_TYPE) continue
     if (baseStatTotalOf(team, dex) < MIN_BASE_STAT_TOTAL) {

@@ -152,7 +152,7 @@ describe('Estadísticas desde Hoy (F3)', () => {
     store.finishOfficial(LAUNCH, WIN, new Date().toISOString())
     const { user } = mount(store)
     await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
-    const dialog = screen.getByRole('dialog', { name: 'Estadísticas' })
+    const dialog = await screen.findByRole('dialog', { name: 'Estadísticas' })
     expect(dialog).toHaveTextContent(/Jugados\s*1/)
     expect(screen.getByTestId('stats-win-percent')).toHaveTextContent('100')
     expect(screen.getByRole('button', { name: 'Copiar' })).toBeInTheDocument()
@@ -161,7 +161,7 @@ describe('Estadísticas desde Hoy (F3)', () => {
   it('sin oficiales terminados: mensaje de vacío y sin Copiar', async () => {
     const { user } = mount(new LocalStorageStore(new MemoryStorage()))
     await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
-    expect(screen.getByRole('dialog')).toHaveTextContent(/Aún no has terminado ningún combate oficial/)
+    expect(await screen.findByRole('dialog')).toHaveTextContent(/Aún no has terminado ningún combate oficial/)
     expect(screen.queryByRole('button', { name: 'Copiar' })).toBeNull()
   })
 })

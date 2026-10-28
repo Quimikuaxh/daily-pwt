@@ -1,0 +1,68 @@
+/**
+ * Textos de cuenta, rankings y amigos (F4) que solo usan las partes que se cargan aparte (Cuenta de Ajustes y pestañas de Rankings y Amigos):
+ * fuera de `es.ts` para que no entren en la ruta crítica (E2E-21). Lo que se pinta al cargar sigue en `es.ts`.
+ */
+export const esCloud = {
+  account: {
+    title: 'Cuenta',
+    signInHint: 'Opcional. Con cuenta, tu historial y tus rachas se guardan en ella y te siguen en cualquier dispositivo, puedes añadir amigos y tu nombre lleva el tick de verificado y no caduca. Sin cuenta se juega igual y también sumas puntos.',
+    guestNickname: (nickname: string) => `Juegas sin cuenta como ${nickname}.`,
+    guestNicknameHint: 'Sin cuenta, tu nombre queda libre si pasas 30 días sin jugar el combate oficial.',
+    signInFailed: 'No se ha podido iniciar sesión. Inténtalo de nuevo.',
+    signOut: 'Cerrar sesión',
+    signOutHint: 'Al cerrar sesión vuelves al historial de este navegador; no se borra nada.',
+    connecting: 'Conectando…',
+    offline: 'No se puede conectar con el servidor: juegas en local y el combate de hoy no contará para los rankings.',
+    signedInAs: (nickname: string) => `Has iniciado sesión como ${nickname}.`,
+    nicknameLabel: 'Nickname',
+    nicknameHint: 'De 3 a 16 caracteres: letras sin tilde, números y _.',
+    nicknameSave: 'Guardar',
+    nicknameSaved: 'Nickname guardado.',
+    nicknameErrors: {
+      nickname_taken: 'Ese nickname ya está cogido.',
+      invalid_nickname: 'De 3 a 16 caracteres: letras sin tilde, números y _.',
+      other: 'No se ha podido guardar. Inténtalo de nuevo.',
+    } as Record<string, string>,
+  },
+
+  ranking: {
+    points: 'Puntos del mes',
+    streak: 'Racha actual',
+    global: 'Global',
+    friends: 'Amigos',
+    kindLabel: 'Ranking',
+    scopeLabel: 'Quién aparece',
+    previousMonth: 'Mes anterior',
+    nextMonth: 'Mes siguiente',
+    month: (year: number, month: number) => `${['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'][month - 1]} de ${year}`,
+    position: 'Posición',
+    player: 'Jugador',
+    pointsColumn: 'Puntos',
+    streakColumn: 'Racha',
+    you: '(tú)',
+    empty: 'Aún no hay nadie en este ranking.',
+    failed: 'No se ha podido cargar el ranking.',
+    provisional: 'Provisional: el multiplicador de hoy se fija a medianoche (hora de Madrid).',
+    signInToAppear: 'Inicia sesión para ver el ranking de tus amigos y llevar el tick de verificado.',
+    verified: 'Con cuenta',
+    noName: '(sin nombre)',
+  },
+
+  friends: {
+    searchLabel: 'Buscar por nickname',
+    search: 'Buscar',
+    noResults: 'Nadie con ese nickname.',
+    add: 'Añadir',
+    requested: 'Solicitud enviada',
+    accept: 'Aceptar',
+    reject: 'Rechazar',
+    cancel: 'Cancelar solicitud',
+    remove: 'Quitar',
+    alreadyFriend: 'Ya sois amigos',
+    incoming: 'Solicitudes recibidas',
+    outgoing: 'Solicitudes enviadas',
+    list: 'Tus amigos',
+    none: 'Aún no tienes amigos añadidos.',
+    failed: 'No se ha podido completar. Inténtalo de nuevo.',
+  },
+} as const

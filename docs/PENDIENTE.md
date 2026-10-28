@@ -4,6 +4,9 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 **Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). El sonido va en `feature/f3-sonido` (desde `main`): los audios ya están descargados y versionados (se descargaron en local, desde la nube las fuentes están bloqueadas); falta implementarlo según «Sonido: plan de implementación».
 
+## Antes de desplegar `feature/cuentas`
+- **`DISTINCT_BASE_SPECIES_FROM`** (`src/core/launch.ts`, RF-12b, DEC-64) vale `2026-10-29`: ponerlo al día siguiente del despliegue, o los días ya publicados entre esa fecha y el despliegue cambiarían de equipo si tenían formas repetidas. Volver a lanzar UT-17 (snapshot) y UT-102.
+
 ## Para F2 (resto)
 - **`LAUNCH_DATE` fijada: 2026-10-24** (Jose, 23/10/2026), con Misty de #1 (`LAUNCH_OPENING`, PRD §0 «Lanzamiento»). El 27/10/2026, reparto de campeones, regiones y hermanos (DEC-62) con #1 a #4 fijos; cambia lo que sale desde el #5. Snapshot y fechas de referencia regenerados. Cambiarla de nuevo, o cambiar el roster o las reglas de generación, cambia lo ya publicado (rival, variante, equipo, `#N`): README, «Lanzamiento».
 - **Calibrar la dificultad** (PRD §14, criterio 19) con el roster completo. Resultado preliminar (INT-14, solo los 5 de F1) con el jugador de prueba "mejor daño" y los IV del jugador iguales a los del rival (RF-16): Brock 100 %, Misty 70 %, Camila 70 %, Plubio 50 %, Rojo 0 %. Brock y Rojo siguen fuera del rango 40-80 %.
@@ -26,7 +29,10 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 ## Fases futuras (tras F3; PRD §0)
 - **Modo PWT:** 7 entrenadores aleatorios seguidos con el mismo equipo. Libre y repetible sin límite (no es diario). Por definir: curación entre combates, si cuenta para estadísticas.
-- **F4 · Cuentas y rankings** (PRD §0, 27/10/2026; rama `feature/cuentas`): descripción en [REQUISITOS-F4.md](REQUISITOS-F4.md) y diseño propuesto en DEC-63. **No empezar el desarrollo hasta que Jose lo diga** y responda REQUISITOS-F4 §3. Jose crea el proyecto de Supabase y el cliente OAuth de Google (REQUISITOS-F4 §4).
+- **F4 · Cuentas y rankings** (PRD §0, 27/10/2026; rama `feature/cuentas`): descripción en [REQUISITOS-F4.md](REQUISITOS-F4.md) y diseño en DEC-63. Desarrollo empezado el 27/10/2026 (decisiones en §3). Supabase: el proyecto de claude-test, esquema `pwt` (DEC-63); Jose prepara lo de REQUISITOS-F4 §4.
+  - **Hecho:** migración `supabase/migrations/20261027000000_pwt_cuentas.sql` con sus tests en PGlite (UT-90 a UT-96); cliente `src/cloud/` (sesión anónima o Google, caché por cuenta, cola de envíos), cuenta en Ajustes y en la cabecera de Hoy, pestañas Rankings y Amigos dentro de Estadísticas, puntos del mes y de hoy; jugadores sin cuenta con nickname, puntos y rankings, tick de verificado y liberación de nombres a los 30 días (RF-112, RF-113) (UT-97 a UT-101); secretos en `deploy.yml`; README «Cuentas y rankings».
+  - **Falta:** Jose prepara Supabase y Google (README, «Cuentas y rankings»; REQUISITOS-F4 §4) y pasa la URL y la clave `anon`; después, probar el flujo real (login, enlace de la sesión anónima, dos dispositivos, cierre del día con `pg_cron`) y añadir un e2e contra el proyecto real o simulado si hace falta.
+  - **Ruta crítica:** el JS principal queda en 224,4 KB gzip, como antes de F4 (medido por Vite; E2E-21 mide HTML + CSS + JS y su límite es 230). Para que quepa, van en ficheros aparte la cuenta (`Account`, `supabase-js`), las ventanas de la cabecera (Estadísticas, Ayuda, Ajustes, que se traen en reposo), los textos de Ayuda (`esHelp.ts`) y de cuenta, rankings y amigos (`esCloud.ts`) y su CSS (`ui/stats/cloud.css`).
 - **Logros con login opcional:** requiere backend (cuentas y almacenamiento); el daily sigue sin cuenta. Con sesión, racha diaria y logros en la cuenta; sin sesión, racha en local. Por definir: servicio, qué logros, migración de las estadísticas locales.
 
 ## Sonido: plan de implementación (F3, PRD §0)

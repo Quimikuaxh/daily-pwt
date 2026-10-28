@@ -11,3 +11,10 @@ export const LAUNCH_DATE = '2026-10-24'
  * al repartir campeones y regiones (DEC-62), se fijan los cuatro ya publicados (#1 a #4) para que no cambien.
  */
 export const LAUNCH_OPENING: readonly string[] = ['misty', 'fredo', 'anton', 'mirto']
+
+/**
+ * RF-12b (Jose, 28/10/2026): desde este día, el equipo del jugador no repite especie aunque sean formas distintas (Thundurus y
+ * Thundurus-Therian). Los retos anteriores ya publicados se quedan como estaban. Al desplegar, debe ser el día siguiente al despliegue:
+ * un día ya publicado que cambie de regla cambia su equipo.
+ */
+export const DISTINCT_BASE_SPECIES_FROM = '2026-10-29'

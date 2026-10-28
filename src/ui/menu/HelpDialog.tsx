@@ -1,7 +1,7 @@
-import { es } from '../../i18n/es'
+import { esHelp } from '../../i18n/esHelp'
 import { Modal } from '../common/Modal'
 
-const text = es.help
+const text = esHelp
 
 /** Ayuda (PRD §10.5): cómo se juega, reglas, mecánicas de 5.ª generación, consejos, créditos y aviso legal. */
 export function HelpDialog({ onClose }: { onClose: () => void }) {

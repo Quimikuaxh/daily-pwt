@@ -117,7 +117,7 @@ describe('ResultScreen con historial (F3: estadísticas y compartir)', () => {
     render(<ResultScreen ended={official} mode="practice" store={store} date="2026-10-22" menu={testMenu(store)} onBackToToday={vi.fn()} onRematch={vi.fn()} />)
     expect(screen.queryByRole('button', { name: 'Copiar' })).toBeNull()
     await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
-    expect(screen.getByRole('dialog', { name: 'Estadísticas' })).toBeInTheDocument()
+    expect(await screen.findByRole('dialog', { name: 'Estadísticas' })).toBeInTheDocument()
     expect(screen.getByTestId('stats-played')).toHaveTextContent('1')
   })
 

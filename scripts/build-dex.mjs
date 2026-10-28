@@ -21,6 +21,8 @@ export function buildDex() {
       abilities: Object.values(entry.abilities).map(toId),
       nfe: Boolean(entry.nfe),
       spriteId: spriteIdOf(entry),
+      // Solo en las formas (thundurustherian → thundurus): dos formas de una especie no van en el mismo equipo (RF-12b).
+      ...(toId(entry.baseSpecies) !== entry.id ? { baseSpecies: toId(entry.baseSpecies) } : {}),
     }
   }
 

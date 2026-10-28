@@ -25,7 +25,7 @@ describe('AppMenu', () => {
   it('Ayuda trae cómo se juega, reglas, mecánicas, consejos, créditos y aviso legal', async () => {
     const { user } = mount()
     await user.click(screen.getByRole('button', { name: 'Ayuda' }))
-    const dialog = screen.getByRole('dialog', { name: 'Ayuda' })
+    const dialog = await screen.findByRole('dialog', { name: 'Ayuda' })
     for (const heading of ['Cómo se juega', 'Reglas del combate', 'Mecánicas de la 5.ª generación', 'Consejos', 'Estadísticas', 'Créditos', 'Aviso legal']) {
       expect(within(dialog).getByRole('heading', { name: heading })).toBeInTheDocument()
     }
@@ -40,7 +40,7 @@ describe('AppMenu', () => {
     const onSettingsChange = vi.fn()
     const { user } = mount({ settings: { speed: 2, animations: 'always', sound: true, volume: 70 }, onSettingsChange })
     await user.click(screen.getByRole('button', { name: 'Ajustes' }))
-    expect(screen.getByRole('button', { name: 'x2' })).toHaveAttribute('aria-pressed', 'true')
+    expect(await screen.findByRole('button', { name: 'x2' })).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByRole('button', { name: 'x1' })).toHaveAttribute('aria-pressed', 'false')
     await user.click(screen.getByRole('button', { name: 'x4' }))
     expect(onSettingsChange).toHaveBeenCalledWith({ speed: 4, animations: 'always', sound: true, volume: 70 })

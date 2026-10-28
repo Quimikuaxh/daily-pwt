@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { newBattleSeed } from './battle/seed'
+import type { Account, Cloud } from './cloud/account'
+import { CONNECTING, DISABLED, OFFLINE } from './cloud/state'
 import type { BattleClient } from './battle/client'
 import type { AiKind, EngineEnd } from './battle/protocol'
 import { challengeFor } from './core/challenge'
@@ -22,6 +24,8 @@ type AppProps = {
   createClient: () => BattleClient
   /** Progreso guardado. Por defecto, `localStorage` (si el navegador no lo deja, en memoria). */
   store?: GameStore
+  /** Supabase (F4, DEC-63), cargado aparte. Sin él (o `null`), solo local, como antes de F4. */
+  cloud?: Promise<Cloud | null> | null
 }
 
 type Battle = { challenge: Challenge; leadIndex: number; seed: string; client: BattleClient; mode: BattleMode; ai: AiKind; replay?: ReplayPlan }
@@ -32,6 +36,8 @@ type Screen =
   | { name: 'battle'; battle: Battle }
   | { name: 'result'; challenge: Challenge; leadIndex: number; ended: EngineEnd; mode: BattleMode }
 
+const noSubscription = () => () => {}
+
 /** Acceder a `localStorage` puede lanzar (cookies bloqueadas, modo privado): sin él el sitio funciona igual, sin guardar. */
 function browserStorage(): Storage | null {
   try {
@@ -41,9 +47,15 @@ function browserStorage(): Storage | null {
   }
 }
 
-export default function App({ data, createClient, store: injectedStore }: AppProps) {
+export default function App({ data, createClient, store: injectedStore, cloud = null }: AppProps) {
   const [hooks] = useState(() => readTestHooks(window.location.search))
-  const [store] = useState<GameStore>(() => injectedStore ?? new LocalStorageStore(browserStorage()))
+  const [localStore] = useState<GameStore>(() => injectedStore ?? new LocalStorageStore(browserStorage()))
+  // La cuenta (F4) se carga aparte, solo con Supabase configurado (E2E-21); mientras tanto, todo local.
+  const [account, setAccount] = useState(null as Account | null)
+  const [accountFailed, setAccountFailed] = useState(false)
+  const accountState = useSyncExternalStore(account?.subscribe ?? noSubscription, account?.getState ?? (() => (accountFailed ? OFFLINE : cloud ? CONNECTING : DISABLED)))
+  // Con sesión de Google, la caché de la cuenta; si no, el historial de este navegador.
+  const store = account && accountState.status === 'signedIn' ? account.store : localStore
   const [settings, setSettings] = useState<Settings>(() => loadSettings(browserStorage()))
   // Tras «Borrar datos locales» se vuelve a pintar: Hoy relee el historial (vacío) en cada render; Ajustes sigue abierto con su aviso.
   const [, setDataGeneration] = useState(0)
@@ -51,6 +63,35 @@ export default function App({ data, createClient, store: injectedStore }: AppPro
   const [battlesStarted, setBattlesStarted] = useState(0)
 
   useEffect(() => preloadBattleImages(), [])
+  useEffect(() => {
+    if (!cloud) return
+    let active = true
+    import('./cloud/account').then(
+      ({ Account }) => active && setAccount(new Account(cloud, browserStorage(), localStore)),
+      () => active && setAccountFailed(true),
+    )
+    return () => {
+      active = false
+    }
+  }, [cloud, localStore])
+  useEffect(() => {
+    if (!account) return
+    void account.start()
+    // Otro dispositivo pudo jugar mientras tanto; y lo que no se pudo enviar se reintenta al volver la conexión.
+    const onVisible = () => document.visibilityState === 'visible' && void account.refresh()
+    const onOnline = () => account.retry()
+    document.addEventListener('visibilitychange', onVisible)
+    window.addEventListener('online', onOnline)
+    // RF-98: el oficial de hoy ya estaba empezado en otro dispositivo; el de aquí no cuenta y Hoy enseña el de la cuenta.
+    const offConflict = account.onConflict((date) =>
+      setScreen((current) => (current.name === 'battle' && current.battle.mode === 'official' && current.battle.challenge.date === date ? { name: 'today', notice: es.today.official.otherDevice } : current)),
+    )
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible)
+      window.removeEventListener('online', onOnline)
+      offConflict()
+    }
+  }, [account])
   // Animaciones (Ajustes): la regla global de «reducir movimiento» de index.css solo se aplica con «Según el sistema»; «Siempre» la
   // anula y «Nunca» la fuerza.
   useEffect(() => {
@@ -70,10 +111,14 @@ export default function App({ data, createClient, store: injectedStore }: AppPro
 
   const menu: MenuContext = {
     store,
+    account: account ?? undefined,
+    accountState,
     settings,
     onSettingsChange: changeSettings,
     onClearData: () => {
-      store.clear()
+      // «Datos locales»: el historial de este navegador y, con sesión, la copia de la cuenta (se vuelve a bajar al recargar).
+      localStore.clear()
+      if (store !== localStore) store.clear()
       clearSettings(browserStorage())
       setSettings(DEFAULT_SETTINGS)
       setDataGeneration((generation) => generation + 1)
@@ -90,7 +135,7 @@ export default function App({ data, createClient, store: injectedStore }: AppPro
     const seed = nextSeed()
     const ai: AiKind = hooks.ai ?? 'heuristic'
     if (mode === 'official') {
-      const { record, created } = store.startOfficial({
+      const entry = {
         date: challenge.date,
         challengeNumber: challenge.number,
         trainerId: challenge.trainer.id,
@@ -98,15 +143,18 @@ export default function App({ data, createClient, store: injectedStore }: AppPro
         dataVersion: challenge.dataVersion,
         startedAt: nowIso(),
         battle: { seed, ai, leadIndex },
-      })
+      }
+      const { record, created } = store.startOfficial(entry)
       // Un segundo intento (otra pestaña, doble clic) no abre otro combate: retoma el que hay o enseña el resultado.
       if (!created) return record.status === 'inProgress' ? resumeOfficial(record) : setScreen({ name: 'today' })
+      account?.officialStarted(entry, { player: challenge.playerTeam.length, rival: challenge.rivalTeam.length })
     }
     setScreen({ name: 'battle', battle: { challenge, leadIndex, seed, ai, mode, client: createClient() } })
   }
 
   function abandonUnresumable(record: DayRecord, reason: VoidReason) {
     store.voidOfficial(record.date, reason, nowIso())
+    account?.officialVoided(record.date, reason)
     setScreen({ name: 'today', notice: es.today.official.resumeFailed })
   }
 
@@ -144,7 +192,15 @@ export default function App({ data, createClient, store: injectedStore }: AppPro
         mode={battle.mode}
         replay={battle.replay}
         onDecision={official ? (decision) => store.recordDecision(date, decision) : undefined}
-        onSettled={official ? (state) => store.recordCheckpoint(date, { ...state, decisions: store.getDay(date)?.battle?.decisions.length ?? 0 }) : undefined}
+        onSettled={
+          official
+            ? (state) => {
+                const decisions = store.getDay(date)?.battle?.decisions ?? []
+                store.recordCheckpoint(date, { ...state, decisions: decisions.length })
+                account?.turnSettled(date, decisions, state)
+              }
+            : undefined
+        }
         onReplayFailed={official ? () => abandonUnresumable(store.getDay(date) as DayRecord, 'replayFailed') : undefined}
         initialSpeed={settings.speed}
         animations={settings.animations}
@@ -153,7 +209,11 @@ export default function App({ data, createClient, store: injectedStore }: AppPro
         onSpeedChange={(speed) => changeSettings({ ...settings, speed })}
         onFinish={(ended) => {
           // El oficial cuenta para el día del reto con el que empezó, aunque termine pasada la medianoche (PRD §4.3).
-          if (official) store.finishOfficial(date, ended, nowIso())
+          if (official) {
+            const decisions = store.getDay(date)?.battle?.decisions ?? []
+            store.finishOfficial(date, ended, nowIso())
+            account?.officialFinished(date, ended, decisions)
+          }
           setScreen({ name: 'result', challenge: battle.challenge, leadIndex: battle.leadIndex, ended, mode: battle.mode })
         }}
         onExit={() => setScreen({ name: 'today' })}

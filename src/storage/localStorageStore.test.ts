@@ -256,3 +256,35 @@ describe('almacenamiento no disponible', () => {
     expect(stored(storage).days['2026-10-21'].battle.decisions).toHaveLength(1)
   })
 })
+
+// UT-99 · F4 (DEC-63): caché del historial de una cuenta.
+describe('caché de una cuenta', () => {
+  it('va en su propia clave y no toca el historial sin cuenta', () => {
+    const storage = new MemoryStorage()
+    const local = new LocalStorageStore(storage, clock)
+    local.startOfficial(entry())
+    const cache = new LocalStorageStore(storage, clock, 'daily-pwt:v1:account:u1')
+    expect(cache.listDays()).toEqual([])
+    cache.startOfficial(entry('2026-10-22'))
+    expect(local.listDays().map((day) => day.date)).toEqual(['2026-10-21'])
+    cache.clear()
+    expect(local.listDays()).toHaveLength(1)
+  })
+
+  it('replaceDays: manda el servidor, salvo un oficial en curso de aquí más avanzado; ignora días ilegibles', () => {
+    const store = new LocalStorageStore(new MemoryStorage(), clock, 'daily-pwt:v1:account:u1')
+    store.startOfficial(entry())
+    store.recordDecision('2026-10-21', { type: 'move', slot: 0 })
+    store.recordDecision('2026-10-21', { type: 'move', slot: 1 })
+    const local = store.getDay('2026-10-21')!
+    const server = { ...local, battle: { ...local.battle!, decisions: [{ type: 'move' as const, slot: 0 }] } }
+    const finished = { ...local, date: '2026-10-20', status: 'won' as const, battle: null, turns: 3, survivors: 2, finishedAt: 'y' }
+    store.replaceDays([server, finished, { date: 'mal' } as never])
+    expect(store.getDay('2026-10-21')?.battle?.decisions).toHaveLength(2)
+    expect(store.getDay('2026-10-20')?.status).toBe('won')
+
+    const otherBattle = { ...server, battle: { ...server.battle, seed: 'otra' } }
+    store.replaceDays([otherBattle])
+    expect(store.getDay('2026-10-21')?.battle?.seed).toBe('otra')
+  })
+})

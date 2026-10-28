@@ -2,7 +2,9 @@ import type { EngineEnd } from '../battle/protocol'
 import type { Checkpoint, DayRecord, DayStatus, Decision, GameStore, NewOfficial, VoidReason } from './gameStore'
 
 export const STORAGE_KEY = 'daily-pwt:v1'
-const CORRUPT_BACKUP_KEY = 'daily-pwt:v1:corrupt'
+/** Caché del historial de una cuenta (F4): la de la base de datos, para que las pantallas la lean igual que la local. */
+export const accountStorageKey = (userId: string) => `${STORAGE_KEY}:account:${userId}`
+const corruptBackupKey = (key: string) => `${key}:corrupt`
 const SCHEMA_VERSION = 1
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/
 const STATUSES: readonly DayStatus[] = ['inProgress', 'won', 'lost', 'void']
@@ -66,7 +68,12 @@ export class LocalStorageStore implements GameStore {
   private file: StoredFile = emptyFile()
   private usable: boolean
 
-  constructor(private readonly storage: Storage | null, private readonly now: () => Date = () => new Date()) {
+  /** `key`: la del modo sin cuenta por defecto; con sesión, la caché de esa cuenta (`accountStorageKey`, DEC-63). */
+  constructor(
+    private readonly storage: Storage | null,
+    private readonly now: () => Date = () => new Date(),
+    private readonly key: string = STORAGE_KEY,
+  ) {
     this.usable = storage !== null
     this.persistent = this.usable
     this.load()
@@ -77,7 +84,7 @@ export class LocalStorageStore implements GameStore {
     if (this.storage === null) return
     let raw: string | null
     try {
-      raw = this.storage.getItem(STORAGE_KEY)
+      raw = this.storage.getItem(this.key)
     } catch {
       this.usable = false
       this.persistent = false
@@ -113,7 +120,7 @@ export class LocalStorageStore implements GameStore {
 
   private keepCorruptBackup(raw: string): void {
     try {
-      this.storage?.setItem(CORRUPT_BACKUP_KEY, raw)
+      this.storage?.setItem(corruptBackupKey(this.key), raw)
     } catch {
       // Sin sitio para la copia: se empieza vacío igualmente.
     }
@@ -122,7 +129,7 @@ export class LocalStorageStore implements GameStore {
   private save(): void {
     if (this.storage === null || !this.usable) return
     try {
-      this.storage.setItem(STORAGE_KEY, JSON.stringify(this.file))
+      this.storage.setItem(this.key, JSON.stringify(this.file))
       this.persistent = true
     } catch {
       // Cuota llena o escritura bloqueada: se sigue en memoria y se reintenta en el próximo cambio.
@@ -217,12 +224,27 @@ export class LocalStorageStore implements GameStore {
     this.save()
   }
 
+  /**
+   * Pone el historial de la cuenta bajado de la base de datos (F4). Manda el servidor, salvo un oficial en curso de este navegador con más
+   * decisiones que el del servidor para el mismo combate (aún por enviar). Los días que el servidor no tiene se quedan.
+   */
+  replaceDays(days: readonly DayRecord[]): void {
+    this.refresh()
+    for (const day of days) {
+      if (!DATE_PATTERN.test(day.date) || !isDayRecord(day, day.date)) continue
+      const mine = this.file.days[day.date]
+      const mineAhead = mine?.status === 'inProgress' && day.status === 'inProgress' && mine.battle?.seed === day.battle?.seed && (mine.battle?.decisions.length ?? 0) > (day.battle?.decisions.length ?? 0)
+      if (!mineAhead) this.file.days[day.date] = withDefaults(day)
+    }
+    this.save()
+  }
+
   clear(): void {
     this.file = emptyFile()
     if (this.storage === null) return
     try {
-      this.storage.removeItem(STORAGE_KEY)
-      this.storage.removeItem(CORRUPT_BACKUP_KEY)
+      this.storage.removeItem(this.key)
+      this.storage.removeItem(corruptBackupKey(this.key))
       // Un archivo de otra versión dejaba el almacenamiento en solo lectura; borrado, se vuelve a poder guardar.
       this.usable = true
       this.persistent = true

@@ -354,6 +354,7 @@ img.sprite,
 
 .header-action {
   --cut: 6px;
+  position: relative;
   padding: 0 10px;
   display: inline-flex;
   align-items: center;
@@ -514,6 +515,55 @@ img.sprite,
 /* El hueco del icono de Ajustes toma el fondo del botón. */
 .header-action {
   --icon-hole: var(--fill);
+}
+
+/* ---------- Cuenta, rankings y amigos (F4) ---------- */
+.header-sign-in {
+  gap: 6px;
+}
+
+.header-badge {
+  /* Dentro del botón (sus esquinas cortadas recortan lo que sobresale). */
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  font-size: 14px;
+  line-height: 18px;
+  color: #f8f8f8;
+  background: #e82848;
+  border: 2px solid #181818;
+  border-radius: 9px;
+}
+
+@media (max-width: 640px) {
+  .header-sign-in-text {
+    display: none;
+  }
+}
+
+.stats-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.stats-tabs [aria-selected="true"] {
+  --edge: #f8c830;
+  --fill: #b81840;
+  --dots: #c83058;
+}
+
+.stats-points {
+  margin-top: 12px;
+}
+
+.stats-provisional {
+  font-size: 14px;
+  color: #d0d0d0;
 }
 
 /* ---------- Compartir ---------- */

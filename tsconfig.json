@@ -13,5 +13,5 @@
     "esModuleInterop": true,
     "types": ["vitest/globals", "node", "vite/client"]
   },
-  "include": ["src", "e2e", "scripts", "vite.config.ts", "vitest.config.ts", "vitest.setup.ts"]
+  "include": ["src", "e2e", "scripts", "supabase", "vite.config.ts", "vitest.config.ts", "vitest.setup.ts"]
 }

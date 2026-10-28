@@ -57,6 +57,8 @@ export type DexSpecies = {
   abilities: string[]
   nfe: boolean
   spriteId: string
+  /** Especie base, solo en las formas (`thundurustherian` → `thundurus`). */
+  baseSpecies?: string
 }
 
 export type DexMove = {

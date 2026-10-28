@@ -313,7 +313,7 @@ describe('Ajustes (F3): velocidad guardada y borrar datos locales', () => {
     await user.click(screen.getByRole('button', { name: 'Volver a Hoy' }))
     expect(official()).toBeDisabled()
     await user.click(screen.getByRole('button', { name: 'Ajustes' }))
-    await user.click(screen.getByRole('button', { name: 'Borrar datos locales' }))
+    await user.click(await screen.findByRole('button', { name: 'Borrar datos locales' }))
     await user.click(screen.getByRole('button', { name: 'Sí, borrar' }))
     expect(store().listDays()).toEqual([])
     expect(window.localStorage.getItem('daily-pwt:settings')).toBeNull()

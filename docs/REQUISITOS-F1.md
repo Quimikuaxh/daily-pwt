@@ -61,6 +61,7 @@ Lo marcado **[F1, se amplía]** es alcance de F1 y crece en F2/F3. Lo marcado **
 - RF-11b Precarga: desde Hoy se piden con prioridad baja los gráficos de interfaz del combate y los sprites de los 12 Pokémon del reto (nunca los del resto del pool), y las pantallas de equipo y de datos no se enseñan hasta tener sus imágenes (DEC-33).
 - RF-11c Los PS numéricos del jugador bajan o suben a la par de la barra (lineal, 700 ms a x1, enteros en cada fotograma, sin animación con `prefers-reduced-motion`) y terminan en el PS exacto (DEC-34).
 - RF-12 Sin Pokémon evolucionables, especies repetidas, objetos repetidos ni legendarios prohibidos (lista de PRD §6).
+- RF-12b (Jose, 28/10/2026) Tampoco dos formas de la misma especie (Thundurus y Thundurus-Therian, Rotom y Rotom-Lavado, Wormadam y sus mantos). Aplica desde `DISTINCT_BASE_SPECIES_FROM` (`src/core/launch.ts`); los retos anteriores ya publicados no cambian. No se relaja nunca, como RF-12.
 - RF-13 Al menos 4 tipos distintos.
 - RF-13b (F2, PRD §0) Suma de estadísticas base (`baseStats` del dex, como el total de las tarjetas de Hoy) de los 6 Pokémon >= 3060 (antes 2800 y luego 2860; cambios de requisito del 23/10/2026).
 - RF-13c (F2, PRD §0) Como máximo 2 Pokémon (antes 3; cambio de requisito del 23/10/2026) que compartan un mismo tipo (cada tipo de un Pokémon de doble tipo cuenta).
