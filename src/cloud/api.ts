@@ -29,6 +29,10 @@ export type PlayerRow = { nickname: string; relation: Relation }
 export interface CloudApi {
   ensureProfile(): Promise<{ nickname: string; created: boolean; registered: boolean }>
   setNickname(nickname: string): Promise<string>
+  /** Sesión anónima: código de un solo uso (una hora) para pasar lo jugado a la cuenta al iniciar sesión. */
+  createGuestClaim(): Promise<string>
+  /** Cuenta: canjea el código; recibe los días que no tenga y, si es nueva, el nombre de la sesión anónima. */
+  claimGuest(code: string): Promise<{ days: number; nickname: string | null }>
   startOfficial(entry: NewOfficial, sizes: { player: number; rival: number }): Promise<StartResult>
   saveTurn(date: string, decisions: Decision[], state: { turn: number; playerRemaining: number; rivalRemaining: number }): Promise<void>
   finishOfficial(date: string, ended: EngineEnd, decisions: Decision[]): Promise<{ validated: boolean }>

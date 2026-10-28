@@ -10,6 +10,9 @@ export { isPlayer, type AccountState }
 
 export type Cloud = { api: CloudApi; auth: CloudAuth }
 
+/** Código para pasar a la cuenta lo jugado sin cuenta, guardado mientras se va a Google y se vuelve. */
+export const GUEST_CLAIM_KEY = 'daily-pwt:guest-claim'
+
 /** Otro dispositivo ya había empezado el oficial de este día (RF-98): el de aquí no cuenta y se enseña el de la cuenta. */
 export type ConflictListener = (date: string) => void
 
@@ -88,14 +91,32 @@ export class Account {
       return
     }
     const profile = await cloud.api.ensureProfile()
+    const claimed = await this.claimGuest(cloud)
     this.accountStore = new LocalStorageStore(this.storage, undefined, accountStorageKey(session.userId))
     // Primero lo pendiente de enviar; luego se sube el historial del navegador (RF-97) y se baja el de la cuenta.
     await this.sync.flush()
     const finished = this.localStore.listDays().filter((day) => day.status !== 'inProgress')
     if (finished.length > 0) await cloud.api.importDays(finished)
     this.accountStore.replaceDays(await cloud.api.myDays())
-    this.set({ status: 'signedIn', userId: session.userId, nickname: profile.nickname, summary: null })
+    this.set({ status: 'signedIn', userId: session.userId, nickname: claimed?.nickname ?? profile.nickname, summary: null })
     await this.refreshSummary()
+  }
+
+  /** Canjea el código guardado antes de ir a Google (una sola vez: se borra aunque falle). */
+  private async claimGuest(cloud: Cloud): Promise<{ days: number; nickname: string | null } | null> {
+    let code: string | null = null
+    try {
+      code = this.storage?.getItem(GUEST_CLAIM_KEY) ?? null
+      this.storage?.removeItem(GUEST_CLAIM_KEY)
+    } catch {
+      return null
+    }
+    if (!code) return null
+    try {
+      return await cloud.api.claimGuest(code)
+    } catch {
+      return null
+    }
   }
 
   /** Vuelve a bajar el historial de la cuenta y los puntos (al volver a la pestaña: otro dispositivo pudo jugar). */
@@ -134,8 +155,21 @@ export class Account {
     }
   }
 
-  signIn(): Promise<void> {
-    return this.cloud ? this.cloud.auth.signInWithGoogle() : Promise.reject(new CloudError('disabled', true))
+  /**
+   * Va a Google en un solo paso. Sin cuenta, antes envía lo pendiente y pide el código para pasar a la cuenta lo jugado en este
+   * navegador (`GUEST_CLAIM_KEY`); si falla, se inicia sesión igual y eso se queda en la sesión anónima.
+   */
+  async signIn(): Promise<void> {
+    if (!this.cloud) throw new CloudError('disabled', true)
+    if (this.state.status === 'guest') {
+      try {
+        await this.sync?.flush()
+        this.storage?.setItem(GUEST_CLAIM_KEY, await this.cloud.api.createGuestClaim())
+      } catch {
+        // Sin código: se entra en la cuenta sin traspaso.
+      }
+    }
+    return this.cloud.auth.signInWithGoogle()
   }
 
   /** RF-96: vuelve al modo local (con una sesión anónima nueva); lo guardado en el navegador no se borra. */

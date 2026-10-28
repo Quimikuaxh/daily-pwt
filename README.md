@@ -88,7 +88,7 @@ Opcional: sin configurar, el juego funciona entero en local (sin cuentas ni rank
 
 1. En el proyecto de Supabase:
    - Authentication → Providers → **Google** activado (cliente OAuth de Google Cloud con los orígenes autorizados).
-   - Authentication → Sign In / Providers: **Allow anonymous sign-ins** y **Enable manual linking** activados (la sesión anónima hace contar el oficial sin cuenta en la media del día; al entrar con Google se enlaza a ese mismo usuario).
+   - Authentication → Sign In / Providers: **Allow anonymous sign-ins** activado (la sesión anónima hace contar el oficial sin cuenta en la media del día; al entrar con Google, lo jugado pasa a la cuenta con un código de un solo uso). «Enable manual linking» no hace falta.
    - Authentication → URL Configuration → Redirect URLs: `https://quimikuaxh.github.io/daily-pwt/` y `http://localhost:5173/`.
    - Database → Extensions: **pg_cron** activada (cierre del día cada hora y liberación diaria de los nombres de jugadores sin cuenta inactivos 30 días).
    - SQL Editor: ejecutar las migraciones de `supabase/migrations/` en orden de nombre (cada una se puede volver a ejecutar; crean lo que falte y redefinen las funciones). Con `pg_cron` activada, programa `pwt-close-days` y `pwt-release-nicknames`; si se activa después, volver a ejecutarla.

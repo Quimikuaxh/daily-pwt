@@ -372,3 +372,54 @@ describe('permisos (UT-96)', () => {
     await expect(t.as(null, `select pwt.my_days()`)).rejects.toThrow()
   })
 })
+
+// UT-104 · Inicio de sesión en un solo paso (Jose, 28/10/2026): lo jugado sin cuenta pasa a la cuenta con un código de un solo uso.
+describe('traspaso de la sesión anónima a la cuenta (UT-104)', () => {
+  it('la cuenta recibe los días que no tiene, con su estado y sus puntos; los repetidos se quedan; el código vale una vez', async () => {
+    const [guest, member] = [await t.user(true), await t.user()]
+    await t.call(guest, `select pwt.ensure_profile()`)
+    await t.call(member, `select pwt.ensure_profile()`)
+    await t.call(member, `select pwt.set_nickname('Socio_traspaso')`)
+    await t.admin(`update pwt.profiles set created_at = now() - interval '2 days' where id = $1`, [member.id])
+    await seedDay(guest.id, addDays(t.today, -3), 'won', 5)
+    await seedDay(guest.id, addDays(t.today, -2), 'won', 4)
+    await seedDay(member.id, addDays(t.today, -2), 'lost', 0)
+    await t.call(guest, START, [t.today])
+    await t.as(guest, `select pwt.save_turn($1::date, $2::jsonb, 1, 6, 5)`, [t.today, decisions(1)])
+
+    const code = await t.call<string>(guest, `select pwt.create_guest_claim()`)
+    expect(await t.call(member, `select pwt.claim_guest($1)`, [code])).toEqual({ days: 2, nickname: null })
+    await expect(t.call(member, `select pwt.claim_guest($1)`, [code])).rejects.toThrow('invalid_claim')
+
+    const days = await t.call<Array<Record<string, any>>>(member, `select pwt.my_days()`)
+    expect(days.map((day) => [day.date, day.status])).toEqual([[addDays(t.today, -3), 'won'], [addDays(t.today, -2), 'lost'], [t.today, 'inProgress']])
+    expect(days[2].battle).toMatchObject({ decisions: [move(0)] })
+    // El día repetido se queda en la sesión anónima (sigue contando en la media); el nombre de la cuenta no cambia.
+    expect(await t.admin(`select date::text from pwt.day_results where user_id = $1`, [guest.id])).toEqual([{ date: addDays(t.today, -2) }])
+    expect(await t.admin(`select nickname from pwt.profiles where id = $1`, [member.id])).toEqual([{ nickname: 'Socio_traspaso' }])
+    // La cuenta puede seguir su oficial de hoy.
+    await t.as(member, `select pwt.save_turn($1::date, $2::jsonb, 2, 6, 4)`, [t.today, decisions(2)])
+  })
+
+  it('una cuenta nueva se queda con el nombre de la sesión anónima', async () => {
+    const [guest, member] = [await t.user(true), await t.user()]
+    await t.call(guest, `select pwt.ensure_profile()`)
+    await t.call(guest, `select pwt.set_nickname('Invitada_trasp')`)
+    await t.call(member, `select pwt.ensure_profile()`)
+    const code = await t.call<string>(guest, `select pwt.create_guest_claim()`)
+    expect(await t.call(member, `select pwt.claim_guest($1)`, [code])).toEqual({ days: 0, nickname: 'Invitada_trasp' })
+    expect(await t.admin(`select id, nickname from pwt.profiles where id = any($1::uuid[]) order by nickname nulls first`, [[guest.id, member.id]]))
+      .toEqual([{ id: guest.id, nickname: null }, { id: member.id, nickname: 'Invitada_trasp' }])
+  })
+
+  it('solo una sesión anónima pide código; un código caducado o inventado no vale', async () => {
+    const [guest, member] = [await t.user(true), await t.user()]
+    await t.call(member, `select pwt.ensure_profile()`)
+    await expect(t.call(member, `select pwt.create_guest_claim()`)).rejects.toThrow('not_guest')
+    await expect(t.call(member, `select pwt.claim_guest('inventado')`)).rejects.toThrow('invalid_claim')
+    const code = await t.call<string>(guest, `select pwt.create_guest_claim()`)
+    await t.admin(`update pwt.guest_claims set created_at = now() - interval '2 hours' where code = $1`, [code])
+    await expect(t.call(member, `select pwt.claim_guest($1)`, [code])).rejects.toThrow('invalid_claim')
+    await expect(t.call(await t.user(true), `select pwt.claim_guest($1)`, [code])).rejects.toThrow('not_registered')
+  })
+})

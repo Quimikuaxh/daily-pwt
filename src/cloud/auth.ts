@@ -5,8 +5,9 @@ export interface CloudAuth {
   getSession(): Promise<Session | null>
   signInAnonymously(): Promise<Session>
   /**
-   * Va a Google y vuelve a la página (redirección). Con una sesión anónima, enlaza Google a ese mismo usuario (`linkIdentity`), así sus
-   * oficiales anónimos pasan a la cuenta y no se duplican en la media del día; si ese Google ya tenía cuenta, entra en ella.
+   * Va a Google y vuelve a la página (redirección), en un solo paso. Lo jugado con la sesión anónima pasa a la cuenta después, con el
+   * código de `create_guest_claim` (`Account.signIn`). *Descartado:* enlazar Google a la sesión anónima (`linkIdentity`): si ese Google ya
+   * tenía cuenta, había que iniciar sesión dos veces.
    */
   signInWithGoogle(): Promise<void>
   signOut(): Promise<void>

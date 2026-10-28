@@ -4,7 +4,7 @@ import type { NewOfficial } from '../storage/gameStore'
 import { accountStorageKey, LocalStorageStore } from '../storage/localStorageStore'
 import { cloudDay, fakeApi, fakeAuth, fakeCloud, networkError } from '../test-utils/cloud'
 import { MemoryStorage } from '../test-utils/memoryStorage'
-import { Account } from './account'
+import { Account, GUEST_CLAIM_KEY } from './account'
 import { cloudConfig } from './config'
 
 // UT-98 · F4 (RF-93 a RF-99, RF-104b; DEC-63): sesión, almacén de cada modo y réplica del oficial.
@@ -118,5 +118,45 @@ describe('Account (UT-98)', () => {
     expect(account.getState()).toMatchObject({ nickname: 'Nuevo' })
     await expect(account.setNickname('Cogido')).rejects.toThrow()
     expect(account.getState()).toMatchObject({ nickname: 'Nuevo' })
+  })
+
+  it('iniciar sesión sin cuenta: envía lo pendiente, pide el código y va a Google en un solo paso', async () => {
+    const cloud = fakeCloud(null)
+    const { account, storage } = setup(cloud)
+    await account.start()
+    await account.signIn()
+    expect(cloud.api.createGuestClaim).toHaveBeenCalled()
+    expect(storage.getItem(GUEST_CLAIM_KEY)).toBe('codigo-1')
+    expect(cloud.auth.signInWithGoogle).toHaveBeenCalledTimes(1)
+  })
+
+  it('si no se puede pedir el código, se inicia sesión igual', async () => {
+    const cloud = fakeCloud(null, fakeApi({ createGuestClaim: async () => Promise.reject(networkError()) }))
+    const { account, storage } = setup(cloud)
+    await account.start()
+    await account.signIn()
+    expect(storage.getItem(GUEST_CLAIM_KEY)).toBeNull()
+    expect(cloud.auth.signInWithGoogle).toHaveBeenCalled()
+  })
+
+  it('al volver con la cuenta canjea el código una vez y, si la cuenta es nueva, se queda con el nombre del navegador', async () => {
+    const api = fakeApi({ claimGuest: async () => ({ days: 3, nickname: 'Invitado' }) })
+    const { account, storage } = setup(fakeCloud(GOOGLE, api))
+    storage.setItem(GUEST_CLAIM_KEY, 'codigo-9')
+    await account.start()
+    expect(api.claimGuest).toHaveBeenCalledWith('codigo-9')
+    expect(storage.getItem(GUEST_CLAIM_KEY)).toBeNull()
+    expect(account.getState()).toMatchObject({ status: 'signedIn', nickname: 'Invitado' })
+    // El canje va antes de bajar el historial, para que los días traspasados ya estén.
+    expect(api.claimGuest.mock.invocationCallOrder[0]).toBeLessThan(api.myDays.mock.invocationCallOrder[0])
+  })
+
+  it('un código que el servidor rechaza no impide entrar', async () => {
+    const api = fakeApi({ claimGuest: async () => Promise.reject(new Error('invalid_claim')) })
+    const { account, storage } = setup(fakeCloud(GOOGLE, api))
+    storage.setItem(GUEST_CLAIM_KEY, 'caducado')
+    await account.start()
+    expect(account.getState()).toMatchObject({ status: 'signedIn' })
+    expect(storage.getItem(GUEST_CLAIM_KEY)).toBeNull()
   })
 })

@@ -14,9 +14,6 @@ function toCloudError(error: { message?: string; code?: string } | null | undefi
 /** La página a la que vuelve Google: la misma, sin parámetros (funciona en Pages, `/daily-pwt/`, y en desarrollo). */
 const returnUrl = () => `${window.location.origin}${window.location.pathname}`
 
-/** Google ya tenía cuenta: `linkIdentity` no puede enlazarlo a la sesión anónima y vuelve con este error. */
-const IDENTITY_TAKEN = 'identity_already_exists'
-
 function supabaseApi(client: SupabaseClient): CloudApi {
   async function rpc<T>(name: string, args: Record<string, unknown> = {}): Promise<T> {
     let result
@@ -33,6 +30,8 @@ function supabaseApi(client: SupabaseClient): CloudApi {
   return {
     ensureProfile: () => rpc('ensure_profile'),
     setNickname: (nickname) => rpc('set_nickname', { p_nickname: nickname }),
+    createGuestClaim: () => rpc('create_guest_claim'),
+    claimGuest: (code) => rpc('claim_guest', { p_code: code }),
     startOfficial: (entry, sizes) =>
       rpc('start_official', {
         p_date: entry.date,
@@ -88,13 +87,6 @@ function supabaseAuth(client: SupabaseClient): CloudAuth {
 
   return {
     async getSession() {
-      const params = new URLSearchParams(`${window.location.search.slice(1)}&${window.location.hash.slice(1)}`)
-      if (params.get('error_code') === IDENTITY_TAKEN) {
-        // Ese Google ya era una cuenta: se entra en ella (la sesión anónima de este navegador se queda como estaba).
-        window.history.replaceState(null, '', returnUrl())
-        await client.auth.signInWithOAuth(google())
-        return null
-      }
       const { data } = await client.auth.getSession()
       return toSession(data.session?.user)
     },
@@ -105,8 +97,7 @@ function supabaseAuth(client: SupabaseClient): CloudAuth {
       return session
     },
     async signInWithGoogle() {
-      const { data } = await client.auth.getSession()
-      const { error } = data.session?.user.is_anonymous ? await client.auth.linkIdentity(google()) : await client.auth.signInWithOAuth(google())
+      const { error } = await client.auth.signInWithOAuth(google())
       if (error) throw toCloudError(error)
     },
     async signOut() {
