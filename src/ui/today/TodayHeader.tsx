@@ -18,7 +18,7 @@ export function TodayHeader({ challengeNumber, countdown, menu, date }: TodayHea
             <time className="plate countdown-value">{countdown}</time>
           </p>
         </div>
-        {menu && date && <AppMenu {...menu} today={date} signIn />}
+        {menu && date && <AppMenu {...menu} today={date} />}
       </div>
     </header>
   )

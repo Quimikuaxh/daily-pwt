@@ -5,13 +5,13 @@ import { render, screen } from '@testing-library/react'
 import { TodayScreen } from './TodayScreen'
 import { pokemonSpriteClass, trainerSpriteClass } from './spriteBox'
 import { makeGameData } from '../../test-utils/fixtures'
-import { setLocalTime } from '../../test-utils/ui'
+import { setMadridTime } from '../../test-utils/ui'
 
 // Revisión ciclo 1, bloqueante 1: los sprites de Hoy van a tamaño natural (x1), nunca escalados de forma fraccionaria.
 const data = makeGameData()
 const SPRITES_DIR = join(import.meta.dirname, '../../../public/sprites')
 
-beforeEach(() => { vi.useFakeTimers(); setLocalTime('2026-10-17', 12) })
+beforeEach(() => { vi.useFakeTimers(); setMadridTime('2026-10-17', 12) })
 afterEach(() => { vi.useRealTimers() })
 
 describe('sprites de Hoy', () => {

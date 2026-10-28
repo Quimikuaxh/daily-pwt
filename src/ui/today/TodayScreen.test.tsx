@@ -5,7 +5,7 @@ import { TodayScreen } from './TodayScreen'
 import { challengeFor, getDailyChallenge } from '../../core/challenge'
 import { calcStats } from '../../core/stats'
 import { fewTypesData, makeGameData } from '../../test-utils/fixtures'
-import { setLocalTime } from '../../test-utils/ui'
+import { setMadridTime } from '../../test-utils/ui'
 import { LAUNCH, addDays } from '../../test-utils/dates'
 import type { ResolvedSet } from '../../test-utils/types'
 
@@ -22,7 +22,7 @@ const challengeOf = (date = NOW) => getDailyChallenge(date, data)
 const name = (kind: 'species' | 'moves' | 'abilities' | 'items' | 'types', id: string) => (data.names as any)[kind][id] as string
 
 function renderToday(over: { date?: string; trainerId?: string; data?: any; onStart?: any; h?: number; mi?: number; s?: number } = {}) {
-  setLocalTime(over.date ?? NOW, over.h ?? 12, over.mi ?? 0, over.s ?? 0)
+  setMadridTime(over.date ?? NOW, over.h ?? 12, over.mi ?? 0, over.s ?? 0)
   const onStart = over.onStart ?? vi.fn()
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
   const utils = render(<TodayScreen data={over.data ?? data} onStart={onStart} rivalOverride={over.trainerId ? { trainerId: over.trainerId } : undefined} />)

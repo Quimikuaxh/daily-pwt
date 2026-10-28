@@ -15,9 +15,9 @@ Base: [REQUISITOS-F1](REQUISITOS-F1.md), [ARQUITECTURA](ARQUITECTURA.md) §9.
 **Núcleo y fechas**
 - UT-01 PRNG: misma semilla → misma secuencia; distinta → distinta; `nextInt` en rango; `shuffle`/`sample` permutan sin mutar; `deriveSeed` distinto por flujo. (RF-02/03)
 - UT-02 Aislamiento de `core/`: sin `Math.random`, `Date.now`, `new Date()` sin argumentos ni imports externos; el test falla con un fixture que lo incumple. (DEC-01)
-- UT-03 `localDate` con getters locales (nunca UTC), TZ UTC/Madrid/Auckland, 23:59:59 → 00:00:00. (RF-01)
+- UT-03 `challengeDate`: la fecha de Madrid con el dispositivo en Auckland, UTC, México, Canarias y Madrid; 23:59:59 → 00:00:00 de Madrid; medianoche de invierno a las 23:00 UTC. (RF-01, DEC-65)
 - UT-04 `challengeNumber`: D0 `#1`, D+1 `#2`, D+5 `#6`, D+365 `#366`, D-1 y anteriores `#1`; días de cambio de hora cuentan 1 día exacto. (RF-09)
-- UT-05 `msUntilNextLocalMidnight`: 1000 ms a 23:59:59; 86 400 000 a 00:00; 82 800 000 en día de 23 h; 90 000 000 en día de 25 h. (RF-30)
+- UT-05 `msUntilNextChallenge`: 1000 ms a las 23:59:59 de Madrid; 86 400 000 a las 00:00; 82 800 000 en día de 23 h; 90 000 000 en día de 25 h, con el dispositivo en otra zona. (RF-30, DEC-65)
 - UT-06 `calcStats` coincide con `@pkmn/data` Gen 5 y el sim (Shedinja 1 PS, naturalezas, IV 20/25/30, EV ≠ 0). (RF-35/16)
 - UT-07 Tabla de tipos Gen 5 completa igual que `@pkmn/data`; Acero resiste Fantasma y Siniestro; sin Hada. (RF-14)
 
@@ -79,7 +79,8 @@ Base: [REQUISITOS-F1](REQUISITOS-F1.md), [ARQUITECTURA](ARQUITECTURA.md) §9.
 - UT-98 `account.test.ts`: sin configuración todo local; sesión anónima con nickname editable que envía el oficial (RF-104b, RF-112), y sin nombre si no se puede pedir el perfil; sin servicio, local con aviso (RF-93); con Google, perfil, importación, caché de la cuenta (RF-97, RF-99); cerrar sesión (RF-96); conflicto de dispositivos (RF-98); nickname.
 - UT-99 `localStorageStore.test.ts`, «caché de una cuenta»: clave propia y `replaceDays`.
 - UT-100 `accountUi.test.tsx`: iniciar sesión en la cabecera de Hoy (RF-93), aviso de solicitudes (RF-111), nickname y cerrar sesión en Ajustes, pestañas de Estadísticas (Yo, Rankings, Amigos), rankings con empates, tick de verificado, nombre liberado y mes anterior, nickname sin cuenta con aviso de caducidad, rankings sin cuenta (RF-109), amigos, puntos del mes y de hoy provisionales.
-- UT-102 `team.baseSpecies.test.ts` (RF-12b, DEC-64): 400 días desde `DISTINCT_BASE_SPECIES_FROM` y 20 días con cada rival, sin dos formas de la misma especie en el equipo del jugador; los días anteriores no cambian (snapshot de UT-17).
+- UT-102 `team.baseSpecies.test.ts` (RF-12b, DEC-64): 400 días desde `TEAM_RULES_2_FROM` y 20 días con cada rival, sin dos formas de la misma especie en el equipo del jugador; los días anteriores no cambian (snapshot de UT-17).
+- UT-103 `team.test.ts`, «suma de estadísticas base relativa al rival» (RF-13d, DEC-66): con cada una de las 99 variantes reales el equipo cae en la ventana sin relajarla; sin equipo posible, 1000 intentos y el de suma más cercana con RF-13d en `relaxed`. Los tests de RF-13b siguen con `TEAM_RULES_1` y `teamViolations` comprueba la regla de cada fecha (`rulesForDate`).
 - UT-101 `App.cloud.test.tsx`: App envía empezar, cada turno y terminar del oficial (no las prácticas ni el estado inicial) y vuelve a Hoy si el oficial ya estaba empezado en otro dispositivo (RF-98).
 - UT-80 `src/data/sprites.test.ts` (PRD §0, 24/10/2026): ningún fotograma de `lanturn.gif` (frente y espalda) dura menos de 100 ms, para que no vuelva el parpadeo del halo a 10 Hz.
 - UT-34 Sprites existen (Pokémon front/back por `spriteId`; entrenador `.gif` y `-mini.png`) con cabecera GIF/PNG válida.

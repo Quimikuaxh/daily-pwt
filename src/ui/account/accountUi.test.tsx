@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { Account } from '../../cloud/account'
 import { CloudError } from '../../cloud/api'
 import { LocalStorageStore } from '../../storage/localStorageStore'
-import { fakeApi, fakeCloud } from '../../test-utils/cloud'
+import { cloudDay, fakeApi, fakeCloud, rankingPage } from '../../test-utils/cloud'
 import { MemoryStorage } from '../../test-utils/memoryStorage'
 import { testMenu } from '../../test-utils/ui'
 import { AppMenu } from '../menu/AppMenu'
@@ -13,40 +13,47 @@ import { AppMenu } from '../menu/AppMenu'
 const TODAY = '2026-10-27'
 const GOOGLE = { userId: 'g1', anonymous: false }
 
-async function mount(session: { userId: string; anonymous: boolean } | null, api = fakeApi(), signIn = true) {
+async function mount(session: { userId: string; anonymous: boolean } | null, api = fakeApi()) {
   const user = userEvent.setup()
   const storage = new MemoryStorage()
   const local = new LocalStorageStore(storage)
   const cloud = fakeCloud(session, api)
   const account = new Account(Promise.resolve(cloud), storage, local)
   await account.start()
-  const view = () => <AppMenu {...testMenu(account.store, { account, accountState: account.getState() })} today={TODAY} signIn={signIn} />
+  const view = () => <AppMenu {...testMenu(account.store, { account, accountState: account.getState() })} today={TODAY} />
   const result = render(view())
   account.subscribe(() => result.rerender(view()))
   return { user, account, cloud }
 }
 
 describe('cuenta en la interfaz (UT-100)', () => {
-  it('sin cuenta: «Iniciar sesión» en la cabecera de Hoy, que lleva a Google (RF-93)', async () => {
+  it('icono Cuenta en la cabecera, delante de los demás; sin cuenta, su ventana lleva a Google (RF-93)', async () => {
     const { user, cloud } = await mount(null)
-    const button = screen.getByRole('button', { name: 'Iniciar sesión con Google' })
-    await user.click(button)
+    expect(within(screen.getByRole('navigation')).getAllByRole('button').map((button) => button.getAttribute('aria-label'))).toEqual(['Cuenta', 'Estadísticas', 'Ayuda', 'Ajustes'])
+    await user.click(screen.getByRole('button', { name: 'Cuenta' }))
+    const dialog = await screen.findByRole('dialog', { name: 'Cuenta' })
+    await user.click(within(dialog).getByRole('button', { name: 'Iniciar sesión con Google' }))
     expect(cloud.auth.signInWithGoogle).toHaveBeenCalled()
   })
 
-  it('con cuenta no hay botón de iniciar sesión y las solicitudes pendientes se avisan en Estadísticas (RF-111)', async () => {
+  it('las solicitudes pendientes se avisan en Estadísticas (RF-111)', async () => {
     await mount(GOOGLE, fakeApi({ mySummary: async () => ({ nickname: 'Jose', registered: true, points: [], incomingRequests: 2 }) }))
-    expect(screen.queryByRole('button', { name: 'Iniciar sesión con Google' })).toBeNull()
     expect(screen.getByRole('status', { name: '2 solicitudes de amistad pendientes' })).toHaveTextContent('2')
   })
 
-  it('Ajustes: nickname cogido avisa y no cambia; cerrar sesión (RF-95, RF-96)', async () => {
+  it('Cuenta: nickname cogido avisa y no cambia; cerrar sesión (RF-95, RF-96); Ajustes explica que el historial está en la cuenta', async () => {
     const api = fakeApi({ mySummary: async () => ({ nickname: 'Jose', registered: true, points: [], incomingRequests: 0 }), setNickname: async () => Promise.reject(new CloudError('nickname_taken', true)) })
     const { user, cloud } = await mount(GOOGLE, api)
     await user.click(screen.getByRole('button', { name: 'Ajustes' }))
-    const dialog = await screen.findByRole('dialog', { name: 'Ajustes' })
+    const settings = await screen.findByRole('dialog', { name: 'Ajustes' })
+    expect(within(settings).getByText(/se guardan en tu cuenta/)).toBeInTheDocument()
+    expect(within(settings).queryByLabelText('Nickname')).toBeNull()
+    await user.click(within(settings).getByRole('button', { name: 'Cerrar' }))
+    await user.click(screen.getByRole('button', { name: 'Cuenta' }))
+    const dialog = await screen.findByRole('dialog', { name: 'Cuenta' })
     const input = await within(dialog).findByLabelText('Nickname')
-    expect(within(dialog).getByText('Has iniciado sesión como Jose.')).toBeInTheDocument()
+    expect(within(dialog).getByText('Sesión iniciada con Google.')).toBeInTheDocument()
+    expect(input).toHaveValue('Jose')
     await user.clear(input)
     await user.type(input, 'ab')
     await user.click(within(dialog).getByRole('button', { name: 'Guardar' }))
@@ -69,13 +76,14 @@ describe('cuenta en la interfaz (UT-100)', () => {
   it('Rankings: puntos del mes con empates en la misma posición y el jugador marcado; racha actual (RF-106 a RF-108)', async () => {
     const api = fakeApi({
       mySummary: async () => ({ nickname: 'Jose', registered: true, points: [], incomingRequests: 0 }),
-      pointsRanking: async () => [
-        { rank: 1, nickname: 'Ana', verified: true, points: 12.5, provisional: true, me: false },
-        { rank: 1, nickname: 'Bea', verified: false, points: 12.5, provisional: false, me: false },
-        { rank: 3, nickname: null, verified: false, points: 4, provisional: false, me: false },
-        { rank: 7, nickname: 'Jose', verified: true, points: 3, provisional: false, me: true },
-      ],
-      streakRanking: async () => [{ rank: 1, nickname: 'Ana', verified: true, streak: 5, me: false }],
+      pointsRanking: async () =>
+        rankingPage([
+          { rank: 1, nickname: 'Ana', verified: true, points: 12.5, provisional: false, me: false },
+          { rank: 1, nickname: 'Bea', verified: false, points: 12.5, provisional: false, me: false },
+          { rank: 3, nickname: null, verified: false, points: 4, provisional: false, me: false },
+          { rank: 7, nickname: 'Jose', verified: true, points: 3, provisional: false, me: true },
+        ]),
+      streakRanking: async () => rankingPage([{ rank: 1, nickname: 'Ana', verified: true, streak: 5, me: false }]),
     })
     const { user } = await mount(GOOGLE, api)
     await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
@@ -85,28 +93,55 @@ describe('cuenta en la interfaz (UT-100)', () => {
       ['1', 'AnaCon cuenta', '12,5'],
       ['1', 'Bea', '12,5'],
       ['3', '(sin nombre)', '4'],
-      ['7', 'JoseCon cuenta (tú)', '3'],
+      ['7', 'JoseCon cuenta(tú)', '3'],
     ])
     expect(within(table).getAllByRole('img', { name: 'Con cuenta' })).toHaveLength(2)
     expect(within(table).getByRole('row', { current: true })).toHaveTextContent('Jose')
-    expect(api.pointsRanking).toHaveBeenCalledWith('2026-10-01', 'global')
-    expect(screen.getByText(/Provisional/)).toBeInTheDocument()
+    expect(api.pointsRanking).toHaveBeenCalledWith('2026-10-01', 'global', null)
+    expect(screen.queryByRole('navigation', { name: 'Páginas del ranking' })).toBeNull()
+    expect(screen.getByText(/Solo cuentan los días ya cerrados/)).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Mes anterior' }))
-    await waitFor(() => expect(api.pointsRanking).toHaveBeenCalledWith('2026-09-01', 'global'))
-    await user.click(screen.getByRole('button', { name: 'Amigos' }))
-    await waitFor(() => expect(api.pointsRanking).toHaveBeenCalledWith('2026-09-01', 'friends'))
-    await user.click(screen.getByRole('button', { name: 'Racha actual' }))
+    await waitFor(() => expect(api.pointsRanking).toHaveBeenCalledWith('2026-09-01', 'global', null))
+    await user.click(screen.getByRole('button', { name: 'Solo amigos' }))
+    await waitFor(() => expect(api.pointsRanking).toHaveBeenCalledWith('2026-09-01', 'friends', null))
+    await user.click(screen.getByRole('button', { name: 'Racha' }))
     expect(await screen.findByText('Ana')).toBeInTheDocument()
-    expect(api.streakRanking).toHaveBeenCalledWith('friends')
+    expect(api.streakRanking).toHaveBeenCalledWith('friends', null)
   })
 
-  it('sin cuenta: nickname propio editable en Ajustes, con el aviso de caducidad (RF-95, RF-112, RF-113)', async () => {
+  it('Rankings por páginas de 20: se abre en la del jugador, se pasa de página y se vuelve a la suya (RF-108)', async () => {
+    const row = (rank: number, me = false) => ({ rank, nickname: me ? 'Jose' : `Jugador_${rank}`, verified: true, points: 100 - rank, provisional: false, me })
+    const pages: Record<string, ReturnType<typeof rankingPage<ReturnType<typeof row>>>> = {
+      mine: rankingPage([row(41, true), row(42)], { page: 3, pages: 4, total: 70, myPage: 3 }),
+      4: rankingPage([row(61)], { page: 4, pages: 4, total: 70, myPage: 3 }),
+    }
+    const api = fakeApi({
+      mySummary: async () => ({ nickname: 'Jose', registered: true, points: [], incomingRequests: 0 }),
+      pointsRanking: async (_month: string, _scope: string, page: number | null) => pages[page === null || page === 3 ? 'mine' : page],
+    })
+    const { user } = await mount(GOOGLE, api)
+    await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
+    await user.click(await screen.findByRole('tab', { name: 'Rankings' }))
+    const pagination = await screen.findByRole('navigation', { name: 'Páginas del ranking' })
+    expect(pagination).toHaveTextContent('Página 3 de 4')
+    expect(within(pagination).queryByRole('button', { name: 'Ir a mi posición' })).toBeNull()
+    await user.click(within(pagination).getByRole('button', { name: 'Página siguiente' }))
+    expect(await screen.findByText('Jugador_61')).toBeInTheDocument()
+    expect(api.pointsRanking).toHaveBeenLastCalledWith('2026-10-01', 'global', 4)
+    expect(screen.getByRole('button', { name: 'Página siguiente' })).toBeDisabled()
+    await user.click(screen.getByRole('button', { name: 'Ir a mi posición' }))
+    expect(await screen.findByText('Jugador_42')).toBeInTheDocument()
+    expect(api.pointsRanking).toHaveBeenLastCalledWith('2026-10-01', 'global', 3)
+  })
+
+  it('sin cuenta: nickname propio editable en Cuenta, con el aviso de caducidad (RF-95, RF-112, RF-113)', async () => {
     const api = fakeApi({ ensureProfile: async () => ({ nickname: 'entrenador_00042', created: true, registered: false }) })
     const { user } = await mount(null, api)
-    await user.click(screen.getByRole('button', { name: 'Ajustes' }))
-    const dialog = await screen.findByRole('dialog', { name: 'Ajustes' })
-    expect(await within(dialog).findByText('Juegas sin cuenta como entrenador_00042.')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Cuenta' }))
+    const dialog = await screen.findByRole('dialog', { name: 'Cuenta' })
+    expect(await within(dialog).findByText('Juegas sin cuenta.')).toBeInTheDocument()
+    expect(within(dialog).getByLabelText('Nickname')).toHaveValue('entrenador_00042')
     expect(within(dialog).getByText(/30 días sin jugar/)).toBeInTheDocument()
     const input = within(dialog).getByLabelText('Nickname')
     await user.clear(input)
@@ -121,7 +156,7 @@ describe('cuenta en la interfaz (UT-100)', () => {
     await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
     await user.click(await screen.findByRole('tab', { name: 'Rankings' }))
     expect(await screen.findByText(/Inicia sesión para ver el ranking de tus amigos/)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Amigos' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Solo amigos' })).toBeDisabled()
     await user.click(await screen.findByRole('tab', { name: 'Amigos' }))
     expect(screen.getByText('Inicia sesión para añadir amigos.')).toBeInTheDocument()
   })
@@ -144,7 +179,7 @@ describe('cuenta en la interfaz (UT-100)', () => {
     expect(api.sendFriendRequest).toHaveBeenCalledWith('Fede')
   })
 
-  it('Yo: puntos del mes y de hoy, provisionales hasta el cierre (RF-103, RF-105)', async () => {
+  it('Yo: puntos del mes (solo días cerrados) y, de hoy, los Pokémon en pie hasta el cierre (RF-103, RF-105)', async () => {
     const api = fakeApi({
       mySummary: async () => ({
         nickname: 'Jose',
@@ -152,14 +187,18 @@ describe('cuenta en la interfaz (UT-100)', () => {
         points: [
           { date: '2026-09-30', points: 9, provisional: false },
           { date: '2026-10-26', points: 4.5, provisional: false },
-          { date: TODAY, points: 7.25, provisional: true },
+          { date: '2026-10-25', points: 7.25, provisional: false },
         ],
         incomingRequests: 0,
       }),
+      myDays: async () => [cloudDay({ date: TODAY, status: 'won', survivors: 4 })],
     })
     const { user } = await mount(GOOGLE, api)
     await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
     expect(await screen.findByTestId('stats-month-points')).toHaveTextContent('11,75')
-    expect(screen.getByTestId('stats-today-points')).toHaveTextContent('7,25 (provisional)')
+    expect(screen.getByTestId('stats-today-survivors')).toHaveTextContent('4/6')
+    expect(screen.getByText(/Los puntos de hoy se calculan a medianoche/)).toBeInTheDocument()
+    expect(screen.queryByText(/provisional/i)).toBeNull()
   })
+
 })

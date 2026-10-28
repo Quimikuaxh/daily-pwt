@@ -14,7 +14,9 @@ const HOST = '127.0.0.1'
 const server = (outDir: string, port: number, env: Record<string, string>) => ({
   command: `npx vite build --outDir ${outDir} --emptyOutDir && npx vite preview --outDir ${outDir} --host ${HOST} --port ${port} --strictPort`,
   url: `http://${HOST}:${port}/`,
-  env,
+  // Sin cuentas (F4): las variables de entorno mandan sobre `.env.local`, así un `.env.local` con Supabase no hace que los e2e creen
+  // usuarios reales.
+  env: { VITE_SUPABASE_URL: '', VITE_SUPABASE_ANON_KEY: '', ...env },
   reuseExistingServer: false,
   timeout: 180_000,
   stdout: 'ignore' as const,

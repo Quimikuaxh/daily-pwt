@@ -35,16 +35,30 @@ export const maxSharingAType = (dex: DexData, team: ResolvedSet[]): number => {
   return Math.max(...counts.values())
 }
 
-/** Devuelve la lista de reglas RF-12/13/13b/13c/14/16 incumplidas por un equipo del jugador (RF-16: los IV son los del rival del día). */
-export function teamViolations(dex: DexData, team: ResolvedSet[], rival: ResolvedSet[], relaxed: string[] = []): string[] {
+/**
+ * Reglas del equipo de cada fecha: `v1` hasta TEAM_RULES_2_FROM (RF-13b, ≥ 3060; especie distinta por id) y `v2` desde ese día
+ * (RF-12b, sin dos formas de la misma especie; RF-13d, suma entre la del rival − 180 y + 240). Fecha fija aquí a propósito: los tests no
+ * leen la constante del código que comprueban.
+ */
+export type TeamRules = 'v1' | 'v2'
+export const rulesForDate = (date: string): TeamRules => (date >= '2026-10-29' ? 'v2' : 'v1')
+
+/** Devuelve la lista de reglas RF-12/13/13b/13c/13d/14/16 incumplidas por un equipo del jugador (RF-16: los IV son los del rival del día). */
+export function teamViolations(dex: DexData, team: ResolvedSet[], rival: ResolvedSet[], relaxed: string[] = [], rules: TeamRules = 'v2'): string[] {
   const out: string[] = []
+  const speciesKey = (id: string) => (rules === 'v2' ? (dex.species[id].baseSpecies ?? id) : id)
   if (team.length !== 6) out.push(`tamaño ${team.length}`)
   if (team.some((p) => dex.species[p.species].nfe)) out.push('RF-12 nfe')
-  if (new Set(team.map((p) => p.species)).size !== team.length) out.push('RF-12 especie repetida')
+  if (new Set(team.map((p) => speciesKey(p.species))).size !== team.length) out.push(rules === 'v2' ? 'RF-12b especie repetida' : 'RF-12 especie repetida')
   if (new Set(team.map((p) => p.item)).size !== team.length) out.push('RF-12 objeto repetido')
   if (team.some((p) => isForbidden(p.species))) out.push('RF-12 prohibido')
   if (distinctTypes(dex, team).length < 4) out.push('RF-13 <4 tipos')
-  if (!relaxed.includes('RF-13b') && baseStatTotal(dex, team) < 3060) out.push('RF-13b suma < 3060')
+  if (rules === 'v1' && !relaxed.includes('RF-13b') && baseStatTotal(dex, team) < 3060) out.push('RF-13b suma < 3060')
+  if (rules === 'v2' && !relaxed.includes('RF-13d')) {
+    const total = baseStatTotal(dex, team)
+    const rivalTotal = baseStatTotal(dex, rival)
+    if (total < rivalTotal - 180 || total > rivalTotal + 240) out.push(`RF-13d suma ${total} fuera de [${rivalTotal - 180}, ${rivalTotal + 240}]`)
+  }
   if (maxSharingAType(dex, team) > 2) out.push('RF-13c >2 del mismo tipo')
   if (!relaxed.includes('RF-14') && !hasSuperEffectiveMove(dex, team, rival)) out.push('RF-14 sin x2')
   if (team.some((p) => p.level !== 50)) out.push('RF-16 nivel')

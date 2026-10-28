@@ -91,9 +91,9 @@ Opcional: sin configurar, el juego funciona entero en local (sin cuentas ni rank
    - Authentication → Sign In / Providers: **Allow anonymous sign-ins** y **Enable manual linking** activados (la sesión anónima hace contar el oficial sin cuenta en la media del día; al entrar con Google se enlaza a ese mismo usuario).
    - Authentication → URL Configuration → Redirect URLs: `https://quimikuaxh.github.io/daily-pwt/` y `http://localhost:5173/`.
    - Database → Extensions: **pg_cron** activada (cierre del día cada hora y liberación diaria de los nombres de jugadores sin cuenta inactivos 30 días).
-   - SQL Editor: ejecutar `supabase/migrations/20261027000000_pwt_cuentas.sql` (se puede volver a ejecutar; crea lo que falte y redefine las funciones). Con `pg_cron` activada, programa `pwt-close-days` y `pwt-release-nicknames`; si se activa después, volver a ejecutarla.
+   - SQL Editor: ejecutar las migraciones de `supabase/migrations/` en orden de nombre (cada una se puede volver a ejecutar; crean lo que falte y redefinen las funciones). Con `pg_cron` activada, programa `pwt-close-days` y `pwt-release-nicknames`; si se activa después, volver a ejecutarla.
    - Project Settings → API → **Exposed schemas**: añadir `pwt`.
-2. En local: copiar `.env.example` a `.env.local` y rellenar `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` (Project Settings → API).
+2. En local: copiar `.env.example` a `.env.local` y rellenar `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` (Project Settings → API). Los e2e (`playwright.config.ts`) construyen siempre sin estas variables: no usan Supabase aunque exista `.env.local`.
 3. En GitHub: secretos del repositorio `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` (Settings → Secrets and variables → Actions); `deploy.yml` los pasa al build.
 
 La clave `anon` es pública por diseño: las tablas tienen RLS sin políticas y el cliente solo puede llamar a las funciones de la API del esquema `pwt`, que comprueban quién llama.
@@ -147,7 +147,7 @@ daily-pwt/
 - Archivo: `src/core/launch.ts` (`src/config.ts` lo reexporta). Valor: `2026-10-24`, fecha de lanzamiento fijada por Jose el 23/10/2026.
 - Efecto: fija el día `#1` del reto y, con él, el desplazamiento de la bolsa de entrenadores. Las fechas anteriores a `LAUNCH_DATE` muestran `#1`.
 - Cambiarlo altera el entrenador, la variante y el equipo de cada fecha y los números `#N`. La secuencia de rivales solo depende del índice de día (los 53 se barajan juntos desde el día 0): con esta fecha los días 2026-10-24 a 27 son Misty, Fredo, Antón y Mirto y Máximo toca el día `#49` (2026-12-11, `D + 48`). Esos cuatro son la apertura del lanzamiento (`LAUNCH_OPENING` en `src/core/launch.ts`): en el primer ciclo, los de esa lista pasan a los primeros días intercambiados con quien estaba, y el reparto no los mueve. Después, cada ciclo se reparte (DEC-62): campeones cada 7-8 días, nunca dos de la misma región seguidos y Millo, Maíz y Zeo a una semana como poco (`SPREAD_RULES` en `src/core/bag.ts`). Vaciar la lista quita la apertura. Para cambiarla: poner la nueva fecha `D` en `src/core/launch.ts`, mover las fechas de referencia de `src/test-utils/dates.ts` (D-1 … D+5 y D+365), regenerar el snapshot y revisarlo (pasos siguientes). Efecto completo y opciones descartadas en [docs/F2-DATOS.md](docs/F2-DATOS.md), «Calendario».
-- `DISTINCT_BASE_SPECIES_FROM` (mismo fichero): desde ese día, el equipo del jugador no lleva dos formas de la misma especie (RF-12b, DEC-64); los días anteriores conservan su equipo. Debe ser el día siguiente al despliegue de la regla.
+- `TEAM_RULES_2_FROM` (mismo fichero): desde ese día, el equipo del jugador no lleva dos formas de la misma especie (RF-12b, DEC-64) y su suma de estadísticas base va de la del rival − 180 a la del rival + 240 (RF-13d, DEC-66); los días anteriores conservan su equipo. Debe ser el día siguiente al despliegue de la regla.
 - Cambiar el roster (añadir o quitar entrenadores) rebaraja la bolsa igual que cambiar la fecha: regenerar el snapshot y avisar de que cambia lo ya publicado.
 
 Pasos al cambiarlo:

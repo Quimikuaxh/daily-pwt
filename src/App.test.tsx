@@ -5,7 +5,7 @@ import App from './App'
 import { getDailyChallenge } from './core/challenge'
 import { makeGameData } from './test-utils/fixtures'
 import { mkUpdate, mockClient, type MockClient } from './test-utils/clientMock'
-import { settle, setLocalTime } from './test-utils/ui'
+import { settle, setMadridTime } from './test-utils/ui'
 import { LAUNCH, addDays } from './test-utils/dates'
 import { LocalStorageStore } from './storage/localStorageStore'
 
@@ -28,7 +28,7 @@ beforeEach(() => {
 afterEach(() => { vi.useRealTimers() })
 
 function mountApp(date = LAUNCH, h = 12, mi = 0, s = 0) {
-  setLocalTime(date, h, mi, s)
+  setMadridTime(date, h, mi, s)
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
   render(<App data={data} store={new LocalStorageStore(null)} createClient={() => { const c = mockClient(); clients.push(c); return c as any }} />)
   return user

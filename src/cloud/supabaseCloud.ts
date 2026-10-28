@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { CloudError, type CloudApi, type CloudDay, type PlayerRow, type PointsRow, type StreakRow, type Summary } from './api'
+import { CloudError, type CloudApi, type CloudDay, type PlayerRow, type PointsRow, type RankingPage, type StreakRow, type Summary } from './api'
 import type { Cloud } from './account'
 import { cloudConfig } from './config'
 import type { CloudAuth, Session } from './auth'
@@ -67,8 +67,11 @@ function supabaseApi(client: SupabaseClient): CloudApi {
       const summary = await rpc<Summary>('my_summary')
       return { ...summary, points: summary.points.map((day) => ({ ...day, points: Number(day.points) })) }
     },
-    pointsRanking: async (month, scope) => numeric(await rpc<PointsRow[]>('points_ranking', { p_month: month, p_scope: scope }), 'points'),
-    streakRanking: (scope) => rpc<StreakRow[]>('streak_ranking', { p_scope: scope }),
+    pointsRanking: async (month, scope, page) => {
+      const result = await rpc<RankingPage<PointsRow>>('points_ranking_page', { p_month: month, p_scope: scope, p_page: page })
+      return { ...result, rows: numeric(result.rows, 'points') }
+    },
+    streakRanking: (scope, page) => rpc<RankingPage<StreakRow>>('streak_ranking_page', { p_scope: scope, p_page: page }),
     searchPlayers: (query) => rpc<PlayerRow[]>('search_players', { p_query: query }),
     sendFriendRequest: (nickname) => rpc('send_friend_request', { p_nickname: nickname }),
     respondFriendRequest: (nickname, accept) => rpc('respond_friend_request', { p_nickname: nickname, p_accept: accept }),

@@ -7,7 +7,7 @@ export const esHelp = {
     {
       title: 'Cómo se juega',
       items: [
-        'Cada día hay un reto nuevo: un rival del Torneo Mundial Pokémon (PWT) de Negro 2 y Blanco 2, con uno de sus equipos del torneo, y un equipo de 6 Pokémon para ti. Es el mismo para todos y cambia a medianoche, con la hora de tu dispositivo.',
+        'Cada día hay un reto nuevo: un rival del Torneo Mundial Pokémon (PWT) de Negro 2 y Blanco 2, con uno de sus equipos del torneo, y un equipo de 6 Pokémon para ti. Es el mismo para todos y cambia a medianoche, hora de Madrid (en Canarias, a la 1:00).',
         'Elige qué Pokémon sacas primero y empieza el combate oficial. Solo hay uno al día: si sales o recargas la página, se reanuda donde lo dejaste, y rendirse cuenta como derrota.',
         'Las prácticas son ilimitadas, con el mismo reto, antes o después del oficial, y no cuentan para nada.',
         'Ganas si debilitas a los 6 Pokémon del rival.',
@@ -45,7 +45,19 @@ export const esHelp = {
       title: 'Estadísticas',
       items: [
         'Solo cuentan los combates oficiales. La racha de victorias se rompe al perder o al dejar pasar un día sin jugar; la de días, al dejar pasar un día.',
-        'Todo se guarda en este navegador, sin cuentas: si borras los datos del sitio o cambias de navegador, empiezas de cero.',
+        'Sin cuenta, se guardan en este navegador: si borras los datos del sitio o cambias de navegador, empiezas de cero. Con cuenta, se guardan en ella y te siguen en cualquier dispositivo.',
+      ],
+    },
+    {
+      title: 'Cuenta, puntos y rankings',
+      items: [
+        'La cuenta es opcional: icono Cuenta de la cabecera, con Google. Sin ella se juega igual y tienes un nombre propio que puedes cambiar; si pasas 30 días sin jugar el combate oficial, ese nombre queda libre para otro jugador.',
+        'Al iniciar sesión, los días jugados en este navegador se suben a tu cuenta: cuentan para las rachas y las estadísticas, pero no dan puntos.',
+        'Puntos del día: los Pokémon que te quedan en pie al ganar el combate oficial × el multiplicador del día. Perder o rendirse da 0.',
+        'El multiplicador va de ×1 a ×2 según lo difícil que fue el reto para todos: 1 + (6 − media de Pokémon en pie de todos los jugadores) / 6. Se fija a medianoche (hora de Madrid); hasta entonces, ese día no da puntos.',
+        'Rankings, en Estadísticas: puntos del mes y racha de victorias actual, de todos o solo de tus amigos. Los jugadores con cuenta llevan el tick de verificado y los empates comparten posición.',
+        'Amigos, solo con cuenta: búscalos por su nombre y envíales una solicitud; cuando la aceptan, os veis en la vista de amigos.',
+        'Para que los rankings sean justos, cada turno del combate oficial se guarda en el servidor: un resultado que no cuadre con lo guardado no puntúa.',
       ],
     },
   ],

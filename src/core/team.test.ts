@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest'
-import { buildPlayerTeam } from './team'
-import { getDailyChallenge } from './challenge'
+import { BST_ABOVE_RIVAL, BST_BELOW_RIVAL, buildPlayerTeam, TEAM_RULES_1 } from './team'
+import { challengeFor, getDailyChallenge } from './challenge'
 import { DataError } from './errors'
 import { Prng, deriveSeed } from './prng'
 import { LAUNCH_DATE } from '../config'
 import { dates } from '../test-utils/dates'
 import { fewTypesData, impossibleRf14Data, makeGameData, mkResolved, mkSet, poolSets, trainerAlpha, trainerBeta } from '../test-utils/fixtures'
-import { baseStatTotal, distinctTypes, isForbidden, maxSharingAType, teamViolations } from '../test-utils/rules'
+import { baseStatTotal, distinctTypes, isForbidden, maxSharingAType, rulesForDate, teamViolations } from '../test-utils/rules'
 import { loadGameData } from '../data/gameData'
 import type { ResolvedSet } from '../test-utils/types'
 
@@ -243,14 +243,14 @@ describe('getDailyChallenge: equipo del jugador en un ciclo (UT-19/20/21/26)', (
 
   it.each([0, 1, 2])('el día %i del ciclo cumple RF-12/13/14/16', (i) => {
     const c = ciclo[i]
-    expect(teamViolations(data.dex, c.playerTeam, c.rivalTeam, c.meta.relaxedRules)).toEqual([])
+    expect(teamViolations(data.dex, c.playerTeam, c.rivalTeam, c.meta.relaxedRules, rulesForDate(c.date))).toEqual([])
   })
 
   it('en 365 días el equipo siempre cumple las reglas y no lanza', () => {
     const bad: string[] = []
     for (const d of dates(365)) {
       const c = getDailyChallenge(d, data)
-      const v = teamViolations(data.dex, c.playerTeam, c.rivalTeam, c.meta.relaxedRules)
+      const v = teamViolations(data.dex, c.playerTeam, c.rivalTeam, c.meta.relaxedRules, rulesForDate(d))
       if (v.length) bad.push(`${d}: ${v.join(',')}`)
     }
     expect(bad).toEqual([])
@@ -319,16 +319,16 @@ describe('buildPlayerTeam: suma de estadísticas base y tipos repetidos (RF-13b,
   const waterData = makeGameData({ playerSets: waterPool })
 
   it('sin suma posible: 1000 intentos y se relaja RF-13b (con RF-14 solo si el equipo no tiene movimiento x2)', () => {
-    const result = buildPlayerTeam(weakPool, rival, rng('weak'), weakData.dex)
+    const result = buildPlayerTeam(weakPool, rival, rng('weak'), weakData.dex, TEAM_RULES_1)
     expect(result.attempts).toBe(1000)
     expect(result.relaxed.includes('RF-13b')).toBe(true)
     expect([['RF-13b'], ['RF-14', 'RF-13b']]).toContainEqual(result.relaxed)
-    expect(teamViolations(weakData.dex, result.team, rival, result.relaxed)).toEqual([])
+    expect(teamViolations(weakData.dex, result.team, rival, result.relaxed, 'v1')).toEqual([])
   })
 
   it('la relajación es determinista y se registra en meta.relaxedRules', () => {
-    const first = buildPlayerTeam(weakPool, rival, rng('weak'), weakData.dex)
-    expect(buildPlayerTeam(weakPool, rival, rng('weak'), weakData.dex)).toEqual(first)
+    const first = buildPlayerTeam(weakPool, rival, rng('weak'), weakData.dex, TEAM_RULES_1)
+    expect(buildPlayerTeam(weakPool, rival, rng('weak'), weakData.dex, TEAM_RULES_1)).toEqual(first)
     const challenge = getDailyChallenge(LAUNCH_DATE, makeGameData({ playerSets: weakPool }))
     expect(challenge.meta.relaxedRules).toContain('RF-13b')
   })
@@ -341,28 +341,60 @@ describe('buildPlayerTeam: suma de estadísticas base y tipos repetidos (RF-13b,
   })
 
   it('con pool normal nunca se devuelve un equipo con 3 o más del mismo tipo ni suma < 3060 (500 semillas)', () => {
-    const bad = Array.from({ length: 500 }, (_, i) => buildPlayerTeam(poolSets, rival, rng('bal' + i), data.dex))
+    const bad = Array.from({ length: 500 }, (_, i) => buildPlayerTeam(poolSets, rival, rng('bal' + i), data.dex, TEAM_RULES_1))
       .filter((r) => r.relaxed.length === 0 && (baseStatTotal(data.dex, r.team) < 3060 || maxSharingAType(data.dex, r.team) > 2))
     expect(bad).toEqual([])
   })
 })
 
-describe('getDailyChallenge con los datos reales: RF-13b y RF-13c en un ciclo y en 365 días', () => {
+describe('getDailyChallenge con los datos reales: RF-13b/RF-13d y RF-13c en 365 días', () => {
   const real = loadGameData()
   const check = (date: string): string | null => {
     const challenge = getDailyChallenge(date, real)
-    const total = baseStatTotal(real.dex, challenge.playerTeam)
-    const sharing = maxSharingAType(real.dex, challenge.playerTeam)
-    return challenge.meta.relaxedRules.length === 0 && total >= 3060 && sharing <= 2 ? null : `${date}: suma ${total}, máx. por tipo ${sharing}, relaxed ${challenge.meta.relaxedRules}`
+    const violations = teamViolations(real.dex, challenge.playerTeam, challenge.rivalTeam, [], rulesForDate(date)).filter((v) => !v.startsWith('RF-14'))
+    return violations.length === 0 && challenge.meta.relaxedRules.every((rule) => rule === 'RF-14') ? null : `${date}: ${violations} relaxed ${challenge.meta.relaxedRules}`
   }
 
   it('los 3 primeros días (un ciclo de prueba) cumplen ambas reglas sin relajar', () => {
     expect(dates(3).map(check).filter(Boolean)).toEqual([])
   })
 
-  it('365 días: suma >= 3060, <= 2 por tipo, sin relajar y con pocos intentos', () => {
+  it('365 días: suma en su regla (≥ 3060 o la ventana del rival), <= 2 por tipo, sin relajarla y con pocos intentos', () => {
     expect(dates(365).map(check).filter(Boolean)).toEqual([])
-    // Con 3060 (23/10/2026) hacen falta más intentos (media 5,5, máximo 46 en 365 días); antes el tope era 20.
-    expect(Math.max(...dates(365).map((d) => getDailyChallenge(d, real).meta.teamAttempts))).toBeLessThanOrEqual(100)
+    // Con 3060 (23/10/2026), media 5,5 intentos y máximo 46 en 365 días; con la ventana del rival (28/10/2026), ver UT-103.
+    expect(Math.max(...dates(365).map((d) => getDailyChallenge(d, real).meta.teamAttempts))).toBeLessThanOrEqual(200)
+  })
+})
+
+// UT-103 · RF-13d (Jose, 28/10/2026): suma del jugador entre la del rival − 180 y la del rival + 240; si no sale, la más cercana.
+describe('buildPlayerTeam: suma de estadísticas base relativa al rival (RF-13d)', () => {
+  const real = loadGameData()
+  const bstOf = (team: ResolvedSet[]) => baseStatTotal(real.dex, team)
+
+  it('con cada rival real, el equipo cae en su ventana sin relajarla', () => {
+    const bad: string[] = []
+    for (const trainer of real.trainers) {
+      for (const variant of trainer.variants) {
+        const challenge = challengeFor({ date: '2026-11-01', trainerId: trainer.id, variantId: variant.id }, real)
+        const rivalTotal = bstOf(challenge.rivalTeam)
+        const total = bstOf(challenge.playerTeam)
+        if (total < rivalTotal - BST_BELOW_RIVAL || total > rivalTotal + BST_ABOVE_RIVAL || challenge.meta.relaxedRules.includes('RF-13d')) bad.push(`${variant.id}: rival ${rivalTotal}, jugador ${total}`)
+      }
+    }
+    expect(bad).toEqual([])
+  })
+
+  it('sin equipo en la ventana: 1000 intentos y se queda el de suma más cercana, con RF-13d en relaxed', () => {
+    const rival = rivalOf()
+    const item = (index: number) => ['leftovers', 'lifeorb', 'sitrusberry', 'chestoberry', 'shedshell', 'expertbelt', 'metronome', 'yacheberry'][index]
+    const weakPool = ['delibird', 'plusle', 'sudowoodo', 'shuckle', 'wobbuffet', 'dunsparce', 'smeargle', 'kecleon']
+      .map((species, index) => mkSet(species, item(index), ['pressure'], ['thunderbolt', 'surf', 'toxic', 'protect']))
+    const weakData = makeGameData({ playerSets: weakPool })
+    const result = buildPlayerTeam(weakPool, rival, rng('weak'), weakData.dex)
+    expect(result.attempts).toBe(1000)
+    expect(result.relaxed.at(-1)).toBe('RF-13d')
+    // Con 8 candidatos, el más cercano a la ventana (que queda muy por encima) es el de los 6 de mayor suma.
+    const totals = weakPool.map((set) => Object.values(weakData.dex.species[set.species].baseStats).reduce((a, b) => a + b, 0)).sort((a, b) => b - a)
+    expect(baseStatTotal(weakData.dex, result.team)).toBe(totals.slice(0, 6).reduce((a, b) => a + b, 0))
   })
 })

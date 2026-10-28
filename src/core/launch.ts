@@ -13,8 +13,9 @@ export const LAUNCH_DATE = '2026-10-24'
 export const LAUNCH_OPENING: readonly string[] = ['misty', 'fredo', 'anton', 'mirto']
 
 /**
- * RF-12b (Jose, 28/10/2026): desde este día, el equipo del jugador no repite especie aunque sean formas distintas (Thundurus y
- * Thundurus-Therian). Los retos anteriores ya publicados se quedan como estaban. Al desplegar, debe ser el día siguiente al despliegue:
- * un día ya publicado que cambie de regla cambia su equipo.
+ * Desde este día se generan los equipos del jugador con las reglas del 28/10/2026 (decisiones de Jose): RF-12b, sin dos formas de la misma
+ * especie (Thundurus y Thundurus-Therian), y RF-13d, suma de estadísticas base entre la del rival − 180 y la del rival + 240 (en vez de
+ * RF-13b, ≥ 3060). Los retos anteriores ya publicados se quedan como estaban. Al desplegar, debe ser el día siguiente al despliegue: un
+ * día ya publicado que cambie de reglas cambia su equipo.
  */
-export const DISTINCT_BASE_SPECIES_FROM = '2026-10-29'
+export const TEAM_RULES_2_FROM = '2026-10-29'

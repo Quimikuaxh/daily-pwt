@@ -2,8 +2,9 @@ import { lazy, Suspense, useState } from 'react'
 import type { Account } from '../../cloud/account'
 import { isPlayer, type AccountState } from '../../cloud/state'
 import type { DayPoints } from '../../cloud/api'
+import { TEAM_SIZE } from '../../core/constants'
 import { es } from '../../i18n/es'
-import type { GameStore } from '../../storage/gameStore'
+import type { DayRecord, GameStore } from '../../storage/gameStore'
 import { computeStats } from '../../storage/playerStats'
 import { Modal } from '../common/Modal'
 import { ShareButton } from '../share/ShareButton'
@@ -50,7 +51,7 @@ export function StatsDialog({ store, today, onClose, account, accountState }: St
               id={`stats-tab-${option.id}`}
               aria-selected={tab === option.id}
               aria-controls="stats-tabpanel"
-              className="btn btn-small settings-option"
+              className="stats-tab"
               onClick={() => setTab(option.id)}
             >
               {option.label}
@@ -75,7 +76,8 @@ export function StatsDialog({ store, today, onClose, account, accountState }: St
 }
 
 const pointsOfMonth = (points: DayPoints[], today: string) => points.filter((day) => day.date.startsWith(today.slice(0, 7))).reduce((total, day) => total + day.points, 0)
-const isOn = (date: string) => (day: DayPoints) => day.date === date
+
+const finishedOn = (date: string) => (day: DayRecord) => day.date === date && (day.status === 'won' || day.status === 'lost')
 
 function MyStats({ store, today, accountState }: { store: GameStore; today: string; accountState?: AccountState }) {
   const days = store.listDays()
@@ -83,7 +85,8 @@ function MyStats({ store, today, accountState }: { store: GameStore; today: stri
   const text = shareTextFor(days, today)
   const summary = accountState && isPlayer(accountState) ? accountState.summary : null
   const monthPoints = pointsOfMonth(summary?.points ?? [], today)
-  const todayPoints = summary?.points.find(isOn(today))
+  // Los puntos de hoy no existen hasta el cierre del día (medianoche de Madrid): se enseña con cuántos Pokémon acabó el oficial.
+  const todayRecord = days.find(finishedOn(today))
 
   return (
     <>
@@ -94,17 +97,15 @@ function MyStats({ store, today, accountState }: { store: GameStore; today: stri
             <dt>{es.ranking.monthPoints}</dt>
             <dd data-testid="stats-month-points">{es.ranking.formatPoints(monthPoints)}</dd>
           </div>
-          {todayPoints && (
+          {todayRecord && (
             <div className="stats-cell">
-              <dt>{es.ranking.todayPoints}</dt>
-              <dd data-testid="stats-today-points">
-                {es.ranking.formatPoints(todayPoints.points)}
-                {todayPoints.provisional && <small className="stats-provisional"> ({es.ranking.provisionalMark})</small>}
-              </dd>
+              <dt>{es.ranking.todaySurvivors}</dt>
+              <dd data-testid="stats-today-survivors">{es.ranking.survivors(todayRecord.status === 'won' ? (todayRecord.survivors ?? 0) : 0, TEAM_SIZE)}</dd>
             </div>
           )}
         </dl>
       )}
+      {summary && todayRecord && <p className="stats-note">{es.ranking.todayPending}</p>}
       {summary && <p className="stats-note">{es.ranking.pointsHint}</p>}
       {text && <ShareButton text={text} />}
       <p className="stats-note">{accountState?.status === 'signedIn' ? es.stats.noteAccount : es.stats.note}</p>

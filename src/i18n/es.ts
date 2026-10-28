@@ -385,9 +385,7 @@ export const es = {
 
   // Cuenta, rankings y amigos (F4): aquí solo lo que se pinta al cargar; el resto, en `esCloud.ts`, fuera de la ruta crítica (E2E-21).
   account: {
-    signIn: 'Iniciar sesión con Google',
-    signInShort: 'Iniciar sesión',
-    signingIn: 'Abriendo Google…',
+    open: 'Cuenta',
   },
 
   ranking: {
@@ -398,8 +396,9 @@ export const es = {
     loading: 'Cargando…',
     formatPoints: (points: number) => points.toLocaleString('es-ES', { maximumFractionDigits: 2 }),
     monthPoints: 'Puntos este mes',
-    todayPoints: 'Puntos de hoy',
-    provisionalMark: 'provisional',
+    todaySurvivors: 'En pie hoy',
+    survivors: (alive: number, total: number) => `${alive}/${total}`,
+    todayPending: 'Los puntos de hoy se calculan a medianoche (hora de Madrid), con la media de todos los jugadores.',
     pointsHint: 'Puntos de un día: tus Pokémon en pie al ganar el oficial × el multiplicador del día, de ×1 a ×2 según lo difícil que fue para todos.',
   },
 

@@ -1,4 +1,25 @@
 /* Cuenta, rankings y amigos (F4): se carga con su pestaña o con la Cuenta de Ajustes, fuera de la ruta crítica (E2E-21). */
+/* Ventana Cuenta: letra como la del resto de ventanas de texto (Ayuda). */
+.account-dialog .settings-hint,
+.account-dialog .settings-status,
+.account-dialog label {
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.account-dialog .text-input,
+.account-dialog .btn-small {
+  font-size: 18px;
+}
+
+.account-actions {
+  margin-top: 16px;
+}
+
+.account-actions .btn {
+  margin-top: 10px;
+}
+
 .nickname-form {
   display: flex;
   flex-wrap: wrap;
@@ -14,9 +35,12 @@
 .text-input {
   flex: 1;
   min-width: 0;
-  min-height: 44px;
+  /* Misma altura y letra que los botones pequeños de al lado. */
+  box-sizing: border-box;
+  height: 44px;
   padding: 0 10px;
   font: inherit;
+  font-size: 16px;
   color: #f8f8f8;
   background: #181818;
   border: 2px solid #585858;
@@ -27,20 +51,108 @@
   outline-offset: 1px;
 }
 
+/* Dos selectores compactos en una fila (se apilan si no caben). */
+.ranking-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.segmented {
+  display: inline-flex;
+  border: 2px solid #f0f0f0;
+}
+
+.segmented-option {
+  min-height: 40px;
+  padding: 0 12px;
+  color: #f8f8f8;
+  font: inherit;
+  font-size: 16px;
+  background: #383838;
+  border: 0;
+  cursor: pointer;
+}
+
+.segmented-option + .segmented-option {
+  border-left: 2px solid #f0f0f0;
+}
+
+.segmented-option[aria-pressed="true"] {
+  background: #b81840;
+  text-shadow: 1px 1px 0 #181818;
+}
+
+.segmented-option:disabled {
+  color: #888;
+  cursor: not-allowed;
+}
+
+.segmented-option:focus-visible,
+.ranking-arrow:focus-visible {
+  outline: 2px solid #f8c830;
+  outline-offset: 1px;
+}
+
+/* Mes como título, con flechas sin caja (44 px de zona táctil). */
 .ranking-month {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 8px;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.ranking-month-name {
+  min-width: 11em;
+  text-align: center;
+  font-size: 18px;
+}
+
+.ranking-arrow {
+  min-width: 44px;
+  min-height: 44px;
+  color: #f8f8f8;
+  font: inherit;
+  font-size: 22px;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.ranking-arrow:disabled {
+  color: #585858;
+  cursor: default;
 }
 
 .ranking-table {
   width: 100%;
+  font-size: 18px;
   margin-top: 8px;
   border-collapse: separate;
   border-spacing: 0 4px;
   font-variant-numeric: tabular-nums;
+}
+
+.ranking-pages {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px 8px;
+  margin-top: 8px;
+}
+
+.ranking-page-number {
+  min-width: 9em;
+  text-align: center;
+  font-size: 18px;
+}
+
+.ranking-mine {
+  flex-basis: 100%;
+  max-width: max-content;
 }
 
 .ranking-table th {
@@ -50,11 +162,36 @@
 }
 
 .ranking-table td {
-  padding: 2px 8px;
+  padding: 4px 8px;
   background: #181818;
   border-top: 2px solid #585858;
   border-bottom: 2px solid #585858;
-  overflow-wrap: anywhere;
+}
+
+/* Nombre, tick y «(tú)» en una línea; el nombre se corta con «…» si no cabe. */
+.ranking-player {
+  width: 100%;
+  max-width: 0;
+}
+
+.ranking-player-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ranking-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ranking-verified,
+.ranking-you {
+  flex: none;
+  white-space: nowrap;
 }
 
 .ranking-table td:first-child,
@@ -64,11 +201,6 @@
   text-align: right;
   width: 1%;
   white-space: nowrap;
-}
-
-.ranking-verified {
-  margin-left: 4px;
-  vertical-align: -2px;
 }
 
 .ranking-me td {

@@ -1,7 +1,6 @@
 import { describe, it, expect, afterEach } from 'vitest'
-import { localDate, msUntilNextLocalMidnight, dayIndex, challengeNumber } from './date'
+import { challengeDate, msUntilNextChallenge, madridInstant, dayIndex, challengeNumber } from './date'
 
-// TODO-CONTRATO: el fichero src/core/date.ts agrupa localDate, msUntilNextLocalMidnight, dayIndex y challengeNumber.
 const LAUNCH = '2026-10-17'
 const originalTZ = process.env.TZ
 afterEach(() => {
@@ -10,37 +9,24 @@ afterEach(() => {
 })
 const inTZ = (tz: string) => { process.env.TZ = tz }
 
-describe('localDate (UT-03, RF-01)', () => {
-  it('usa los getters locales, no UTC (Auckland adelantado)', () => {
-    inTZ('Pacific/Auckland')
-    // 12:30 UTC del 17 = 01:30 del 18 en Auckland (NZDT, +13).
-    expect(localDate(new Date('2026-10-17T12:30:00Z'))).toBe('2026-10-18')
+// UT-03 · RF-01 (cambio de Jose del 28/10/2026): la fecha del reto es la de Madrid, sea cual sea la zona del dispositivo.
+describe('challengeDate (UT-03, RF-01)', () => {
+  it.each(['Pacific/Auckland', 'UTC', 'America/Mexico_City', 'Atlantic/Canary', 'Europe/Madrid'])('es la fecha de Madrid con el dispositivo en %s', (tz) => {
+    inTZ(tz)
+    // 22:30Z del 17 = 00:30 del 18 en Madrid (CEST); en Canarias aún son las 23:30 del 17.
+    expect(challengeDate(new Date('2026-10-17T22:30:00Z'))).toBe('2026-10-18')
+    expect(challengeDate(new Date('2026-10-17T21:59:59Z'))).toBe('2026-10-17')
   })
 
-  it('usa los getters locales en UTC', () => {
+  it('23:59:59 de Madrid sigue siendo el mismo día y 00:00:00 ya es el siguiente', () => {
     inTZ('UTC')
-    expect(localDate(new Date('2026-10-17T12:30:00Z'))).toBe('2026-10-17')
+    expect(challengeDate(madridInstant('2026-10-17', 23, 59, 59))).toBe('2026-10-17')
+    expect(challengeDate(madridInstant('2026-10-18'))).toBe('2026-10-18')
   })
 
-  it('usa los getters locales en Madrid cerca de la medianoche', () => {
-    inTZ('Europe/Madrid')
-    // 22:30Z del 17 = 00:30 del 18 en Madrid (CEST).
-    expect(localDate(new Date('2026-10-17T22:30:00Z'))).toBe('2026-10-18')
-  })
-
-  it('23:59:59 sigue siendo el mismo día', () => {
-    inTZ('Europe/Madrid')
-    expect(localDate(new Date(2026, 9, 17, 23, 59, 59))).toBe('2026-10-17')
-  })
-
-  it('00:00:00 ya es el día siguiente', () => {
-    inTZ('Europe/Madrid')
-    expect(localDate(new Date(2026, 9, 18, 0, 0, 0))).toBe('2026-10-18')
-  })
-
-  it('rellena con ceros mes y día', () => {
-    inTZ('UTC')
-    expect(localDate(new Date(2027, 0, 5, 10))).toBe('2027-01-05')
+  it('en invierno, la medianoche de Madrid es a las 23:00 UTC', () => {
+    expect(madridInstant('2027-01-05').toISOString()).toBe('2027-01-04T23:00:00.000Z')
+    expect(challengeDate(new Date('2027-01-04T23:00:00Z'))).toBe('2027-01-05')
   })
 })
 
@@ -88,37 +74,24 @@ describe('dayIndex / challengeNumber (UT-04, RF-09)', () => {
   })
 })
 
-describe('msUntilNextLocalMidnight (UT-05, RF-30)', () => {
-  it('quedan 1000 ms a las 23:59:59', () => {
-    inTZ('Europe/Madrid')
-    expect(msUntilNextLocalMidnight(new Date(2026, 9, 17, 23, 59, 59))).toBe(1000)
+describe('msUntilNextChallenge (UT-05, RF-30)', () => {
+  it('1000 ms a las 23:59:59 de Madrid y 86 400 000 a las 00:00, con el dispositivo en otra zona', () => {
+    inTZ('America/Mexico_City')
+    expect(msUntilNextChallenge(madridInstant('2026-10-17', 23, 59, 59))).toBe(1000)
+    expect(msUntilNextChallenge(madridInstant('2026-10-17'))).toBe(86_400_000)
   })
 
-  it('quedan 86 400 000 ms a las 00:00:00 de un día normal', () => {
-    inTZ('Europe/Madrid')
-    expect(msUntilNextLocalMidnight(new Date(2026, 9, 17, 0, 0, 0))).toBe(86_400_000)
+  it('día de 23 h (marzo) y de 25 h (octubre) en Madrid', () => {
+    inTZ('UTC')
+    expect(msUntilNextChallenge(madridInstant('2027-03-28'))).toBe(82_800_000)
+    expect(msUntilNextChallenge(madridInstant('2027-10-31'))).toBe(90_000_000)
   })
 
-  it('en el día de 23 h (2027-03-28 Madrid) quedan 82 800 000 ms a las 00:00', () => {
-    inTZ('Europe/Madrid')
-    expect(msUntilNextLocalMidnight(new Date(2027, 2, 28, 0, 0, 0))).toBe(82_800_000)
-  })
-
-  it('en el día de 25 h (2027-10-31 Madrid) quedan 90 000 000 ms a las 00:00', () => {
-    inTZ('Europe/Madrid')
-    expect(msUntilNextLocalMidnight(new Date(2027, 9, 31, 0, 0, 0))).toBe(90_000_000)
-  })
-
-  it('con milisegundos sueltos redondea hacia lo que realmente queda', () => {
-    inTZ('Europe/Madrid')
-    expect(msUntilNextLocalMidnight(new Date(2026, 9, 17, 23, 59, 59, 500))).toBe(500)
-  })
-
-  it('termina en la medianoche local real en Auckland', () => {
-    inTZ('Pacific/Auckland')
-    const now = new Date(2026, 9, 17, 12, 0, 0)
-    const target = new Date(now.getTime() + msUntilNextLocalMidnight(now))
-    expect(localDate(target)).toBe('2026-10-18')
-    expect([target.getHours(), target.getMinutes(), target.getSeconds()]).toEqual([0, 0, 0])
+  it('termina justo en la medianoche de Madrid', () => {
+    inTZ('Atlantic/Canary')
+    const now = madridInstant('2026-10-17', 23, 59, 59)
+    const target = new Date(now.getTime() + msUntilNextChallenge(now))
+    expect(challengeDate(target)).toBe('2026-10-18')
+    expect(msUntilNextChallenge(new Date(now.getTime() + 500))).toBe(500)
   })
 })

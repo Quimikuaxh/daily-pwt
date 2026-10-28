@@ -9,6 +9,7 @@ import type { Settings } from '../../storage/settings'
 const StatsDialog = lazy(() => import('../stats/StatsDialog').then((module) => ({ default: module.StatsDialog })))
 const HelpDialog = lazy(() => import('./HelpDialog').then((module) => ({ default: module.HelpDialog })))
 const SettingsDialog = lazy(() => import('./SettingsDialog').then((module) => ({ default: module.SettingsDialog })))
+const AccountDialog = lazy(() => import('../account/AccountSection').then((module) => ({ default: module.AccountDialog })))
 
 /** Iconos en píxel (escala 2 exacta), al estilo de los de menú del juego. */
 function StatsIcon() {
@@ -44,27 +45,6 @@ function AccountIcon() {
   )
 }
 
-/** «Iniciar sesión» de la cabecera: icono y, en pantallas anchas, también el texto. */
-function HeaderSignIn({ account }: { account: Account }) {
-  const [busy, setBusy] = useState(false)
-  return (
-    <button
-      type="button"
-      className="btn btn-small header-action header-sign-in"
-      aria-label={es.account.signIn}
-      title={es.account.signIn}
-      disabled={busy}
-      onClick={() => {
-        setBusy(true)
-        account.signIn().catch(() => setBusy(false))
-      }}
-    >
-      <AccountIcon />
-      <span className="header-sign-in-text" aria-hidden="true">{busy ? es.account.signingIn : es.account.signInShort}</span>
-    </button>
-  )
-}
-
 export type AppMenuProps = {
   store: GameStore
   /** Fecha del reto que se está viendo (rachas vivas y oficial de hoy que compartir). */
@@ -75,22 +55,25 @@ export type AppMenuProps = {
   /** Cuenta y rankings (F4). Sin ellos, el menú es el de antes: solo local. */
   account?: Account
   accountState?: AccountState
-  /** RF-93: botón de iniciar sesión en la cabecera (solo en Hoy). */
-  signIn?: boolean
 }
 
 /** Lo que el menú necesita de App; la fecha la pone cada pantalla. */
-export type MenuContext = Omit<AppMenuProps, 'today' | 'signIn'>
+export type MenuContext = Omit<AppMenuProps, 'today'>
 
-type Open = 'stats' | 'help' | 'settings' | null
+type Open = 'account' | 'stats' | 'help' | 'settings' | null
 
-/** Accesos de la cabecera de Hoy y de Resultado: Estadísticas, Ayuda y Ajustes, con sus ventanas. */
-export function AppMenu({ store, today, settings, onSettingsChange, onClearData, account, accountState, signIn = false }: AppMenuProps) {
+/**
+ * Accesos de la cabecera de Hoy y de Resultado: Cuenta (con Supabase configurado; RF-93, decisión de Jose del 28/10/2026), Estadísticas,
+ * Ayuda y Ajustes, con sus ventanas.
+ */
+export function AppMenu({ store, today, settings, onSettingsChange, onClearData, account, accountState }: AppMenuProps) {
   const [open, setOpen] = useState(null as Open)
   const close = () => setOpen(null)
   // RF-111: aviso en la cabecera si hay solicitudes de amistad pendientes.
   const pending = accountState?.status === 'signedIn' ? (accountState.summary?.incomingRequests ?? 0) : 0
+  const withAccount = account && accountState && accountState.status !== 'disabled'
   const buttons = [
+    ...(withAccount ? [{ id: 'account' as const, label: es.account.open, icon: <AccountIcon /> }] : []),
     { id: 'stats' as const, label: es.stats.open, icon: <StatsIcon /> },
     { id: 'help' as const, label: es.help.open, icon: <HelpIcon /> },
     { id: 'settings' as const, label: es.settings.open, icon: <SettingsIcon /> },
@@ -99,7 +82,6 @@ export function AppMenu({ store, today, settings, onSettingsChange, onClearData,
   return (
     <>
       <nav className="header-actions" aria-label={es.app.headerActions}>
-        {signIn && account && accountState?.status === 'guest' && <HeaderSignIn account={account} />}
         {buttons.map((button) => (
           <button key={button.id} type="button" className="btn btn-small header-action" onClick={() => setOpen(button.id)} aria-label={button.label} title={button.label}>
             {button.icon}
@@ -110,9 +92,10 @@ export function AppMenu({ store, today, settings, onSettingsChange, onClearData,
         ))}
       </nav>
       <Suspense fallback={null}>
+      {open === 'account' && account && accountState && <AccountDialog account={account} state={accountState} onClose={close} />}
       {open === 'stats' && <StatsDialog store={store} today={today} onClose={close} account={account} accountState={accountState} />}
       {open === 'help' && <HelpDialog onClose={close} />}
-      {open === 'settings' && <SettingsDialog settings={settings} onChange={onSettingsChange} onClearData={onClearData} onClose={close} account={account} accountState={accountState} />}
+      {open === 'settings' && <SettingsDialog settings={settings} onChange={onSettingsChange} onClearData={onClearData} onClose={close} accountState={accountState} />}
       </Suspense>
     </>
   )

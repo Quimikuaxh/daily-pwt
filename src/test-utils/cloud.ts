@@ -1,6 +1,6 @@
 import { vi } from 'vitest'
 import type { Cloud } from '../cloud/account'
-import { CloudError, type CloudApi, type CloudDay } from '../cloud/api'
+import { CloudError, type CloudApi, type CloudDay, type RankingPage } from '../cloud/api'
 import type { CloudAuth, Session } from '../cloud/auth'
 
 /** Rechazo del servidor (`raise exception` de una función) y fallo de red, como los da `supabaseCloud.ts`. */
@@ -19,8 +19,8 @@ export function fakeApi(over: Partial<CloudApi> = {}): CloudApi & { [K in keyof 
     importDays: async (days) => days.length,
     myDays: async () => [],
     mySummary: async () => ({ nickname: null, registered: false, points: [], incomingRequests: 0 }),
-    pointsRanking: async () => [],
-    streakRanking: async () => [],
+    pointsRanking: async () => rankingPage([]),
+    streakRanking: async () => rankingPage([]),
     searchPlayers: async () => [],
     sendFriendRequest: async () => 'outgoing',
     respondFriendRequest: async () => undefined,
@@ -45,6 +45,11 @@ export function fakeAuth(session: Session | null, over: Partial<CloudAuth> = {})
 }
 
 export const fakeCloud = (session: Session | null, api = fakeApi(), auth = fakeAuth(session)): Cloud & { api: typeof api; auth: typeof auth } => ({ api, auth })
+
+/** Una sola página con estas filas (`myPage` la del jugador si sale). */
+export function rankingPage<Row extends { me: boolean }>(rows: Row[], over: Partial<RankingPage<Row>> = {}): RankingPage<Row> {
+  return { page: 1, pages: 1, total: rows.length, myPage: rows.some((row) => row.me) ? 1 : null, rows, ...over }
+}
 
 /** Día de la cuenta terminado, con lo que devuelve `my_days`. */
 export function cloudDay(over: Partial<CloudDay> = {}): CloudDay {

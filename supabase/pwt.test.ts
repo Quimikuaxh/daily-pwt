@@ -22,6 +22,10 @@ async function play(caller: Caller, date: string, result: 'win' | 'loss', surviv
   ])
 }
 
+type RankingPage = { page: number; pages: number; total: number; myPage: number | null; rows: Array<Record<string, unknown>> }
+const pointsPage = (caller: Caller, month: string, scope: string, page: number | null = null, size = 20) =>
+  t.call<RankingPage>(caller, `select pwt.points_ranking_page($1::date, $2, $3, $4)`, [month, scope, page, size])
+
 /** Día ya terminado y validado, escrito a mano (la API solo deja empezar el de hoy). */
 async function seedDay(user: string, date: string, status: 'won' | 'lost' | 'void', survivors: number, extra: { validated?: boolean; imported?: boolean } = {}) {
   await t.admin(
@@ -205,7 +209,7 @@ describe('historial de la cuenta (UT-92)', () => {
 })
 
 describe('puntos y multiplicador del día (UT-93)', () => {
-  it('puntos = supervivientes × (1 + (6 − media)/6), provisionales hasta el cierre; derrotas y anónimos entran en la media', async () => {
+  it('puntos = supervivientes × (1 + (6 − media)/6), solo cuando el día está cerrado; derrotas y anónimos entran en la media', async () => {
     const date = addDays(t.today, -40)
     const [first, second, anonymous, importedUser, voided] = [await t.user(), await t.user(), await t.user(true), await t.user(), await t.user()]
     await seedDay(first.id, date, 'won', 6)
@@ -213,14 +217,16 @@ describe('puntos y multiplicador del día (UT-93)', () => {
     await seedDay(anonymous.id, date, 'lost', 0)
     await seedDay(importedUser.id, date, 'won', 6, { validated: false, imported: true })
     await seedDay(voided.id, date, 'void', 0, { validated: false })
-    // Media (6 + 3 + 0) / 3 = 3 → ×1,5.
-    const before = await t.admin(`select user_id, points::float, provisional from pwt.day_points($1::date, $1::date) order by points desc`, [date])
-    expect(before).toEqual([
-      { user_id: first.id, points: 9, provisional: true },
-      { user_id: second.id, points: 4.5, provisional: true },
-      { user_id: anonymous.id, points: 0, provisional: true },
-    ])
+    // Sin cerrar, el día no tiene puntos (solo se dan los definitivos).
+    expect(await t.admin(`select * from pwt.day_points($1::date, $1::date)`, [date])).toEqual([])
     expect(await t.admin(`select pwt.close_days() > 0 as closed`)).toEqual([{ closed: true }])
+    // Media (6 + 3 + 0) / 3 = 3 → ×1,5.
+    const closedPoints = await t.admin(`select user_id, points::float, provisional from pwt.day_points($1::date, $1::date) order by points desc`, [date])
+    expect(closedPoints).toEqual([
+      { user_id: first.id, points: 9, provisional: false },
+      { user_id: second.id, points: 4.5, provisional: false },
+      { user_id: anonymous.id, points: 0, provisional: false },
+    ])
     expect(await t.admin(`select players, average::float, multiplier::float from pwt.day_difficulty where date = $1::date`, [date])).toEqual([{ players: 3, average: 3, multiplier: 1.5 }])
     // Un oficial terminado tras el cierre puntúa con el multiplicador fijado y no lo cambia.
     const late = await t.user()
@@ -265,8 +271,9 @@ describe('rankings (UT-94)', () => {
     await seedDay(released.id, day(3), 'won', 3)
     await t.admin(`select pwt.close_days()`)
 
-    const global = await t.as(players[3], `select rank, nickname, verified, points::float, me from pwt.points_ranking($1::date, 'global', 50)`, [day(10)])
-    expect(global).toEqual([
+    const global = await pointsPage(players[3], day(10), 'global')
+    expect(global).toMatchObject({ page: 1, pages: 1, total: 6, myPage: 1 })
+    expect(global.rows).toEqual([
       { rank: 1, nickname: 'Dani', verified: true, points: 9.75, me: true },
       { rank: 2, nickname: 'Ana', verified: true, points: 7.5, me: false },
       { rank: 2, nickname: 'Bea', verified: true, points: 7.5, me: false },
@@ -274,16 +281,21 @@ describe('rankings (UT-94)', () => {
       { rank: 5, nickname: null, verified: false, points: 4.5, me: false },
       { rank: 6, nickname: 'Carla', verified: true, points: 3.75, me: false },
     ])
-    expect(await t.as(guest, `select nickname, me from pwt.points_ranking($1::date, 'global', 1)`, [day(0)])).toEqual([{ nickname: 'Dani', me: false }, { nickname: 'Invi', me: true }])
-
-    const top1 = await t.as(players[2], `select rank, nickname from pwt.points_ranking($1::date, 'global', 1)`, [day(0)])
-    expect(top1).toEqual([{ rank: 1, nickname: 'Dani' }, { rank: 6, nickname: 'Carla' }])
+    // Páginas de 2: sin página pedida, se abre en la del jugador (Invi, 4.º → página 2; Carla, 6.ª → página 3).
+    expect(await pointsPage(guest, day(0), 'global', null, 2)).toMatchObject({ page: 2, pages: 3, total: 6, myPage: 2, rows: [{ nickname: 'Bea' }, { nickname: 'Invi', me: true }] })
+    expect(await pointsPage(players[2], day(0), 'global', null, 2)).toMatchObject({ page: 3, myPage: 3, rows: [{ nickname: null }, { nickname: 'Carla', rank: 6 }] })
+    expect(await pointsPage(players[2], day(0), 'global', 1, 2)).toMatchObject({ page: 1, myPage: 3, rows: [{ nickname: 'Dani' }, { nickname: 'Ana' }] })
+    // Una página fuera de rango se ajusta a la última; sin sesión, la primera.
+    expect(await pointsPage(players[2], day(0), 'global', 99, 2)).toMatchObject({ page: 3 })
+    expect(await pointsPage(null, day(0), 'global', null, 2)).toMatchObject({ page: 1, myPage: null })
+    // Mes sin nadie: una página vacía.
+    expect(await pointsPage(players[2], addDays(month, -400), 'global')).toEqual({ page: 1, pages: 1, total: 0, myPage: null, rows: [] })
 
     await t.call(players[0], `select pwt.send_friend_request('carla')`)
     await t.call(players[2], `select pwt.respond_friend_request('ANA', true)`)
-    const friends = await t.as(players[2], `select nickname from pwt.points_ranking($1::date, 'friends', 50)`, [day(0)])
-    expect(friends.map((row) => row.nickname)).toEqual(['Ana', 'Carla'])
-    expect(await t.as(null, `select nickname from pwt.points_ranking($1::date, 'global', 50)`, [day(0)])).toHaveLength(6)
+    const friends = await pointsPage(players[2], day(0), 'friends')
+    expect(friends.rows.map((row) => row.nickname)).toEqual(['Ana', 'Carla'])
+    expect((await pointsPage(null, day(0), 'global')).rows).toHaveLength(6)
   })
 
   it('racha actual: días seguidos ganados hasta hoy o, si hoy no ha terminado, hasta ayer; los importados cuentan; sin cuenta también', async () => {
@@ -297,7 +309,8 @@ describe('rankings (UT-94)', () => {
     await seedDay(broken.id, addDays(t.today, -2), 'won', 6)
     await seedDay(broken.id, addDays(t.today, -1), 'lost', 0)
     await seedDay(anonymous.id, addDays(t.today, -1), 'won', 6)
-    const rows = await t.as(alive, `select nickname, verified, streak, me from pwt.streak_ranking('global', 50) where nickname like 'racha_%'`)
+    const page = await t.call<RankingPage>(alive, `select pwt.streak_ranking_page('global', 1, 100)`)
+    const rows = page.rows.filter((row) => String(row.nickname).startsWith('racha_')).map(({ rank: _rank, ...row }) => row)
     expect(rows).toEqual([
       { nickname: 'racha_0', verified: true, streak: 3, me: true },
       { nickname: 'racha_1', verified: true, streak: 2, me: false },
@@ -354,6 +367,7 @@ describe('permisos (UT-96)', () => {
     const user = await t.user()
     await expect(t.as(user, `select pwt.close_days()`)).rejects.toThrow()
     await expect(t.as(user, `select * from pwt.day_points('2026-01-01', '2026-12-31')`)).rejects.toThrow()
+    await expect(t.as(user, `select * from pwt.points_ranked('2026-01-01', 'global')`)).rejects.toThrow()
     await expect(t.as(user, `select * from pwt.profiles`)).rejects.toThrow()
     await expect(t.as(null, `select pwt.my_days()`)).rejects.toThrow()
   })

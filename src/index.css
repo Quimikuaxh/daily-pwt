@@ -518,10 +518,6 @@ img.sprite,
 }
 
 /* ---------- Cuenta, rankings y amigos (F4) ---------- */
-.header-sign-in {
-  gap: 6px;
-}
-
 .header-badge {
   /* Dentro del botón (sus esquinas cortadas recortan lo que sobresale). */
   position: absolute;
@@ -538,32 +534,41 @@ img.sprite,
   border-radius: 9px;
 }
 
-@media (max-width: 640px) {
-  .header-sign-in-text {
-    display: none;
-  }
-}
-
+/* Pestañas de Estadísticas: rótulos, no botones; la elegida, en rojo y subrayada. */
 .stats-tabs {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 4px;
+  margin-bottom: 14px;
+  border-bottom: 2px solid #585858;
 }
 
-.stats-tabs [aria-selected="true"] {
-  --edge: #f8c830;
-  --fill: #b81840;
-  --dots: #c83058;
+.stats-tab {
+  min-height: 44px;
+  padding: 0 14px;
+  color: #d0d0d0;
+  font: inherit;
+  font-size: 18px;
+  background: none;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+}
+
+.stats-tab[aria-selected="true"] {
+  color: #f8f8f8;
+  background: linear-gradient(#b81840, #881830);
+  border-bottom-color: #f8c830;
+  text-shadow: 1px 1px 0 #181818;
+}
+
+.stats-tab:focus-visible {
+  outline: 2px solid #f8c830;
+  outline-offset: -2px;
 }
 
 .stats-points {
   margin-top: 12px;
-}
-
-.stats-provisional {
-  font-size: 14px;
-  color: #d0d0d0;
 }
 
 /* ---------- Compartir ---------- */

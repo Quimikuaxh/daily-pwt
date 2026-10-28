@@ -45,7 +45,7 @@ Lo marcado **[F1, se amplía]** es alcance de F1 y crece en F2/F3. Lo marcado **
 ## 3. Requisitos funcionales
 
 ### Generador diario
-- RF-01 La fecha local del dispositivo (`YYYY-MM-DD`) es la entrada del reto.
+- RF-01 La fecha de Madrid (`YYYY-MM-DD`, hora peninsular española con su horario de verano) es la entrada del reto, sea cual sea la zona del dispositivo (cambio de Jose del 28/10/2026: antes, la fecha local del dispositivo; ver PRD §0).
 - RF-02 `getDailyChallenge(date, data)` es pura: mismas entradas, mismo reto. Sin `Math.random()` ni fuentes no deterministas.
 - RF-03 Semilla: `hash("daily-pwt:v1:" + fecha)` con PRNG determinista.
 - RF-04 El reto contiene: rival, variante, habilidad elegida de cada Pokémon rival, primer Pokémon rival, 6 sets del jugador con su habilidad y el número `#N`.
@@ -61,9 +61,10 @@ Lo marcado **[F1, se amplía]** es alcance de F1 y crece en F2/F3. Lo marcado **
 - RF-11b Precarga: desde Hoy se piden con prioridad baja los gráficos de interfaz del combate y los sprites de los 12 Pokémon del reto (nunca los del resto del pool), y las pantallas de equipo y de datos no se enseñan hasta tener sus imágenes (DEC-33).
 - RF-11c Los PS numéricos del jugador bajan o suben a la par de la barra (lineal, 700 ms a x1, enteros en cada fotograma, sin animación con `prefers-reduced-motion`) y terminan en el PS exacto (DEC-34).
 - RF-12 Sin Pokémon evolucionables, especies repetidas, objetos repetidos ni legendarios prohibidos (lista de PRD §6).
-- RF-12b (Jose, 28/10/2026) Tampoco dos formas de la misma especie (Thundurus y Thundurus-Therian, Rotom y Rotom-Lavado, Wormadam y sus mantos). Aplica desde `DISTINCT_BASE_SPECIES_FROM` (`src/core/launch.ts`); los retos anteriores ya publicados no cambian. No se relaja nunca, como RF-12.
+- RF-12b (Jose, 28/10/2026) Tampoco dos formas de la misma especie (Thundurus y Thundurus-Therian, Rotom y Rotom-Lavado, Wormadam y sus mantos). Aplica desde `TEAM_RULES_2_FROM` (`src/core/launch.ts`); los retos anteriores ya publicados no cambian. No se relaja nunca, como RF-12.
 - RF-13 Al menos 4 tipos distintos.
-- RF-13b (F2, PRD §0) Suma de estadísticas base (`baseStats` del dex, como el total de las tarjetas de Hoy) de los 6 Pokémon >= 3060 (antes 2800 y luego 2860; cambios de requisito del 23/10/2026).
+- RF-13d (Jose, 28/10/2026) Desde `TEAM_RULES_2_FROM`, sustituye a RF-13b: la suma de estadísticas base de los 6 Pokémon va de la del equipo rival del día − 180 a la del rival + 240. Si en 1000 intentos no sale ninguno, se queda el de suma más cercana a ese rango (se relaja, como RF-13b, y queda en `meta.relaxedRules`). *Descartado:* un suelo fijo de 2800.
+- RF-13b (F2, PRD §0; hasta `TEAM_RULES_2_FROM`) Suma de estadísticas base (`baseStats` del dex, como el total de las tarjetas de Hoy) de los 6 Pokémon >= 3060 (antes 2800 y luego 2860; cambios de requisito del 23/10/2026).
 - RF-13c (F2, PRD §0) Como máximo 2 Pokémon (antes 3; cambio de requisito del 23/10/2026) que compartan un mismo tipo (cada tipo de un Pokémon de doble tipo cuenta).
 - RF-14 Al menos un movimiento de daño ×2 o más por tipos contra algún Pokémon del rival.
 - RF-15 Si la tirada incumple, se repite con el siguiente valor del PRNG (regla 7 de §2).
@@ -77,7 +78,7 @@ Lo marcado **[F1, se amplía]** es alcance de F1 y crece en F2/F3. Lo marcado **
 - RF-21 Todos los nombres mostrados en español.
 
 ### Pantalla Hoy
-- RF-30 Cabecera: logo, `#N`, cuenta atrás hh:mm:ss hasta la medianoche local.
+- RF-30 Cabecera: logo, `#N`, cuenta atrás hh:mm:ss hasta la medianoche de Madrid.
 - RF-31 Al llegar a 0, sin recargar, se muestra el reto nuevo y la cuenta atrás reinicia.
 - RF-32 Tarjeta del rival: sprite, nombre, categoría, región y tipo de especialidad (si existe). No muestra el torneo de origen; `sourceTournament` y `sourceUrl` se conservan en los datos (PRD §7.4).
 - RF-33 Equipo rival: 6 especies visibles.
@@ -137,7 +138,7 @@ Lo marcado **[F1, se amplía]** es alcance de F1 y crece en F2/F3. Lo marcado **
 
 ## 5. Casos límite y negativos
 - Medianoche con Hoy abierta: cambia el reto. Con combate en curso: sigue con el reto con que empezó.
-- Cambio de hora (días de 23/25 h): la cuenta atrás termina en la medianoche local real.
+- Cambio de hora (días de 23/25 h): la cuenta atrás termina en la medianoche real de Madrid.
 - Reloj o zona cambiados: se usa la fecha del dispositivo.
 - Rival con una variante: siempre esa. Variantes idénticas: deduplicadas.
 - Primeras fases válidas en el rival, nunca en el pool del jugador.

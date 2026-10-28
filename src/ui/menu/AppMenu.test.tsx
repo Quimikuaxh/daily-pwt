@@ -26,7 +26,7 @@ describe('AppMenu', () => {
     const { user } = mount()
     await user.click(screen.getByRole('button', { name: 'Ayuda' }))
     const dialog = await screen.findByRole('dialog', { name: 'Ayuda' })
-    for (const heading of ['Cómo se juega', 'Reglas del combate', 'Mecánicas de la 5.ª generación', 'Consejos', 'Estadísticas', 'Créditos', 'Aviso legal']) {
+    for (const heading of ['Cómo se juega', 'Reglas del combate', 'Mecánicas de la 5.ª generación', 'Consejos', 'Estadísticas', 'Cuenta, puntos y rankings', 'Créditos', 'Aviso legal']) {
       expect(within(dialog).getByRole('heading', { name: heading })).toBeInTheDocument()
     }
     expect(dialog).toHaveTextContent(/WikiDex/)
@@ -34,6 +34,8 @@ describe('AppMenu', () => {
     expect(dialog).toHaveTextContent(/Super Music Collection/)
     expect(dialog).toHaveTextContent(/The Sounds Resource/)
     expect(dialog).toHaveTextContent(/no oficial/)
+    expect(dialog).toHaveTextContent(/1 \+ \(6 − media de Pokémon en pie de todos los jugadores\) \/ 6/)
+    expect(dialog).toHaveTextContent(/medianoche, hora de Madrid/)
   })
 
   it('Ajustes: la velocidad marcada es la guardada y cambiarla avisa', async () => {

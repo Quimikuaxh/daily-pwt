@@ -5,7 +5,7 @@ import App from './App'
 import { getDailyChallenge } from './core/challenge'
 import { makeGameData } from './test-utils/fixtures'
 import { mkUpdate, mockClient, type MockClient } from './test-utils/clientMock'
-import { settle, setLocalTime } from './test-utils/ui'
+import { settle, setMadridTime } from './test-utils/ui'
 import { LAUNCH } from './test-utils/dates'
 import { MemoryStorage } from './test-utils/memoryStorage'
 import { LocalStorageStore } from './storage/localStorageStore'
@@ -30,7 +30,7 @@ afterEach(() => {
 })
 
 async function mountApp(cloud: ReturnType<typeof fakeCloud>) {
-  setLocalTime(LAUNCH, 12, 0, 0)
+  setMadridTime(LAUNCH, 12, 0, 0)
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
   render(<App data={data} store={new LocalStorageStore(new MemoryStorage())} cloud={Promise.resolve(cloud)} createClient={() => { const client = mockClient(); clients.push(client); return client as any }} />)
   // La cuenta se carga aparte (import dinámico): se espera a que abra la sesión.

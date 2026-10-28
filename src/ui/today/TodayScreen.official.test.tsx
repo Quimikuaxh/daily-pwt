@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { TodayScreen } from './TodayScreen'
 import { getDailyChallenge } from '../../core/challenge'
 import { makeGameData } from '../../test-utils/fixtures'
-import { setLocalTime, testMenu } from '../../test-utils/ui'
+import { setMadridTime, testMenu } from '../../test-utils/ui'
 import { LAUNCH } from '../../test-utils/dates'
 import { MemoryStorage } from '../../test-utils/memoryStorage'
 import { LocalStorageStore } from '../../storage/localStorageStore'
@@ -18,7 +18,7 @@ const LOSS: EngineEnd = { result: 'loss', reason: 'forfeit', turns: 5, playerAli
 
 beforeEach(() => {
   vi.useFakeTimers()
-  setLocalTime(LAUNCH)
+  setMadridTime(LAUNCH)
 })
 afterEach(() => { vi.useRealTimers() })
 

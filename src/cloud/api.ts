@@ -19,6 +19,8 @@ export type RankingScope = 'global' | 'friends'
 /** `verified`: jugador con cuenta (tick). `nickname` es `null` si era sin cuenta y su nombre se liberó (RF-113). */
 export type PointsRow = { rank: number; nickname: string | null; verified: boolean; points: number; provisional: boolean; me: boolean }
 export type StreakRow = { rank: number; nickname: string | null; verified: boolean; streak: number; me: boolean }
+/** Una página de 20 de un ranking (RF-108). `myPage`: la página del jugador, o `null` si no aparece. */
+export type RankingPage<Row> = { page: number; pages: number; total: number; myPage: number | null; rows: Row[] }
 
 /** Relación con otro jugador: amigo, solicitud recibida, solicitud enviada o ninguna. */
 export type Relation = 'friend' | 'incoming' | 'outgoing' | 'none'
@@ -34,8 +36,9 @@ export interface CloudApi {
   importDays(days: DayRecord[]): Promise<number>
   myDays(): Promise<CloudDay[]>
   mySummary(): Promise<Summary>
-  pointsRanking(month: string, scope: RankingScope): Promise<PointsRow[]>
-  streakRanking(scope: RankingScope): Promise<StreakRow[]>
+  /** `page` null: la del jugador (o la primera, si no aparece). */
+  pointsRanking(month: string, scope: RankingScope, page: number | null): Promise<RankingPage<PointsRow>>
+  streakRanking(scope: RankingScope, page: number | null): Promise<RankingPage<StreakRow>>
   searchPlayers(query: string): Promise<PlayerRow[]>
   sendFriendRequest(nickname: string): Promise<Relation>
   respondFriendRequest(nickname: string, accept: boolean): Promise<void>

@@ -55,6 +55,7 @@ export type DexSpecies = {
   abilities: string[]
   nfe: boolean
   spriteId: string
+  baseSpecies?: string
 }
 export type DexMove = {
   id: string

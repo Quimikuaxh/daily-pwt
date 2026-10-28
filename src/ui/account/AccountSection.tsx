@@ -2,20 +2,19 @@ import { useState, type FormEvent } from 'react'
 import { CloudError } from '../../cloud/api'
 import type { Account } from '../../cloud/account'
 import type { AccountState } from '../../cloud/state'
-import { es } from '../../i18n/es'
 import { esCloud } from '../../i18n/esCloud'
+import { Modal } from '../common/Modal'
 import '../stats/cloud.css'
 
 const text = esCloud.account
 const NICKNAME = /^[A-Za-z0-9_]{3,16}$/
 
-/** Cuenta en Ajustes (RF-93 a RF-96): iniciar sesión con Google, cambiar el nickname y cerrar sesión. */
-export function AccountSection({ account, state }: { account: Account; state: AccountState }) {
+/** Ventana «Cuenta» del icono de la cabecera (RF-93 a RF-96): iniciar sesión con Google, cambiar el nickname y cerrar sesión. */
+export function AccountDialog({ account, state, onClose }: { account: Account; state: AccountState; onClose: () => void }) {
   return (
-    <section className="settings-section account-section">
-      <h3 className="help-title">{text.title}</h3>
+    <Modal title={text.title} onClose={onClose} className="account-dialog">
       {state.status === 'signedIn' || state.status === 'guest' ? <Player account={account} state={state} /> : <Unavailable state={state} />}
-    </section>
+    </Modal>
   )
 }
 
@@ -33,7 +32,7 @@ function SignInButton({ account }: { account: Account }) {
           account.signIn().catch(() => setStatus('failed'))
         }}
       >
-        {status === 'busy' ? es.account.signingIn : es.account.signIn}
+        {status === 'busy' ? text.signingIn : text.signIn}
       </button>
       {status === 'failed' && <p className="settings-status" role="alert">{text.signInFailed}</p>}
     </>
@@ -51,22 +50,24 @@ function Player({ account, state }: { account: Account; state: Extract<AccountSt
     <>
       {state.nickname !== null && (
         <>
-          <p className="settings-hint">{guest ? text.guestNickname(state.nickname) : text.signedInAs(state.nickname)}</p>
+          <p className="settings-hint">{guest ? text.guestNickname : text.signedIn}</p>
           <NicknameForm key={state.nickname} account={account} nickname={state.nickname} />
           {guest && <p className="settings-hint">{text.guestNicknameHint}</p>}
         </>
       )}
-      {guest ? (
-        <>
-          <p className="settings-hint">{text.signInHint}</p>
-          <SignInButton account={account} />
-        </>
-      ) : (
-        <>
-          <p className="settings-hint">{text.signOutHint}</p>
-          <button type="button" className="btn btn-small" onClick={() => void account.signOut()}>{text.signOut}</button>
-        </>
-      )}
+      <div className="account-actions">
+        {guest ? (
+          <>
+            <p className="settings-hint">{text.signInHint}</p>
+            <SignInButton account={account} />
+          </>
+        ) : (
+          <>
+            <p className="settings-hint">{text.signOutHint}</p>
+            <button type="button" className="btn btn-small" onClick={() => void account.signOut()}>{text.signOut}</button>
+          </>
+        )}
+      </div>
     </>
   )
 }
@@ -111,7 +112,8 @@ function NicknameForm({ account, nickname }: { account: Account; nickname: strin
         <button type="submit" className="btn btn-small" disabled={busy || draft === nickname}>{text.nicknameSave}</button>
       </form>
       <p id="nickname-hint" className="settings-hint">{text.nicknameHint}</p>
-      <p className="settings-status" role={message?.kind === 'error' ? 'alert' : 'status'}>{message?.text ?? ''}</p>
+      {/* Solo con aviso: sin él no deja un hueco en blanco. */}
+      {message && <p className="settings-status" role={message.kind === 'error' ? 'alert' : 'status'}>{message.text}</p>}
     </>
   )
 }

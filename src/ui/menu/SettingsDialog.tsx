@@ -1,15 +1,14 @@
-import { lazy, Suspense, useState } from 'react'
-import type { Account } from '../../cloud/account'
+import { useState } from 'react'
 import type { AccountState } from '../../cloud/state'
 import { es } from '../../i18n/es'
+import { esCloud } from '../../i18n/esCloud'
 import { ANIMATION_MODES, SPEEDS, type Settings } from '../../storage/settings'
 import { Dialog } from '../common/Dialog'
 import { Modal } from '../common/Modal'
 import { SoundSettings } from './SoundSettings'
 
 const text = es.settings
-// Fuera de la ruta crítica (E2E-21).
-const AccountSection = lazy(() => import('../account/AccountSection').then((module) => ({ default: module.AccountSection })))
+
 
 type SettingsDialogProps = {
   settings: Settings
@@ -17,23 +16,18 @@ type SettingsDialogProps = {
   /** Borra el historial y los ajustes de este navegador. */
   onClearData: () => void
   onClose: () => void
-  account?: Account
   accountState?: AccountState
 }
 
 /** Ajustes (PRD §10.6, decisiones del 22 y 23/10/2026): velocidad del combate, animaciones de movimientos, sonido y volumen, y «Borrar datos locales»; sin tema claro/oscuro. */
-export function SettingsDialog({ settings, onChange, onClearData, onClose, account, accountState }: SettingsDialogProps) {
+export function SettingsDialog({ settings, onChange, onClearData, onClose, accountState }: SettingsDialogProps) {
   const [confirming, setConfirming] = useState(false)
+  const signedIn = accountState?.status === 'signedIn'
   const [cleared, setCleared] = useState(false)
 
   return (
     <>
       <Modal title={text.title} onClose={onClose} className="settings-dialog">
-        {account && accountState && accountState.status !== 'disabled' && (
-          <Suspense fallback={null}>
-            <AccountSection account={account} state={accountState} />
-          </Suspense>
-        )}
         <section className="settings-section">
           <h3 className="help-title" id="settings-speed">{text.speedTitle}</h3>
           <div className="settings-options" role="group" aria-labelledby="settings-speed">
@@ -71,7 +65,7 @@ export function SettingsDialog({ settings, onChange, onClearData, onClose, accou
         <SoundSettings settings={settings} onChange={(sound) => onChange({ ...settings, ...sound })} />
         <section className="settings-section">
           <h3 className="help-title">{text.dataTitle}</h3>
-          <p className="settings-hint">{text.dataHint}</p>
+          <p className="settings-hint">{signedIn ? esCloud.settings.dataHint : text.dataHint}</p>
           <button type="button" className="btn btn-danger btn-small" onClick={() => setConfirming(true)}>{text.clear}</button>
           <p className="settings-status" role="status">{cleared ? text.cleared : ''}</p>
         </section>
@@ -79,7 +73,7 @@ export function SettingsDialog({ settings, onChange, onClearData, onClose, accou
       {confirming && (
         <Dialog
           title={text.confirmTitle}
-          body={text.confirmBody}
+          body={signedIn ? esCloud.settings.confirmBody : text.confirmBody}
           confirmLabel={text.confirm}
           cancelLabel={text.cancel}
           onCancel={() => setConfirming(false)}

@@ -1,3 +1,4 @@
+import { madridInstant } from '../core/date'
 import type { GameStore } from '../storage/gameStore'
 import { DEFAULT_SETTINGS } from '../storage/settings'
 import type { MenuContext } from '../ui/menu/AppMenu'
@@ -11,10 +12,9 @@ export async function settle(ms = 30_000): Promise<void> {
   })
 }
 
-/** Fija el reloj del sistema a una fecha local YYYY-MM-DD a la hora indicada. */
-export function setLocalTime(date: string, h = 12, mi = 0, s = 0): void {
-  const [y, m, d] = date.split('-').map(Number)
-  vi.setSystemTime(new Date(y, m - 1, d, h, mi, s))
+/** Fija el reloj del sistema a la hora de Madrid indicada del día YYYY-MM-DD (el reto va por la hora de Madrid, RF-01). */
+export function setMadridTime(date: string, h = 12, mi = 0, s = 0): void {
+  vi.setSystemTime(madridInstant(date, h, mi, s))
 }
 
 export function mockMatchMedia(matches: boolean): void {

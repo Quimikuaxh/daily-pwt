@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { challengeFor, getDailyChallenge } from '../core/challenge'
-import { localDate, msUntilNextLocalMidnight } from '../core/date'
+import { challengeDate, msUntilNextChallenge } from '../core/date'
 import type { Challenge, GameData } from '../core/types'
 import { es } from '../i18n/es'
 
 export type TodayState = {
   challenge: Challenge | null
-  /** hh:mm:ss hasta la próxima medianoche local (las horas pueden ser 23 o 25 en los cambios de hora). */
+  /** hh:mm:ss hasta la próxima medianoche de Madrid (las horas pueden ser 23 o 25 en los cambios de hora). */
   countdown: string
   error: string | null
 }
@@ -30,11 +30,11 @@ function useNow(): Date {
     const scheduleNextTick = () => {
       const current = new Date()
       setNow(current)
-      const untilNextSecond = msUntilNextLocalMidnight(current) % MS_PER_SECOND
+      const untilNextSecond = msUntilNextChallenge(current) % MS_PER_SECOND
       timer = setTimeout(scheduleNextTick, untilNextSecond === 0 ? MS_PER_SECOND : untilNextSecond)
     }
     const first = new Date()
-    timer = setTimeout(scheduleNextTick, msUntilNextLocalMidnight(first) % MS_PER_SECOND || MS_PER_SECOND)
+    timer = setTimeout(scheduleNextTick, msUntilNextChallenge(first) % MS_PER_SECOND || MS_PER_SECOND)
     return () => clearTimeout(timer)
   }, [])
 
@@ -54,20 +54,20 @@ function buildChallenge(date: string, data: GameData | null, rival?: RivalOverri
   }
 }
 
-/** Reto de la fecha local del dispositivo (RF-01) y cuenta atrás hasta el siguiente (RF-30/31). */
+/** Reto de la fecha de Madrid (RF-01) y cuenta atrás hasta el siguiente (RF-30/31). */
 export function useToday(data: GameData | null, dateOverride?: string, rivalOverride?: RivalOverride): TodayState {
   const now = useNow()
-  const date = dateOverride ?? localDate(now)
+  const date = dateOverride ?? challengeDate(now)
   const trainerId = rivalOverride?.trainerId
   const variantId = rivalOverride?.variantId
   const { challenge, error } = useMemo(
     () => buildChallenge(date, data, trainerId === undefined ? undefined : { trainerId, variantId }),
     [date, data, trainerId, variantId],
   )
-  return { challenge, countdown: formatCountdown(msUntilNextLocalMidnight(now)), error }
+  return { challenge, countdown: formatCountdown(msUntilNextChallenge(now)), error }
 }
 
-/** Solo la cuenta atrás hasta la próxima medianoche local (Resultado, PRD §10.3). */
+/** Solo la cuenta atrás hasta la próxima medianoche de Madrid (Resultado, PRD §10.3). */
 export function useCountdown(): string {
-  return formatCountdown(msUntilNextLocalMidnight(useNow()))
+  return formatCountdown(msUntilNextChallenge(useNow()))
 }

@@ -1,10 +1,10 @@
 import { NEUTRAL_NATURE } from './constants'
-import { DISTINCT_BASE_SPECIES_FROM, LAUNCH_DATE, LAUNCH_OPENING } from './launch'
+import { LAUNCH_DATE, LAUNCH_OPENING, TEAM_RULES_2_FROM } from './launch'
 import { rivalForDay, type TrainerTraits } from './bag'
 import { challengeNumber, dayIndex } from './date'
 import { DataError } from './errors'
 import { Prng, deriveSeed } from './prng'
-import { buildPlayerTeam, poolWithoutRival } from './team'
+import { buildPlayerTeam, poolWithoutRival, TEAM_RULES_1, TEAM_RULES_2 } from './team'
 import type { Challenge, GameData, PokemonSet, ResolvedSet, TeamVariant, Trainer } from './types'
 
 const SEED_PREFIX = 'daily-pwt:v1:'
@@ -97,7 +97,7 @@ export function challengeFor({ date, trainerId, variantId }: ChallengeSelection,
   const rivalTeam = putLeadFirst(resolvedTeam, trainer, new Prng(deriveSeed(daySeed, 'lead')))
 
   const pool = poolWithoutRival(data.playerSets, trainer.id)
-  const player = buildPlayerTeam(pool, rivalTeam, new Prng(deriveSeed(daySeed, 'player')), data.dex, { distinctBaseSpecies: date >= DISTINCT_BASE_SPECIES_FROM })
+  const player = buildPlayerTeam(pool, rivalTeam, new Prng(deriveSeed(daySeed, 'player')), data.dex, date >= TEAM_RULES_2_FROM ? TEAM_RULES_2 : TEAM_RULES_1)
   const playerTeam = player.team.map((member) => ({ ...member, nameEs: spanishName(data, member.species) }))
 
   const challengeTrainer: Challenge['trainer'] = {

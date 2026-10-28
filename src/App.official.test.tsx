@@ -5,7 +5,7 @@ import App from './App'
 import { getDailyChallenge } from './core/challenge'
 import { makeGameData } from './test-utils/fixtures'
 import { mkUpdate, mockClient, type MockClient } from './test-utils/clientMock'
-import { settle, setLocalTime } from './test-utils/ui'
+import { settle, setMadridTime } from './test-utils/ui'
 import { LAUNCH, addDays } from './test-utils/dates'
 import { MemoryStorage } from './test-utils/memoryStorage'
 import { LocalStorageStore } from './storage/localStorageStore'
@@ -31,7 +31,7 @@ afterEach(() => { vi.useRealTimers() })
 
 /** Monta la aplicación sobre el almacenamiento compartido: montar otra vez equivale a recargar la página. */
 function mountApp(date = LAUNCH, h = 12, mi = 0, s = 0) {
-  setLocalTime(date, h, mi, s)
+  setMadridTime(date, h, mi, s)
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
   const utils = render(<App data={data} store={new LocalStorageStore(storage)} createClient={() => { const client = mockClient(); clients.push(client); return client as any }} />)
   return { user, ...utils }
@@ -280,7 +280,7 @@ describe('política cuando no se puede reanudar (DEC-43): el intento se gasta, s
 
 describe('sin almacenamiento', () => {
   it('el sitio funciona: el oficial se registra en memoria y se avisa de que no se guardará', async () => {
-    setLocalTime(LAUNCH)
+    setMadridTime(LAUNCH)
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     render(<App data={data} store={new LocalStorageStore(null)} createClient={() => { const client = mockClient(); clients.push(client); return client as any }} />)
     expect(screen.getByText(/no deja guardar datos/i)).toBeInTheDocument()
