@@ -7,9 +7,9 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 ## Tanda en curso: `feature/mejoras-tras-f5` (desde `main` en 9b17abb, 29/10/2026; un solo despliegue al final)
 Hecho: 1) resultado visual en el Historial (RF-124b; migración `20261029020000_pwt_historial_resultado.sql`, pendiente de aplicar en producción), 2) pausa de la repetición (RF-128), música continua en el visor (RF-129b), 3) objeto real en la pantalla de datos (RF-71, UT-114), 4) nombres cortados en los rankings y en la cabecera, 5) ventanas que cambian de tamaño al cargar (DEC-72), 6) puntito rojo en Estadísticas (RF-111) y cifra centrada en la bolita de «Amigos», 7) la página de detrás ya no se desplaza con una ventana abierta (UT-116, E2E-74), 8) equipos en el visor (RF-129c, UT-117). Antes de desplegar: migraciones en producción primero y tanda e2e completa («directo» no exime de los tests).
 
-## Victorias del día bajo el rival (29/10/2026, directo a `main`)
-- **Hecho:** «Victorias: X/Y» bajo el rival de Hoy (RF-114, UT-120).
-- **Antes de desplegar:** aplicar en producción `20261029040000_pwt_victorias_del_dia.sql` **antes** de publicar la web (sin ella, la línea se queda en «Victorias: …»). Tanda e2e completa.
+## Traspaso con los enlaces compartidos (29/10/2026, directo a `main`)
+- **Hecho:** al pasar la sesión anónima a la cuenta, también sus enlaces compartidos (RF-97, UT-104). La repetición y el combate en curso ya pasaban (`on update cascade`). «Victorias: X/Y» (RF-114) desplegado en `f769445`.
+- **Antes de desplegar:** aplicar en producción `20261029050000_pwt_traspaso_completo.sql`. No cambia la web: basta con la migración, pero va con su tanda e2e como siempre.
 
 ## Tanda `feature/amigos-y-privacidad` (29/10/2026)
 - **Hecho:** vista de un amigo con sus estadísticas e historial (RF-111b, DEC-73); política de privacidad en `public/privacidad.html`, enlazada desde Ayuda (E2E-75).

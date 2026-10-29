@@ -507,6 +507,23 @@ describe('traspaso de la sesión anónima a la cuenta (UT-104)', () => {
     await t.as(member, `select pwt.save_turn($1::date, $2::jsonb, 2, 6, 4)`, [t.today, decisions(2)])
   })
 
+  it('con el día pasan su repetición y su enlace compartido: salen en el historial de la cuenta y la cuenta puede borrar el enlace', async () => {
+    const [guest, member] = [await t.user(true), await t.user()]
+    await t.call(guest, `select pwt.ensure_profile()`)
+    await t.call(member, `select pwt.ensure_profile()`)
+    const date = addDays(t.today, -4)
+    await seedDay(guest.id, date, 'won', 5)
+    await t.as(guest, `select pwt.save_replay($1::date, 'datos')`, [date])
+    const shared = await t.call<string>(guest, `select pwt.share_replay($1::date)`, [date])
+    const code = await t.call<string>(guest, `select pwt.create_guest_claim()`)
+    await t.call(member, `select pwt.claim_guest($1)`, [code])
+    expect(await t.call(member, `select pwt.my_history()`)).toEqual([expect.objectContaining({ date, sharedId: shared })])
+    expect(await t.call(member, `select pwt.get_my_replay($1::date)`, [date])).toBe('datos')
+    expect(await t.call(member, `select (pwt.get_shared_replay($1) ->> 'mine')::boolean`, [shared])).toBe(true)
+    await t.as(member, `select pwt.delete_shared_replay($1)`, [shared])
+    expect(await t.admin(`select count(*)::int as links from pwt.shared_replays where id = $1`, [shared])).toEqual([{ links: 0 }])
+  })
+
   it('una cuenta nueva se queda con el nombre de la sesión anónima', async () => {
     const [guest, member] = [await t.user(true), await t.user()]
     await t.call(guest, `select pwt.ensure_profile()`)
