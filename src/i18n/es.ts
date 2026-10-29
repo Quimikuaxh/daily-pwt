@@ -123,6 +123,9 @@ const REGIONS = {
   unova: 'Teselia',
 } as const
 
+/** «1 solicitud de amistad pendiente», «2 solicitudes…» (botón Estadísticas y pestaña Amigos, RF-111). */
+const pendingRequests = (count: number) => `${count} ${count === 1 ? 'solicitud de amistad pendiente' : 'solicitudes de amistad pendientes'}`
+
 export const es = {
   app: {
     name: 'Daily PWT',
@@ -245,6 +248,7 @@ export const es = {
       label: 'Equipo',
       choosePrompt: 'Elige un Pokémon.',
       forcedPrompt: 'Elige el siguiente Pokémon.',
+      playerPrompt: 'Equipo del jugador.',
       rivalLabel: 'Equipo rival',
       rivalPrompt: (trainer: string) => `Equipo de ${trainer}.`,
       memberAria: (name: string, level: string, hp: string, state: string) => `${name} ${level} ${hp} PS${state ? `, ${state}` : ''}`,
@@ -348,6 +352,7 @@ export const es = {
   stats: {
     title: 'Estadísticas',
     open: 'Estadísticas',
+    openPending: (count: number) => `Estadísticas (${pendingRequests(count)})`,
     close: 'Cerrar',
     played: 'Jugados',
     winPercent: '% victorias',
@@ -407,7 +412,7 @@ export const es = {
     tabMine: 'Yo',
     tabRankings: 'Rankings',
     tabFriends: 'Amigos',
-    tabFriendsPending: (count: number) => `Amigos: ${count} ${count === 1 ? 'solicitud de amistad pendiente' : 'solicitudes de amistad pendientes'}`,
+    tabFriendsPending: (count: number) => `Amigos: ${pendingRequests(count)}`,
     loading: 'Cargando…',
     formatPoints: (points: number) => points.toLocaleString('es-ES', { maximumFractionDigits: 2 }),
     monthPoints: 'Puntos este mes',
@@ -419,7 +424,6 @@ export const es = {
 
   friends: {
     signIn: 'Inicia sesión para añadir amigos.',
-    pendingBadge: (count: number) => `${count} ${count === 1 ? 'solicitud de amistad pendiente' : 'solicitudes de amistad pendientes'}`,
   },
 
   share: {

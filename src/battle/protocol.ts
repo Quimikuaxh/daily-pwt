@@ -54,6 +54,11 @@ export type MonView = {
   /** Solo el bando del jugador conoce los PS reales. */
   hp?: number
   maxHp?: number
+  /**
+   * Objeto que lleva en ese momento (id; `''` sin objeto): cambia con Truco, Trapicheo, Desarme o al gastarlo. Las repeticiones guardadas
+   * antes de tenerlo no lo traen: entonces vale el del set.
+   */
+  item?: string
   /** PP actuales y máximos de sus movimientos, en el orden del set (pantalla de datos; los del rival, en el botón RIVAL). */
   moves?: { id: string; pp: number; maxPp: number }[]
 }

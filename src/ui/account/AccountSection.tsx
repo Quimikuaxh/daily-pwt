@@ -6,6 +6,7 @@ import { releaseGoogleButton, renderGoogleButton, type GoogleCredential } from '
 import { esCloud } from '../../i18n/esCloud'
 import { Modal } from '../common/Modal'
 import '../stats/cloud.css'
+import { Loading } from '../common/Loading'
 
 const text = esCloud.account
 const NICKNAME = /^[A-Za-z0-9_]{3,16}$/
@@ -48,7 +49,7 @@ function SignInButton({ account }: { account: Account }) {
   return (
     <>
       <div ref={slot} className="google-signin" hidden={status === 'busy' || status === 'unavailable'} />
-      {status === 'busy' && <p className="settings-hint" role="status">{text.signingIn}</p>}
+      {status === 'busy' && <Loading label={text.signingIn} />}
       {status === 'failed' && <p className="settings-status" role="alert">{text.signInFailed}</p>}
       {status === 'unavailable' && <p className="settings-status" role="alert">{text.googleUnavailable}</p>}
     </>
@@ -56,7 +57,7 @@ function SignInButton({ account }: { account: Account }) {
 }
 
 function Unavailable({ state }: { state: AccountState }) {
-  return <p className="settings-hint">{state.status === 'connecting' ? text.connecting : text.offline}</p>
+  return state.status === 'connecting' ? <Loading label={text.connecting} /> : <p className="settings-hint">{text.offline}</p>
 }
 
 /** Con sesión, con cuenta o sin ella: el nickname se puede cambiar en los dos casos (RF-95, RF-112). */

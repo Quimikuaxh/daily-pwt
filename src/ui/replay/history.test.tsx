@@ -12,7 +12,7 @@ import { MatchHistoryDialog } from './MatchHistoryDialog'
 import { replayIdFrom, replayLink } from './replayLink'
 
 // UT-108 · F5 (RF-124 a RF-126, RF-131, RF-133): ventana Historial, sus accesos y el enlace compartido.
-const item = (over: Partial<HistoryItem> = {}): HistoryItem => ({ date: '2026-11-02', challengeNumber: 10, trainerId: 'misty', variantId: 'misty-1', status: 'won', turns: 21, survivors: 4, sharedId: null, ...over })
+const item = (over: Partial<HistoryItem> = {}): HistoryItem => ({ date: '2026-11-02', challengeNumber: 10, trainerId: 'misty', variantId: 'misty-1', status: 'won', turns: 21, survivors: 4, playerFainted: null, sharedId: null, ...over })
 const trainerName = (id: string) => ({ misty: 'Misty', brock: 'Brock' })[id] ?? id
 
 describe('ventana Historial (UT-108)', () => {
@@ -23,9 +23,15 @@ describe('ventana Historial (UT-108)', () => {
     render(<MatchHistoryDialog api={api} trainerName={trainerName} onWatch={onWatch} onClose={vi.fn()} />)
     const items = await screen.findAllByRole('listitem')
     expect(items[0]).toHaveTextContent('#10 · 02/11/2026 · Misty')
-    expect(items[0]).toHaveTextContent('Victoria · 21 turnos · 4/6 en pie')
+    // El resultado es una copa (dorada o tachada) que se lee «Victoria» o «Derrota» (decisión de Jose, 29/10/2026).
+    expect(within(items[0]).getByRole('img', { name: 'Victoria' })).toHaveAttribute('data-won', 'true')
+    expect(items[0]).toHaveTextContent('21 turnos · 4/6 en pie')
     expect(items[1]).toHaveTextContent('#9 · 01/11/2026 · Brock')
-    expect(items[1]).toHaveTextContent('Derrota · 12 turnos')
+    expect(within(items[1]).getByRole('img', { name: 'Derrota' })).toHaveAttribute('data-won', 'false')
+    expect(items[1].querySelector('.history-cup-cross')).not.toBeNull()
+    expect(items[0].querySelector('.history-cup-cross')).toBeNull()
+    expect(items[1]).toHaveTextContent('12 turnos')
+    expect(items[1]).not.toHaveTextContent('en pie')
     await user.click(within(items[1]).getByRole('button', { name: 'Ver repetición' }))
     expect(onWatch).toHaveBeenCalledWith('2026-11-01')
   })
@@ -67,6 +73,29 @@ describe('ventana Historial (UT-108)', () => {
     // Sin sprite de mapa, el de combate.
     fireEvent.error(withArt.querySelector('img.history-trainer') as HTMLImageElement)
     expect(container.querySelector('img.history-trainer-battle')?.getAttribute('src')).toMatch(/sprites\/trainers\/misty\.gif$/)
+  })
+
+  it('los debilitados del equipo van en gris, ganara o perdiera; sin ese dato, ninguno', async () => {
+    const team = ['garchomp', 'starmie', 'gengar', 'tyranitar', 'heatran', 'milotic']
+    const api = fakeApi({
+      myHistory: async () => [
+        item({ playerFainted: [true, false, false, true, false, false] }),
+        item({ date: '2026-11-01', status: 'lost', survivors: 0, playerFainted: [true, true, true, true, true, true] }),
+        item({ date: '2026-10-31' }),
+      ],
+    })
+    render(<MatchHistoryDialog api={api} trainerName={trainerName} art={() => ({ trainerSprite: 'misty', team })} onWatch={vi.fn()} onClose={vi.fn()} />)
+    const dimmed = (entry: HTMLElement) => [...entry.querySelectorAll('.bt-member-icon')].map((icon) => icon.getAttribute('data-dimmed') === 'true')
+    const [won, lost, unknown] = await screen.findAllByRole('listitem')
+    expect(dimmed(won)).toEqual([true, false, false, true, false, false])
+    expect(dimmed(lost)).toEqual([true, true, true, true, true, true])
+    expect(dimmed(unknown)).toEqual([false, false, false, false, false, false])
+  })
+
+  it('mientras carga, la Poké Ball de carga (UT-115, DEC-72)', () => {
+    render(<MatchHistoryDialog api={fakeApi({ myHistory: () => new Promise(() => undefined) })} trainerName={trainerName} onWatch={vi.fn()} onClose={vi.fn()} />)
+    expect(screen.getByRole('status')).toHaveTextContent('Cargando…')
+    expect(screen.getByRole('status').querySelector('.loading-ball')).not.toBeNull()
   })
 
   it('sin combates, el aviso de vacío; sin servicio, el de conexión', async () => {

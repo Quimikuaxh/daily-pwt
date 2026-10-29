@@ -49,7 +49,7 @@ Juego web diario estilo Daily Red contra los entrenadores del Pokémon World Tou
 - **Fuentes externas**: Bulbapedia responde 403 (Cloudflare) y se lee vía Internet Archive; WikiDex devuelve 503 a ratos. Todo lo descargado se guarda en el repo; la app no depende de nada externo en tiempo de ejecución.
 - **Sprites**: `public/` pesa ~39 MB, pero la web solo descarga los sprites del reto del día. No precargar el pool entero.
 - **Sonido**: `public/audio/` pesa ~29 MB (pistas completas, DEC-56). Cargar solo la pista del rival del combate en curso y los efectos; nunca toda la música. El ZIP de efectos no se puede descargar por script (Cloudflare): ver README, «Sonido».
-- **Fuente**: `pokemon-dp.ttf` trae métricas `hhea` erróneas; los `*-override` de su `@font-face` en `src/index.css` son los que evitan el descuadre en Windows y Firefox. No quitarlos.
+- **Fuente**: `pokemon-dp.ttf` trae métricas `hhea` erróneas; los `*-override` de su `@font-face` en `src/index.css` son los que evitan el descuadre en Windows y Firefox. No quitarlos. Con `descent-override: 0%` la caja no reserva hueco para las «g p j y»: todo texto con `overflow: hidden` (p. ej. con «…») necesita `padding-bottom: 0.25em; margin-bottom: -0.25em` o los corta.
 - **Estética**: el combate y los menús replican N2/B2 con assets ripeados; reconstruir solo lo que el juego pinta en ejecución y comparar siempre con capturas reales.
 
 ## Estado

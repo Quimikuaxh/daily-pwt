@@ -94,4 +94,21 @@ test.describe('360 px táctil', () => {
     await page.getByRole('button', { name: 'Volver a Hoy' }).tap()
     await expect(new TodayPage(page).challengeNumber).toBeVisible()
   })
+
+  test('E2E-74 con una ventana abierta, la página de detrás no se desplaza; al cerrarla, sí', async ({ page }) => {
+    await new TodayPage(page).goto()
+    await page.getByRole('button', { name: 'Estadísticas' }).tap()
+    const dialog = page.getByRole('dialog', { name: 'Estadísticas' })
+    await expect(dialog).toBeVisible()
+    // Sobre el fondo y dentro de la ventana (hasta pasar su final).
+    for (const y of [720, 300]) {
+      await page.mouse.move(180, y)
+      await page.mouse.wheel(0, 2000)
+    }
+    await page.waitForTimeout(300)
+    expect(await page.evaluate(() => window.scrollY), 'la página no se mueve con la ventana abierta').toBe(0)
+    await dialog.getByRole('button', { name: 'Cerrar' }).tap()
+    await page.mouse.wheel(0, 600)
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0)
+  })
 })

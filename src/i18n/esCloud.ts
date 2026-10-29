@@ -63,6 +63,7 @@ export const esCloud = {
   },
 
   friends: {
+    loading: 'Cargando…',
     searchLabel: 'Buscar por nickname',
     search: 'Buscar',
     noResults: 'Nadie con ese nickname.',

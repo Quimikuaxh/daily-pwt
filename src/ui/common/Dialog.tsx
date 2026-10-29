@@ -1,4 +1,5 @@
 import { useEffect, useRef, useId, type KeyboardEvent } from 'react'
+import { useScrollLock } from './scrollLock'
 
 type DialogProps = {
   title: string
@@ -15,6 +16,7 @@ export function Dialog({ title, body, confirmLabel, cancelLabel, onConfirm, onCa
   const bodyId = useId()
   const cancelRef = useRef(null as HTMLButtonElement | null)
   const confirmRef = useRef(null as HTMLButtonElement | null)
+  useScrollLock()
 
   useEffect(() => {
     const previouslyFocused = document.activeElement as HTMLElement | null

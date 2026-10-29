@@ -8,6 +8,7 @@ import type { Settings } from '../../storage/settings'
 import { Dialog } from '../common/Dialog'
 import { ReplayViewer } from './ReplayViewer'
 import './replay.css'
+import { Loading } from '../common/Loading'
 
 const text = esReplay.viewer
 
@@ -58,9 +59,11 @@ export function ReplayScreen({ source, api, ready, data, settings, onExit }: Rep
   if (shownStatus !== 'ready' || loaded.status !== 'ready') {
     return (
       <main className="page-main replay-message">
-        <p className="settings-hint" role={shownStatus === 'loading' ? 'status' : 'alert'}>
-          {shownStatus === 'loading' ? text.loading : shownStatus === 'notFound' ? text.notFound : text.failed}
-        </p>
+        {shownStatus === 'loading' ? (
+          <Loading label={text.loading} />
+        ) : (
+          <p className="settings-hint" role="alert">{shownStatus === 'notFound' ? text.notFound : text.failed}</p>
+        )}
         {shownStatus !== 'loading' && <button type="button" className="btn btn-primary" onClick={onExit}>{text.toToday}</button>}
       </main>
     )
@@ -69,7 +72,7 @@ export function ReplayScreen({ source, api, ready, data, settings, onExit }: Rep
   const canDelete = source.kind === 'shared' && loaded.mine && api !== null
   return (
     <>
-      <ReplayViewer replay={loaded.replay} data={data} settings={settings} onExit={onExit} onDelete={canDelete ? () => setConfirmDelete(true) : undefined} />
+      <ReplayViewer replay={loaded.replay} data={data} settings={settings} onExit={onExit} onDelete={canDelete ? () => setConfirmDelete(true) : undefined} own={source.kind !== 'shared' || loaded.mine} />
       {confirmDelete && source.kind === 'shared' && api && (
         <Dialog
           title={text.deleteTitle}

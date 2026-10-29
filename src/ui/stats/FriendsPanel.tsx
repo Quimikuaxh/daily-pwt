@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import type { CloudApi, PlayerRow } from '../../cloud/api'
 import { esCloud } from '../../i18n/esCloud'
 import './cloud.css'
+import { Loading } from '../common/Loading'
 
 const text = esCloud.friends
 
@@ -71,6 +72,7 @@ export function FriendsPanel({ api, onChange }: { api: CloudApi; onChange?: () =
         </ul>
       )}
       {error && <p className="settings-status" role="alert">{text.failed}</p>}
+      {list === null && !error && <Loading label={text.loading} />}
       {incoming.length > 0 && (
         <FriendSection title={text.incoming}>
           {incoming.map((row) => (
@@ -92,15 +94,15 @@ export function FriendsPanel({ api, onChange }: { api: CloudApi; onChange?: () =
           ))}
         </FriendSection>
       )}
-      <FriendSection title={text.list}>
-        {list !== null && friends.length === 0 && <li className="settings-hint">{text.none}</li>}
+      {list !== null && <FriendSection title={text.list}>
+        {friends.length === 0 && <li className="settings-hint">{text.none}</li>}
         {friends.map((row) => (
           <li key={row.nickname}>
             <span>{row.nickname}</span>
             <button type="button" className="btn btn-small" onClick={() => run(() => api.removeFriend(row.nickname))}>{text.remove}</button>
           </li>
         ))}
-      </FriendSection>
+      </FriendSection>}
     </div>
   )
 }

@@ -110,7 +110,8 @@ export function AppMenu({ store, today, settings, onSettingsChange, onClearData,
       : []),
     // RF-124: en el móvil no cabe; allí se abre desde Cuenta.
     ...(withHistory ? [{ id: 'history' as const, label: es.history.open, icon: <HistoryIcon />, wideOnly: true }] : []),
-    { id: 'stats' as const, label: es.stats.open, icon: <StatsIcon /> },
+    // Con solicitudes pendientes, un puntito rojo sin número (decisión de Jose, 29/10/2026): el número lo dice el nombre del botón.
+    { id: 'stats' as const, label: pending ? es.stats.openPending(pending) : es.stats.open, icon: <StatsIcon /> },
     { id: 'help' as const, label: es.help.open, icon: <HelpIcon /> },
     { id: 'settings' as const, label: es.settings.open, icon: <SettingsIcon /> },
   ]
@@ -122,7 +123,7 @@ export function AppMenu({ store, today, settings, onSettingsChange, onClearData,
           <button key={button.id} type="button" className={`btn btn-small header-action${'wideOnly' in button ? ' header-action-wide' : ''}${button.id === 'account' && signedInAs ? ' header-account' : ''}`} onClick={() => setOpen(button.id)} aria-label={button.label} title={button.label}>
             {button.icon}
             {button.id === 'stats' && pending > 0 && (
-              <span className="header-badge" role="status" aria-label={es.friends.pendingBadge(pending)}>{pending}</span>
+              <span className="header-badge" aria-hidden="true" />
             )}
           </button>
         ))}

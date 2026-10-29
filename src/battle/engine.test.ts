@@ -562,3 +562,26 @@ describe('sustituto en la vista', () => {
     expect(update.view.player.team[0].substitute).toBe(true)
   })
 })
+
+// UT-114 · Objeto que lleva cada Pokémon en ese momento (la pantalla de datos lo enseña): cambia con Truco y con Desarme.
+describe('objeto actual en la vista', () => {
+  it('Truco intercambia los objetos de los dos', () => {
+    const user = mon('alakazam', ['trick', 'trick', 'trick', 'trick'], { item: 'choicescarf', ability: 'synchronize' })
+    const foe = mon('clefable', ['splash', 'splash', 'splash', 'splash'], { item: 'leftovers', ability: 'unaware' })
+    const engine = createBattleEngine({ battleSeed: 's', player: [user], playerLead: 0, rival: [foe], ai: 'trivial', maxTurns: 50 } as any)
+    const start = engine.start().view
+    expect([start.player.team[0].item, start.rival.team[0].item]).toEqual(['choicescarf', 'leftovers'])
+    const update = engine.choose({ type: 'move', slot: 1 })
+    expect([update.view.player.team[0].item, update.view.rival.team[0].item]).toEqual(['leftovers', 'choicescarf'])
+  })
+
+  it('tras Desarme, sin objeto', () => {
+    const user = mon('snorlax', ['splash', 'splash', 'splash', 'splash'], { item: 'leftovers', ability: 'thickfat' })
+    const foe = mon('weavile', ['knockoff', 'knockoff', 'knockoff', 'knockoff'], { ability: 'pressure' })
+    const engine = createBattleEngine({ battleSeed: 's', player: [user], playerLead: 0, rival: [foe], ai: 'trivial', maxTurns: 50 } as any)
+    engine.start()
+    const update = engine.choose({ type: 'move', slot: 1 })
+    expect(update.lines.some((line) => line.startsWith('|-enditem|p1a:'))).toBe(true)
+    expect(update.view.player.team[0].item).toBe('')
+  })
+})

@@ -17,7 +17,7 @@ import { RemainingIndicator } from './RemainingIndicator'
 import { TopScreen } from './TopScreen'
 import { PartyScreen } from './party/PartyScreen'
 import { PARTY_SCREEN_IMAGES, useImagesReady } from './preloadAssets'
-import { partyMembers, rivalMembers } from './party/partyModel'
+import { partyMembers, requestFromView, rivalMembers } from './party/partyModel'
 import { TouchScreen, type TouchMode } from './TouchScreen'
 import { canChoose, hasOnlyForcedMove, isForcedSwitch, moveOptions, playerInPinch, switchBlockedReason, switchOptions } from './battleModel'
 import { avatarForSeed } from './introAssets'
@@ -34,15 +34,17 @@ type BattleScreenProps = {
   ai?: AiKind
   /**
    * Etiqueta OFICIAL/PRÁCTICA y textos de salir y rendirse (PRD §10.2). Por defecto, práctica. `replay` (F5, RF-127): repetición, sin menú
-   * de combate; en su lugar van `controls` y «Volver» sale sin confirmar.
+   * de combate; en su lugar van `controls` y «Volver» sale sin confirmar. `controls` recibe `openTeam`, que abre la pantalla de equipo de
+   * un bando en solo lectura, con Datos (decisión de Jose, 29/10/2026).
    */
   mode?: BattleMode | 'replay'
-  controls?: ReactNode
+  controls?: (openTeam: (side: ReplayTeam) => void) => ReactNode
   /** Reanudación de un oficial guardado: sin intro y con las decisiones ya tomadas reproducidas. */
   replay?: BattleParams['replay']
   onDecision?: BattleParams['onDecision']
   onSettled?: BattleParams['onSettled']
   onReplayFailed?: BattleParams['onReplayFailed']
+  paused?: BattleParams['paused']
   /** Velocidad de Ajustes; al cambiarla con el botón del combate se avisa para guardarla. */
   initialSpeed?: BattleParams['initialSpeed']
   onSpeedChange?: BattleParams['onSpeedChange']
@@ -55,6 +57,9 @@ type BattleScreenProps = {
   onExit: () => void
 }
 
+/** Bando cuyo equipo se consulta en el visor de repeticiones. */
+export type ReplayTeam = 'player' | 'rival'
+
 type PendingDialog = 'forfeit' | 'exit' | 'history' | 'sound' | null
 
 /** Menú elegido para una petición concreta: cuando llega otra petición (turno nuevo) se vuelve al menú principal. */
@@ -62,7 +67,7 @@ type TouchChoice = { request: BattleRequest | null; mode: TouchMode }
 
 const isInteractive = (target: EventTarget | null): boolean => target instanceof HTMLElement && target.closest('button, a, input, select, textarea, [role="dialog"]') !== null
 
-export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', controls, replay, onDecision, onSettled, onReplayFailed, initialSpeed, onSpeedChange, animations = 'always', sound, onSoundChange, onFinish, onExit }: BattleScreenProps) {
+export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', controls, replay, onDecision, onSettled, onReplayFailed, paused, initialSpeed, onSpeedChange, animations = 'always', sound, onSoundChange, onFinish, onExit }: BattleScreenProps) {
   const { trainer, rivalTeam, playerTeam } = challenge
   const speciesName = (speciesId: string, fallback: string): string => data.names.species[speciesId] ?? fallback
 
@@ -79,6 +84,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
     onDecision,
     onSettled,
     onReplayFailed,
+    paused,
     initialSpeed,
     onSpeedChange,
   })
@@ -93,6 +99,8 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   const [answeredForcedRequest, setAnsweredForcedRequest] = useState(null as BattleRequest | null)
   // Equipo rival abierto desde el cambio forzado (botón RIVAL de la pantalla de equipo): al volver, se sigue eligiendo sustituto.
   const [rivalPeek, setRivalPeek] = useState(null as BattleRequest | null)
+  // Visor (F5): equipo abierto con los botones de la barra; se cierra con Volver de la pantalla de equipo.
+  const [replayTeam, setReplayTeam] = useState(null as ReplayTeam | null)
 
   const { request, lastChoiceRequest, choose, advance } = battle
   const menuRequest = request ?? lastChoiceRequest
@@ -101,22 +109,26 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   const forcedSwitchPending = forcedSwitch && answeredForcedRequest !== menuRequest
   const moves = moveOptions(menuRequest, data)
   const blockedReason = menuRequest === null ? null : switchBlockedReason(menuRequest, switchOptions(menuRequest, data.names))
-  const members = useMemo(() => partyMembers(menuRequest, battle.view, data, playerTeam), [menuRequest, battle.view, data, playerTeam])
+  // En el visor no hay petición del simulador: las placas salen de la vista grabada.
+  const partyRequest = mode === 'replay' ? requestFromView(battle.view, playerTeam) : menuRequest
+  const members = useMemo(() => partyMembers(partyRequest, battle.view, data, playerTeam), [partyRequest, battle.view, data, playerTeam])
   const rivals = useMemo(() => rivalMembers(battle.view, data, rivalTeam), [battle.view, data, rivalTeam])
   const touchMode: TouchMode = forcedSwitchPending ? (rivalPeek === menuRequest ? 'rival' : 'switch') : touchChoice.request === menuRequest ? touchChoice.mode : 'main'
   const ended = battle.ended !== null
 
   // Música del rival (DEC-57): se descargan su pista y los efectos al entrar; suena desde el iris de la intro (o desde el principio al
   // reanudar un oficial, que no tiene intro) y se funde al terminar el combate, al salir o al desmontar. La velocidad no la cambia.
+  // En el visor (RF-128) la pantalla se vuelve a montar en cada salto: la música sigue sin cortarse y la para el visor al salir.
   const music = battleMusicFor(trainer)
   useEffect(() => getAudio().preload([music], SFX_IDS), [music])
-  const musicOn = battle.introPhase !== 'loading' && !ended
+  const musicOn = battle.introPhase !== 'loading' && (mode === 'replay' || !ended)
   useEffect(() => {
     if (!musicOn) return
     const audio = getAudio()
     audio.playMusic(music)
+    if (mode === 'replay') return
     return () => audio.stopMusic()
-  }, [musicOn, music])
+  }, [musicOn, music, mode])
 
   // Pitido de vida baja: mientras el Pokémon del jugador tiene la barra en rojo, desde que la barra termina de bajar; se corta al curarse,
   // al cambiarlo, al debilitarse (PS a 0), al terminar el combate y al salir.
@@ -164,10 +176,12 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
     choose({ type: 'switch', slot })
   }
 
-  const partyReady = useImagesReady(PARTY_SCREEN_IMAGES, touchMode === 'switch' || touchMode === 'rival')
+  const partyReady = useImagesReady(PARTY_SCREEN_IMAGES, touchMode === 'switch' || touchMode === 'rival' || replayTeam !== null)
   const partyOpen = touchMode === 'switch' && partyReady && !battle.failed && members.length > 0
   const rivalOpen = touchMode === 'rival' && partyReady && !battle.failed && rivals.length > 0
   const closeToMain = () => setTouchChoice({ request: menuRequest, mode: 'main' })
+  const replayPartyOpen = replayTeam === 'player' && partyReady && !battle.failed && members.length > 0
+  const replayRivalOpen = replayTeam === 'rival' && partyReady && !battle.failed && rivals.length > 0
 
   function confirmDialog() {
     const confirmed = dialog
@@ -237,7 +251,18 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                   readOnly={{ prompt: es.battle.party.rivalPrompt(trainer.nameEs), label: es.battle.party.rivalLabel }}
                 />
               )}
-              <div className="bt-underlay" inert={partyOpen || rivalOpen}>
+              {(replayPartyOpen || replayRivalOpen) && (
+                <PartyScreen
+                  members={replayPartyOpen ? members : rivals}
+                  data={data}
+                  forced={false}
+                  enabled
+                  onChoose={() => {}}
+                  onClose={() => setReplayTeam(null)}
+                  readOnly={replayPartyOpen ? { prompt: es.battle.party.playerPrompt, label: es.battle.party.label } : { prompt: es.battle.party.rivalPrompt(trainer.nameEs), label: es.battle.party.rivalLabel }}
+                />
+              )}
+              <div className="bt-underlay" inert={partyOpen || rivalOpen || replayPartyOpen || replayRivalOpen}>
                 <TopScreen view={battle.view} data={data} challenge={challenge} introPhase={battle.introPhase} switchAnim={battle.switchAnim} avatar={avatar} message={message} onAdvance={advance} speed={battle.speed} reducedMotion={reducedMotion} moveFx={reducedMotion ? null : battle.moveFx} />
                 {battle.failed ? (
                   <section role="alert" className="bt-touch bt-error" style={{ height: SCREEN_HEIGHT }}>
@@ -248,7 +273,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                   <>
                   {mode === 'replay' && (
                     <section className="bt-touch bt-replay" style={{ height: SCREEN_HEIGHT }} aria-label={es.battle.modeReplayLabel}>
-                      {controls}
+                      {controls?.(setReplayTeam)}
                     </section>
                   )}
                   {mode !== 'replay' && (

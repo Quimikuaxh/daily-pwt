@@ -4,6 +4,7 @@ import { es } from '../../i18n/es'
 import { esCloud } from '../../i18n/esCloud'
 import { VerifiedIcon } from '../common/VerifiedIcon'
 import './cloud.css'
+import { Loading } from '../common/Loading'
 
 const text = esCloud.ranking
 
@@ -94,7 +95,7 @@ function RankingBody({ available, loading, rows }: { available: boolean; loading
     return <p className="settings-hint">{esCloud.account.offline}</p>
   }
   if (loading) {
-    return <p className="settings-hint" role="status">{es.ranking.loading}</p>
+    return <Loading label={es.ranking.loading} />
   }
   if (rows === null) {
     return <p className="settings-hint" role="alert">{text.failed}</p>

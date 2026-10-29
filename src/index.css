@@ -276,7 +276,15 @@ img.sprite,
 }
 
 /* ---------- Diálogo ---------- */
+/* Con una ventana abierta, la página de detrás no se desplaza (`useScrollLock`). En `html` y en `body`: según el navegador, desplaza uno u otro. */
+.scroll-locked,
+.scroll-locked body {
+  overflow: hidden;
+}
+
 .dialog-backdrop {
+  /* Ni el gesto sobre el fondo ni el que llega al final de la ventana pasan a la página. */
+  overscroll-behavior: contain;
   position: fixed;
   inset: 0;
   z-index: 50;
@@ -330,6 +338,7 @@ img.sprite,
 .modal-body {
   min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
   margin-right: -10px;
   padding-right: 10px;
 }
@@ -344,6 +353,47 @@ img.sprite,
 
 .modal-head .dialog-title {
   margin: 0;
+}
+
+/* Ventanas con datos del servidor: el mismo alto siempre (decisión de Jose, 29/10/2026), cargando o no y en cualquier pestaña; lo que no
+   cabe se desplaza dentro. *Descartado:* reservar al cargar un alto aproximado (salta si el contenido mide otra cosa y al cambiar de pestaña). */
+.stats-dialog,
+.history-list-dialog {
+  height: min(34rem, calc(100dvh - 32px));
+}
+
+/* El contenido ocupa todo el alto: la carga se centra en el hueco libre y la nota final de Rankings queda abajo (no un hueco vacío debajo). */
+:is(.stats-dialog, .history-list-dialog) .modal-body,
+.stats-dialog #stats-tabpanel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.loading {
+  flex: 1;
+}
+
+/* Indicador de carga (`Loading`): Poké Ball que gira a saltos de 90°, centrada en el hueco libre de la ventana. */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 160px;
+  color: #d0d0d0;
+  font-size: 18px;
+}
+
+.loading-ball {
+  animation: loading-spin 0.8s steps(4) infinite;
+}
+
+@keyframes loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ---------- Accesos de la cabecera ---------- */
@@ -533,6 +583,9 @@ img.sprite,
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  /* Hueco para las «g p j y», que `overflow: hidden` cortaría (`descent-override: 0%`), sin cambiar la altura. */
+  padding-bottom: 0.25em;
+  margin-bottom: -0.25em;
   text-align: left;
   /* Como el «#5» de la cabecera: con 18 px, las minúsculas de la fuente de píxel se ven más pequeñas que las cifras de la cuenta atrás. */
   font-size: 22px;
@@ -569,19 +622,16 @@ img.sprite,
 }
 
 .header-badge {
-  /* Dentro del botón (sus esquinas cortadas recortan lo que sobresale). */
+  /* Puntito rojo de solicitudes pendientes: entero dentro del botón, por debajo de la esquina cortada (que recorta lo que pase por ella). */
   position: absolute;
-  top: 1px;
-  right: 1px;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 4px;
-  font-size: 14px;
-  line-height: 18px;
-  color: #f8f8f8;
+  top: 3px;
+  right: 3px;
+  width: 10px;
+  height: 10px;
+  box-sizing: content-box;
   background: #e82848;
-  border: 2px solid #181818;
-  border-radius: 9px;
+  border: 2px solid #f8f8f8;
+  border-radius: 50%;
 }
 
 /* Pestañas de Estadísticas: rótulos, no botones; la elegida, en rojo y subrayada. */
@@ -614,21 +664,28 @@ img.sprite,
 
 /* Bolita naranja con las solicitudes de amistad pendientes (RF-111). */
 .tab-badge {
+  /* Bolita roja con borde y cifra blancos, gruesos (decisión de Jose, 29/10/2026; antes, naranja con borde y cifra negros). */
   display: inline-block;
-  min-width: 20px;
-  height: 20px;
+  /* 25 px: la cifra mide 11 px de alto; con un hueco impar (25 − 4 de borde) queda centrada al píxel. */
+  min-width: 25px;
+  height: 25px;
   margin-left: 6px;
-  padding: 0 5px;
+  /* 1 px menos a la izquierda: el engordado de la cifra (`text-shadow`) le suma 1 px a la derecha. */
+  padding: 0 6px 0 5px;
   box-sizing: border-box;
-  font-size: 14px;
-  line-height: 18px;
+  font-size: 16px;
+  /* Con las métricas de la fuente (los `*-override` de arriba) la cifra cae por debajo del centro: la línea más baja y el hueco de debajo la
+     centran. */
+  line-height: 16px;
+  padding-bottom: 5px;
   text-align: center;
-  vertical-align: 2px;
-  color: #181818;
-  background: #f89030;
-  border: 1px solid #181818;
-  border-radius: 10px;
-  text-shadow: none;
+  vertical-align: 1px;
+  color: #f8f8f8;
+  background: #e82848;
+  border: 2px solid #f8f8f8;
+  border-radius: 13px;
+  /* La fuente de píxel no tiene negrita: la cifra se engorda 1 px a la derecha. */
+  text-shadow: 1px 0 0 #f8f8f8;
 }
 
 .stats-tab:focus-visible {

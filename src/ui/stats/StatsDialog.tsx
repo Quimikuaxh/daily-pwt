@@ -10,6 +10,7 @@ import { Modal } from '../common/Modal'
 import { ShareButton } from '../share/ShareButton'
 import { shareTextFor } from '../share/shareText'
 import { StatsPanel } from './StatsPanel'
+import { Loading } from '../common/Loading'
 
 // Fuera de la ruta crítica (E2E-21): solo se cargan al abrir su pestaña.
 const RankingsPanel = lazy(() => import('./RankingsPanel').then((module) => ({ default: module.RankingsPanel })))
@@ -64,7 +65,7 @@ export function StatsDialog({ store, today, onClose, account, accountState }: St
       )}
       <div id="stats-tabpanel" role={withAccount ? 'tabpanel' : undefined} aria-labelledby={withAccount ? `stats-tab-${tab}` : undefined}>
         {tab === 'mine' && <MyStats store={store} today={today} accountState={accountState} />}
-        <Suspense fallback={<p className="settings-hint" role="status">{es.ranking.loading}</p>}>
+        <Suspense fallback={<Loading label={es.ranking.loading} />}>
         {tab === 'rankings' && account && <RankingsPanel api={account.api} today={today} member={member} />}
         {tab === 'friends' && account &&
           (member && account.api ? (

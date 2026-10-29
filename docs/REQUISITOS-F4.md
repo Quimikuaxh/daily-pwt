@@ -51,7 +51,7 @@ Base: [PRD](PRD.md) §0, «Cuentas, rachas y rankings» (decisiones de Jose del 
 
 ### Amigos
 - RF-110 Solo entre jugadores con cuenta: los que no tienen no salen en la búsqueda ni pueden enviar ni recibir solicitudes. Buscar por nickname (sin distinguir mayúsculas) y enviar solicitud. El otro la acepta o la rechaza; hasta aceptarla no hay amistad. Se puede cancelar una solicitud enviada y quitar a un amigo (desaparece para los dos).
-- RF-111 Pestaña de solicitudes recibidas, con aviso en la cabecera si hay alguna pendiente, y una bolita naranja con su número en la pestaña «Amigos» (decisión de Jose, 28/10/2026; antes, «Amigos (2)»).
+- RF-111 Pestaña de solicitudes recibidas, con aviso en la cabecera si hay alguna pendiente (un puntito rojo sin número en el icono de Estadísticas, entero dentro del botón; el nombre del botón dice cuántas: «Estadísticas (2 solicitudes de amistad pendientes)»; decisión de Jose, 29/10/2026: antes, un globo con el número que la esquina cortada del botón tapaba a medias), y una bolita con su número en la pestaña «Amigos» (decisión de Jose, 28/10/2026; antes, «Amigos (2)»). Las dos, rojas con borde blanco y la cifra blanca, gruesos (decisión de Jose, 29/10/2026; antes, naranja con borde y cifra negros).
 
 ## 3. Decisiones de Jose (27/10/2026)
 - Días importados (RF-97): cuentan para racha y estadísticas, pero no para puntos ni para la media del día (no tienen estados validados).

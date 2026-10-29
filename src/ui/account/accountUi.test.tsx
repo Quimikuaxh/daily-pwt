@@ -51,7 +51,9 @@ describe('cuenta en la interfaz (UT-100)', () => {
 
   it('las solicitudes pendientes se avisan en Estadísticas (RF-111)', async () => {
     await mount(GOOGLE, fakeApi({ mySummary: async () => ({ nickname: 'Jose', registered: true, points: [], incomingRequests: 2 }) }))
-    expect(screen.getByRole('status', { name: '2 solicitudes de amistad pendientes' })).toHaveTextContent('2')
+    // Puntito rojo sin número (decisión de Jose, 29/10/2026): el número lo dice el nombre del botón.
+    const stats = screen.getByRole('button', { name: 'Estadísticas (2 solicitudes de amistad pendientes)' })
+    expect(stats.querySelector('.header-badge')).toHaveTextContent('')
   })
 
   it('Cuenta: nickname cogido avisa y no cambia; cerrar sesión (RF-95, RF-96); Ajustes explica que el historial está en la cuenta', async () => {
@@ -184,7 +186,7 @@ describe('cuenta en la interfaz (UT-100)', () => {
       searchPlayers: async () => [{ nickname: 'Fede', relation: 'none' }],
     })
     const { user } = await mount(GOOGLE, api)
-    await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
+    await user.click(screen.getByRole('button', { name: 'Estadísticas (1 solicitud de amistad pendiente)' }))
     const friendsTab = await screen.findByRole('tab', { name: 'Amigos: 1 solicitud de amistad pendiente' })
     // RF-111: bolita naranja con el número.
     expect(friendsTab.querySelector('.tab-badge')).toHaveTextContent('1')
@@ -196,6 +198,26 @@ describe('cuenta en la interfaz (UT-100)', () => {
     await user.click(screen.getByRole('button', { name: 'Buscar' }))
     await user.click(await screen.findByRole('button', { name: 'Añadir' }))
     expect(api.sendFriendRequest).toHaveBeenCalledWith('Fede')
+  })
+
+  it('mientras cargan, Amigos y Rankings enseñan la Poké Ball de carga en vez de una lista vacía (UT-115, DEC-72)', async () => {
+    let answerFriends = (_rows: never[]) => undefined as void
+    const api = fakeApi({
+      mySummary: async () => ({ nickname: 'Jose', registered: true, points: [], incomingRequests: 0 }),
+      listFriends: () => new Promise((resolve) => (answerFriends = resolve)),
+      pointsRanking: () => new Promise(() => undefined),
+    })
+    const { user } = await mount(GOOGLE, api)
+    await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
+    await user.click(await screen.findByRole('tab', { name: 'Rankings' }))
+    expect((await screen.findByRole('status')).querySelector('.loading-ball')).not.toBeNull()
+    await user.click(screen.getByRole('tab', { name: 'Amigos' }))
+    const loading = await screen.findByText('Cargando…')
+    expect(loading.closest('.loading')?.querySelector('.loading-ball')).not.toBeNull()
+    expect(screen.queryByRole('heading', { name: 'Tus amigos' })).toBeNull()
+    answerFriends([])
+    expect(await screen.findByText('Aún no tienes amigos añadidos.')).toBeInTheDocument()
+    expect(screen.queryByText('Cargando…')).toBeNull()
   })
 
   it('Yo: puntos del mes (solo días cerrados) y, de hoy, los Pokémon en pie hasta el cierre (RF-103, RF-105)', async () => {

@@ -31,6 +31,8 @@ export type HistoryItem = {
   status: 'won' | 'lost'
   turns: number | null
   survivors: number | null
+  /** Debilitados al acabar, en el orden del equipo; `null` en los días que no lo tienen. */
+  playerFainted: boolean[] | null
   sharedId: string | null
 }
 

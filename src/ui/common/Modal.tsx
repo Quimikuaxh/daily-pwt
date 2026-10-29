@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, type KeyboardEvent, type ReactNode } from 'react'
 import { es } from '../../i18n/es'
+import { useScrollLock } from './scrollLock'
 
 type ModalProps = {
   title: string
@@ -15,6 +16,7 @@ export function Modal({ title, onClose, children, className }: ModalProps) {
   const titleId = useId()
   const panelRef = useRef(null as HTMLDivElement | null)
   const closeRef = useRef(null as HTMLButtonElement | null)
+  useScrollLock()
 
   useEffect(() => {
     const previouslyFocused = document.activeElement as HTMLElement | null

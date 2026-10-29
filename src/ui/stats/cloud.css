@@ -57,12 +57,24 @@
   outline-offset: 1px;
 }
 
+/* Rankings: la misma separación entre todos los bloques (selectores, mes, aviso, tabla, páginas y nota) y la nota de días cerrados, al
+   final del alto fijo de la ventana (DEC-72). */
+.rankings-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rankings-panel > .stats-note {
+  margin: auto 0 0;
+}
+
 /* Dos selectores compactos en una fila (se apilan si no caben). */
 .ranking-filters {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 10px;
 }
 
 .segmented {
@@ -107,7 +119,6 @@
   align-items: center;
   justify-content: center;
   gap: 4px;
-  margin-bottom: 4px;
 }
 
 .ranking-month-name {
@@ -135,7 +146,8 @@
 .ranking-table {
   width: 100%;
   font-size: 18px;
-  margin-top: 8px;
+  /* Quita el `border-spacing` de arriba y de abajo: la separación con lo demás la pone el panel. */
+  margin: -4px 0;
   border-collapse: separate;
   border-spacing: 0 4px;
   font-variant-numeric: tabular-nums;
@@ -147,7 +159,6 @@
   align-items: center;
   justify-content: center;
   gap: 4px 8px;
-  margin-top: 8px;
 }
 
 .ranking-page-number {
@@ -192,6 +203,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  /* La fuente no tiene hueco de descendente (`descent-override: 0%`, index.css): sin este margen, `overflow: hidden` corta las «g p j y». */
+  padding-bottom: 0.25em;
+  margin-bottom: -0.25em;
 }
 
 .ranking-verified,

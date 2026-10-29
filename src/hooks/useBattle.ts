@@ -69,6 +69,11 @@ export type BattleParams = {
   /** Velocidad guardada en Ajustes (por defecto x1) y aviso al cambiarla desde el combate, para guardarla. */
   initialSpeed?: BattleSpeed
   onSpeedChange?: (speed: BattleSpeed) => void
+  /**
+   * Visor de repeticiones (RF-128): mientras valga `true`, la presentación se queda en el mensaje o la animación en curso; al quitarla,
+   * sigue desde ahí.
+   */
+  paused?: boolean
   /** Efectos de sonido (DEC-57); por defecto, el motor de la página. Nunca suenan al reproducir un combate guardado. */
   playSfx?: (id: SfxId) => void
 }
@@ -152,6 +157,8 @@ export function useBattle(params: BattleParams): BattleController {
   const moveFxCount = useRef(0)
 
   const wakeRef = useRef(null as (() => void) | null)
+  // Esperas ya cumplidas durante la pausa del visor: se sueltan al quitarla.
+  const heldRef = useRef([] as (() => void)[])
   const skipIntroRef = useRef(false)
   const introRunningRef = useRef(params.replay === undefined)
   const paramsRef = useRef(params)
@@ -163,6 +170,13 @@ export function useBattle(params: BattleParams): BattleController {
     paramsRef.current = params
     speedRef.current = speed
   })
+
+  useEffect(() => {
+    if (params.paused) return
+    const held = heldRef.current
+    heldRef.current = []
+    held.forEach((resume) => resume())
+  }, [params.paused])
 
   useEffect(() => {
     const { client, init } = paramsRef.current
@@ -196,7 +210,8 @@ export function useBattle(params: BattleParams): BattleController {
           clearTimeout(timer)
           timers.delete(timer)
           wakeRef.current = null
-          resolve()
+          if (paramsRef.current.paused) heldRef.current.push(resolve)
+          else resolve()
         }
         const timer = setTimeout(finish, milliseconds / speedRef.current)
         timers.add(timer)

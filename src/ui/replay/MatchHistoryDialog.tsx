@@ -9,6 +9,7 @@ import { MemberIcon } from '../battle/party/MemberIcon'
 // Con la base de la web (`/daily-pwt/` en Pages), como el resto de sprites: las de `data/sprites` sin base apuntan a la raíz del dominio.
 import { trainerMiniSprite, trainerSprite } from '../common/spriteUrls'
 import './replay.css'
+import { Loading } from '../common/Loading'
 
 const text = esReplay.history
 
@@ -106,6 +107,29 @@ function HistoryIcon({ icon }: { icon: keyof typeof HISTORY_ICONS }) {
   )
 }
 
+/**
+ * Copa en píxel (12 × 12) del resultado (decisión de Jose, 29/10/2026): dorada si se ganó; gris y tachada en rojo si no. El lector de
+ * pantalla la lee como «Victoria» o «Derrota».
+ */
+const CUP = {
+  body: 'M2 1h8v1H2zM3 2h6v4H3zM4 6h4v1H4zM5 7h2v1H5zM4 8h4v1H4zM3 9h6v2H3zM1 2h1v2H1zM10 2h1v2H10zM2 4h1v1H2zM9 4h1v1H9z',
+  shade: 'M7 2h2v4H7zM6 6h2v1H6zM6 7h1v1H6zM6 8h2v1H6zM7 9h2v2H7z',
+  shine: 'M4 2h1v2H4z',
+  // Diagonal de 2 px de grueso, de abajo a la izquierda a arriba a la derecha.
+  cross: Array.from({ length: 11 }, (_, step) => `M${step} ${10 - step}h2v1H${step}z`).join(''),
+} as const
+
+function ResultCup({ won }: { won: boolean }) {
+  return (
+    <svg className="history-cup" data-won={won ? 'true' : 'false'} viewBox="0 0 12 12" width="24" height="24" role="img" aria-label={won ? text.won : text.lost} shapeRendering="crispEdges">
+      <path className="history-cup-body" d={CUP.body} />
+      <path className="history-cup-shade" d={CUP.shade} />
+      <path className="history-cup-shine" d={CUP.shine} />
+      {!won && <path className="history-cup-cross" d={CUP.cross} />}
+    </svg>
+  )
+}
+
 /** Sprite de mapa del rival, número, fecha, nombre y resultado, y los iconos de caja de los 6 del equipo. */
 function HistoryItemHeader({ item, name, art, children }: { item: HistoryItem; name: string; art: HistoryArt | null; children: React.ReactNode }) {
   return (
@@ -119,12 +143,16 @@ function HistoryItemHeader({ item, name, art, children }: { item: HistoryItem; n
         <p className="history-item-title">
           {text.item(item.challengeNumber, shortDate(item.date))} · {name}
         </p>
-        <p className="history-item-result">{item.status === 'won' ? text.won(item.turns ?? 0, item.survivors ?? 0) : text.lost(item.turns ?? 0)}</p>
+        <p className="history-item-result">
+          <ResultCup won={item.status === 'won'} />
+          {text.turns(item.turns ?? 0)}
+          {item.status === 'won' && ` · ${text.alive(item.survivors ?? 0)}`}
+        </p>
       </div>
       {art && (
         <div className="history-item-team" aria-hidden="true">
           {art.team.map((spriteId, index) => (
-            <MemberIcon key={`${spriteId}-${index}`} spriteId={spriteId} />
+            <MemberIcon key={`${spriteId}-${index}`} spriteId={spriteId} dimmed={item.playerFainted?.[index] ?? false} />
           ))}
         </div>
       )}
@@ -151,7 +179,7 @@ function HistoryBody({ api, items, failed, children }: { api: CloudApi | null; i
     return <p className="settings-hint" role="alert">{text.failed}</p>
   }
   if (items === null) {
-    return <p className="settings-hint" role="status">{text.loading}</p>
+    return <Loading label={text.loading} />
   }
   if (items.length === 0) {
     return <p className="settings-hint">{text.empty}</p>

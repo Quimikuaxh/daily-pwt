@@ -481,6 +481,18 @@ describe('historial y repeticiones (UT-105)', () => {
     await expect(t.call(player, `select pwt.get_my_replay($1::date)`, [addDays(t.today, -30)])).rejects.toThrow('replay_not_found')
   })
 
+  it('el historial trae los debilitados del equipo, en su orden (null si el día no los tiene)', async () => {
+    const player = await t.user()
+    const [fainted, without] = [addDays(t.today, -2), addDays(t.today, -1)]
+    for (const date of [fainted, without]) {
+      await finished(player, date)
+      await t.as(player, `select pwt.save_replay($1::date, 'x')`, [date])
+    }
+    await t.admin(`update pwt.day_results set player_fainted = '{true,false,false,true,false,false}' where user_id = $1 and date = $2::date`, [player.id, fainted])
+    const history = await t.call<Array<Record<string, unknown>>>(player, `select pwt.my_history()`)
+    expect(history.map((entry) => entry.playerFainted)).toEqual([null, [true, false, false, true, false, false]])
+  })
+
   it('no guarda de un día sin terminar, de otro jugador ni datos vacíos o enormes', async () => {
     const [player, other] = [await t.user(), await t.user()]
     await t.call(player, START, [t.today])

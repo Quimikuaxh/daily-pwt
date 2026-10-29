@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { getAudio } from '../../audio/audio'
 import { getDailyChallenge } from '../../core/challenge'
 import type { ReplayData, ReplayStep } from '../../replay/replayData'
 import { DEFAULT_SETTINGS } from '../../storage/settings'
@@ -39,13 +40,13 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
-async function mount(onDelete?: () => void) {
+async function mount(onDelete?: () => void, shown: ReplayData = replay) {
   const onExit = vi.fn()
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-  render(<ReplayViewer replay={replay} data={data} settings={DEFAULT_SETTINGS} onExit={onExit} onDelete={onDelete} />)
+  const { unmount } = render(<ReplayViewer replay={shown} data={data} settings={DEFAULT_SETTINGS} onExit={onExit} onDelete={onDelete} />)
   await settle()
   const controls = () => screen.getByRole('group', { name: 'Controles de la repetición' })
-  return { user, onExit, controls }
+  return { user, onExit, controls, unmount }
 }
 
 describe('visor de repeticiones (UT-107)', () => {
@@ -121,6 +122,70 @@ describe('visor de repeticiones (UT-107)', () => {
     for (let second = 0; second < 15; second++) await settle(1_000)
     expect(screen.getByText(/^Victoria/)).toBeInTheDocument()
     expect(within(controls()).getByRole('button', { name: 'Reproducir' })).toBeDisabled()
+  })
+
+  it('«Pausa» a mitad de un turno lo deja quieto en el mensaje de ese momento; «Reproducir» sigue desde ahí', async () => {
+    // Un turno con los dos movimientos: dos mensajes seguidos.
+    const twoMoves = ['|move|p1a: Garchomp|Earthquake|p2a: Snorlax', '|-damage|p2a: Snorlax|70/100', '|move|p2a: Snorlax|Body Slam|p1a: Garchomp', '|-damage|p1a: Garchomp|100/150', '|turn|2']
+    const { user, controls } = await mount(undefined, { ...replay, steps: replay.steps.map((step, index) => (index === 1 ? { ...step, lines: twoMoves } : step)) })
+    await user.click(within(controls()).getByRole('button', { name: 'Reproducir' }))
+    await settle(800)
+    expect(screen.getByText('Turno 1 de 3')).toBeInTheDocument()
+    expect(document.querySelector('.bt-message-text')?.textContent).toMatch(/Garchomp/)
+    await user.click(within(controls()).getByRole('button', { name: 'Pausa' }))
+    const message = () => document.querySelector('.bt-message-text')?.textContent
+    const shownAtPause = message()
+    await settle(10_000)
+    expect(message()).toBe(shownAtPause)
+    expect(screen.getByText('Turno 1 de 3')).toBeInTheDocument()
+    await user.click(within(controls()).getByRole('button', { name: 'Reproducir' }))
+    for (let second = 0; second < 5; second++) await settle(1_000)
+    expect(message()).not.toBe(shownAtPause)
+  })
+
+  it('la música sigue al saltar de turno (no vuelve a empezar) y se para al salir del visor', async () => {
+    const audio = getAudio()
+    const stopMusic = vi.spyOn(audio, 'stopMusic')
+    const { user, controls, unmount } = await mount()
+    for (const button of ['Turno siguiente', 'Turno siguiente', 'Turno anterior', 'Al final', 'Al principio']) {
+      await user.click(within(controls()).getByRole('button', { name: button }))
+      await settle(50)
+    }
+    expect(stopMusic).not.toHaveBeenCalled()
+    unmount()
+    expect(stopMusic).toHaveBeenCalled()
+    stopMusic.mockRestore()
+  })
+
+  it('«Tu equipo» y «Rival» abren la pantalla de equipo de cada bando, solo para consultar (con Datos, sin Cambiar) (UT-117)', async () => {
+    const { user, controls } = await mount()
+    await user.click(within(controls()).getByRole('button', { name: 'Turno siguiente' }))
+    await settle(50)
+    await user.click(screen.getByRole('button', { name: 'Tu equipo' }))
+    const team = await screen.findByRole('region', { name: 'Equipo' })
+    const panels = within(team).getAllByRole('button').filter((button) => button.classList.contains('bt-party-panel'))
+    expect(panels).toHaveLength(6)
+    expect(panels[0]).toHaveAccessibleName(/150\/150/)
+    await user.click(panels[0])
+    const options = screen.getByRole('group', { name: /Qué hacer con/ })
+    expect(within(options).queryByRole('button', { name: 'Cambiar' })).toBeNull()
+    expect(within(options).getByRole('button', { name: 'Datos' })).toBeInTheDocument()
+    await user.click(within(options).getByRole('button', { name: 'Cancelar' }))
+    await user.keyboard('{Escape}')
+    expect(screen.queryByRole('region', { name: 'Equipo' })).toBeNull()
+    await user.click(screen.getByRole('button', { name: 'Rival' }))
+    const rival = await screen.findByRole('region', { name: 'Equipo rival' })
+    // El rival, entero, con los PS de ese momento de la repetición (Snorlax al 70 % tras el turno 1).
+    const rivalPanels = within(rival).getAllByRole('button').filter((button) => button.classList.contains('bt-party-panel'))
+    expect(rivalPanels).toHaveLength(6)
+    expect(rivalPanels[0]).toHaveAccessibleName(/70 %/)
+  })
+
+  it('el botón del equipo dice «Equipo» si la repetición es de otro jugador', async () => {
+    render(<ReplayViewer replay={replay} data={data} settings={DEFAULT_SETTINGS} onExit={vi.fn()} own={false} />)
+    await settle()
+    expect(screen.getByRole('button', { name: 'Equipo' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Tu equipo' })).toBeNull()
   })
 
   it('«Borrar enlace» solo si se le pasa (quien la compartió)', async () => {

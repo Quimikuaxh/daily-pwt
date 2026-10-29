@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { calcStats } from '../../../core/stats'
 import { es } from '../../../i18n/es'
 import iconIndex from '../../../generated/icon-index.json'
-import { memberHpText, partyMembers, rivalMembers } from './partyModel'
+import { memberHpText, partyMembers, requestFromView, rivalMembers } from './partyModel'
 import { dexNumberText } from './summaryModel'
 import { realChallenge, realData, realRequest, realTeam, realView } from './partyFixtures'
 
@@ -35,6 +35,15 @@ describe('partyMembers', () => {
     expect(first.moves.map((move) => move.name)).toEqual(set.moves.map((id) => realData.names.moves[id]))
     expect(first.natureName).toBe((es.battle.summary.natures as Record<string, string>)[set.nature])
     expect(first.natureName).not.toBe(set.nature)
+  })
+
+  it('el objeto es el que lleva en ese momento según el combate (UT-114: Truco, Desarme); sin ese dato, el del set', () => {
+    const base = realView()
+    const withItems = (items: (string | undefined)[]) => ({ ...base, player: { ...base.player, team: base.player.team.map((mon, index) => ({ ...mon, item: items[index] })) } })
+    const result = partyMembers(realRequest(), withItems(['leftovers', '', undefined]), realData, realTeam)
+    expect(result[0].itemName).toBe(realData.names.items.leftovers)
+    expect(result[1].itemName).toBe(es.battle.summary.noItem)
+    expect(result[2].itemName).toBe(realData.names.items[realTeam[2].item])
   })
 
   it('los PP salen del estado del combate (movimientos usados bajan los PP actuales)', () => {
@@ -101,6 +110,21 @@ describe('partyMembers', () => {
   })
 })
 
+// UT-117 · Visor de repeticiones: las placas del jugador salen de la vista grabada (no hay petición del simulador).
+describe('requestFromView', () => {
+  it('da los mismos datos que la petición real: orden, PS, estado, debilitado y activo', () => {
+    const base = realView()
+    const view = { ...base, player: { ...base.player, active: 1, team: base.player.team.map((mon, index) => (index === 0 ? { ...mon, hp: 0, hpPercent: 0, fainted: true } : index === 2 ? { ...mon, hp: 60, status: 'par' } : mon)) } }
+    const members = partyMembers(requestFromView(view, realTeam), view, realData, realTeam)
+    expect(members.map((member) => member.speciesId)).toEqual(realTeam.map((set) => set.species))
+    expect(members[0]).toMatchObject({ fainted: true, hp: 0, active: false })
+    expect(members[1]).toMatchObject({ active: true, fainted: false })
+    expect(members[2]).toMatchObject({ hp: 60, status: 'par', maxHp: view.player.team[2].maxHp })
+    expect(members[3].stats).toEqual(partyMembers(realRequest(), realView(), realData, realTeam)[3].stats)
+    expect(requestFromView(null, realTeam)).toBeNull()
+  })
+})
+
 // UT-68 · Equipo rival (botón RIVAL, decisiones de Jose del 22/10/2026).
 describe('rivalMembers', () => {
   const rivalTeam = realChallenge.rivalTeam
@@ -121,6 +145,15 @@ describe('rivalMembers', () => {
       },
     }
   }
+
+  it('el objeto del rival es el que lleva en ese momento (UT-114); sin ese dato, el del set', () => {
+    const base = view()
+    const changed = { ...base, rival: { ...base.rival, team: base.rival.team.map((mon, index) => (index === 0 ? { ...mon, item: 'choicescarf' } : index === 1 ? { ...mon, item: '' } : mon)) } }
+    const members = rivalMembers(changed, realData, rivalTeam)
+    expect(members[0].itemName).toBe(realData.names.items.choicescarf)
+    expect(members[1].itemName).toBe(es.battle.summary.noItem)
+    expect(members[2].itemName).toBe(realData.names.items[rivalTeam[2].item] ?? es.battle.summary.noItem)
+  })
 
   it('los 6 en el orden del equipo rival, con su set completo y estadísticas reales', () => {
     const members = rivalMembers(view(), realData, rivalTeam)

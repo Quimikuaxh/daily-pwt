@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
+import { getAudio } from '../../audio/audio'
 import type { GameData } from '../../core/types'
 import { es } from '../../i18n/es'
 import { esReplay } from '../../i18n/esReplay'
 import { ReplayClient } from '../../replay/replayClient'
 import type { ReplayData } from '../../replay/replayData'
 import type { Settings } from '../../storage/settings'
-import { BattleScreen } from '../battle/BattleScreen'
+import { BattleScreen, type ReplayTeam } from '../battle/BattleScreen'
 import './replay.css'
 
 const text = esReplay.viewer
@@ -19,6 +20,8 @@ type ReplayViewerProps = {
   onExit: () => void
   /** Solo si la ve quien la compartió (RF-133): «Borrar enlace». */
   onDelete?: () => void
+  /** La repetición es de quien la ve: su botón dice «Tu equipo»; si no, «Equipo». */
+  own?: boolean
 }
 
 /**
@@ -49,7 +52,7 @@ const turnShownAt = (replay: ReplayData, index: number) => (index === 0 ? 0 : re
  * Avanzar emite los pasos del turno siguiente, con sus mensajes y animaciones. Ir atrás o saltar vuelve a montar la pantalla en ese paso
  * con el avance rápido de la reanudación (sin animación ni intro). «Reproducir» avanza solo al terminar cada turno.
  */
-export function ReplayViewer({ replay, data, settings, onExit, onDelete }: ReplayViewerProps) {
+export function ReplayViewer({ replay, data, settings, onExit, onDelete, own = true }: ReplayViewerProps) {
   const last = replay.steps.length - 1
   // `start`: paso en el que se monta la pantalla; `mount` la vuelve a montar aunque el paso sea el mismo.
   const [position, setPosition] = useState({ start: 0, mount: 0 })
@@ -119,6 +122,12 @@ export function ReplayViewer({ replay, data, settings, onExit, onDelete }: Repla
     return () => clearTimeout(pending)
   }, [playing, busy, shown, last, settings.speed])
 
+  // La música del rival la arranca la pantalla de combate y sigue entre saltos (cada salto la vuelve a montar); se para al salir del visor.
+  useEffect(() => {
+    const audio = getAudio()
+    return () => audio.stopMusic()
+  }, [])
+
   const ended = replay.ended
   const atEnd = shown === last && !busy
   const turn = busy && playingFrom !== null ? replay.steps[playingFrom].view.turn : turnShownAt(replay, shown)
@@ -133,7 +142,7 @@ export function ReplayViewer({ replay, data, settings, onExit, onDelete }: Repla
       battleSeed={replay.battleSeed}
       ai={replay.ai}
       mode="replay"
-      controls={
+      controls={(openTeam) => (
         <ReplayControls
           label={atEnd ? (resultText(replay) ?? text.turnOf(totalTurns, totalTurns)) : turn === 0 ? text.intro : text.turnOf(turn, totalTurns)}
           atStart={shown === 0}
@@ -149,11 +158,15 @@ export function ReplayViewer({ replay, data, settings, onExit, onDelete }: Repla
           onEnd={() => seek(last)}
           onExit={onExit}
           onDelete={onDelete}
+          playerTeamLabel={own ? text.ownTeam : text.playerTeam}
+          onTeam={openTeam}
         />
-      }
+      )}
       // Saltar a un paso: el avance rápido de la reanudación emite y pinta los pasos hasta él, sin animación ni intro.
       replay={position.start > 0 ? { decisions: Array.from({ length: position.start }, () => ({ type: 'move' as const, slot: 1 })), expected: null } : undefined}
       onSettled={settled}
+      // «Pausa» a mitad de un turno lo deja quieto en ese mensaje (RF-128); «Reproducir» lo sigue desde ahí.
+      paused={!playing && playingFrom !== null}
       onFinish={() => {
         setShown(last)
         setBusy(false)
@@ -190,22 +203,30 @@ type ReplayControlsProps = {
   onEnd: () => void
   onExit: () => void
   onDelete?: () => void
+  playerTeamLabel: string
+  /** Abre la pantalla de equipo de un bando (decisión de Jose, 29/10/2026: dos botones, el rival entero). */
+  onTeam: (side: ReplayTeam) => void
 }
 
-/** Iconos en píxel (viewBox de 10 × 10, como los de la cabecera), centrados en su botón. */
+/**
+ * Iconos en píxel (viewBox de 10 × 10, como los de la cabecera), centrados en su botón. «Turno anterior» y «Al principio» son el espejo de
+ * «Turno siguiente» y «Al final»: el mismo dibujo invertido (decisión de Jose, 29/10/2026).
+ */
 const ICONS = {
-  start: 'M1 1h2v8H1zM8 1h1v8H8zM7 2h1v6H7zM6 3h1v4H6zM5 4h1v2H5z',
-  previous: 'M7 1h1v8H7zM6 2h1v6H6zM5 3h1v4H5zM4 4h1v2H4z',
   play: 'M3 1h1v8H3zM4 2h1v6H4zM5 3h1v4H5zM6 4h1v2H6z',
   pause: 'M2 1h2v8H2zM6 1h2v8H6z',
   next: 'M1 1h1v8H1zM2 2h1v6H2zM3 3h1v4H3zM4 4h1v2H4zM5 1h1v8H5zM6 2h1v6H6zM7 3h1v4H7zM8 4h1v2H8z',
   end: 'M1 1h1v8H1zM2 2h1v6H2zM3 3h1v4H3zM4 4h1v2H4zM7 1h2v8H7z',
 } as const
 
-function ControlIcon({ icon }: { icon: keyof typeof ICONS }) {
+const MIRRORED = { previous: 'next', start: 'end' } as const
+
+function ControlIcon({ icon }: { icon: keyof typeof ICONS | keyof typeof MIRRORED }) {
+  const mirrored = icon in MIRRORED
+  const path = ICONS[mirrored ? MIRRORED[icon as keyof typeof MIRRORED] : (icon as keyof typeof ICONS)]
   return (
     <svg className="rp-icon" viewBox="0 0 10 10" width="20" height="20" aria-hidden="true" shapeRendering="crispEdges">
-      <path d={ICONS[icon]} fill="currentColor" />
+      <path d={path} fill="currentColor" transform={mirrored ? 'matrix(-1 0 0 1 10 0)' : undefined} />
     </svg>
   )
 }
@@ -232,7 +253,10 @@ function ReplayControls(props: ReplayControlsProps) {
         </div>
       </div>
       <div className="rp-actions">
+        {/* Rival a la izquierda, Volver en el centro y el equipo del jugador a la derecha (decisión de Jose, 29/10/2026). */}
+        <button type="button" className="rp-text-button" onClick={() => props.onTeam('rival')}>{text.rivalTeam}</button>
         <button type="button" className="rp-text-button" onClick={props.onExit}>{es.battle.back}</button>
+        <button type="button" className="rp-text-button" onClick={() => props.onTeam('player')}>{props.playerTeamLabel}</button>
         {props.onDelete && <button type="button" className="rp-text-button rp-danger" onClick={props.onDelete}>{text.deleteLink}</button>}
       </div>
     </div>

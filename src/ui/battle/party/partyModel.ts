@@ -78,7 +78,8 @@ const STAT_FROM_REQUEST: Record<keyof StatsTable, string> = { hp: 'hp', atk: 'at
 
 /**
  * Los 6 Pokémon del jugador en el orden del simulador (el mismo que usan los botones de cambio), con sus datos reales a Nv. 50.
- * Objeto, habilidad, naturaleza y movimientos salen del set resuelto del reto (`team`); si el set no está (no ocurre en una partida real)
+ * El objeto es el que lleva en ese momento (la vista: cambia con Truco, Desarme o al gastarlo). Habilidad, naturaleza y movimientos salen
+ * del set resuelto del reto (`team`); si el set no está (no ocurre en una partida real)
  * se cae a lo que trae el propio request del simulador.
  */
 export function partyMembers(request: BattleRequest | null, view: BattleView | null, data: GameData, team: readonly ResolvedSet[]): PartyMember[] {
@@ -96,7 +97,8 @@ export function partyMembers(request: BattleRequest | null, view: BattleView | n
     const stats = set
       ? calcStats(species.baseStats, set.ivs, set.evs, set.nature, level)
       : ({ hp: condition.maxHp, ...Object.fromEntries(STAT_KEYS.filter((key) => key !== 'hp').map((key) => [key, requestStats?.[STAT_FROM_REQUEST[key]] ?? 0])) } as StatsTable)
-    const itemId = set?.item ?? member.item ?? ''
+    // El que lleva ahora (Truco, Desarme, bayas…); sin vista, el del set.
+    const itemId = view?.player.team.find((mon) => mon.species === speciesId)?.item ?? set?.item ?? member.item ?? ''
     const abilityId = set?.ability ?? member.baseAbility ?? ''
     // Debilitado, el simulador manda «0 fnt» sin PS máximos: se toman de las estadísticas.
     const maxHp = condition.maxHp || stats.hp
@@ -117,7 +119,7 @@ export function partyMembers(request: BattleRequest | null, view: BattleView | n
         active: member.active,
         canSendOut: !condition.fainted && !member.active,
         types: species.types.map((typeName) => ({ id: typeName, label: data.names.types[typeName] ?? typeName })),
-        itemName: data.names.items[itemId] ?? (itemId ? es.log.unknownItem : es.battle.summary.noItem),
+        itemName: itemNameOf(itemId, data),
         abilityName: data.names.abilities[abilityId] ?? es.log.unknownAbility,
         abilityId,
         natureName: (es.battle.summary.natures as Record<string, string>)[nature] ?? nature,
@@ -128,6 +130,25 @@ export function partyMembers(request: BattleRequest | null, view: BattleView | n
       },
     ]
   })
+}
+
+/**
+ * Visor de repeticiones (F5): las repeticiones no guardan la petición del simulador, de donde salen las placas del jugador. Se monta una
+ * equivalente con la vista grabada (mismo orden, PS reales, estado y activo); nivel y género, del set.
+ */
+export function requestFromView(view: BattleView | null, team: readonly ResolvedSet[]): BattleRequest | null {
+  if (!view) return null
+  return {
+    side: {
+      name: '',
+      id: 'p1',
+      pokemon: view.player.team.map((mon, index) => {
+        const set = team.find((candidate) => candidate.species === mon.species)
+        const condition = mon.fainted ? '0 fnt' : `${mon.hp ?? 0}/${mon.maxHp ?? 0}${mon.status ? ` ${mon.status}` : ''}`
+        return { ident: `p1: ${mon.species}`, details: `${mon.species}, L${set?.level ?? 50}${set?.gender ? `, ${set.gender}` : ''}`, condition, active: view.player.active === index }
+      }),
+    },
+  }
 }
 
 /**
@@ -159,7 +180,7 @@ export function rivalMembers(view: BattleView | null, data: GameData, team: read
         active: view?.rival.active === index,
         canSendOut: false,
         types: species.types.map((typeName) => ({ id: typeName, label: data.names.types[typeName] ?? typeName })),
-        itemName: data.names.items[set.item] ?? (set.item ? es.log.unknownItem : es.battle.summary.noItem),
+        itemName: itemNameOf(mon?.item ?? set.item, data),
         abilityName: data.names.abilities[set.ability] ?? es.log.unknownAbility,
         abilityId: set.ability,
         natureName: (es.battle.summary.natures as Record<string, string>)[set.nature] ?? set.nature,
@@ -171,6 +192,8 @@ export function rivalMembers(view: BattleView | null, data: GameData, team: read
     ]
   })
 }
+
+const itemNameOf = (itemId: string, data: GameData): string => data.names.items[itemId] ?? (itemId ? es.log.unknownItem : es.battle.summary.noItem)
 
 /** PS de un miembro como texto: «97/152» los propios; «64 %» los del rival. */
 export const memberHpText = (member: Pick<PartyMember, 'hp' | 'maxHp' | 'hpPercentOnly'>): string =>
