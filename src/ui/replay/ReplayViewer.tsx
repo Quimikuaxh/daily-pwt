@@ -63,6 +63,10 @@ export function ReplayViewer({ replay, data, settings, onExit, onDelete, own = t
   // Paso desde el que se está reproduciendo un turno (para el rótulo y para terminarlo al instante); `null` en reposo, en la intro o al saltar.
   const [playingFrom, setPlayingFrom] = useState(null as number | null)
   const targetRef = useRef(0)
+  // Paso que la pantalla presenta en el próximo `onSettled`: llegan uno por paso y en orden, y tras montar en `start` el primero es ese.
+  // No vale `client.emitted`: «Reproducir» emite de golpe todos los pasos del turno (con un cambio forzado son dos) y la pantalla los va
+  // presentando después; contar por lo emitido daba el turno por terminado al presentar el primero.
+  const presentedRef = useRef(0)
   const [rests] = useState(() => restSteps(replay))
   const nextRest = (index: number) => nextRestOf(rests, index, last)
   const previousRest = (index: number) => previousRestOf(rests, index)
@@ -70,6 +74,7 @@ export function ReplayViewer({ replay, data, settings, onExit, onDelete, own = t
   function seek(step: number) {
     setPlayingFrom(null)
     targetRef.current = step
+    presentedRef.current = step
     setShown(step)
     setBusy(true)
     setClient(new ReplayClient(replay.steps))
@@ -103,7 +108,8 @@ export function ReplayViewer({ replay, data, settings, onExit, onDelete, own = t
   }
 
   function settled() {
-    const reached = client.emitted - 1
+    const reached = presentedRef.current
+    presentedRef.current += 1
     setShown(reached)
     if (reached === targetRef.current) {
       setBusy(false)

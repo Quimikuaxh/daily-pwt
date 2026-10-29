@@ -109,6 +109,39 @@ describe('visor de repeticiones (UT-107)', () => {
   })
 
 
+  // Un KO con cambio forzado deja el turno en dos pasos (el golpe y el que sale). El rótulo no pasa al turno siguiente hasta que se ha
+  // enseñado el cambio, y «Reproducir» no arranca el siguiente turno antes (antes contaba por lo emitido y adelantaba un turno).
+  it('con un cambio forzado, el turno no avanza hasta enseñar al que sale y no se salta ningún mensaje', async () => {
+    const fainted = mkView({ turn: 1, player: SIX.map((s, i) => pMon(s, i === 0 ? 0 : 150, 150)), rival: RSIX.map((s) => rMon(s)) }) as ReplayStep['view']
+    const switched = (turn: number, rivalHp = 100) =>
+      mkView({ turn, pActive: 1, player: SIX.map((s, i) => pMon(s, i === 0 ? 0 : 150, 150)), rival: RSIX.map((s, i) => (i === 0 ? rMon(s, rivalHp) : rMon(s))) }) as ReplayStep['view']
+    const ended = { ...ENDED, turns: 2, playerAlive: 5 }
+    const forced: ReplayData = {
+      ...replay,
+      steps: [
+        { lines: [], view: view(1) },
+        { lines: ['|move|p2a: Snorlax|Body Slam|p1a: Garchomp', '|-damage|p1a: Garchomp|0 fnt', '|faint|p1a: Garchomp'], view: fainted },
+        { lines: ['|switch|p1a: Starmie|Starmie, L50|150/150', '|turn|2'], view: switched(2) },
+        { lines: ['|move|p1a: Starmie|Surf|p2a: Snorlax', '|-damage|p2a: Snorlax|50/100', '|turn|3'], view: switched(3, 50) },
+        { lines: ['|win|Jugador'], view: switched(3, 0), ended },
+      ],
+      ended,
+    }
+    const { user, controls } = await mount(undefined, forced)
+    await user.click(within(controls()).getByRole('button', { name: 'Reproducir' }))
+    const seen: string[] = []
+    for (let tick = 0; tick < 400 && !screen.queryByText(/^Victoria/); tick++) {
+      await settle(100)
+      const message = document.querySelector('.bt-message-text')?.textContent ?? ''
+      const label = document.querySelector('.rp-turn')?.textContent ?? ''
+      if (/Adelante, Starmie/.test(message)) expect(label).toBe('Turno 1 de 2')
+      if (/Starmie usó Surf/.test(message)) expect(label).toBe('Turno 2 de 2')
+      if (seen.at(-1) !== message) seen.push(message)
+    }
+    expect(screen.getByText(/^Victoria/)).toBeInTheDocument()
+    for (const expected of [/Garchomp se ha debilitado/, /Adelante, Starmie/, /Starmie usó Surf/]) expect(seen.some((m) => expected.test(m)), String(expected)).toBe(true)
+  })
+
   it('reproducir avanza solo hasta el final; pausa lo para', async () => {
     const { user, controls } = await mount()
     await user.click(within(controls()).getByRole('button', { name: 'Reproducir' }))
