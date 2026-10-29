@@ -165,6 +165,7 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
   const menu: MenuContext = {
     trainerName: (trainerId) => data?.trainers.find((trainer) => trainer.id === trainerId)?.nameEs ?? trainerId,
     onWatchReplay: (date) => setScreen({ name: 'replay', source: { kind: 'mine', date } }),
+    onWatchFriendReplay: (nickname, date) => setScreen({ name: 'replay', source: { kind: 'friend', nickname, date } }),
     historyArt: (item) => historyArtFor(item, data),
     store,
     account: account ?? undefined,

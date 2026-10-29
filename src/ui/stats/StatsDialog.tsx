@@ -1,20 +1,18 @@
 import { lazy, Suspense, useState } from 'react'
 import type { Account } from '../../cloud/account'
+import type { HistoryItem } from '../../cloud/api'
+import type { HistoryArt } from '../replay/historyArt'
 import { isPlayer, type AccountState } from '../../cloud/state'
-import type { DayPoints } from '../../cloud/api'
-import { TEAM_SIZE } from '../../core/constants'
 import { es } from '../../i18n/es'
-import type { DayRecord, GameStore } from '../../storage/gameStore'
-import { computeStats } from '../../storage/playerStats'
+import type { GameStore } from '../../storage/gameStore'
 import { Modal } from '../common/Modal'
-import { ShareButton } from '../share/ShareButton'
-import { shareTextFor } from '../share/shareText'
-import { StatsPanel } from './StatsPanel'
+import { StatsSummary } from './StatsSummary'
 import { Loading } from '../common/Loading'
 
 // Fuera de la ruta crítica (E2E-21): solo se cargan al abrir su pestaña.
 const RankingsPanel = lazy(() => import('./RankingsPanel').then((module) => ({ default: module.RankingsPanel })))
 const FriendsPanel = lazy(() => import('./FriendsPanel').then((module) => ({ default: module.FriendsPanel })))
+const FriendView = lazy(() => import('./FriendView').then((module) => ({ default: module.FriendView })))
 
 type StatsDialogProps = {
   store: GameStore
@@ -24,13 +22,19 @@ type StatsDialogProps = {
   /** F4: con cuenta configurada, pestañas de Rankings y Amigos (decisión de Jose: dentro de Estadísticas). */
   account?: Account
   accountState?: AccountState
+  /** Historial de un amigo con sus repeticiones (decisión de Jose, 29/10/2026). Sin ellos, de un amigo solo se ven sus estadísticas. */
+  trainerName?: (trainerId: string) => string
+  historyArt?: (item: HistoryItem) => HistoryArt | null
+  onWatchFriendReplay?: (nickname: string, date: string) => void
 }
 
 type Tab = 'mine' | 'rankings' | 'friends'
 
 /** Estadísticas sobre el historial de oficiales y, si el de hoy ya terminó, su botón de compartir; con cuenta, también rankings y amigos. */
-export function StatsDialog({ store, today, onClose, account, accountState }: StatsDialogProps) {
+export function StatsDialog({ store, today, onClose, account, accountState, trainerName, historyArt, onWatchFriendReplay }: StatsDialogProps) {
   const [tab, setTab] = useState('mine' as Tab)
+  // Amigo abierto en la pestaña Amigos; al cambiar de pestaña se vuelve a la lista.
+  const [friend, setFriend] = useState(null as string | null)
   const withAccount = Boolean(account && accountState && accountState.status !== 'disabled')
   const member = accountState?.status === 'signedIn'
   const pending = accountState && isPlayer(accountState) ? (accountState.summary?.incomingRequests ?? 0) : 0
@@ -55,7 +59,10 @@ export function StatsDialog({ store, today, onClose, account, accountState }: St
               aria-controls="stats-tabpanel"
               className="stats-tab"
               aria-label={option.accessibleName}
-              onClick={() => setTab(option.id)}
+              onClick={() => {
+                setTab(option.id)
+                setFriend(null)
+              }}
             >
               {option.label}
               {option.badge !== undefined && <span className="tab-badge" aria-hidden="true">{option.badge}</span>}
@@ -69,7 +76,11 @@ export function StatsDialog({ store, today, onClose, account, accountState }: St
         {tab === 'rankings' && account && <RankingsPanel api={account.api} today={today} member={member} />}
         {tab === 'friends' && account &&
           (member && account.api ? (
-            <FriendsPanel api={account.api} onChange={() => void account.refreshSummary()} />
+            friend ? (
+              <FriendView api={account.api} nickname={friend} today={today} onBack={() => setFriend(null)} trainerName={trainerName} art={historyArt} onWatch={onWatchFriendReplay} />
+            ) : (
+              <FriendsPanel api={account.api} onChange={() => void account.refreshSummary()} onOpen={setFriend} />
+            )
           ) : (
             <p className="settings-hint">{es.friends.signIn}</p>
           ))}
@@ -79,40 +90,15 @@ export function StatsDialog({ store, today, onClose, account, accountState }: St
   )
 }
 
-const pointsOfMonth = (points: DayPoints[], today: string) => points.filter((day) => day.date.startsWith(today.slice(0, 7))).reduce((total, day) => total + day.points, 0)
-
-const finishedOn = (date: string) => (day: DayRecord) => day.date === date && (day.status === 'won' || day.status === 'lost')
-
 function MyStats({ store, today, accountState }: { store: GameStore; today: string; accountState?: AccountState }) {
-  const days = store.listDays()
-  const stats = computeStats(days, today)
-  const text = shareTextFor(days, today)
   const summary = accountState && isPlayer(accountState) ? accountState.summary : null
-  const monthPoints = pointsOfMonth(summary?.points ?? [], today)
-  // Los puntos de hoy no existen hasta el cierre del día (medianoche de Madrid): se enseña con cuántos Pokémon acabó el oficial.
-  const todayRecord = days.find(finishedOn(today))
-
   return (
-    <>
-      {stats.played === 0 ? <p className="dialog-body">{es.stats.empty}</p> : <StatsPanel stats={stats} />}
-      {summary && (
-        <dl className="stats-totals stats-points">
-          <div className="stats-cell">
-            <dt>{es.ranking.monthPoints}</dt>
-            <dd data-testid="stats-month-points">{es.ranking.formatPoints(monthPoints)}</dd>
-          </div>
-          {todayRecord && (
-            <div className="stats-cell">
-              <dt>{es.ranking.todaySurvivors}</dt>
-              <dd data-testid="stats-today-survivors">{es.ranking.survivors(todayRecord.status === 'won' ? (todayRecord.survivors ?? 0) : 0, TEAM_SIZE)}</dd>
-            </div>
-          )}
-        </dl>
-      )}
-      {summary && todayRecord && <p className="stats-note">{es.ranking.todayPending}</p>}
-      {summary && <p className="stats-note">{es.ranking.pointsHint}</p>}
-      {text && <ShareButton text={text} />}
-      <p className="stats-note">{accountState?.status === 'signedIn' ? es.stats.noteAccount : es.stats.note}</p>
-    </>
+    <StatsSummary
+      days={store.listDays()}
+      today={today}
+      points={summary?.points ?? null}
+      own
+      note={accountState?.status === 'signedIn' ? es.stats.noteAccount : es.stats.note}
+    />
   )
 }

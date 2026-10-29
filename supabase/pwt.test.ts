@@ -399,6 +399,58 @@ describe('amigos (UT-95)', () => {
   })
 })
 
+// UT-118 · Estadísticas e historial de un amigo (decisión de Jose, 29/10/2026): solo entre amigos y solo de los días ya cerrados.
+describe('vista de un amigo (UT-118)', () => {
+  // Los nicknames llevan `suffix`: la base es la misma en todo el fichero.
+  async function friends(suffix: string) {
+    const [eva, fede, gema] = [await t.user(), await t.user(), await t.user()]
+    for (const [player, name] of [[eva, 'Eva_'], [fede, 'Fede_'], [gema, 'Gema_']] as const) {
+      await t.call(player, `select pwt.ensure_profile()`)
+      await t.call(player, `select pwt.set_nickname($1)`, [name + suffix])
+    }
+    await t.call(eva, `select pwt.send_friend_request($1)`, [`fede_${suffix}`])
+    await t.as(fede, `select pwt.respond_friend_request($1, true)`, [`eva_${suffix}`])
+    return { eva, fede, gema }
+  }
+
+  it('un amigo ve sus días cerrados, sus puntos y su historial; el día de hoy, no', async () => {
+    const { eva, fede } = await friends('v')
+    // Un día pasado que no usa ningún otro test (la base y sus días cerrados son los mismos en todo el fichero).
+    const closed = addDays(t.today, -200)
+    for (const date of [closed, t.today]) {
+      await seedDay(fede.id, date, 'won', 4)
+      await t.as(fede, `select pwt.save_replay($1::date, 'datos')`, [date])
+    }
+    await t.admin(`insert into pwt.day_difficulty (date, players, average, multiplier) values ($1::date, 1, 4, 1.3333)`, [closed])
+    const profile = await t.call<{ nickname: string; days: Array<{ date: string; battle?: unknown }>; points: Array<{ date: string; points: number }>; history: Array<{ date: string; sharedId: unknown }> }>(eva, `select pwt.friend_profile('FEDE_V')`)
+    expect(profile.nickname).toBe('Fede_v')
+    expect(profile.days.map((day) => day.date)).toEqual([closed])
+    expect(profile.days[0]).not.toHaveProperty('battle')
+    expect(profile.points).toEqual([expect.objectContaining({ date: closed, points: 5.33 })])
+    expect(profile.history).toEqual([expect.objectContaining({ date: closed, sharedId: null })])
+    expect(await t.call(eva, `select pwt.get_friend_replay('fede_v', $1::date)`, [closed])).toBe('datos')
+    await expect(t.call(eva, `select pwt.get_friend_replay('fede_v', $1::date)`, [t.today])).rejects.toThrow('replay_not_found')
+  })
+
+  it('quien no es amigo (o solo tiene la solicitud pendiente) no ve nada, ni con un nickname que no existe ni sin cuenta', async () => {
+    const { eva, fede, gema } = await friends('w')
+    await seedDay(fede.id, addDays(t.today, -1), 'won', 4)
+    await expect(t.call(gema, `select pwt.friend_profile('fede_w')`)).rejects.toThrow('not_friends')
+    await t.call(gema, `select pwt.send_friend_request('fede_w')`)
+    await expect(t.call(gema, `select pwt.friend_profile('fede_w')`)).rejects.toThrow('not_friends')
+    await expect(t.call(gema, `select pwt.get_friend_replay('fede_w', $1::date)`, [addDays(t.today, -1)])).rejects.toThrow('not_friends')
+    await expect(t.call(eva, `select pwt.friend_profile('nadie')`)).rejects.toThrow('not_friends')
+    const guest = await t.user(true)
+    await expect(t.call(guest, `select pwt.friend_profile('fede_w')`)).rejects.toThrow('not_registered')
+    await expect(t.as(null, `select pwt.friend_profile('fede_w')`)).rejects.toThrow()
+    // Al dejar de ser amigos, deja de verse.
+    await t.as(eva, `select pwt.remove_friend('fede_w')`)
+    await expect(t.call(eva, `select pwt.friend_profile('fede_w')`)).rejects.toThrow('not_friends')
+    // La función interna no se expone.
+    await expect(t.as(eva, `select pwt.friend_of_caller('fede_w')`)).rejects.toThrow()
+  })
+})
+
 describe('permisos (UT-96)', () => {
   it('las funciones internas no se pueden llamar desde la API y las tablas no se leen', async () => {
     const user = await t.user()

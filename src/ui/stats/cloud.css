@@ -253,3 +253,53 @@
   flex: 1;
   overflow-wrap: anywhere;
 }
+
+/* Amigo pulsable (decisión de Jose, 29/10/2026): abre sus estadísticas e historial. Como texto, con «›» y subrayado al pasar. */
+.friend-open {
+  flex: 1;
+  min-height: 44px;
+  padding: 0;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.friend-open::after {
+  content: " ›";
+  color: #d0d0d0;
+}
+
+.friend-open:hover,
+.friend-open:focus-visible {
+  text-decoration: underline;
+}
+
+.friend-open:focus-visible {
+  outline: 2px solid #f8c830;
+  outline-offset: 2px;
+}
+
+/* Vista de un amigo: «‹ Amigos» y su nickname arriba; ocupa el alto de la ventana (la carga se centra en el hueco). */
+.friend-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.friend-view-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.friend-view-name {
+  margin: 0;
+  min-width: 0;
+  font-size: 22px;
+  overflow-wrap: anywhere;
+}

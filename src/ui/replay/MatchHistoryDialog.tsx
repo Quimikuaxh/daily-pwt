@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import type { CloudApi, HistoryItem } from '../../cloud/api'
 import { esReplay } from '../../i18n/esReplay'
 import { Modal } from '../common/Modal'
@@ -63,32 +63,67 @@ export function MatchHistoryDialog({ api, trainerName, art, onWatch, onClose }: 
     }
   }
 
+  /** Aviso tras compartir o dejar de compartir, debajo de ese combate. */
+  function statusOf(item: HistoryItem) {
+    if (status?.date !== item.date) return null
+    return (
+      <p className="settings-status" role="status">
+        {status.message} {status.link && <span className="history-link">{status.link}</span>}
+      </p>
+    )
+  }
+
   return (
     <Modal title={text.title} onClose={onClose} className="history-list-dialog">
       <HistoryBody api={api} items={items} failed={failed}>
-        <ul className="history-items">
-          {(items ?? []).map((item) => (
-            <li key={item.date} className="history-item">
-              <HistoryItemHeader item={item} name={trainerName(item.trainerId)} art={art?.(item) ?? null}>
-                {/* Botones cuadrados con icono, a la derecha (decisión de Jose, 28/10/2026); el nombre va en la etiqueta y en la ayuda. */}
-                <div className="history-item-actions">
-                  <button type="button" className="btn btn-small history-icon-button" aria-label={text.watch} title={text.watch} onClick={() => onWatch(item.date)}><HistoryIcon icon="play" /></button>
-                  <button type="button" className="btn btn-small history-icon-button" aria-label={text.share} title={text.share} onClick={() => void share(item)}><HistoryIcon icon="share" /></button>
-                  {item.sharedId && (
-                    <button type="button" className="btn btn-small history-icon-button" aria-label={text.unshare} title={text.unshare} onClick={() => void unshare(item)}><HistoryIcon icon="unshare" /></button>
-                  )}
-                </div>
-              </HistoryItemHeader>
-              {status?.date === item.date && (
-                <p className="settings-status" role="status">
-                  {status.message} {status.link && <span className="history-link">{status.link}</span>}
-                </p>
+        <HistoryList
+          items={items ?? []}
+          trainerName={trainerName}
+          art={art}
+          onWatch={onWatch}
+          actions={(item) => (
+            <>
+              <button type="button" className="btn btn-small history-icon-button" aria-label={text.share} title={text.share} onClick={() => void share(item)}><HistoryIcon icon="share" /></button>
+              {item.sharedId && (
+                <button type="button" className="btn btn-small history-icon-button" aria-label={text.unshare} title={text.unshare} onClick={() => void unshare(item)}><HistoryIcon icon="unshare" /></button>
               )}
-            </li>
-          ))}
-        </ul>
+            </>
+          )}
+          after={statusOf}
+        />
       </HistoryBody>
     </Modal>
+  )
+}
+
+type HistoryListProps = {
+  items: HistoryItem[]
+  trainerName: (trainerId: string) => string
+  art?: (item: HistoryItem) => HistoryArt | null
+  onWatch: (date: string) => void
+  /** Botones detrás de «Ver repetición» (los del propio historial: compartir y dejar de compartir). */
+  actions?: (item: HistoryItem) => ReactNode
+  /** Lo que va debajo de cada combate (el aviso tras compartir). */
+  after?: (item: HistoryItem) => ReactNode
+}
+
+/** Lista de combates del historial: la del propio jugador y, solo con «Ver repetición», la de un amigo (decisión de Jose, 29/10/2026). */
+export function HistoryList({ items, trainerName, art, onWatch, actions, after }: HistoryListProps) {
+  return (
+    <ul className="history-items">
+      {items.map((item) => (
+        <li key={item.date} className="history-item">
+          <HistoryItemHeader item={item} name={trainerName(item.trainerId)} art={art?.(item) ?? null}>
+            {/* Botones cuadrados con icono, a la derecha (decisión de Jose, 28/10/2026); el nombre va en la etiqueta y en la ayuda. */}
+            <div className="history-item-actions">
+              <button type="button" className="btn btn-small history-icon-button" aria-label={text.watch} title={text.watch} onClick={() => onWatch(item.date)}><HistoryIcon icon="play" /></button>
+              {actions?.(item)}
+            </div>
+          </HistoryItemHeader>
+          {after?.(item)}
+        </li>
+      ))}
+    </ul>
   )
 }
 

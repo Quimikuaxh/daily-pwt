@@ -29,6 +29,10 @@ describe('AppMenu', () => {
     for (const heading of ['Cómo se juega', 'Reglas del combate', 'Mecánicas de la 5.ª generación', 'Consejos', 'Estadísticas', 'Cuenta, puntos y rankings', 'Créditos', 'Aviso legal']) {
       expect(within(dialog).getByRole('heading', { name: heading })).toBeInTheDocument()
     }
+    // Política de privacidad (la pide Google): página estática, en otra pestaña.
+    const privacy = within(dialog).getByRole('link', { name: 'Política de privacidad' })
+    expect(privacy).toHaveAttribute('href', 'privacidad.html')
+    expect(privacy).toHaveAttribute('target', '_blank')
     expect(dialog).toHaveTextContent(/WikiDex/)
     expect(dialog).toHaveTextContent(/Pokémon Showdown/)
     expect(dialog).toHaveTextContent(/Super Music Collection/)

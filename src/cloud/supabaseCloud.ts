@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { CloudError, type CloudApi, type CloudDay, type HistoryItem, type PlayerRow, type PointsRow, type RankingPage, type SharedReplay, type StreakRow, type Summary } from './api'
+import { CloudError, type CloudApi, type CloudDay, type FriendProfile, type HistoryItem, type PlayerRow, type PointsRow, type RankingPage, type SharedReplay, type StreakRow, type Summary } from './api'
 import type { Cloud } from './account'
 import { cloudConfig } from './config'
 import type { CloudAuth, Session } from './auth'
@@ -74,6 +74,11 @@ function supabaseApi(client: SupabaseClient): CloudApi {
     cancelFriendRequest: (nickname) => rpc('cancel_friend_request', { p_nickname: nickname }),
     removeFriend: (nickname) => rpc('remove_friend', { p_nickname: nickname }),
     listFriends: () => rpc<PlayerRow[]>('list_friends'),
+    friendProfile: async (nickname) => {
+      const profile = await rpc<FriendProfile>('friend_profile', { p_nickname: nickname })
+      return { ...profile, points: profile.points.map((day) => ({ ...day, points: Number(day.points) })) }
+    },
+    getFriendReplay: (nickname, date) => rpc<string>('get_friend_replay', { p_nickname: nickname, p_date: date }),
     saveReplay: (date, data) => rpc('save_replay', { p_date: date, p_data: data }),
     myHistory: () => rpc<HistoryItem[]>('my_history'),
     getMyReplay: (date) => rpc<string>('get_my_replay', { p_date: date }),

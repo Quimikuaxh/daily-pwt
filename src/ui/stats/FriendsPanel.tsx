@@ -12,7 +12,7 @@ type Action = { (): Promise<unknown> }
  * Amigos (RF-110, RF-111): buscar por nickname y enviar solicitud; aceptar o rechazar las recibidas, cancelar las enviadas y quitar amigos.
  * `onChange` avisa de que han cambiado las solicitudes (para el aviso de la cabecera).
  */
-export function FriendsPanel({ api, onChange }: { api: CloudApi; onChange?: () => void }) {
+export function FriendsPanel({ api, onChange, onOpen }: { api: CloudApi; onChange?: () => void; onOpen?: (nickname: string) => void }) {
   const [list, setList] = useState(null as PlayerRow[] | null)
   const [query, setQuery] = useState('')
   const [results, setResults] = useState(null as PlayerRow[] | null)
@@ -98,7 +98,12 @@ export function FriendsPanel({ api, onChange }: { api: CloudApi; onChange?: () =
         {friends.length === 0 && <li className="settings-hint">{text.none}</li>}
         {friends.map((row) => (
           <li key={row.nickname}>
-            <span>{row.nickname}</span>
+            {/* Al pulsarlo, sus estadísticas e historial (decisión de Jose, 29/10/2026). */}
+            {onOpen ? (
+              <button type="button" className="friend-open" aria-label={text.open(row.nickname)} onClick={() => onOpen(row.nickname)}>{row.nickname}</button>
+            ) : (
+              <span>{row.nickname}</span>
+            )}
             <button type="button" className="btn btn-small" onClick={() => run(() => api.removeFriend(row.nickname))}>{text.remove}</button>
           </li>
         ))}

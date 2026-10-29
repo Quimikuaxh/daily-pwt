@@ -14,7 +14,8 @@ const text = esReplay.viewer
 
 /** De dónde sale la repetición: del historial propio (por fecha) o de un enlace compartido (por id). */
 /** `local`: la del oficial que acaba de terminar, ya en memoria (RF-135; también sin conexión). */
-export type ReplaySource = { kind: 'mine'; date: string } | { kind: 'shared'; id: string } | { kind: 'local'; replay: ReplayData }
+/** `friend`: la de un amigo, desde su historial (decisión de Jose, 29/10/2026). */
+export type ReplaySource = { kind: 'mine'; date: string } | { kind: 'friend'; nickname: string; date: string } | { kind: 'shared'; id: string } | { kind: 'local'; replay: ReplayData }
 
 type Loaded = { status: 'loading' } | { status: 'ready'; replay: ReplayData; mine: boolean } | { status: 'notFound' | 'failed' }
 
@@ -33,13 +34,14 @@ type ReplayScreenProps = {
 export function ReplayScreen({ source, api, ready, data, settings, onExit }: ReplayScreenProps) {
   const [loaded, setLoaded] = useState((source.kind === 'local' ? { status: 'ready', replay: source.replay, mine: false } : { status: 'loading' }) as Loaded)
   const [confirmDelete, setConfirmDelete] = useState(false)
-  const key = source.kind === 'mine' ? source.date : source.kind === 'shared' ? source.id : 'local'
+  const key = source.kind === 'mine' ? source.date : source.kind === 'friend' ? `${source.nickname}/${source.date}` : source.kind === 'shared' ? source.id : 'local'
 
   useEffect(() => {
     if (!api || source.kind === 'local') return
     let cancelled = false
     const load = async () => {
       if (source.kind === 'mine') return { replay: await decodeReplay(await api.getMyReplay(source.date)), mine: false }
+      if (source.kind === 'friend') return { replay: await decodeReplay(await api.getFriendReplay(source.nickname, source.date)), mine: false }
       const shared = await api.getSharedReplay(source.id)
       return { replay: await decodeReplay(shared.data), mine: shared.mine }
     }
@@ -72,7 +74,7 @@ export function ReplayScreen({ source, api, ready, data, settings, onExit }: Rep
   const canDelete = source.kind === 'shared' && loaded.mine && api !== null
   return (
     <>
-      <ReplayViewer replay={loaded.replay} data={data} settings={settings} onExit={onExit} onDelete={canDelete ? () => setConfirmDelete(true) : undefined} own={source.kind !== 'shared' || loaded.mine} />
+      <ReplayViewer replay={loaded.replay} data={data} settings={settings} onExit={onExit} onDelete={canDelete ? () => setConfirmDelete(true) : undefined} own={source.kind === 'shared' ? loaded.mine : source.kind !== 'friend'} />
       {confirmDelete && source.kind === 'shared' && api && (
         <Dialog
           title={text.deleteTitle}

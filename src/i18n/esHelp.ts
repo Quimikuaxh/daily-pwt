@@ -56,7 +56,7 @@ export const esHelp = {
         'Puntos del día: los Pokémon que te quedan en pie al ganar el combate oficial × el multiplicador del día. Perder o rendirse da 0.',
         'El multiplicador va de ×1 a ×2 según lo difícil que fue el reto para todos: 1 + (6 − media de Pokémon en pie de todos los jugadores) / 6. Se fija a medianoche (hora de Madrid); hasta entonces, ese día no da puntos.',
         'Rankings, en Estadísticas: puntos del mes y racha de victorias actual, de todos o solo de tus amigos. Los jugadores con cuenta llevan el tick de verificado y los empates comparten posición.',
-        'Amigos, solo con cuenta: búscalos por su nombre y envíales una solicitud; cuando la aceptan, os veis en la vista de amigos.',
+        'Amigos, solo con cuenta: búscalos por su nombre y envíales una solicitud; cuando la aceptan, os veis en la vista de amigos de los rankings. Pulsa en un amigo para ver sus estadísticas y su historial con sus repeticiones (de los días ya cerrados: el combate de hoy, a partir de medianoche).',
         'Para que los rankings sean justos, cada turno del combate oficial se guarda en el servidor: un resultado que no cuadre con lo guardado no puntúa.',
       ],
     },
@@ -74,4 +74,5 @@ export const esHelp = {
   ],
   legalTitle: 'Aviso legal',
   legal: FAN_NOTICE,
+  privacy: 'Política de privacidad',
 } as const

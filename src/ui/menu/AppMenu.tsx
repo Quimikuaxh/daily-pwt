@@ -72,6 +72,8 @@ export type AppMenuProps = {
   onWatchReplay?: (date: string) => void
   /** Sprite del rival y equipo (los `spriteId` de los 6) de un combate del historial; `null` si los datos ya no dan ese reto. */
   historyArt?: (item: HistoryItem) => HistoryArt | null
+  /** Abrir una repetición del historial de un amigo (desde Estadísticas › Amigos). */
+  onWatchFriendReplay?: (nickname: string, date: string) => void
 }
 
 /** Lo que el menú necesita de App; la fecha la pone cada pantalla. */
@@ -83,7 +85,7 @@ type Open = 'account' | 'history' | 'stats' | 'help' | 'settings' | null
  * Accesos de la cabecera de Hoy y de Resultado: Cuenta (con Supabase configurado; RF-93, decisión de Jose del 28/10/2026), Estadísticas,
  * Ayuda y Ajustes, con sus ventanas.
  */
-export function AppMenu({ store, today, settings, onSettingsChange, onClearData, account, accountState, trainerName, onWatchReplay, historyArt }: AppMenuProps) {
+export function AppMenu({ store, today, settings, onSettingsChange, onClearData, account, accountState, trainerName, onWatchReplay, historyArt, onWatchFriendReplay }: AppMenuProps) {
   const [open, setOpen] = useState(null as Open)
   const close = () => setOpen(null)
   // RF-111: aviso en la cabecera si hay solicitudes de amistad pendientes.
@@ -142,7 +144,24 @@ export function AppMenu({ store, today, settings, onSettingsChange, onClearData,
           onClose={close}
         />
       )}
-      {open === 'stats' && <StatsDialog store={store} today={today} onClose={close} account={account} accountState={accountState} />}
+      {open === 'stats' && (
+        <StatsDialog
+          store={store}
+          today={today}
+          onClose={close}
+          account={account}
+          accountState={accountState}
+          trainerName={trainerName}
+          historyArt={historyArt}
+          onWatchFriendReplay={
+            onWatchFriendReplay &&
+            ((nickname, date) => {
+              close()
+              onWatchFriendReplay(nickname, date)
+            })
+          }
+        />
+      )}
       {open === 'help' && <HelpDialog onClose={close} />}
       {open === 'settings' && <SettingsDialog settings={settings} onChange={onSettingsChange} onClearData={onClearData} onClose={close} accountState={accountState} />}
       </Suspense>

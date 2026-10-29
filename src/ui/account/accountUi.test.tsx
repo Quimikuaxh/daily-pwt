@@ -4,10 +4,10 @@ import userEvent from '@testing-library/user-event'
 import { Account } from '../../cloud/account'
 import { CloudError } from '../../cloud/api'
 import { LocalStorageStore } from '../../storage/localStorageStore'
-import { cloudDay, fakeApi, fakeCloud, rankingPage } from '../../test-utils/cloud'
+import { cloudDay, fakeApi, fakeCloud, rankingPage, serverError } from '../../test-utils/cloud'
 import { MemoryStorage } from '../../test-utils/memoryStorage'
 import { testMenu } from '../../test-utils/ui'
-import { AppMenu } from '../menu/AppMenu'
+import { AppMenu, type MenuContext } from '../menu/AppMenu'
 
 // El botón real lo pinta Google (DEC-70): aquí, uno que devuelve una credencial al pulsarlo.
 vi.mock('../../cloud/googleIdentity', () => ({
@@ -24,14 +24,14 @@ vi.mock('../../cloud/googleIdentity', () => ({
 const TODAY = '2026-10-27'
 const GOOGLE = { userId: 'g1', anonymous: false }
 
-async function mount(session: { userId: string; anonymous: boolean } | null, api = fakeApi()) {
+async function mount(session: { userId: string; anonymous: boolean } | null, api = fakeApi(), menu: Partial<MenuContext> = {}) {
   const user = userEvent.setup()
   const storage = new MemoryStorage()
   const local = new LocalStorageStore(storage)
   const cloud = fakeCloud(session, api)
   const account = new Account(Promise.resolve(cloud), storage, local)
   await account.start()
-  const view = () => <AppMenu {...testMenu(account.store, { account, accountState: account.getState() })} today={TODAY} />
+  const view = () => <AppMenu {...testMenu(account.store, { account, accountState: account.getState(), ...menu })} today={TODAY} />
   const result = render(view())
   account.subscribe(() => result.rerender(view()))
   return { user, account, cloud }
@@ -218,6 +218,50 @@ describe('cuenta en la interfaz (UT-100)', () => {
     answerFriends([])
     expect(await screen.findByText('Aún no tienes amigos añadidos.')).toBeInTheDocument()
     expect(screen.queryByText('Cargando…')).toBeNull()
+  })
+
+  it('al pulsar un amigo, sus estadísticas como en «Yo» y su historial; «Ver repetición» abre la suya y «‹ Amigos» vuelve (UT-119)', async () => {
+    const onWatchFriendReplay = vi.fn()
+    const api = fakeApi({
+      mySummary: async () => ({ nickname: 'Jose', registered: true, points: [], incomingRequests: 0 }),
+      listFriends: async () => [{ nickname: 'Eva', relation: 'friend' }],
+      friendProfile: async (nickname) => ({
+        nickname,
+        days: [cloudDay({ date: '2026-10-25', status: 'won' }), cloudDay({ date: '2026-10-26', status: 'lost', survivors: 0 })],
+        points: [{ date: '2026-10-25', points: 4.5, provisional: false }],
+        history: [{ date: '2026-10-26', challengeNumber: 3, trainerId: 'misty', variantId: 'misty-1', status: 'lost', turns: 12, survivors: 0, playerFainted: null, sharedId: null }],
+      }),
+    })
+    const { user } = await mount(GOOGLE, api, { trainerName: () => 'Misty', onWatchFriendReplay })
+    await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
+    await user.click(await screen.findByRole('tab', { name: 'Amigos' }))
+    await user.click(await screen.findByRole('button', { name: 'Ver las estadísticas de Eva' }))
+    expect(await screen.findByRole('heading', { name: 'Eva' })).toBeInTheDocument()
+    expect(api.friendProfile).toHaveBeenCalledWith('Eva')
+    expect(await screen.findByTestId('stats-played')).toHaveTextContent('2')
+    expect(screen.getByTestId('stats-month-points')).toHaveTextContent('4,5')
+    // De otro: sin botón de compartir; su historial solo con «Ver repetición».
+    expect(screen.queryByRole('button', { name: /Compartir/ })).toBeNull()
+    expect(screen.getByText('#3 · 26/10/2026 · Misty')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Ver repetición' }))
+    expect(onWatchFriendReplay).toHaveBeenCalledWith('Eva', '2026-10-26')
+  })
+
+  it('«‹ Amigos» vuelve a la lista; si el servidor no da sus datos (ya no es amigo), avisa (UT-119)', async () => {
+    const api = fakeApi({
+      mySummary: async () => ({ nickname: 'Jose', registered: true, points: [], incomingRequests: 0 }),
+      listFriends: async () => [{ nickname: 'Eva', relation: 'friend' }],
+      friendProfile: async () => {
+        throw serverError('not_friends')
+      },
+    })
+    const { user } = await mount(GOOGLE, api)
+    await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
+    await user.click(await screen.findByRole('tab', { name: 'Amigos' }))
+    await user.click(await screen.findByRole('button', { name: 'Ver las estadísticas de Eva' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('No se han podido cargar sus datos.')
+    await user.click(screen.getByRole('button', { name: '‹ Amigos' }))
+    expect(await screen.findByRole('heading', { name: 'Tus amigos' })).toBeInTheDocument()
   })
 
   it('Yo: puntos del mes (solo días cerrados) y, de hoy, los Pokémon en pie hasta el cierre (RF-103, RF-105)', async () => {

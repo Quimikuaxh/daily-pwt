@@ -39,6 +39,9 @@ export type HistoryItem = {
 /** Repetición compartida (RF-132). `mine`: la compartió quien la está viendo (puede borrarla, RF-133). */
 export type SharedReplay = { id: string; nickname: string | null; date: string; challengeNumber: number; trainerId: string; data: string; mine: boolean }
 
+/** Vista de un amigo (decisión de Jose, 29/10/2026): sus días ya cerrados, los puntos de esos días y su historial (sin enlaces). */
+export type FriendProfile = { nickname: string; days: CloudDay[]; points: DayPoints[]; history: HistoryItem[] }
+
 /** Relación con otro jugador: amigo, solicitud recibida, solicitud enviada o ninguna. */
 export type Relation = 'friend' | 'incoming' | 'outgoing' | 'none'
 export type PlayerRow = { nickname: string; relation: Relation }
@@ -66,6 +69,9 @@ export interface CloudApi {
   cancelFriendRequest(nickname: string): Promise<void>
   removeFriend(nickname: string): Promise<void>
   listFriends(): Promise<PlayerRow[]>
+  /** Solo de un amigo (`not_friends` si no lo es) y sin el día de hoy hasta que se cierre. */
+  friendProfile(nickname: string): Promise<FriendProfile>
+  getFriendReplay(nickname: string, date: string): Promise<string>
   /** F5: repetición comprimida del oficial de ese día (`encodeReplay`). */
   saveReplay(date: string, data: string): Promise<void>
   myHistory(): Promise<HistoryItem[]>

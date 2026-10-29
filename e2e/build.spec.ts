@@ -48,6 +48,18 @@ test.describe('Build de producción (sin VITE_TEST_HOOKS)', () => {
 })
 
 test.describe('Rendimiento con red y CPU limitadas', () => {
+  test('E2E-75 la política de privacidad se sirve como página propia y Ayuda la enlaza (la pide Google para el inicio de sesión)', async ({ browser }) => {
+    const context = await browser.newContext({ baseURL: PROD, timezoneId: 'Europe/Madrid', locale: 'es-ES' })
+    const page = await context.newPage()
+    await page.goto('./')
+    await page.getByRole('button', { name: 'Ayuda' }).click()
+    const link = page.getByRole('dialog', { name: 'Ayuda' }).getByRole('link', { name: 'Política de privacidad' })
+    const [privacy] = await Promise.all([context.waitForEvent('page'), link.click()])
+    await expect(privacy.getByRole('heading', { level: 1, name: 'Política de privacidad' })).toBeVisible()
+    await expect(privacy.getByRole('link', { name: 'quimikuaxh@gmail.com' }).first()).toHaveAttribute('href', 'mailto:quimikuaxh@gmail.com')
+    await context.close()
+  })
+
   test('E2E-21 4G + CPU x4: Hoy < 3 s, ruta crítica < 230 KB gzip, sim y calc fuera @timing', async ({ page, context, browserName }) => {
     test.skip(browserName !== 'chromium', 'El throttling CDP solo existe en Chromium')
     const cdp = await context.newCDPSession(page)

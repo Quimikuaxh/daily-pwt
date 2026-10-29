@@ -28,6 +28,10 @@ export function HelpDialog({ onClose }: { onClose: () => void }) {
       <section className="help-section">
         <h3 className="help-title">{text.legalTitle}</h3>
         <p className="help-legal">{text.legal}</p>
+        {/* Página estática de `public/` (la pide Google para la pantalla de inicio de sesión); se abre aparte para no perder la partida. */}
+        <p className="help-legal">
+          <a href="privacidad.html" target="_blank" rel="noopener">{text.privacy}</a>
+        </p>
       </section>
     </Modal>
   )

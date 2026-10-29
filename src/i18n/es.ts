@@ -361,6 +361,7 @@ export const es = {
     current: 'Actual',
     max: 'Máxima',
     empty: 'Aún no has terminado ningún combate oficial. Las prácticas no cuentan.',
+    friendEmpty: 'Aún no tiene combates oficiales de días ya cerrados.',
     note: 'Solo cuentan los combates oficiales. Se guardan en este navegador.',
     noteAccount: 'Solo cuentan los combates oficiales. Se guardan en tu cuenta.',
   },
