@@ -451,6 +451,23 @@ describe('vista de un amigo (UT-118)', () => {
   })
 })
 
+// UT-120 · «Victorias: X/Y» del día bajo el rival de Hoy (decisión de Jose, 29/10/2026): solo oficiales terminados y validados.
+describe('victorias del día (UT-120)', () => {
+  it('cuenta victorias y oficiales terminados y validados de ese día; sin sesión también se ve', async () => {
+    const date = addDays(t.today, -300)
+    const players = [await t.user(), await t.user(), await t.user(), await t.user(), await t.user()]
+    await seedDay(players[0].id, date, 'won', 4)
+    await seedDay(players[1].id, date, 'won', 6)
+    await seedDay(players[2].id, date, 'lost', 0)
+    // Ni el no validado ni el anulado cuentan.
+    await seedDay(players[3].id, date, 'won', 5, { validated: false })
+    await seedDay(players[4].id, date, 'void', 0)
+    expect(await t.call(players[0], `select pwt.day_wins($1::date)`, [date])).toEqual({ wins: 2, players: 3 })
+    expect(await t.call(null, `select pwt.day_wins($1::date)`, [date])).toEqual({ wins: 2, players: 3 })
+    expect(await t.call(null, `select pwt.day_wins($1::date)`, [addDays(date, -1)])).toEqual({ wins: 0, players: 0 })
+  })
+})
+
 describe('permisos (UT-96)', () => {
   it('las funciones internas no se pueden llamar desde la API y las tablas no se leen', async () => {
     const user = await t.user()

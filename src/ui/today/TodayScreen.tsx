@@ -1,11 +1,13 @@
-import { useId, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
+import type { CloudApi } from '../../cloud/api'
+import { isPlayer, type AccountState } from '../../cloud/state'
 import { useToday, type RivalOverride } from '../../hooks/useToday'
 import type { Challenge, GameData } from '../../core/types'
 import type { BattleMode, DayRecord, GameStore } from '../../storage/gameStore'
 import { es } from '../../i18n/es'
 import { PlayerCard } from './PlayerCard'
 import { usePreloadChallengeSprites } from '../battle/preloadAssets'
-import { RivalSection } from './RivalSection'
+import { RivalSection, type DayWins } from './RivalSection'
 import { TodayFooter } from './TodayFooter'
 import { TodayHeader } from './TodayHeader'
 import type { MenuContext } from '../menu/AppMenu'
@@ -33,6 +35,28 @@ type TodayContentProps = {
   onStart: TodayScreenProps['onStart']
   onResume?: TodayScreenProps['onResume']
   store?: GameStore
+  dayWins?: DayWins
+}
+
+/**
+ * «Victorias: X/Y» del día bajo el rival (decisión de Jose, 29/10/2026). Solo con la cuenta abierta o abriéndose: sin servicio (o sin
+ * Supabase configurado) no se enseña. Se pide al entrar en Hoy, también al volver de un combate.
+ */
+function useDayWins(api: CloudApi | null, date: string, state: AccountState | undefined): DayWins {
+  const [loaded, setLoaded] = useState(null as { date: string; wins: number; players: number } | null)
+  useEffect(() => {
+    if (!api || !date) return
+    let active = true
+    api.dayWins(date).then(
+      (result) => active && setLoaded({ date, ...result }),
+      () => undefined,
+    )
+    return () => {
+      active = false
+    }
+  }, [api, date])
+  if (!state || !(isPlayer(state) || state.status === 'connecting')) return undefined
+  return loaded?.date === date ? { wins: loaded.wins, players: loaded.players } : null
 }
 
 function officialStatusText(record: DayRecord | null): string {
@@ -43,7 +67,7 @@ function officialStatusText(record: DayRecord | null): string {
   return result(record.turns ?? 0, record.survivors ?? 0)
 }
 
-function TodayContent({ challenge, data, onStart, onResume, store }: TodayContentProps) {
+function TodayContent({ challenge, data, onStart, onResume, store, dayWins }: TodayContentProps) {
   usePreloadChallengeSprites(challenge, data)
   const playerHeadingId = useId()
   const hintId = useId()
@@ -56,7 +80,7 @@ function TodayContent({ challenge, data, onStart, onResume, store }: TodayConten
 
   return (
     <>
-      <RivalSection challenge={challenge} data={data} />
+      <RivalSection challenge={challenge} data={data} dayWins={dayWins} />
 
       <section aria-labelledby={playerHeadingId} className="panel">
         <h2 id={playerHeadingId} className="section-title">{es.today.playerSection}</h2>
@@ -105,6 +129,7 @@ function TodayContent({ challenge, data, onStart, onResume, store }: TodayConten
 
 export function TodayScreen({ data, onStart, onResume, store, notice, menu, dateOverride, rivalOverride }: TodayScreenProps) {
   const { challenge, countdown, error } = useToday(data, dateOverride, rivalOverride)
+  const dayWins = useDayWins(menu?.account?.api ?? null, challenge?.date ?? '', menu?.accountState)
   return (
     <div className="page">
       <a href="#main" className="skip-link">{es.app.skipToContent}</a>
@@ -112,7 +137,7 @@ export function TodayScreen({ data, onStart, onResume, store, notice, menu, date
       <main id="main" tabIndex={-1} className="page-main">
         {notice && <p role="alert" className="alert">{notice}</p>}
         {challenge && data ? (
-          <TodayContent key={challenge.date} challenge={challenge} data={data} onStart={onStart} onResume={onResume} store={store} />
+          <TodayContent key={challenge.date} challenge={challenge} data={data} onStart={onStart} onResume={onResume} store={store} dayWins={dayWins} />
         ) : (
           <p role="alert" className="alert">{error ?? es.today.dataError}</p>
         )}

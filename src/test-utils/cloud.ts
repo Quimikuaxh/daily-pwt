@@ -23,6 +23,7 @@ export function fakeApi(over: Partial<CloudApi> = {}): CloudApi & { [K in keyof 
     mySummary: async () => ({ nickname: null, registered: false, points: [], incomingRequests: 0 }),
     pointsRanking: async () => rankingPage([]),
     streakRanking: async () => rankingPage([]),
+    dayWins: async () => ({ wins: 0, players: 0 }),
     searchPlayers: async () => [],
     sendFriendRequest: async () => 'outgoing',
     respondFriendRequest: async () => undefined,

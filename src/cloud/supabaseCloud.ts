@@ -68,6 +68,7 @@ function supabaseApi(client: SupabaseClient): CloudApi {
       return { ...result, rows: numeric(result.rows, 'points') }
     },
     streakRanking: (scope, page) => rpc<RankingPage<StreakRow>>('streak_ranking_page', { p_scope: scope, p_page: page }),
+    dayWins: (date) => rpc<{ wins: number; players: number }>('day_wins', { p_date: date }),
     searchPlayers: (query) => rpc<PlayerRow[]>('search_players', { p_query: query }),
     sendFriendRequest: (nickname) => rpc('send_friend_request', { p_nickname: nickname }),
     respondFriendRequest: (nickname, accept) => rpc('respond_friend_request', { p_nickname: nickname, p_accept: accept }),

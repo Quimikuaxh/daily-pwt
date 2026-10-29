@@ -9,10 +9,13 @@ import { cardModel } from './cardModel'
 import { MonHead } from './MonHead'
 import { MoveList } from './MoveList'
 
-type RivalSectionProps = { challenge: Challenge; data: GameData }
+/** «Victorias: X/Y» de hoy (decisión de Jose, 29/10/2026): `undefined` sin cuenta configurada (no se enseña), `null` mientras carga. */
+export type DayWins = { wins: number; players: number } | null | undefined
+
+type RivalSectionProps = { challenge: Challenge; data: GameData; dayWins?: DayWins }
 
 
-function RivalCard({ challenge, data }: RivalSectionProps) {
+function RivalCard({ challenge, data, dayWins }: RivalSectionProps) {
   const { trainer } = challenge
   const specialty = trainer.specialtyType
   return (
@@ -32,6 +35,12 @@ function RivalCard({ challenge, data }: RivalSectionProps) {
             <TypeBadge typeName={specialty} label={data.names.types[specialty] ?? specialty} />
           </p>
         )}
+        {/* Mientras carga, la línea ya ocupa su sitio (no salta la tarjeta). */}
+        {dayWins !== undefined && (
+          <p className="rival-meta" data-testid="day-wins" title={es.today.dayWinsHint}>
+            {dayWins === null ? es.today.dayWinsLoading : es.today.dayWins(dayWins.wins, dayWins.players)}
+          </p>
+        )}
       </div>
     </div>
   )
@@ -48,7 +57,7 @@ function RivalMonDetails({ set, data }: { set: Challenge['rivalTeam'][number]; d
   )
 }
 
-export function RivalSection({ challenge, data }: RivalSectionProps) {
+export function RivalSection({ challenge, data, dayWins }: RivalSectionProps) {
   const headingId = useId()
   const teamId = useId()
   const [showDetails, setShowDetails] = useState(false)
@@ -71,7 +80,7 @@ export function RivalSection({ challenge, data }: RivalSectionProps) {
   return (
     <section ref={sectionRef} aria-labelledby={headingId} className="panel plate rival-section">
       <h2 id={headingId} className="section-title">{es.today.rivalSection}</h2>
-      <RivalCard challenge={challenge} data={data} />
+      <RivalCard challenge={challenge} data={data} dayWins={dayWins} />
 
       <h3 className="subsection-title">{es.today.rivalTeam}</h3>
       <ul id={teamId} className="rival-team" data-detailed={showDetails ? "true" : undefined}>

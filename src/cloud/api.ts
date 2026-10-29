@@ -63,6 +63,8 @@ export interface CloudApi {
   /** `page` null: la del jugador (o la primera, si no aparece). */
   pointsRanking(month: string, scope: RankingScope, page: number | null): Promise<RankingPage<PointsRow>>
   streakRanking(scope: RankingScope, page: number | null): Promise<RankingPage<StreakRow>>
+  /** «Victorias: X/Y» bajo el rival de Hoy: oficiales de ese día terminados y validados, y cuántos de ellos ganaron. */
+  dayWins(date: string): Promise<{ wins: number; players: number }>
   searchPlayers(query: string): Promise<PlayerRow[]>
   sendFriendRequest(nickname: string): Promise<Relation>
   respondFriendRequest(nickname: string, accept: boolean): Promise<void>
