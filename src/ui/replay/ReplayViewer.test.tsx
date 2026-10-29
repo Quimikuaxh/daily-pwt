@@ -8,6 +8,7 @@ import { DEFAULT_SETTINGS } from '../../storage/settings'
 import { makeGameData } from '../../test-utils/fixtures'
 import { settle } from '../../test-utils/ui'
 import { mkView, pMon, rMon } from '../../test-utils/view'
+import { es } from '../../i18n/es'
 import { ReplayViewer } from './ReplayViewer'
 
 // UT-107 · F5 (RF-127 a RF-130): visor de repeticiones sobre la pantalla de combate, sin menús y con sus controles.
@@ -179,6 +180,27 @@ describe('visor de repeticiones (UT-107)', () => {
     const rivalPanels = within(rival).getAllByRole('button').filter((button) => button.classList.contains('bt-party-panel'))
     expect(rivalPanels).toHaveLength(6)
     expect(rivalPanels[0]).toHaveAccessibleName(/70 %/)
+  })
+
+  it('en los equipos del visor, Datos enseña el objeto de ese momento de la repetición (tras Truco, Desarme…), en los dos bandos (UT-114)', async () => {
+    // Tras el turno 1: el primero del jugador lleva la Baya Atania que no tenía y al del rival se la quitaron.
+    const changed = (step: ReplayStep, index: number): ReplayStep =>
+      index === 0 ? step : { ...step, view: { ...step.view, player: { ...step.view.player, team: step.view.player.team.map((mon, slot) => (slot === 0 ? { ...mon, item: 'chestoberry' } : mon)) }, rival: { ...step.view.rival, team: step.view.rival.team.map((mon, slot) => (slot === 0 ? { ...mon, item: '' } : mon)) } } }
+    const { user, controls } = await mount(undefined, { ...replay, steps: replay.steps.map(changed) })
+    await user.click(within(controls()).getByRole('button', { name: 'Turno siguiente' }))
+    await settle(50)
+    const openData = async (team: string) => {
+      const region = await screen.findByRole('region', { name: team })
+      await user.click(within(region).getAllByRole('button').filter((button) => button.classList.contains('bt-party-panel'))[0])
+      await user.click(screen.getByRole('button', { name: 'Datos' }))
+      return screen.findByRole('region', { name: /^Datos de/ })
+    }
+    await user.click(screen.getByRole('button', { name: 'Tu equipo' }))
+    expect(await openData('Equipo')).toHaveTextContent(data.names.items.chestoberry)
+    await user.keyboard('{Escape}')
+    await user.keyboard('{Escape}')
+    await user.click(screen.getByRole('button', { name: 'Rival' }))
+    expect(await openData('Equipo rival')).toHaveTextContent(es.battle.summary.noItem)
   })
 
   it('el botón del equipo dice «Equipo» si la repetición es de otro jugador', async () => {
