@@ -39,7 +39,7 @@ type TodayContentProps = {
 }
 
 /**
- * «Victorias: X/Y» del día bajo el rival (decisión de Jose, 29/10/2026). Solo con la cuenta abierta o abriéndose: sin servicio (o sin
+ * «Victorias de jugadores: X/Y» del día bajo el rival (decisión de Jose, 29/10/2026). Solo con la cuenta abierta o abriéndose: sin servicio (o sin
  * Supabase configurado) no se enseña. Se pide al entrar en Hoy, también al volver de un combate.
  */
 function useDayWins(api: CloudApi | null, date: string, state: AccountState | undefined): DayWins {

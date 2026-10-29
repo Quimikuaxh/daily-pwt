@@ -9,7 +9,7 @@ import { cardModel } from './cardModel'
 import { MonHead } from './MonHead'
 import { MoveList } from './MoveList'
 
-/** «Victorias: X/Y» de hoy (decisión de Jose, 29/10/2026): `undefined` sin cuenta configurada (no se enseña), `null` mientras carga. */
+/** «Victorias de jugadores: X/Y» de hoy (decisión de Jose, 29/10/2026): `undefined` sin cuenta configurada (no se enseña), `null` mientras carga. */
 export type DayWins = { wins: number; players: number } | null | undefined
 
 type RivalSectionProps = { challenge: Challenge; data: GameData; dayWins?: DayWins }

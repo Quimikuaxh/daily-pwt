@@ -9,7 +9,7 @@ import { MemoryStorage } from '../../test-utils/memoryStorage'
 import { setMadridTime, testMenu } from '../../test-utils/ui'
 import { TodayScreen } from './TodayScreen'
 
-// UT-120 · «Victorias: X/Y» de hoy bajo el rival (decisión de Jose, 29/10/2026).
+// UT-120 · «Victorias de jugadores: X/Y» de hoy bajo el rival (decisión de Jose, 29/10/2026).
 const data = makeGameData()
 
 beforeEach(() => vi.useFakeTimers({ shouldAdvanceTime: true }))
@@ -30,15 +30,15 @@ async function mountToday(api = fakeApi(), withCloud = true) {
 }
 
 describe('victorias del día bajo el rival (UT-120)', () => {
-  it('pide las de hoy y las enseña como «Victorias: ganadas/terminados»', async () => {
+  it('pide las de hoy y las enseña como «Victorias de jugadores: ganadas/terminados»', async () => {
     const api = await mountToday(fakeApi({ dayWins: async () => ({ wins: 12, players: 30 }) }))
-    expect(await screen.findByText('Victorias: 12/30')).toBeInTheDocument()
+    expect(await screen.findByText('Victorias de jugadores: 12/30')).toBeInTheDocument()
     expect(api.dayWins).toHaveBeenCalledWith(LAUNCH)
   })
 
   it('mientras carga, la línea ya ocupa su sitio', async () => {
     await mountToday(fakeApi({ dayWins: () => new Promise(() => undefined) }))
-    await waitFor(() => expect(screen.getByTestId('day-wins')).toHaveTextContent('Victorias: …'))
+    await waitFor(() => expect(screen.getByTestId('day-wins')).toHaveTextContent('Victorias de jugadores: …'))
   })
 
   it('sin cuenta configurada no sale', async () => {

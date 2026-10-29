@@ -156,8 +156,9 @@ export const es = {
     regions: REGIONS,
     /** Va seguido de la placa del tipo, que ya lleva su nombre. */
     specialty: 'Especialidad:',
-    dayWins: (wins: number, players: number) => `Victorias: ${wins}/${players}`,
-    dayWinsLoading: 'Victorias: …',
+    // «de jugadores» (decisión de Jose, 29/10/2026): con solo «Victorias» parecían las del rival o las propias.
+    dayWins: (wins: number, players: number) => `Victorias de jugadores: ${wins}/${players}`,
+    dayWinsLoading: 'Victorias de jugadores: …',
     dayWinsHint: 'Jugadores que han ganado hoy a este rival / jugadores que han terminado su combate oficial de hoy',
     showRivalDetails: 'Ver movimientos y objetos del rival',
     hideRivalDetails: 'Ocultar movimientos y objetos del rival',
