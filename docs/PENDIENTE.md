@@ -11,6 +11,10 @@ Hecho: 1) resultado visual en el Historial (RF-124b; migración `20261029020000_
 - **Qué:** en Estadísticas › Amigos, al pulsar un amigo se abre una vista prácticamente idéntica a la de «Yo» con las estadísticas de ese amigo (jugados, victorias, rachas, distribución, puntos del mes…), con su nickname arriba y la forma de volver a la lista.
 - **Pista:** reutilizar el componente de «Yo» (`MyStats` en `src/ui/stats/StatsDialog.tsx`) alimentándolo con los días del amigo, no copiarlo. Hace falta una función nueva en el servidor que devuelva los resultados de un jugador **solo si es amigo** del que pregunta (comprobado en el servidor, como el resto de RPC de `pwt`), sin el día de hoy hasta que se cierre (para no adelantar cómo le fue antes de jugar). Por definir con Jose: si se enseña también su botón de compartir o su historial de repeticiones.
 
+## Más adelante (sin prisa): ids de repeticiones compartidas con aleatoriedad criptográfica (Jose, 29/10/2026)
+- **Qué:** `pwt.new_replay_id` (`20261029000000_pwt_repeticiones.sql`) arma los 10 caracteres con `random()`, que no es criptográfico. Cambiarlo a `gen_random_bytes` (pgcrypto) en una migración nueva, con el mismo alfabeto y longitud (los enlaces ya compartidos siguen valiendo).
+- **Por qué:** refuerzo, no un agujero: hay unos 3,6 billones de ids posibles y adivinar uno a ciegas no es viable, y una repetición compartida es pública por diseño. Jose: no es prioritario.
+
 ## Primera tanda en `feature/mejoras-tras-f5` (ya desplegada el 29/10/2026)
 - **Hecho:** bolita naranja con las solicitudes pendientes en «Amigos» (RF-111); login con el botón oficial de Google (DEC-70, comprobado en local); oficial a medias a medianoche = derrota (RF-80b, DEC-71).
 - **Antes de desplegar:** aplicar en producción la migración `20261029010000_pwt_oficial_caducado.sql` **antes** del despliegue (el cliente nuevo cuenta con que el servidor cierre los oficiales a medias). Tanda e2e completa.

@@ -265,13 +265,18 @@
   }
 
   .history-item-actions {
-    grid-row: 1;
+    grid-row: 1 / span 2;
     flex-direction: column;
   }
 
+  /* El equipo, debajo del sprite y del texto y a la izquierda de los botones (decisión de Jose, 29/10/2026; antes, a todo el ancho por
+     debajo de los botones, que dejaba la fila muy alta). Si no caben los 6 a 40 px, las casillas se estrechan (los iconos tienen margen
+     transparente y se solapan sin taparse). */
   .history-item-team {
-    grid-column: 1 / -1;
-    margin-top: 6px;
+    grid-column: 1 / -2;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 40px));
+    gap: 0;
   }
 }
 
