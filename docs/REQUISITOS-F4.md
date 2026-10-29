@@ -42,6 +42,7 @@ Base: [PRD](PRD.md) §0, «Cuentas, rachas y rankings» (decisiones de Jose del 
 ### Rankings
 - RF-106 Ranking de **puntos del mes**: suma de los puntos de los días del mes natural (hora de Madrid). Se reinicia el día 1. Se pueden ver los meses anteriores.
 - RF-107 Ranking de **racha actual**: racha de victorias viva de cada jugador en este momento (no es mensual).
+- RF-107b **Con 0 también se sale** en los dos rankings (decisión de Jose, 29/10/2026): todo jugador con nickname que haya terminado algún oficial (también importado o no validado); en el de puntos de un mes, si lo terminó ese mes o antes. Quien solo abrió la web, sin jugar, no sale. *Descartado:* todos los que tienen nickname (sin cuenta, cualquiera que entra recibe uno) y solo los que tienen cuenta.
 - RF-108 Los dos rankings tienen vista **global** y vista **amigos** (el jugador y sus amigos aceptados). Se muestra la posición propia aunque no esté en el top.
 - RF-109 Sin cuenta se aparece en los rankings globales (RF-112), pero no hay vista de amigos; se invita a iniciar sesión.
 

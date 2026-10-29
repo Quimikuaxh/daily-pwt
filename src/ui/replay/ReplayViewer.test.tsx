@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { getAudio } from '../../audio/audio'
@@ -33,6 +33,12 @@ const replay: ReplayData = {
   ],
   ended: ENDED,
 }
+
+// «Datos» abre una ficha que se carga aparte (`lazy`): en la tanda completa su primera carga podía tardar más de lo que espera
+// `findByRole` y UT-114 fallaba a veces (también en CI). Precargada, el test no depende de lo cargada que esté la máquina.
+beforeAll(async () => {
+  await import('../battle/party/SummaryScreen')
+})
 
 beforeEach(() => {
   vi.useFakeTimers()

@@ -348,11 +348,34 @@ describe('rankings (UT-94)', () => {
     await seedDay(anonymous.id, addDays(t.today, -1), 'won', 6)
     const page = await t.call<RankingPage>(alive, `select pwt.streak_ranking_page('global', 1, 100)`)
     const rows = page.rows.filter((row) => String(row.nickname).startsWith('racha_')).map(({ rank: _rank, ...row }) => row)
+    // Con 0 también salen quienes han jugado algún oficial (RF-107b, cambio de requisito del 29/10/2026): racha_2 perdió ayer.
     expect(rows).toEqual([
       { nickname: 'racha_0', verified: true, streak: 3, me: true },
       { nickname: 'racha_1', verified: true, streak: 2, me: false },
       { nickname: 'racha_3', verified: false, streak: 1, me: false },
+      { nickname: 'racha_2', verified: true, streak: 0, me: false },
     ])
+  })
+
+  // RF-106b y RF-107b (Jose, 29/10/2026): con 0 salen todos los que han terminado algún oficial; quien solo abrió la web, no.
+  it('los rankings incluyen a quien tiene 0 si ha jugado algún oficial, y no a quien solo tiene nickname', async () => {
+    const month = addDays(t.today, -800).slice(0, 8) + '01'
+    const [before, lostNow, imported, visitor] = [await t.user(), await t.user(), await t.user(), await t.user(true)]
+    for (const [index, player] of [before, lostNow, imported, visitor].entries()) {
+      await t.call(player, `select pwt.ensure_profile()`)
+      await t.call(player, `select pwt.set_nickname($1)`, [`cero_${index}`])
+    }
+    // Jugó el mes anterior; pierde este mes; solo tiene un día importado (no puntúa); el visitante nunca jugó.
+    await seedDay(before.id, addDays(month, -10), 'won', 6)
+    await seedDay(lostNow.id, addDays(month, 3), 'lost', 0)
+    await seedDay(imported.id, addDays(month, 5), 'won', 6, { imported: true, validated: false })
+    await t.admin(`select pwt.close_days()`)
+    const zeros = (rows: Array<Record<string, unknown>>) => rows.filter((row) => String(row.nickname).startsWith('cero_')).map((row) => [row.nickname, row.points ?? row.streak])
+    expect(zeros((await pointsPage(before, month, 'global', 1, 100)).rows).sort()).toEqual([['cero_0', 0], ['cero_1', 0], ['cero_2', 0]])
+    // Un mes antes de que jugaran: nadie de ellos.
+    expect(zeros((await pointsPage(before, addDays(month, -40), 'global', 1, 100)).rows)).toEqual([])
+    const streaks = zeros((await t.call<RankingPage>(before, `select pwt.streak_ranking_page('global', 1, 100)`)).rows)
+    expect(streaks.sort()).toEqual([['cero_0', 0], ['cero_1', 0], ['cero_2', 0]])
   })
 })
 

@@ -82,6 +82,8 @@ El build de producción no incluye los ganchos de prueba (ver [Ganchos de prueba
 
 Configuración única del repositorio: Settings > Pages > Source = **GitHub Actions**.
 
+Las acciones de los workflows van en versiones que corren en Node 24 (`checkout@v7`, `setup-node@v7`, `upload-artifact@v7`, `upload-pages-artifact@v5`, `deploy-pages@v5`; 29/10/2026): con las anteriores GitHub avisaba de que Node 20 está obsoleto. El proyecto usa Node 22 (`engines` y `node-version`).
+
 ### Cuentas y rankings (Supabase, F4)
 
 Opcional: sin configurar, el juego funciona entero en local (sin cuentas ni rankings). Usa el proyecto de Supabase de claude-test, con todo lo de daily-pwt en el esquema `pwt` ([DEC-63](docs/ARQUITECTURA.md)).
