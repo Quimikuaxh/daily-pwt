@@ -6,7 +6,8 @@ import { shareResult } from '../share/shareText'
 import { replayLink } from './replayLink'
 import type { HistoryArt } from './historyArt'
 import { MemberIcon } from '../battle/party/MemberIcon'
-import { trainerMiniSpriteUrl, trainerSpriteUrl } from '../../data/sprites'
+// Con la base de la web (`/daily-pwt/` en Pages), como el resto de sprites: las de `data/sprites` sin base apuntan a la raíz del dominio.
+import { trainerMiniSprite, trainerSprite } from '../common/spriteUrls'
 import './replay.css'
 
 const text = esReplay.history
@@ -136,9 +137,9 @@ function HistoryItemHeader({ item, name, art, children }: { item: HistoryItem; n
 function TrainerMini({ sprite }: { sprite: string }) {
   const [missing, setMissing] = useState(false)
   return missing ? (
-    <img className="history-trainer history-trainer-battle" src={trainerSpriteUrl(sprite)} alt="" />
+    <img className="history-trainer history-trainer-battle" src={trainerSprite(sprite)} alt="" />
   ) : (
-    <img className="history-trainer" src={trainerMiniSpriteUrl(sprite)} alt="" onError={() => setMissing(true)} />
+    <img className="history-trainer" src={trainerMiniSprite(sprite)} alt="" onError={() => setMissing(true)} />
   )
 }
 

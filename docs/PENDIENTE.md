@@ -9,6 +9,26 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 - **Antes de desplegar:** aplicar en producción la migración `20261029010000_pwt_oficial_caducado.sql` **antes** del despliegue (el cliente nuevo cuenta con que el servidor cierre los oficiales a medias). Tanda e2e completa.
 - **Tras desplegar:** quitar del cliente OAuth de Google la URI de redirección de Supabase y el dominio `supabase.co` (ver «Marca en la pantalla de Google»).
 
+## Corregir: objeto real en la pantalla de datos (petición de Jose, 29/10/2026)
+- **Qué:** en los datos de cada Pokémon durante el combate (los propios y los del rival), el objeto que lleva **en ese momento**, no el del equipo del reto: tras Truco o Trapicheo, el que recibió; tras Desarme, consumir una baya o gastar un objeto, ninguno.
+- **Por qué:** hoy `SummaryScreen` pinta `itemName` del equipo del reto (`cardModel.ts`), fijo durante todo el combate, y engaña al decidir.
+- **Pista:** los propios ya traen el objeto actual en la petición del simulador (`RequestPokemon.item`); los del rival hay que seguirlos con los mensajes `-item` y `-enditem` del registro (lo que el jugador ha visto, como en el juego). Comprobar también al reanudar y en el visor de repeticiones.
+
+## Siguiente: aviso de solicitudes en el icono de Estadísticas (Jose, 29/10/2026)
+- **Qué:** un puntito rojo en el icono de Estadísticas de la cabecera cuando haya solicitudes de amistad pendientes, para verlo sin abrir la ventana (dentro ya está la bolita naranja de «Amigos», RF-111). Para lectores de pantalla, el nombre del botón lo dice.
+
+## Corregir: nombres cortados en los rankings (Jose, 29/10/2026)
+- **Qué:** en las filas de los rankings se cortan los rasgos que bajan de la línea (la «g» de «Andreugu»). Revisar la altura de línea y el `overflow` de la celda del nombre (con la fuente `pokemon-dp`, ver «Fuente» en `CLAUDE.md`), también en Amigos y en el nickname de la cabecera.
+
+## Corregir: la pausa de la repetición no funciona (Jose, 29/10/2026)
+- **Qué:** con «Reproducir» en marcha, pulsar «Pausa» debe parar la repetición; hoy sigue avanzando.
+- **Pista:** `ReplayViewer.tsx` solo mira `playing` al llegar a un punto de descanso (efecto que programa el siguiente turno); el turno en curso (`busy`, `playNext`) sigue y quizá el temporizador ya programado no se cancela al pausar. Reproducir el fallo en un test (UT-107) antes de arreglarlo.
+
+## Siguiente: ver los equipos en la repetición (Jose, 29/10/2026)
+- **Qué:** en el visor de repeticiones, un botón para consultar el equipo propio y el del rival (la pantalla de datos del combate, con lo que había en ese momento de la repetición). Hoy el visor no ofrece menús y no hay forma de verlos.
+- **Solo en el visor** (decisión de Jose, 29/10/2026); en el combate no.
+- **Por definir:** un botón por equipo o uno con pestañas; si el rival se enseña entero (la repetición ya terminó) o solo lo visto hasta ese turno.
+
 ## Siguiente: resultado visual en el Historial (petición de Jose, 28/10/2026)
 - **Qué (propuesta, por confirmar el diseño):** en cada combate del Historial, en vez de la palabra «Victoria» / «Derrota», un distintivo de color (copa dorada y borde dorado si se ganó; Poké Ball gris y borde rojo si se perdió), con los turnos y los Pokémon en pie debajo; los Pokémon del equipo que acabaron debilitados, apagados (como en la pantalla de equipo). Para lectores de pantalla sigue diciendo «Victoria» o «Derrota».
 - **Hace falta:** que `my_history` devuelva también `player_fainted` (nueva migración: la de F5 ya estará aplicada).
