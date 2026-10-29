@@ -7,6 +7,33 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 ## Tanda en curso: `feature/mejoras-tras-f5` (desde `main` en 9b17abb, 29/10/2026; un solo despliegue al final)
 Hecho: 1) resultado visual en el Historial (RF-124b; migración `20261029020000_pwt_historial_resultado.sql`, pendiente de aplicar en producción), 2) pausa de la repetición (RF-128), música continua en el visor (RF-129b), 3) objeto real en la pantalla de datos (RF-71, UT-114), 4) nombres cortados en los rankings y en la cabecera, 5) ventanas que cambian de tamaño al cargar (DEC-72), 6) puntito rojo en Estadísticas (RF-111) y cifra centrada en la bolita de «Amigos», 7) la página de detrás ya no se desplaza con una ventana abierta (UT-116, E2E-74), 8) equipos en el visor (RF-129c, UT-117). Antes de desplegar: migraciones en producción primero y tanda e2e completa («directo» no exime de los tests).
 
+## Próxima mejora de la IA del rival (29/10/2026, sin empezar; PRD §0 «IA que aprende tu equipo»)
+Hoy (DEC-12) la IA conoce tu equipo entero desde el principio (`ai/state.ts`) y es una heurística por reglas. Opciones habladas con Jose:
+
+**Decidido por Jose**
+- **No conoce tus sets de entrada:** los aprende sobre la marcha, con lo que se ve en el combate (como un jugador).
+- **Cambia cuando queda bloqueada** (no solo por desventaja de tipos o daño): Otra Vez o Mofa que la dejan sin nada útil, Anulación, objeto Elección atado a un ataque que no te hace nada, Canto Mortal a punto de acabar, Tóxico avanzado o Drenadoras con poca vida.
+- **Puede predecir, pero nunca decidir después de tu elección.** Hoy ya no la lee (`makeRivalChoice` llama a la IA tras registrar tu elección, pero `AiState` no la incluye). Propuesta: que el motor decida por el rival **antes** de pasar tu elección al sim, con un test que compruebe que con dos elecciones tuyas distintas el rival hace lo mismo.
+
+**Qué sabe de cada Pokémon tuyo (modelo de información)**
+- Especie: solo si ha salido al campo (no ve el banquillo). PS en %, estado y subidas: lo que se ve en su caja.
+- Movimientos: los que has usado. Objeto: cuando se ve (Restos, baya comida, Vidasfera) o se deduce (repetir siempre el mismo ataque → Elección). Habilidad: cuando sale en un mensaje (Intimidación, Levitación…).
+- Lo no visto, dos opciones:
+  1. **Por los sets del pool del jugador** (`player-sets.json`), descartando los que no encajan con lo visto, como quien conoce el metajuego. *Recomendada.*
+  2. **Lo básico** (ataques de su tipo, sin objeto especial) hasta verlo. Más ingenua.
+
+**Opciones para hacerla más fuerte** (saber menos la hace algo más floja; combinables con lo anterior, siempre sobre lo que ha visto)
+1. **Afinar la heurística:** quién ataca primero (velocidad y prioridad), prever tu cambio y atacar al que entra, cambiar a quien aguanta tu golpe previsto, no mejorar si la van a debilitar antes, guardar al Pokémon clave y sacrificar a otro. Barata, sin coste de cálculo.
+2. **Mirar un turno por delante:** cada opción del rival contra todas tus respuestas posibles (no la elegida), con `@smogon/calc`; la que mejor resultado da contra tu mejor respuesta. Unas 80 combinaciones por turno, rápido en el worker.
+3. **Búsqueda más profunda** (varios turnos o simulaciones aleatorias clonando el combate de `@pkmn/sim`). La más fuerte; en móvil puede tardar segundos por turno.
+
+**Por decidir**
+- Opción de información (1 o 2) y de fuerza (1, 2 o 3).
+- Si la IA nueva es para todos o una dificultad elegible; si es elegible, cómo cuenta en rachas, puntos y la media del día (si no se separa, los rankings no son comparables).
+- Calibrar con partidas de prueba (pendiente ya, «Necesitan a Jose») para que ningún día quede casi imposible.
+- Simetría: tú sí puedes ver los sets del rival (ocultos por defecto, PRD P6); ¿se mantiene?
+- Desde qué día se aplica: cambia lo que hace el rival en los retos (no el reto en sí); las repeticiones y reanudar siguen valiendo si la IA sigue siendo determinista con su semilla (`Prng(battleSeed+":ai")`), pero un oficial a medias al desplegar se reanudaría con otra IA.
+
 ## Rankings con 0 (29/10/2026, directo a `main`)
 - **Hecho:** salen con 0 quienes han terminado algún oficial (RF-107b, UT-122). Solo servidor: la web no cambia.
 - **Para que se vea (Jose):** aplicar en producción `20261029060000_pwt_rankings_con_cero.sql` (SQL Editor). Se puede volver a ejecutar.
