@@ -51,6 +51,22 @@ describe('efectos de movimientos', () => {
     expect(drawn(effect, 0.42, 'a')).toEqual(drawn(effect, 0.42, 'a'))
   })
 
+  // UT-123 · Día Soleado (Jose, 30/10/2026): rayos de sol desde la esquina de arriba a la izquierda, no puntos que caen como fuego.
+  it('Día Soleado pinta rayos de sol desde la esquina de arriba a la izquierda (no puntos que caen) y se apaga al terminar', () => {
+    expect(effectFor('sunnyday', 'weather', 'Fire')).toBe(CUSTOM_EFFECTS.sunnyday)
+    const middle = drawn(CUSTOM_EFFECTS.sunnyday, 0.5)
+    expect(middle.length).toBeGreaterThan(100)
+    // Todo dentro del cono que baja hacia la derecha desde el sol (abajo y a la derecha de su centro, con algo de margen por el disco).
+    expect(middle.every((dot) => dot.x >= -12 && dot.y >= -12)).toBe(true)
+    // Los haces cruzan la pantalla: llegan lejos del sol.
+    expect(Math.max(...middle.map((dot) => Math.hypot(dot.x - 14, dot.y - 8)))).toBeGreaterThan(150)
+    // Igual en dos instantes seguidos salvo el pulso: no hay partículas que caigan (la nube no se desplaza hacia abajo).
+    const later = drawn(CUSTOM_EFFECTS.sunnyday, 0.55)
+    const meanY = (dots: { y: number }[]) => dots.reduce((sum, dot) => sum + dot.y, 0) / dots.length
+    expect(Math.abs(meanY(later) - meanY(middle))).toBeLessThan(15)
+    expect(drawn(CUSTOM_EFFECTS.sunnyday, 1)).toEqual([])
+  })
+
   it('los temblores son de pocos píxeles y se apagan al terminar', () => {
     for (const [name, effect] of all) {
       if (!effect.shake) continue
@@ -62,14 +78,16 @@ describe('efectos de movimientos', () => {
     }
   })
 
-  it('61 movimientos con animación propia (tres tandas de 20 y Maldición); el resto usa la genérica de su clase (Poder Oculto de cualquier tipo, la suya)', () => {
-    expect(Object.keys(CUSTOM_EFFECTS)).toHaveLength(61)
+  // Cambio de requisito del 30/10/2026 (Jose): cuarta tanda con los cuatro climas propios (la lluvia ya lo era) y 20 movimientos más.
+  it('84 movimientos con animación propia (cuatro tandas de 20, Maldición y tres climas); el resto usa la genérica de su clase (Poder Oculto de cualquier tipo, la suya)', () => {
+    expect(Object.keys(CUSTOM_EFFECTS)).toHaveLength(84)
+    for (const id of ['sunnyday', 'raindance', 'sandstorm', 'hail', 'trick', 'dragondance', 'lightscreen', 'reflect']) expect(effectFor(id, 'foe'), id).toBe(CUSTOM_EFFECTS[id])
     expect(effectFor('flamethrower', 'shot', 'Fire')).toBe(CUSTOM_EFFECTS.flamethrower)
     expect(effectFor('crunch', 'bite', 'Dark')).toBe(CUSTOM_EFFECTS.crunch)
     expect(effectFor('earthquake', 'hit')).toBe(CUSTOM_EFFECTS.earthquake)
     expect(effectFor('hiddenpowerfire', 'shot')).toBe(CUSTOM_EFFECTS.hiddenpower)
     expect(effectFor('tackle', 'hit')).toBe(GENERIC_EFFECTS.hit)
-    expect(effectFor('nastyplot', 'boost')).toBe(GENERIC_EFFECTS.boost)
+    expect(effectFor('agility', 'boost')).toBe(GENERIC_EFFECTS.boost)
     expect(effectFor('firefang', 'bite', 'Fire')).toBe(GENERIC_EFFECTS.bite)
   })
 
@@ -96,11 +114,12 @@ describe('efectos de movimientos', () => {
   it('los ataques especiales sin animación propia usan la de su tipo (cada tipo, la suya; Lanzallamas no son bolas)', () => {
     expect(Object.keys(SPECIAL_BY_TYPE).sort()).toEqual([...TYPES].sort())
     expect(new Set(Object.values(SPECIAL_BY_TYPE)).size).toBe(TYPES.length)
-    // Lanzallamas y Surf tienen animación propia desde la tercera tanda (23/10/2026): de ejemplo, Onda Ígnea y Agua Lodosa.
-    expect(effectFor('heatwave', 'shot', 'Fire')).toBe(SPECIAL_BY_TYPE.Fire)
+    // Lanzallamas y Surf tienen animación propia desde la tercera tanda (23/10/2026) y Onda Ígnea desde la cuarta (30/10/2026): de
+    // ejemplo, Sofoco y Agua Lodosa.
+    expect(effectFor('overheat', 'shot', 'Fire')).toBe(SPECIAL_BY_TYPE.Fire)
     expect(effectFor('muddywater', 'shot', 'Water')).toBe(SPECIAL_BY_TYPE.Water)
     expect(effectFor('icebeam', 'shot', 'Ice')).toBe(CUSTOM_EFFECTS.icebeam)
-    expect(effectFor('heatwave', 'shot')).toBe(GENERIC_EFFECTS.shot)
+    expect(effectFor('overheat', 'shot')).toBe(GENERIC_EFFECTS.shot)
   })
 
   it('move-fx.json: cada movimiento tiene una clase conocida y los de estado están bien clasificados', () => {

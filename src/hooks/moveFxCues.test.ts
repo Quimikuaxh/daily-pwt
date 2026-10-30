@@ -51,6 +51,16 @@ describe('conditionFx', () => {
     expect(conditionFx('|-boost|p1a: Scizor|atk|0')).toBeNull()
   })
 
+  // Jose, 30/10/2026: el clima se anima al ponerlo una habilidad y en cada turno que sigue; si lo pone un movimiento, ya se anima con él.
+  it('el clima se anima al ponerlo una habilidad y en cada turno que sigue, pero no al ponerlo un movimiento ni al acabar', () => {
+    expect(conditionFx('|-weather|SunnyDay|[from] ability: Drought|[of] p2a: Ninetales')).toEqual({ moveId: 'sunnyday', user: 'rival', target: null })
+    expect(conditionFx('|-weather|Sandstorm|[upkeep]')).toEqual({ moveId: 'sandstorm', user: 'player', target: null })
+    expect(conditionFx('|-weather|Hail|[upkeep]')).toMatchObject({ moveId: 'hail' })
+    expect(conditionFx('|-weather|RainDance|[from] ability: Drizzle|[of] p1a: Politoed')).toEqual({ moveId: 'raindance', user: 'player', target: null })
+    expect(conditionFx('|-weather|SunnyDay')).toBeNull()
+    expect(conditionFx('|-weather|none')).toBeNull()
+  })
+
   it('el resto de líneas, nada', () => {
     expect(conditionFx('|cant|p1a: Suicune|recharge')).toBeNull()
     expect(conditionFx('|-damage|p2a: Garchomp|50/100')).toBeNull()

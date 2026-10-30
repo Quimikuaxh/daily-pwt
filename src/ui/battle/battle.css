@@ -424,7 +424,8 @@
   left: 0;
   top: 147px;
   width: 256px;
-  height: 42px;
+  /* Hasta el borde inferior de la pantalla (192 px): con 42 px quedaba una franja del campo debajo (Jose, 30/10/2026). */
+  height: 45px;
   box-sizing: border-box;
   padding: 3px 8px 0;
   background: rgb(0 0 0 / 0.67);
@@ -1237,11 +1238,15 @@
   --weather-art: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' shape-rendering='crispEdges'%3E%3Crect width='10' height='10' fill='%235888c0'/%3E%3Crect x='2' y='1' width='1' height='3' fill='%23f8f8f8'/%3E%3Crect x='1' y='2' width='3' height='1' fill='%23f8f8f8'/%3E%3Crect x='7' y='6' width='2' height='2' fill='%23d0e8f8'/%3E%3C/svg%3E") 0 0 / 10px 10px;
 }
 
+/* Capa propia: al terminar la animación de un cambio (se quita `.bt-intro`), Chromium volvía a pintar la pantalla táctil y durante un
+   fotograma la mitad de abajo salía del color de fondo del SVG (#d8d8e0): un flash blanco, p. ej. con el daño de Trampa Rocas al entrar
+   (Jose, 30/10/2026; DEC-74). */
 .bt-touch-svg {
   position: absolute;
   inset: 0;
   width: 256px;
   height: 192px;
+  will-change: transform;
 }
 
 .bt-touch button {

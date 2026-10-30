@@ -326,7 +326,46 @@ const substitute: Effect = {
   },
 }
 
-/** Clima: partículas por toda la pantalla, del color del tipo (lluvia en rayas si es de Agua; sol, arena o nieve en puntos). */
+/** Centro del sol de Día Soleado: arriba a la izquierda, medio fuera de la pantalla, para que los rayos crucen el campo en diagonal. */
+const SUN = { x: 14, y: 8 }
+const SUN_COLORS = { core: '#f8f8d8', glow: '#f8d850', ray: '#f8f0b0', rayEdge: '#f8c840' }
+
+/**
+ * Día Soleado: un sol que asoma por la esquina y haces de luz que bajan en diagonal sobre el campo, crecen y laten antes de apagarse
+ * (Jose, 30/10/2026: con puntos que caían parecía que llovía fuego).
+ */
+function sunRays(paint: Painter, progress: number, random: () => number): void {
+  const grow = phase(progress, 0, 0.4)
+  const fade = 1 - phase(progress, 0.8, 1)
+  if (fade <= 0) return
+  const rays = 6
+  for (let i = 0; i < rays; i += 1) {
+    // De casi horizontal a casi vertical, hacia abajo a la derecha; cada haz late con su propio desfase.
+    const angle = 0.18 + (i / (rays - 1)) * 1.15
+    const pulse = 0.85 + 0.15 * Math.sin(progress * 16 + i * 1.7)
+    const length = 280 * grow * pulse * fade
+    const width = i % 2 === 0 ? 5 : 3
+    for (let distance = 14; distance < length; distance += 3) {
+      // Macizo cerca del sol y punteado hacia la punta: la luz se difumina.
+      if (distance > length * 0.65 && Math.floor(distance / 3) % 2 === 1) continue
+      const x = SUN.x + Math.cos(angle) * distance
+      const y = SUN.y + Math.sin(angle) * distance
+      if (x > 256 || y > 192) break
+      paint.dot(x - width / 2, y - width / 2, width, distance < length * 0.4 ? SUN_COLORS.ray : SUN_COLORS.rayEdge)
+    }
+  }
+  // Destellos sueltos dentro del cono de luz.
+  for (let i = 0; i < 10; i += 1) {
+    const angle = 0.18 + random() * 1.15
+    const distance = 40 + random() * 200 * grow
+    const sparkle = { x: SUN.x + Math.cos(angle) * distance, y: SUN.y + Math.sin(angle) * distance }
+    if ((i + Math.floor(progress * 12)) % 3 === 0 && sparkle.x < 256 && sparkle.y < 192) paint.dot(sparkle.x, sparkle.y, 2, '#ffffff')
+  }
+  orb(paint, SUN, Math.round(9 + 5 * grow), SUN_COLORS.glow, SUN_COLORS.core)
+  orb(paint, SUN, Math.round(5 + 3 * grow), SUN_COLORS.core, '#ffffff')
+}
+
+/** Clima genérico (los cuatro climas tienen la suya propia): partículas por toda la pantalla, del color del tipo. */
 const weather: Effect = {
   duration: 900,
   draw(paint, progress, c) {
@@ -1687,6 +1726,394 @@ const zenheadbutt: Effect = {
   shake: shakeTarget(0.55, 0.85, 3),
 }
 
+// ---------- cuarta tanda (30/10/2026): climas y los 20 movimientos más usados que iban con la genérica ----------
+
+/** Día Soleado: el sol con sus rayos (`sunRays`), sin depender del tipo (también cuando lo pone Sequía). */
+const sunnyday: Effect = {
+  duration: 1000,
+  draw(paint, progress, c) {
+    sunRays(paint, progress, c.random)
+  },
+}
+
+/** Tormenta Arena: ráfagas de arena que cruzan la pantalla en horizontal, ondulando, con polvo suelto. */
+const sandstorm: Effect = {
+  duration: 1000,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 90)
+    const fade = 1 - phase(progress, 0.85, 1)
+    if (fade <= 0) return
+    const colors = ['#d8b070', '#b08848', '#f0d898']
+    for (let i = 0; i < 44; i += 1) {
+      const x = (seeds[i] * 300 + progress * 520) % 300 - 22
+      const y = seeds[i + 44] * 176 + Math.sin(progress * 14 + i) * 5
+      // Racha: de cuatro a seis cuadros en fila, el de delante más claro.
+      const length = 4 + (i % 3)
+      for (let k = 0; k < length; k += 1) if (x - k * 4 > -8 && x - k * 4 < 260) paint.dot(x - k * 4, y + k * 0.5, 3, k === 0 ? colors[2] : colors[i % 2])
+    }
+    // Polvo: bandas punteadas que velan el campo.
+    for (let band = 0; band < 5; band += 1) {
+      const y = 20 + band * 34 + Math.sin(progress * 6 + band) * 4
+      for (let x = (progress * 200 + band * 13) % 8; x < 256; x += 8) paint.dot(x, y + ((x / 8) % 2) * 2, 2, colors[1])
+    }
+  },
+}
+
+/** Granizo: nubes grises y bolas de hielo que caen en diagonal y rebotan en destellos al llegar abajo. */
+const hail: Effect = {
+  duration: 1000,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 60)
+    const clouds = phase(progress, 0, 0.3)
+    for (let i = 0; i < 8; i += 1) orb(paint, { x: 16 + i * 32, y: -6 + clouds * 14 + (i % 2) * 4 }, 9, '#9098a8', '#c8d0e0')
+    const fall = phase(progress, 0.2, 1)
+    if (fall <= 0) return
+    for (let i = 0; i < 28; i += 1) {
+      const t = (fall * 1.6 + seeds[i]) % 1
+      const x = (seeds[i + 28] * 240 + t * 30) % 250
+      const y = 12 + t * 168
+      if (t > 0.92) {
+        // Rebote: un destello en cruz donde cae.
+        for (const [dx, dy] of [[-3, 0], [3, 0], [0, -3]]) paint.dot(x + dx, y + dy, 1, '#ffffff')
+        continue
+      }
+      paint.dot(x, y, 4, '#e0f0f8')
+      paint.dot(x + 2, y + 2, 2, '#88b8e0')
+      paint.dot(x, y, 1, '#ffffff')
+    }
+  },
+}
+
+/** Danza Dragón: dos llamas, morada y roja, suben en espiral alrededor del usuario. */
+const dragondance: Effect = {
+  duration: 900,
+  draw(paint, progress, c) {
+    if (progress > 0.95) return
+    for (let i = 0; i < 26; i += 1) {
+      const t = i / 26
+      const angle = t * Math.PI * 2.5 + progress * 14
+      for (const [side, color, light] of [[1, '#7038f8', '#b8a0f8'], [-1, '#e84830', '#f8b070']] as const) {
+        const x = c.user.x + Math.cos(angle) * (14 + t * 14) * side
+        const y = c.user.y + 14 - t * 70 * phase(progress, 0, 0.3)
+        paint.dot(x - 2, y - 2, t < 0.6 ? 5 : 3, Math.sin(angle) * side > 0 ? light : color)
+      }
+    }
+  },
+}
+
+/** Llamas que suben alrededor de un punto (puños y golpes de fuego). */
+function flames(paint: Painter, center: Point, t: number, seeds: readonly number[]): void {
+  if (t <= 0 || t >= 1) return
+  for (let i = 0; i < 8; i += 1) {
+    const x = center.x - 22 + seeds[i] * 44
+    const y = center.y + 10 - t * (24 + seeds[i + 8] * 18)
+    paint.dot(x, y, 4, '#f87830')
+    paint.dot(x + 1, y - 3, 2, '#f8d050')
+  }
+}
+
+/** Puño Fuego: un puño en llamas que golpea; las llamas suben del objetivo. */
+const firepunch: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 16)
+    const approach = phase(progress, 0.05, 0.4)
+    if (progress < 0.45) fist(paint, c.target, 1 + approach * 3, '#f87830', '#f8d050')
+    burst(paint, c.target, phase(progress, 0.4, 0.75), '#f87830', '#f8d050', 8, 26)
+    flames(paint, c.target, phase(progress, 0.45, 1), seeds)
+  },
+  shake: shakeTarget(0.4, 0.75, 3),
+}
+
+/** Rayos en zigzag que salen de un punto. */
+function sparks(paint: Painter, center: Point, t: number, count = 6): void {
+  if (t <= 0 || t >= 1) return
+  for (let i = 0; i < count; i += 1) {
+    const angle = (i / count) * Math.PI * 2 + 0.3
+    for (let k = 1; k <= 5; k += 1) {
+      const r = k * 6 * t + 6
+      const zig = k % 2 ? 3 : -3
+      paint.dot(center.x + Math.cos(angle) * r - Math.sin(angle) * zig, center.y + Math.sin(angle) * r + Math.cos(angle) * zig, 2, k % 2 ? '#f8f080' : '#f8c818')
+    }
+  }
+}
+
+/** Puño Trueno: un puño eléctrico golpea y suelta rayos en zigzag. */
+const thunderpunch: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    const approach = phase(progress, 0.05, 0.4)
+    if (progress < 0.45) fist(paint, c.target, 1 + approach * 3, '#f8c818', '#f8f080')
+    sparks(paint, c.target, phase(progress, 0.4, 0.95))
+  },
+  shake: shakeTarget(0.4, 0.8, 3),
+}
+
+/** Machada: un puño enorme cae desde arriba sobre el objetivo y lo aplasta. */
+const hammerarm: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    const fall = phase(progress, 0.1, 0.5)
+    if (progress < 0.55) fist(paint, { x: c.target.x, y: c.target.y - 60 + fall * 52 }, 5, '#c03028', '#f08070')
+    burst(paint, { x: c.target.x, y: c.target.y + 10 }, phase(progress, 0.5, 0.85), '#c03028', '#f8f8f8', 6, 34)
+  },
+  shake: (progress) => (inPhase(progress, 0.5, 0.8) ? { who: 'target', dx: 0, dy: Math.round(Math.sin(progress * 80) * 3) } : null),
+}
+
+/** Patada Baja: un pie entra a ras de suelo en barrido y golpea los pies del objetivo. */
+const lowkick: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    const sweep = phase(progress, 0.05, 0.45)
+    const dir = c.target.x > c.user.x ? 1 : -1
+    if (progress < 0.5) boot(paint, { x: c.target.x - dir * (50 - sweep * 50), y: c.target.y + 14 }, 3, '#c03028', '#f08070')
+    burst(paint, { x: c.target.x, y: c.target.y + 16 }, phase(progress, 0.45, 0.8), '#c03028', '#f8f8f8', 6, 20)
+  },
+  shake: shakeTarget(0.45, 0.75, 3),
+}
+
+/** Demolición: un canto de mano baja en vertical y el golpe agrieta el aire. */
+const brickbreak: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    const chop = phase(progress, 0.05, 0.4)
+    if (progress < 0.45) {
+      const top = c.target.y - 50 + chop * 40
+      for (let y = 0; y < 26; y += 3) paint.dot(c.target.x - 3, top + y, 7, y < 6 ? '#f8f8f8' : '#e8c8a0')
+    }
+    const crack = phase(progress, 0.4, 0.85)
+    if (crack > 0 && crack < 1) {
+      for (const angle of [-2.4, -0.8, 0.6, 2.2]) {
+        for (let r = 4; r < 4 + crack * 30; r += 3) paint.dot(c.target.x + Math.cos(angle + r * 0.04) * r, c.target.y + Math.sin(angle + r * 0.04) * r, 3, '#f8f8f8')
+      }
+    }
+  },
+  shake: shakeTarget(0.4, 0.75, 3),
+}
+
+/** Acua Cola: una cola de agua barre en arco al objetivo y salpica gotas. */
+const aquatail: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 16)
+    const swing = phase(progress, 0.05, 0.5)
+    if (swing > 0 && swing < 1) {
+      for (let k = 0; k < 4; k += 1) crescent(paint, c.target, -2.6 + (swing - k * 0.08) * 3.4, 26 - k * 2, '#5890f0', '#b8d8f8')
+    }
+    shards(paint, c.target, phase(progress, 0.45, 0.95), seeds, '#88b8f8')
+  },
+  shake: shakeTarget(0.45, 0.8),
+}
+
+/** Acua Jet: el usuario sale disparado dejando una estela de agua y choca contra el objetivo. */
+const aquajet: Effect = {
+  duration: 650,
+  draw(paint, progress, c) {
+    const dash = phase(progress, 0.05, 0.45)
+    if (dash > 0 && dash < 1) {
+      beam(paint, c.user, lerpPoint(c.user, c.target, dash), 1, '#5890f0', '#b8d8f8', 5, 2)
+      orb(paint, lerpPoint(c.user, c.target, dash), 7, '#5890f0', '#e0f0f8')
+    }
+    burst(paint, c.target, phase(progress, 0.45, 0.85), '#5890f0', '#e0f0f8', 10, 28)
+  },
+  shake: shakeTarget(0.45, 0.8),
+}
+
+/** Bostezo: una burbuja sale del usuario, flota hasta el objetivo, crece y se rompe en una zeta. */
+const yawn: Effect = {
+  duration: 900,
+  draw(paint, progress, c) {
+    const float = phase(progress, 0.05, 0.6)
+    if (progress < 0.65) {
+      const at = along(c, float, 26)
+      const bubble = { x: at.x, y: at.y + Math.sin(progress * 20) * 2 }
+      ring(paint, bubble, 7 + float * 10, '#f8c8e8', 3, 18)
+      paint.dot(bubble.x - 4 - float * 3, bubble.y - 4 - float * 3, 3, '#ffffff')
+    }
+    const pop = phase(progress, 0.6, 1)
+    if (pop > 0 && pop < 1) sleepZ(paint, { x: c.target.x + 6, y: c.target.y - 34 - pop * 14 }, 3, '#f8f8f8')
+  },
+}
+
+/** Pared de cristal delante del usuario: rombos que aparecen de abajo arriba y un brillo que la recorre. */
+function wall(paint: Painter, c: FxContext, progress: number, color: string, light: string): void {
+  const build = phase(progress, 0, 0.45)
+  const fade = phase(progress, 0.85, 1)
+  if (fade >= 1) return
+  const dir = c.target.x > c.user.x ? 1 : -1
+  const x0 = c.user.x + dir * 30
+  const rows = Math.round(8 * build)
+  const shine = (progress * 2.5) % 1
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < 4; col += 1) {
+      const center = { x: x0 + col * 10 * dir - dir * row * 2, y: c.user.y + 16 - row * 9 }
+      const lit = Math.abs(row / 8 - shine) < 0.15
+      diamond(paint, center, 4, lit ? '#ffffff' : color, lit ? '#ffffff' : light)
+    }
+  }
+}
+
+/** Pantalla Luz: una pared amarilla de cristal se alza delante del usuario. */
+const lightscreen: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    wall(paint, c, progress, '#f8d030', '#f8f0a0')
+  },
+}
+
+/** Reflejo: una pared rosada de cristal se alza delante del usuario. */
+const reflect: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    wall(paint, c, progress, '#f878b8', '#f8c8e0')
+  },
+}
+
+/** Viento Afín: ráfagas verdes y blancas que soplan por el campo detrás del usuario hacia el rival. */
+const tailwind: Effect = {
+  duration: 900,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 40)
+    const dir = c.target.x > c.user.x ? 1 : -1
+    for (let i = 0; i < 16; i += 1) {
+      const t = (progress * 1.3 + seeds[i]) % 1
+      const x = dir > 0 ? -10 + t * 270 : 266 - t * 270
+      const y = 20 + seeds[i + 20] * 140 + Math.sin(t * 8 + i) * 6
+      for (let k = 0; k < 5; k += 1) {
+        const px = x - dir * k * 5
+        if (px > -8 && px < 262) paint.dot(px, y - Math.sin((t + k * 0.05) * 8) * 2, 3, k < 2 ? '#f8f8f8' : '#98d8a8')
+      }
+    }
+  },
+}
+
+/** Zumbido: ondas de sonido verdes, en arcos, del usuario al objetivo. */
+const bugbuzz: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    const heading = Math.atan2(c.target.y - c.user.y, c.target.x - c.user.x)
+    for (let k = 0; k < 5; k += 1) {
+      const t = phase(progress, k * 0.08, k * 0.08 + 0.55)
+      if (t <= 0 || t >= 1) continue
+      crescent(paint, along(c, t), heading, 10 + t * 8, k % 2 ? '#a8b820' : '#d8e858', '#f8f8b0')
+    }
+  },
+  shake: (progress) => (inPhase(progress, 0.5, 0.9) ? { who: 'target', dx: Math.round(Math.sin(progress * 120) * 2), dy: 0 } : null),
+}
+
+/** Pulso Umbrío: anillos oscuros, negros y morados, que salen del usuario y alcanzan al objetivo. */
+const darkpulse: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    for (let k = 0; k < 4; k += 1) {
+      const t = phase(progress, k * 0.1, k * 0.1 + 0.6)
+      if (t <= 0 || t >= 1) continue
+      ring(paint, along(c, t), 8 + t * 6, k % 2 ? '#302838' : '#705898', 3, 14, progress * 6)
+    }
+  },
+  shake: shakeTarget(0.55, 0.9),
+}
+
+/** Onda Ígnea: ondas de calor en zigzag cruzan el campo hacia el objetivo. */
+const heatwave: Effect = {
+  duration: 850,
+  draw(paint, progress, c) {
+    const dir = c.target.x > c.user.x ? 1 : -1
+    for (let k = 0; k < 6; k += 1) {
+      const t = phase(progress, k * 0.06, k * 0.06 + 0.6)
+      if (t <= 0 || t >= 1) continue
+      const at = lerpPoint(c.user, c.target, t)
+      for (let s = -4; s <= 4; s += 1) paint.dot(at.x + Math.sin(s * 1.4 + progress * 20) * 3 * dir, at.y + s * 5, 3, Math.abs(s) % 2 ? '#f87830' : '#f8d050')
+    }
+  },
+  shake: shakeTarget(0.6, 0.95),
+}
+
+/** Persecución: una sombra cruza rápido y tres zarpazos oscuros caen sobre el objetivo. */
+const pursuit: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    const dash = phase(progress, 0.05, 0.35)
+    if (dash > 0 && dash < 1) orb(paint, lerpPoint(c.user, c.target, dash), 8, '#302838', '#705898')
+    for (let k = 0; k < 3; k += 1) {
+      const t = phase(progress, 0.35 + k * 0.08, 0.6 + k * 0.08)
+      if (t <= 0 || t >= 1) continue
+      const from = { x: c.target.x - 18 + k * 12, y: c.target.y - 24 }
+      beam(paint, from, { x: from.x - 10, y: from.y + 44 }, t, '#302838', '#a890d0', 4)
+    }
+  },
+  shake: shakeTarget(0.4, 0.75),
+}
+
+/** Maquinación: un aura oscura gira alrededor de la cabeza del usuario y titilan destellos malvados. */
+const nastyplot: Effect = {
+  duration: 900,
+  draw(paint, progress, c) {
+    const head = { x: c.user.x, y: c.user.y - 30 }
+    if (progress > 0.95) return
+    ring(paint, head, 22 + Math.sin(progress * 10) * 3, '#705898', 3, 20, progress * 8)
+    ring(paint, head, 13, '#302838', 3, 12, -progress * 10)
+    if (Math.floor(progress * 10) % 2 === 0) {
+      for (const dx of [-7, 7]) diamond(paint, { x: head.x + dx, y: head.y - 2 }, 3, '#e82838', '#f8a0a0')
+    }
+  },
+}
+
+/** Rompecoraza: el caparazón estalla en pedazos grises y queda un aura roja de fuerza. */
+const shellsmash: Effect = {
+  duration: 900,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 24)
+    if (progress < 0.25) ring(paint, c.user, 22, '#a8a8b8', 4, 18)
+    shards(paint, c.user, phase(progress, 0.2, 0.75), seeds, '#a8a8b8', 50)
+    const aura = phase(progress, 0.55, 1)
+    if (aura > 0 && aura < 1) ring(paint, c.user, 26 - aura * 10, aura < 0.5 ? '#e83030' : '#f88870', 3, 20, progress * 5)
+  },
+  shake: (progress) => (inPhase(progress, 0.15, 0.3) ? { who: 'user', dx: Math.round(Math.sin(progress * 120) * 3), dy: 0 } : null),
+}
+
+/** Otra Vez: dos manos aplauden sobre el objetivo y salen notas. */
+const encore: Effect = {
+  duration: 900,
+  draw(paint, progress, c) {
+    if (progress > 0.95) return
+    const clap = Math.abs(Math.sin(progress * Math.PI * 6))
+    const at = { x: c.target.x, y: c.target.y - 38 }
+    for (const side of [-1, 1]) {
+      const x = at.x + side * (5 + clap * 12)
+      for (let y = 0; y < 16; y += 3) paint.dot(x - 3, at.y + y, 6, y < 3 ? '#f8f8f8' : '#f8d8b0')
+    }
+    for (let i = 0; i < 3; i += 1) {
+      const t = (progress * 1.5 + i / 3) % 1
+      const note = { x: at.x - 30 + i * 30, y: at.y - 4 - t * 22 }
+      paint.dot(note.x, note.y, 5, '#f8f8f8')
+      for (let k = 1; k <= 4; k += 1) paint.dot(note.x + 4, note.y - k * 3, 2, '#f8f8f8')
+    }
+  },
+}
+
+/** Objeto en píxel: una bolsita con lazo (lo que cambia de manos con Truco). */
+function itemIcon(paint: Painter, center: Point, color: string): void {
+  for (let y = -6; y <= 7; y += 3) for (let x = -7; x <= 6; x += 3) paint.dot(center.x + x, center.y + y, 3, color)
+  for (const dx of [-4, 0, 3]) paint.dot(center.x + dx, center.y - 10, 3, '#f8f8f8')
+}
+
+/** Truco: los objetos de los dos cambian de manos en arcos que se cruzan, con un destello al llegar. */
+const trick: Effect = {
+  duration: 950,
+  draw(paint, progress, c) {
+    const swap = phase(progress, 0.15, 0.75)
+    if (progress < 0.8) {
+      itemIcon(paint, along(c, swap, 34), '#f8d030')
+      itemIcon(paint, along({ ...c, user: c.target, target: c.user }, swap, -34), '#78c8f8')
+    }
+    for (const [who, t] of [[c.user, phase(progress, 0.75, 1)], [c.target, phase(progress, 0.75, 1)]] as const) {
+      if (t > 0 && t < 1) ring(paint, who, 6 + t * 12, '#f8f8f8', 2, 10)
+    }
+    if (progress < 0.15) for (const who of [c.user, c.target]) ring(paint, who, 14 - progress * 40, '#f8c8e8', 2, 10)
+  },
+}
+
 // ---------- estados y objetos (sobre el Pokémon que los sufre: `user` y `target` son él; decisiones de Jose del 23/10/2026) ----------
 
 /** Quemado: llamas que suben por el Pokémon, que se encoge de dolor. */
@@ -1837,6 +2264,29 @@ export const CONDITION_EFFECTS: Record<string, Effect> = {
 
 /** Los movimientos con animación propia: los 60 más usados entre rivales y pool del jugador (tres tandas de 20, 22 y 23/10/2026) y Maldición. */
 export const CUSTOM_EFFECTS: Record<string, Effect> = {
+  sunnyday,
+  sandstorm,
+  hail,
+  dragondance,
+  firepunch,
+  aquatail,
+  yawn,
+  lightscreen,
+  reflect,
+  bugbuzz,
+  nastyplot,
+  shellsmash,
+  lowkick,
+  brickbreak,
+  aquajet,
+  encore,
+  thunderpunch,
+  heatwave,
+  trick,
+  hammerarm,
+  pursuit,
+  darkpulse,
+  tailwind,
   earthquake,
   stoneedge,
   psychic,

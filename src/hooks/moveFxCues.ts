@@ -33,10 +33,26 @@ const STATUS_FX: Record<string, string> = { brn: 'brn', psn: 'psn', tox: 'psn', 
  * Animación de un estado sobre el Pokémon que lo sufre, con su mensaje (decisión de Jose): al caer en él (`-status`, `-start` confusión),
  * cuando le impide moverse (`cant`), cuando le hace daño (`-damage [from] brn|psn|tox`) y cuando avisa de que sigue confuso (`-activate`).
  * También los cambios de características (`-boost`, `-unboost`: flechas que suben o bajan) y la baya que sube una (`-boost [from] item: …
- * Berry`): se la come y le suben las flechas.
+ * Berry`): se la come y le suben las flechas. Y el clima (`weatherFx`).
  */
+/** Clima del simulador -> movimiento con su animación (DEC-53). */
+const WEATHER_FX: Record<string, string> = { sunnyday: 'sunnyday', raindance: 'raindance', sandstorm: 'sandstorm', hail: 'hail' }
+
+/**
+ * Clima que se anima con su mensaje, como en el juego (Jose, 30/10/2026): al ponerlo una habilidad (`[from] ability: Drought`) y en cada
+ * turno que sigue (`[upkeep]`). Cuando lo pone un movimiento ya se anima con «X usó Día Soleado» (`usedMove`): no se repite.
+ */
+function weatherFx(parts: readonly string[]): FxCue | null {
+  const [weather = '', ...rest] = parts
+  const moveId = WEATHER_FX[toId(weather)]
+  if (!moveId || !rest.some((part) => part.startsWith('[upkeep]') || part.startsWith('[from]'))) return null
+  const user = sideOf(tagOf(rest, 'of') ?? '') ?? 'player'
+  return { moveId, user, target: null }
+}
+
 export function conditionFx(line: string): FxCue | null {
   const [, type = '', ref = '', what = '', ...rest] = line.split('|')
+  if (type === '-weather') return weatherFx([ref, what, ...rest])
   const side = sideOf(ref)
   if (!side) return null
   const on = (moveId: string): FxCue => ({ moveId, user: side, target: side })
