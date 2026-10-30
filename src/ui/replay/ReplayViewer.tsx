@@ -59,7 +59,8 @@ export function ReplayViewer({ replay, data, settings, onExit, onDelete, own = t
   const [client, setClient] = useState(() => new ReplayClient(replay.steps))
   const [shown, setShown] = useState(0)
   const [busy, setBusy] = useState(true)
-  const [playing, setPlaying] = useState(false)
+  // Empieza reproduciéndose, sin pulsar «Reproducir» (decisión de Jose, 30/10/2026): tras la intro avanza solo turno a turno.
+  const [playing, setPlaying] = useState(true)
   // Paso desde el que se está reproduciendo un turno (para el rótulo y para terminarlo al instante); `null` en reposo, en la intro o al saltar.
   const [playingFrom, setPlayingFrom] = useState(null as number | null)
   const targetRef = useRef(0)
@@ -128,6 +129,11 @@ export function ReplayViewer({ replay, data, settings, onExit, onDelete, own = t
     return () => clearTimeout(pending)
   }, [playing, busy, shown, last, settings.speed])
 
+  // El navegador no deja sonar nada hasta el primer toque: al abrir un enlace la repetición empieza sola y muda, así que se avisa
+  // (decisión de Jose, 30/10/2026). Con el sonido apagado en Ajustes no hace falta.
+  const [soundLocked, setSoundLocked] = useState(() => !getAudio().isUnlocked())
+  useEffect(() => getAudio().onUnlock(() => setSoundLocked(false)), [])
+
   // La música del rival la arranca la pantalla de combate y sigue entre saltos (cada salto la vuelve a montar); se para al salir del visor.
   useEffect(() => {
     const audio = getAudio()
@@ -166,6 +172,7 @@ export function ReplayViewer({ replay, data, settings, onExit, onDelete, own = t
           onDelete={onDelete}
           playerTeamLabel={own ? text.ownTeam : text.playerTeam}
           onTeam={openTeam}
+          soundHint={soundLocked && settings.sound}
         />
       )}
       // Saltar a un paso: el avance rápido de la reanudación emite y pinta los pasos hasta él, sin animación ni intro.
@@ -212,6 +219,8 @@ type ReplayControlsProps = {
   playerTeamLabel: string
   /** Abre la pantalla de equipo de un bando (decisión de Jose, 29/10/2026: dos botones, el rival entero). */
   onTeam: (side: ReplayTeam) => void
+  /** Aún no ha habido ningún toque: el sonido está bloqueado por el navegador. */
+  soundHint: boolean
 }
 
 /**
@@ -244,6 +253,11 @@ function ControlIcon({ icon }: { icon: keyof typeof ICONS | keyof typeof MIRRORE
 function ReplayControls(props: ReplayControlsProps) {
   return (
     <div className="rp-controls">
+      {/* Cualquier toque desbloquea el sonido (también este botón, que no hace nada más). Al desaparecer deja su hueco: los controles no
+          se mueven (decisión de Jose, 30/10/2026). */}
+      <button type="button" className="rp-sound-hint" data-shown={props.soundHint ? 'true' : undefined} aria-hidden={props.soundHint ? undefined : true} tabIndex={props.soundHint ? undefined : -1}>
+        {text.tapForSound}
+      </button>
       <p className="rp-turn" aria-live="polite">{props.label}</p>
       <div className="rp-buttons" role="group" aria-label={text.controls}>
         <div className="rp-group">

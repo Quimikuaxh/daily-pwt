@@ -1,5 +1,5 @@
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-import { render, screen, within } from '@testing-library/react'
+import { act, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { getAudio } from '../../audio/audio'
 import { getDailyChallenge } from '../../core/challenge'
@@ -47,12 +47,17 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
-async function mount(onDelete?: () => void, shown: ReplayData = replay) {
+/**
+ * La repetición empieza reproduciéndose (decisión de Jose, 30/10/2026). Para probar los controles desde un punto fijo, por defecto se
+ * pulsa «Pausa» nada más abrirla, como haría quien la ve; con `playing`, se deja que avance sola.
+ */
+async function mount(onDelete?: () => void, shown: ReplayData = replay, { playing = false } = {}) {
   const onExit = vi.fn()
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
   const { unmount } = render(<ReplayViewer replay={shown} data={data} settings={DEFAULT_SETTINGS} onExit={onExit} onDelete={onDelete} />)
-  await settle()
   const controls = () => screen.getByRole('group', { name: 'Controles de la repetición' })
+  if (!playing) await user.click(within(controls()).getByRole('button', { name: 'Pausa' }))
+  await settle()
   return { user, onExit, controls, unmount }
 }
 
@@ -66,6 +71,14 @@ describe('visor de repeticiones (UT-107)', () => {
     await user.click(screen.getAllByRole('button', { name: 'Volver' })[0])
     expect(onExit).toHaveBeenCalled()
     expect(screen.queryByRole('dialog')).toBeNull()
+  })
+
+  it('empieza reproduciéndose sola: sin pulsar nada, tras la intro enseña los turnos uno tras otro hasta el final', async () => {
+    const { controls } = await mount(undefined, replay, { playing: true })
+    expect(within(controls()).getByRole('button', { name: 'Pausa' })).toBeInTheDocument()
+    expect(screen.getByText('Inicio')).toBeInTheDocument()
+    for (let second = 0; second < 15 && !screen.queryByText(/^Victoria/); second++) await settle(1_000)
+    expect(screen.getByText(/^Victoria · 3 turnos/)).toBeInTheDocument()
   })
 
   it('turno siguiente, turno anterior, al final (con el resultado) y al principio', async () => {
@@ -247,6 +260,27 @@ describe('visor de repeticiones (UT-107)', () => {
     await settle()
     expect(screen.getByRole('button', { name: 'Equipo' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Tu equipo' })).toBeNull()
+  })
+
+  it('mientras el navegador no deja sonar (sin ningún toque), avisa «Toca para activar el sonido»; al tocar, desaparece; con el sonido apagado, no sale', async () => {
+    const audio = getAudio()
+    let unlock = () => {}
+    const locked = vi.spyOn(audio, 'isUnlocked').mockReturnValue(false)
+    const listen = vi.spyOn(audio, 'onUnlock').mockImplementation((listener) => {
+      unlock = listener
+      return () => undefined
+    })
+    const { unmount } = render(<ReplayViewer replay={replay} data={data} settings={DEFAULT_SETTINGS} onExit={vi.fn()} />)
+    await settle()
+    expect(screen.getByRole('button', { name: 'Toca para activar el sonido' })).toBeInTheDocument()
+    act(() => unlock())
+    expect(screen.queryByRole('button', { name: 'Toca para activar el sonido' })).toBeNull()
+    unmount()
+    render(<ReplayViewer replay={replay} data={data} settings={{ ...DEFAULT_SETTINGS, sound: false }} onExit={vi.fn()} />)
+    await settle()
+    expect(screen.queryByRole('button', { name: 'Toca para activar el sonido' })).toBeNull()
+    locked.mockRestore()
+    listen.mockRestore()
   })
 
   it('«Borrar enlace» solo si se le pasa (quien la compartió)', async () => {

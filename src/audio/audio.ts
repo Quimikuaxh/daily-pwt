@@ -3,13 +3,15 @@ import { createAudioEngine, type AudioContextLike, type AudioEngine, type AudioI
 
 /** Música y efectos de cada momento (PRD §0, «Fuentes y temas del sonido»). */
 export const SFX_IDS = [
-  'hit-super', 'hit-neutral', 'hit-weak', 'ball-throw', 'ball-open', 'faint', 'low-hp',
+  'hit-super', 'hit-neutral', 'hit-weak', 'ball-throw', 'ball-open', 'faint',
   'menu-select', 'menu-cancel',
   'status-brn', 'status-psn', 'status-par', 'status-slp', 'status-frz', 'status-confusion',
   'berry', 'stat-up', 'stat-down',
 ] as const
 export type SfxId = (typeof SFX_IDS)[number]
 export const VICTORY_MUSIC = 'victory-pwt'
+/** Suena en vez de la del rival mientras el Pokémon del jugador está en rojo (decisión de Jose, 30/10/2026; sustituye al pitido). */
+export const CRITICAL_HEALTH_MUSIC = 'critical-health'
 
 /** Temas propios por entrenador (`trainers` de `data/audio.json`): Mirto y Cheren, con los suyos de Negro y Blanco (Jose, 28/10/2026). */
 const TRAINER_MUSIC: Record<string, string> = (audioIndex as { trainers?: Record<string, string> }).trainers ?? {}

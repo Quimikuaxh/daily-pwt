@@ -28,6 +28,10 @@ type Options = {
 export const LOOP_CROSSFADE_MS = 40
 /** Fundido al parar la música si no se pide otro. */
 export const DEFAULT_FADE_MS = 400
+/** Al salir de rojo, la de vida baja se apaga en este tiempo (decisión de Jose, 30/10/2026)… */
+export const PINCH_EXIT_FADE_MS = 800
+/** …y la del rival vuelve desde bajo y sube durante más tiempo, para que se note que vuelve (decisión de Jose, 30/10/2026). */
+export const MUSIC_RETURN_FADE_IN_MS = 1500
 const UNLOCK_EVENTS = ['pointerdown', 'keydown'] as const
 
 /** Volumen de Ajustes (0-100) a ganancia: curva cuadrática, que se percibe más pareja que la lineal. */
@@ -62,10 +66,14 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
   let unlocked = false
   /** Pista pedida (suene ya o espere a la interacción o a la descarga). */
   let wantedMusic: string | null = null
-  let playing: { id: string; source: AudioBufferSourceNode; gain: GainNode } | null = null
-  /** Efecto en bucle pedido (el pitido de vida baja) y el que suena. */
-  let wantedLoop: string | null = null
-  let looping: { id: string; source: AudioBufferSourceNode } | null = null
+  /** Música de vida baja: mientras se pida, suena ella en vez de `wantedMusic`. */
+  let wantedPinch: string | null = null
+  /** Por dónde iba la música cortada por la de vida baja: al quitarla, sigue desde ahí. */
+  let resumeAt: { id: string; offsetSec: number } | null = null
+  /** `startedAt` (reloj del contexto) y `offsetSec` (segundo de la pista en ese momento): con ellos se sabe por dónde va. */
+  let playing: { id: string; source: AudioBufferSourceNode; gain: GainNode; startedAt: number; offsetSec: number } | null = null
+  /** Quien quiere saber cuándo deja de estar bloqueado el sonido (el aviso «Toca para activar el sonido» del visor). */
+  const unlockListeners = new Set<() => void>()
   const bytes = new Map<string, Promise<ArrayBuffer | null>>()
   const buffers = new Map<string, Promise<AudioBuffer | null>>()
 
@@ -111,13 +119,28 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
     if (master) master.gain.value = muted ? 0 : volumeToGain(volume)
   }
 
-  function startWantedMusic() {
-    const id = wantedMusic
+  /** Lo que debe sonar: la de vida baja si está pedida; si no, la pedida. */
+  const effectiveMusic = () => wantedPinch ?? wantedMusic
+
+  /** Segundo de la pista por el que va lo que suena, contando las vueltas del bucle. */
+  function positionOf(current: NonNullable<typeof playing>): number {
+    const elapsed = current.offsetSec + ((context?.currentTime ?? current.startedAt) - current.startedAt)
+    const entry = index.music[current.id]
+    if (entry?.loopStartSec === undefined || entry.loopEndSec === undefined || elapsed < entry.loopEndSec) return elapsed
+    return entry.loopStartSec + ((elapsed - entry.loopStartSec) % (entry.loopEndSec - entry.loopStartSec))
+  }
+
+  /** `fadeInMs`: entra subiendo desde 0 (la del rival al volver de la de vida baja). */
+  function startWantedMusic(fadeInMs = 0) {
+    const id = effectiveMusic()
     if (!id || !context || playing?.id === id) return
     void bufferOf(`music:${id}`).then((buffer) => {
       const ctx = context
-      if (!buffer || !ctx || !musicGain || wantedMusic !== id || playing?.id === id) return
+      if (!buffer || !ctx || !musicGain || effectiveMusic() !== id || playing?.id === id) return
       stopPlaying(0)
+      // Vuelta de la de vida baja: la música sigue por donde iba; todo lo demás empieza desde el principio.
+      const offsetSec = resumeAt?.id === id ? resumeAt.offsetSec : 0
+      if (resumeAt?.id === id) resumeAt = null
       const entry = index.music[id]
       const source = ctx.createBufferSource()
       source.buffer = buffer
@@ -127,10 +150,14 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
         source.loopEnd = entry.loopEndSec
       }
       const gain = ctx.createGain()
+      if (fadeInMs > 0) {
+        gain.gain.setValueAtTime(0, ctx.currentTime)
+        gain.gain.linearRampToValueAtTime(1, ctx.currentTime + fadeInMs / 1000)
+      }
       gain.connect(musicGain)
       source.connect(gain)
-      source.start()
-      playing = { id, source, gain }
+      source.start(0, offsetSec)
+      playing = { id, source, gain, startedAt: ctx.currentTime, offsetSec }
     })
   }
 
@@ -147,32 +174,6 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
       } else current.source.stop()
     } catch {
       // Ya parada.
-    }
-  }
-
-  function startWantedLoop() {
-    const id = wantedLoop
-    if (!id || !unlocked || !context || looping?.id === id) return
-    void bufferOf(`sfx:${id}`).then((buffer) => {
-      const ctx = context
-      if (!buffer || !ctx || !master || wantedLoop !== id || looping?.id === id) return
-      stopLooping()
-      const source = ctx.createBufferSource()
-      source.buffer = buffer
-      source.loop = true
-      source.connect(master)
-      source.start()
-      looping = { id, source }
-    })
-  }
-
-  function stopLooping() {
-    const current = looping
-    looping = null
-    try {
-      current?.source.stop()
-    } catch {
-      // Ya parado.
     }
   }
 
@@ -194,8 +195,11 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
     unlocked = true
     for (const type of UNLOCK_EVENTS) unlockTarget?.removeEventListener(type, unlock)
     void context.resume().catch(() => undefined)
+    // Lo que ya se precargó sin contexto (solo los bytes) se decodifica ahora: así la de vida baja suena en cuanto se pide.
+    for (const key of [...bytes.keys()]) void bufferOf(key)
+    for (const listener of [...unlockListeners]) listener()
+    unlockListeners.clear()
     startWantedMusic()
-    startWantedLoop()
   }
 
   for (const type of UNLOCK_EVENTS) unlockTarget?.addEventListener(type, unlock)
@@ -222,6 +226,8 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
     },
     stopMusic(fadeMs = DEFAULT_FADE_MS) {
       wantedMusic = null
+      wantedPinch = null
+      resumeAt = null
       stopPlaying(fadeMs)
     },
     /** Efecto de una vez. Antes de la primera interacción no suena (no se guarda para después). */
@@ -237,16 +243,31 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
       })
     },
     /**
-     * Efecto en bucle hasta que se pida otro o `null` (el pitido de vida baja). Si se pide antes de la primera interacción, empieza en
-     * cuanto la haya: es un estado del combate, no un suceso.
+     * Música de vida baja (decisión de Jose, 30/10/2026): con un id, corta la música que suena y pone esa desde el principio, en bucle;
+     * con `null`, la funde (`PINCH_EXIT_FADE_MS`) mientras la música vuelve por donde iba, subiendo desde bajo
+     * (`MUSIC_RETURN_FADE_IN_MS`). Pedida otra vez, vuelve a empezar desde el principio. Si se pide antes de la primera interacción,
+     * suena en cuanto la haya: es un estado del combate, no un suceso.
      */
-    setLoopSfx(id: string | null) {
-      wantedLoop = id
-      if (id === null || looping?.id !== id) stopLooping()
-      startWantedLoop()
+    setPinchMusic(id: string | null) {
+      if (id === wantedPinch) return
+      if (id !== null && wantedPinch === null && playing && playing.id === wantedMusic) resumeAt = { id: playing.id, offsetSec: positionOf(playing) }
+      const leaving = id === null
+      wantedPinch = id
+      // Al entrar, corte seco; al salir, fundido cruzado.
+      stopPlaying(leaving ? PINCH_EXIT_FADE_MS : 0)
+      startWantedMusic(leaving ? MUSIC_RETURN_FADE_IN_MS : 0)
     },
+    /**
+     * El navegador no deja sonar nada hasta el primer toque o tecla en la página. `listener` se llama una vez, cuando llega; si ya
+     * llegó, no se llama. Devuelve cómo dejar de escuchar.
+     */
+    onUnlock(listener: () => void): () => void {
+      if (!unlocked) unlockListeners.add(listener)
+      return () => unlockListeners.delete(listener)
+    },
+    isUnlocked: () => unlocked,
     /** Para los tests y la depuración. */
-    state: () => ({ unlocked, volume, muted, music: playing?.id ?? null, wantedMusic, loop: looping?.id ?? null }),
+    state: () => ({ unlocked, volume, muted, music: playing?.id ?? null, wantedMusic, pinch: wantedPinch }),
   }
 }
 

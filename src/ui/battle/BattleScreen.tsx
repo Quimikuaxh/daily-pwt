@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
-import { battleMusicFor, getAudio, SFX_IDS } from '../../audio/audio'
+import { battleMusicFor, CRITICAL_HEALTH_MUSIC, getAudio, SFX_IDS } from '../../audio/audio'
 import type { BattleClient } from '../../battle/client'
 import type { AiKind, BattleRequest, EngineEnd } from '../../battle/protocol'
 import { MAX_TURNS } from '../../config'
@@ -120,7 +120,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   // reanudar un oficial, que no tiene intro) y se funde al terminar el combate, al salir o al desmontar. La velocidad no la cambia.
   // En el visor (RF-128) la pantalla se vuelve a montar en cada salto: la música sigue sin cortarse y la para el visor al salir.
   const music = battleMusicFor(trainer)
-  useEffect(() => getAudio().preload([music], SFX_IDS), [music])
+  useEffect(() => getAudio().preload([music, CRITICAL_HEALTH_MUSIC], SFX_IDS), [music])
   const musicOn = battle.introPhase !== 'loading' && (mode === 'replay' || !ended)
   useEffect(() => {
     if (!musicOn) return
@@ -130,17 +130,18 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
     return () => audio.stopMusic()
   }, [musicOn, music, mode])
 
-  // Pitido de vida baja: mientras el Pokémon del jugador tiene la barra en rojo, desde que la barra termina de bajar; se corta al curarse,
-  // al cambiarlo, al debilitarse (PS a 0), al terminar el combate y al salir.
+  // Música de vida baja (decisión de Jose, 30/10/2026; antes, un pitido): mientras el Pokémon del jugador tiene la barra en rojo, desde
+  // que la barra termina de bajar, corta la del rival y suena ella desde el principio, en bucle. Al curarse, al cambiarlo, al debilitarse
+  // (PS a 0), al terminar el combate o al salir, vuelve la del rival por donde iba; si vuelve a estar en rojo, empieza otra vez.
   const pinch = musicOn && playerInPinch(battle.view)
   const barMs = HP_BAR_ANIMATION_MS / battle.speed
   useEffect(() => {
     if (!pinch) return
     const audio = getAudio()
-    const timer = setTimeout(() => audio.setLoopSfx('low-hp'), barMs)
+    const timer = setTimeout(() => audio.setPinchMusic(CRITICAL_HEALTH_MUSIC), barMs)
     return () => {
       clearTimeout(timer)
-      audio.setLoopSfx(null)
+      audio.setPinchMusic(null)
     }
   }, [pinch, barMs])
 

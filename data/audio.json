@@ -21,6 +21,13 @@
       "baseUrl": "https://archive.org/download/pkmn-black-white-soundtrack/",
       "credit": "Música de Pokémon Negro / Blanco (Shota Kageyama, Junichi Masuda, Go Ichinose) © Nintendo / Creatures Inc. / GAME FREAK inc., del Super Music Collection alojado en Internet Archive",
       "license": "Música propiedad de sus titulares, usada como fan project no oficial (mismo riesgo asumido que con los sprites, PRD §0)."
+    },
+    "yt-critical-health": {
+      "name": "Pokémon Black & White - Critical Health Music (HQ), canal Pokeli en YouTube",
+      "page": "https://www.youtube.com/watch?v=aLVr0VfeLmk",
+      "video": "https://www.youtube.com/watch?v=aLVr0VfeLmk",
+      "credit": "Música de vida baja de Pokémon Negro / Blanco © Nintendo / Creatures Inc. / GAME FREAK inc., del vídeo de Pokeli en YouTube (no está en el Super Music Collection)",
+      "license": "Música propiedad de sus titulares, usada como fan project no oficial (mismo riesgo asumido que con el resto de la música, PRD §0)."
     }
   },
   "music": [
@@ -116,6 +123,14 @@
       "source": "ost-b2w2",
       "file": "Disc 2/13 - Winning in the PWT!.flac",
       "_nota": "Jingle de victoria en Resultado"
+    },
+    {
+      "id": "critical-health",
+      "source": "yt-critical-health",
+      "trimLeadingSilence": true,
+      "loopStartSec": 11.98,
+      "loopEndSec": 22.7689,
+      "_nota": "Suena en vez de la música de combate mientras el Pokémon del jugador tiene la barra en rojo (decisión de Jose, 30/10/2026). Se le quita el silencio del principio (0,68 s en el vídeo). Trae entrada (0-12 s), el bucle (10,789 s) dos veces y un fundido desde 33,8 s; el bucle acaba antes del fundido, que no llega a sonar."
     }
   ],
   "sfx": [
@@ -154,12 +169,6 @@
       "source": "tsr-sfx-b2w2",
       "entry": "Sound Effects/SEQ_SE/SEQ_SE_DEAD.wav",
       "_nota": "Debilitado, al caer el sprite"
-    },
-    {
-      "id": "low-hp",
-      "source": "tsr-sfx-b2w2",
-      "entry": "Sound Effects/SEQ_SE/SEQ_SE_HINSHI.wav",
-      "_nota": "Pitido de vida baja, en bucle mientras el Pokémon del jugador está en rojo (hinshi: «a punto de caer»)"
     },
     {
       "id": "menu-select",

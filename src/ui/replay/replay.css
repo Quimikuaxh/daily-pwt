@@ -16,6 +16,25 @@
   color: #383838;
 }
 
+/* «Toca para activar el sonido»: hasta el primer toque el navegador no deja sonar nada (DEC-57). */
+.bt-replay .rp-sound-hint {
+  position: static;
+  min-height: 24px;
+  padding: 0 10px;
+  font: inherit;
+  font-size: 11px;
+  color: #181818;
+  background: #f8c830;
+  border: 2px solid #181818;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Sin aviso, el botón sigue ocupando su sitio (invisible y sin poder pulsarse): los controles no se mueven. */
+.bt-replay .rp-sound-hint:not([data-shown]) {
+  visibility: hidden;
+}
+
 .rp-turn {
   margin: 0;
   font-size: 12px;

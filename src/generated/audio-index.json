@@ -75,6 +75,12 @@
     "victory-pwt": {
       "path": "audio/music/victory-pwt.m4a",
       "durationSec": 38
+    },
+    "critical-health": {
+      "path": "audio/music/critical-health.m4a",
+      "durationSec": 38.753,
+      "loopStartSec": 11.98,
+      "loopEndSec": 22.7689
     }
   },
   "sfx": {
@@ -101,10 +107,6 @@
     "faint": {
       "path": "audio/sfx/faint.m4a",
       "durationSec": 0.583
-    },
-    "low-hp": {
-      "path": "audio/sfx/low-hp.m4a",
-      "durationSec": 0.535
     },
     "menu-select": {
       "path": "audio/sfx/menu-select.m4a",

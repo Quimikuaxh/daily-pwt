@@ -4,6 +4,10 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 **Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). El sonido va en `feature/f3-sonido` (desde `main`): los audios ya están descargados y versionados (se descargaron en local, desde la nube las fuentes están bloqueadas); falta implementarlo según «Sonido: plan de implementación».
 
+## Repetición que empieza sola y música de vida baja (30/10/2026, rama `feature/repeticion-autoplay`)
+- **Hecho:** el visor empieza reproduciéndose, sin pulsar «Reproducir» (RF-128, UT-107). Música de vida baja en vez del pitido (PRD §0, UT-121). Solo web, sin migración.
+- **Desplegado** el 30/10/2026, con el visto bueno de Jose tras escucharlo en una repetición. Aviso «Toca para activar el sonido» en el visor (el navegador no deja sonar hasta el primer toque).
+
 ## Tanda en curso: `feature/mejoras-tras-f5` (desde `main` en 9b17abb, 29/10/2026; un solo despliegue al final)
 Hecho: 1) resultado visual en el Historial (RF-124b; migración `20261029020000_pwt_historial_resultado.sql`, pendiente de aplicar en producción), 2) pausa de la repetición (RF-128), música continua en el visor (RF-129b), 3) objeto real en la pantalla de datos (RF-71, UT-114), 4) nombres cortados en los rankings y en la cabecera, 5) ventanas que cambian de tamaño al cargar (DEC-72), 6) puntito rojo en Estadísticas (RF-111) y cifra centrada en la bolita de «Amigos», 7) la página de detrás ya no se desplaza con una ventana abierta (UT-116, E2E-74), 8) equipos en el visor (RF-129c, UT-117). Antes de desplegar: migraciones en producción primero y tanda e2e completa («directo» no exime de los tests).
 

@@ -8,11 +8,14 @@ type Trainer = { id: string; category: 'leader' | 'champion'; region: string }
 const manifest = (): Manifest => readJson('data', 'audio.json')
 
 describe('scripts/build-audio.mjs', () => {
-  it('el manifiesto es válido: música por https desde el OST y efectos desde el ZIP', async () => {
+  it('el manifiesto es válido: música por https desde el OST (la de vida baja, de un vídeo) y efectos desde el ZIP', async () => {
     const { planAudio } = await importScript('scripts/build-audio.mjs')
     const plans = planAudio(manifest())
-    expect(plans.filter((plan: { kind: string }) => plan.kind === 'music')).toHaveLength(13)
-    expect(plans.filter((plan: { kind: string }) => plan.kind === 'sfx')).toHaveLength(18)
+    expect(plans.filter((plan: { kind: string }) => plan.kind === 'music')).toHaveLength(14)
+    // Sin el pitido de vida baja: lo sustituye la música (decisión de Jose, 30/10/2026).
+    expect(plans.filter((plan: { kind: string }) => plan.kind === 'sfx')).toHaveLength(17)
+    expect(plans.find((plan: { id: string }) => plan.id === 'critical-health')).toMatchObject({ video: 'https://www.youtube.com/watch?v=aLVr0VfeLmk', cacheName: 'critical-health.yt' })
+    expect(() => planAudio({ ...manifest(), sources: { ...manifest().sources, 'yt-critical-health': { video: 'http://inseguro' } } })).toThrow(/Vídeo mal definido/)
     const kanto = plans.find((plan: { id: string }) => plan.id === 'gym-kanto')
     expect(kanto.url).toBe('https://archive.org/download/pkmn-bw2-soundtrack/Disc%202/04%20-%20Battle!%20(Gym%20Leader%20-%20Kanto).flac')
   })
@@ -29,11 +32,18 @@ describe('scripts/build-audio.mjs', () => {
   })
 
   // UT-75 · Puntos de bucle (DEC-57).
-  it('las 10 pistas de combate tienen puntos de bucle dentro de la pista y fuera del fundido; el jingle de victoria, no', () => {
+  it('las pistas de combate tienen puntos de bucle dentro de la pista y fuera del fundido; el jingle de victoria, no', () => {
     const index = readJson<Index>('src', 'generated', 'audio-index.json')
     for (const [id, entry] of Object.entries(index.music)) {
       if (id === 'victory-pwt') {
         expect(entry.loopStartSec, id).toBeUndefined()
+        continue
+      }
+      if (id === 'critical-health') {
+        // La de vida baja da la vuelta cada 10,79 s y, sin el silencio del principio, su fundido empieza en el 33,8 (decisión de Jose,
+        // 30/10/2026: sin el fundido, y que suene en cuanto se pide).
+        expect(entry).toMatchObject({ loopStartSec: 11.98, loopEndSec: 22.7689 })
+        expect(entry.loopEndSec, id).toBeLessThan(33.8)
         continue
       }
       const { loopStartSec = NaN, loopEndSec = NaN, durationSec } = entry

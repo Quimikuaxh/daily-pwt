@@ -23,6 +23,7 @@ export const esReplay = {
   },
   viewer: {
     controls: 'Controles de la repetición',
+    tapForSound: 'Toca para activar el sonido',
     ownTeam: 'Tu equipo',
     playerTeam: 'Equipo',
     rivalTeam: 'Rival',

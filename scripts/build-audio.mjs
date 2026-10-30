@@ -18,6 +18,8 @@ const MUSIC_ARGS = ['-vn', '-ar', '48000', '-ac', '2', '-c:a', 'aac', '-b:a', '1
 const SFX_ARGS = ['-vn', '-ar', '48000', '-ac', '2', '-c:a', 'aac', '-b:a', '96k', '-movflags', '+faststart']
 /** Quita el silencio del principio y del final: el efecto debe sonar en cuanto se pide. */
 const TRIM_SILENCE = 'silenceremove=start_periods=1:start_threshold=-60dB,areverse,silenceremove=start_periods=1:start_threshold=-60dB,areverse'
+/** Solo el del principio: una pista que debe sonar en cuanto se pide (la de vida baja); sus puntos de bucle cuentan ya sin él. */
+const TRIM_LEADING_SILENCE = 'silenceremove=start_periods=1:start_threshold=-60dB'
 
 /** Puntos de bucle (DEC-57): los dos o ninguno, y el final después del principio. */
 function loopOf(item) {
@@ -48,6 +50,12 @@ export function planAudio(manifest) {
     const source = manifest.sources[item.source]
     if (!source) throw new Error(`Origen desconocido en ${kind}/${item.id}: ${item.source}`)
     const path = `audio/${kind}/${item.id}.m4a`
+    // Pista que no está en ningún OST (la de vida baja): sale de un vídeo, con yt-dlp; una por origen.
+    if (kind === 'music' && source.video) {
+      if (!source.video.startsWith('https://')) throw new Error(`Vídeo mal definido: ${item.id}`)
+      const loop = loopOf(item)
+      return { kind, id: item.id, path, video: source.video, cacheName: `${item.id}.yt`, trimLeadingSilence: item.trimLeadingSilence === true, ...(loop && { loop }) }
+    }
     if (kind === 'music') {
       if (!source.baseUrl?.startsWith('https://') || !item.file) throw new Error(`Pista mal definida: ${item.id}`)
       const loop = loopOf(item)
@@ -76,6 +84,16 @@ async function downloadFlac(item) {
   return target
 }
 
+/** Audio del vídeo tal cual lo sirve (sin recodificar: se codifica una sola vez, al pasarlo a AAC). Necesita `yt-dlp`. */
+function downloadVideoAudio(item) {
+  const target = resolve(MUSIC_CACHE, item.cacheName)
+  if (existsSync(target) && statSync(target).size > 0) return target
+  mkdirSync(MUSIC_CACHE, { recursive: true })
+  execFileSync('yt-dlp', ['-q', '--no-playlist', '-f', 'bestaudio', '-o', target, item.video], { stdio: 'inherit' })
+  if (!existsSync(target)) throw new Error(`yt-dlp no ha dejado el audio de ${item.video}`)
+  return target
+}
+
 /** `input` es una ruta, o `pipe:0` con los bytes en `stdin`. */
 function encode(input, target, args, filter, stdin) {
   mkdirSync(dirname(target), { recursive: true })
@@ -98,7 +116,7 @@ async function main() {
     const target = resolve(AUDIO_DIR, item.path.replace(/^audio\//, ''))
     try {
       if (force || !existsSync(target)) {
-        if (item.kind === 'music') encode(await downloadFlac(item), target, MUSIC_ARGS)
+        if (item.kind === 'music') encode(item.video ? downloadVideoAudio(item) : await downloadFlac(item), target, MUSIC_ARGS, item.trimLeadingSilence ? TRIM_LEADING_SILENCE : undefined)
         else encode('pipe:0', target, SFX_ARGS, TRIM_SILENCE, extractEntry(item.zip, item.entry))
         console.log(`  ${item.path}`)
       }
