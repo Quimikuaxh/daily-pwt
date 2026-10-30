@@ -12,6 +12,8 @@ export type SfxId = (typeof SFX_IDS)[number]
 export const VICTORY_MUSIC = 'victory-pwt'
 /** Suena en vez de la del rival mientras el Pokémon del jugador está en rojo (decisión de Jose, 30/10/2026; sustituye al pitido). */
 export const CRITICAL_HEALTH_MUSIC = 'critical-health'
+/** Suena en vez de la del rival cuando este tiene en el campo su último Pokémon (decisión de Jose, 30/10/2026; todos los rivales). */
+export const LAST_POKEMON_MUSIC = 'last-pokemon'
 
 /** Temas propios por entrenador (`trainers` de `data/audio.json`): Mirto y Cheren, con los suyos de Negro y Blanco (Jose, 28/10/2026). */
 const TRAINER_MUSIC: Record<string, string> = (audioIndex as { trainers?: Record<string, string> }).trainers ?? {}

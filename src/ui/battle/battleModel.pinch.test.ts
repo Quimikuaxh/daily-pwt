@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import type { BattleView } from '../../battle/protocol'
 import { mkView, pMon, rMon } from '../../test-utils/view'
-import { fillFor, playerInPinch } from './battleModel'
+import { fillFor, playerInPinch, rivalOnLastPokemon } from './battleModel'
 
-// UT-80 · Pitido de vida baja (DEC-57): solo con el Pokémon activo del jugador en rojo y en pie.
+// UT-80 · Música de vida baja (antes, pitido; DEC-57): solo con el Pokémon activo del jugador en rojo y en pie.
 describe('playerInPinch', () => {
   const view = (over: Parameters<typeof mkView>[0]) => mkView(over) as BattleView
 
@@ -23,5 +23,22 @@ describe('playerInPinch', () => {
     expect(playerInPinch(view({ player: [pMon('garchomp', 0, 183)] }))).toBe(false)
     expect(playerInPinch(view({ player: [pMon('garchomp', 10, 183), pMon('starmie', 150, 150)], pActive: 1 }))).toBe(false)
     expect(playerInPinch(null)).toBe(false)
+  })
+})
+
+// UT-122 · Tema del último Pokémon del rival (decisión de Jose, 30/10/2026).
+describe('rivalOnLastPokemon', () => {
+  const view = (over: Parameters<typeof mkView>[0]) => mkView(over) as BattleView
+  const fainted = (id: string) => rMon(id, 0)
+
+  it('con el último Pokémon del rival en el campo y en pie, sí; con más de uno en pie, no', () => {
+    expect(rivalOnLastPokemon(view({ rival: [fainted('snorlax'), fainted('lapras'), rMon('gyarados', 80)], rActive: 2 }))).toBe(true)
+    expect(rivalOnLastPokemon(view({ rival: [rMon('snorlax', 40), rMon('lapras'), rMon('gyarados')] }))).toBe(false)
+  })
+
+  it('mientras cae el penúltimo y aún no ha salido el último, no; tampoco al caer el último, ni sin vista', () => {
+    expect(rivalOnLastPokemon(view({ rival: [fainted('snorlax'), rMon('gyarados')], rActive: 0 }))).toBe(false)
+    expect(rivalOnLastPokemon(view({ rival: [fainted('snorlax'), fainted('gyarados')], rActive: 1 }))).toBe(false)
+    expect(rivalOnLastPokemon(null)).toBe(false)
   })
 })

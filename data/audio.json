@@ -125,6 +125,14 @@
       "_nota": "Jingle de victoria en Resultado"
     },
     {
+      "id": "last-pokemon",
+      "source": "ost-b2w2",
+      "file": "Disc 1/50 - Victory Lies Before You!.flac",
+      "loopStartSec": 25.62,
+      "loopEndSec": 67.1087,
+      "_nota": "«Victory Lies Before You!»: suena en vez del tema del rival cuando saca su último Pokémon, con todos los rivales (decisión de Jose, 30/10/2026)."
+    },
+    {
       "id": "critical-health",
       "source": "yt-critical-health",
       "trimLeadingSilence": true,

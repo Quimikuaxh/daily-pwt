@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
-import { battleMusicFor, CRITICAL_HEALTH_MUSIC, getAudio, SFX_IDS } from '../../audio/audio'
+import { battleMusicFor, CRITICAL_HEALTH_MUSIC, getAudio, LAST_POKEMON_MUSIC, SFX_IDS } from '../../audio/audio'
+import { MUSIC_CHANGE_FADE_MS } from '../../audio/audioEngine'
 import type { BattleClient } from '../../battle/client'
 import type { AiKind, BattleRequest, EngineEnd } from '../../battle/protocol'
 import { MAX_TURNS } from '../../config'
@@ -19,7 +20,7 @@ import { PartyScreen } from './party/PartyScreen'
 import { PARTY_SCREEN_IMAGES, useImagesReady } from './preloadAssets'
 import { partyMembers, requestFromView, rivalMembers } from './party/partyModel'
 import { TouchScreen, type TouchMode } from './TouchScreen'
-import { canChoose, hasOnlyForcedMove, isForcedSwitch, moveOptions, playerInPinch, switchBlockedReason, switchOptions } from './battleModel'
+import { canChoose, hasOnlyForcedMove, isForcedSwitch, moveOptions, playerInPinch, rivalOnLastPokemon, switchBlockedReason, switchOptions } from './battleModel'
 import { avatarForSeed } from './introAssets'
 import { menuSoundFor } from './menuSounds'
 import { SCREEN_HEIGHT, SCREEN_WIDTH, STAGE_HEIGHT, useStageScale } from './useStageScale'
@@ -119,16 +120,24 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   // Música del rival (DEC-57): se descargan su pista y los efectos al entrar; suena desde el iris de la intro (o desde el principio al
   // reanudar un oficial, que no tiene intro) y se funde al terminar el combate, al salir o al desmontar. La velocidad no la cambia.
   // En el visor (RF-128) la pantalla se vuelve a montar en cada salto: la música sigue sin cortarse y la para el visor al salir.
-  const music = battleMusicFor(trainer)
-  useEffect(() => getAudio().preload([music, CRITICAL_HEALTH_MUSIC], SFX_IDS), [music])
+  // Con el último Pokémon del rival en el campo, su tema en vez del del rival, con transición (decisión de Jose, 30/10/2026).
+  const rivalMusic = battleMusicFor(trainer)
+  const music = rivalOnLastPokemon(battle.view) ? LAST_POKEMON_MUSIC : rivalMusic
+  useEffect(() => getAudio().preload([rivalMusic, LAST_POKEMON_MUSIC, CRITICAL_HEALTH_MUSIC], SFX_IDS), [rivalMusic])
   const musicOn = battle.introPhase !== 'loading' && (mode === 'replay' || !ended)
+  // Parar va aparte de cambiar de tema: al pasar al del último Pokémon no se para la música (ni se pierde la de vida baja).
+  useEffect(() => {
+    if (!musicOn || mode === 'replay') return
+    const audio = getAudio()
+    return () => audio.stopMusic()
+  }, [musicOn, mode])
+  const playedMusic = useRef(null as string | null)
   useEffect(() => {
     if (!musicOn) return
-    const audio = getAudio()
-    audio.playMusic(music)
-    if (mode === 'replay') return
-    return () => audio.stopMusic()
-  }, [musicOn, music, mode])
+    const change = playedMusic.current !== null && playedMusic.current !== music
+    getAudio().playMusic(music, change ? { crossfadeMs: MUSIC_CHANGE_FADE_MS } : undefined)
+    playedMusic.current = music
+  }, [musicOn, music])
 
   // Música de vida baja (decisión de Jose, 30/10/2026; antes, un pitido): mientras el Pokémon del jugador tiene la barra en rojo, desde
   // que la barra termina de bajar, corta la del rival y suena ella desde el principio, en bucle. Al curarse, al cambiarlo, al debilitarse

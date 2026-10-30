@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { createAudioEngine, crossfadeLoopSeam, LOOP_CROSSFADE_MS, PINCH_EXIT_FADE_MS, volumeToGain, type AudioContextLike, type AudioIndex } from './audioEngine'
+import { createAudioEngine, crossfadeLoopSeam, LOOP_CROSSFADE_MS, MUSIC_CHANGE_FADE_MS, PINCH_EXIT_FADE_MS, volumeToGain, type AudioContextLike, type AudioIndex } from './audioEngine'
 
 // UT-76 · Motor de sonido (DEC-57) con un AudioContext falso.
 const index: AudioIndex = {
@@ -7,6 +7,7 @@ const index: AudioIndex = {
     'gym-kanto': { path: 'audio/music/gym-kanto.m4a', durationSec: 112, loopStartSec: 26.27, loopEndSec: 70.63 },
     'victory-pwt': { path: 'audio/music/victory-pwt.m4a', durationSec: 38 },
     'critical-health': { path: 'audio/music/critical-health.m4a', durationSec: 39.4, loopStartSec: 12.64, loopEndSec: 23.43 },
+    'last-pokemon': { path: 'audio/music/last-pokemon.m4a', durationSec: 102, loopStartSec: 25.62, loopEndSec: 67.11 },
   },
   sfx: { faint: { path: 'audio/sfx/faint.m4a', durationSec: 0.5 } },
 }
@@ -216,6 +217,39 @@ describe('motor de sonido', () => {
     const late = vi.fn()
     engine.onUnlock(late)
     expect(late).not.toHaveBeenCalled()
+  })
+
+  // Tema del último Pokémon del rival (decisión de Jose, 30/10/2026).
+  it('cambiar de tema con transición: el que sonaba se apaga mientras el nuevo entra subiendo desde el principio', async () => {
+    const { engine, fake, interact, settle } = setup()
+    interact()
+    engine.playMusic('gym-kanto')
+    await settle()
+    const gainsBefore = fake.gains.length
+    engine.playMusic('last-pokemon', { crossfadeMs: MUSIC_CHANGE_FADE_MS })
+    await settle()
+    expect(fake.sources[0].stoppedAt).toBeCloseTo(10 + MUSIC_CHANGE_FADE_MS / 1000)
+    expect(fake.sources[1]).toMatchObject({ loop: true, loopStart: 25.62, loopEnd: 67.11, started: true, offset: 0 })
+    expect(fake.gains.slice(gainsBefore).some((node) => node.gain.ramps.includes(1))).toBe(true)
+  })
+
+  it('si sale el último Pokémon con el tuyo en rojo, sigue la de vida baja; al quitarla, suena el del último Pokémon desde el principio', async () => {
+    const { engine, fake, interact, settle } = setup()
+    const clock = fake.context as unknown as { currentTime: number }
+    interact()
+    engine.playMusic('gym-kanto')
+    await settle()
+    clock.currentTime = 40
+    engine.setPinchMusic('critical-health')
+    await settle()
+    engine.playMusic('last-pokemon', { crossfadeMs: MUSIC_CHANGE_FADE_MS })
+    await settle()
+    expect(engine.state().music).toBe('critical-health')
+    expect(fake.sources).toHaveLength(2)
+    engine.setPinchMusic(null)
+    await settle()
+    expect(fake.sources[2]).toMatchObject({ loopStart: 25.62, started: true, offset: 0 })
+    expect(engine.state().music).toBe('last-pokemon')
   })
 
   it('lo precargado antes de la primera interacción se decodifica al tocar, antes de pedirlo (la de vida baja, sin esperar)', async () => {

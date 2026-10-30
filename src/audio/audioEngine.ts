@@ -32,6 +32,8 @@ export const DEFAULT_FADE_MS = 400
 export const PINCH_EXIT_FADE_MS = 800
 /** …y la del rival vuelve desde bajo y sube durante más tiempo, para que se note que vuelve (decisión de Jose, 30/10/2026). */
 export const MUSIC_RETURN_FADE_IN_MS = 1500
+/** Cambio de tema con transición (el del último Pokémon del rival, decisión de Jose, 30/10/2026): uno se apaga mientras entra el otro. */
+export const MUSIC_CHANGE_FADE_MS = 800
 const UNLOCK_EVENTS = ['pointerdown', 'keydown'] as const
 
 /** Volumen de Ajustes (0-100) a ganancia: curva cuadrática, que se percibe más pareja que la lineal. */
@@ -130,14 +132,14 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
     return entry.loopStartSec + ((elapsed - entry.loopStartSec) % (entry.loopEndSec - entry.loopStartSec))
   }
 
-  /** `fadeInMs`: entra subiendo desde 0 (la del rival al volver de la de vida baja). */
-  function startWantedMusic(fadeInMs = 0) {
+  /** `fadeInMs`: entra subiendo desde 0 (la del rival al volver de la de vida baja); `fadeOutMs`: la que sonaba se apaga en ese tiempo. */
+  function startWantedMusic(fadeInMs = 0, fadeOutMs = 0) {
     const id = effectiveMusic()
     if (!id || !context || playing?.id === id) return
     void bufferOf(`music:${id}`).then((buffer) => {
       const ctx = context
       if (!buffer || !ctx || !musicGain || effectiveMusic() !== id || playing?.id === id) return
-      stopPlaying(0)
+      stopPlaying(fadeOutMs)
       // Vuelta de la de vida baja: la música sigue por donde iba; todo lo demás empieza desde el principio.
       const offsetSec = resumeAt?.id === id ? resumeAt.offsetSec : 0
       if (resumeAt?.id === id) resumeAt = null
@@ -219,10 +221,14 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
       }
     },
     /** Música en bucle (o una vez si no tiene puntos de bucle). Si aún no hay interacción, empieza en cuanto la haya. */
-    playMusic(id: string) {
+    /**
+     * Con `crossfadeMs`, la que sonaba se apaga mientras esta entra subiendo (el tema del último Pokémon). Si está sonando la de vida
+     * baja, sigue ella: esta suena al quitarla, desde el principio (no se había llegado a oír).
+     */
+    playMusic(id: string, { crossfadeMs = 0 }: { crossfadeMs?: number } = {}) {
       if (wantedMusic === id && (playing?.id === id || !unlocked)) return
       wantedMusic = id
-      startWantedMusic()
+      startWantedMusic(crossfadeMs, crossfadeMs)
     },
     stopMusic(fadeMs = DEFAULT_FADE_MS) {
       wantedMusic = null

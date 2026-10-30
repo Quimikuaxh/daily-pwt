@@ -11,7 +11,7 @@ describe('scripts/build-audio.mjs', () => {
   it('el manifiesto es válido: música por https desde el OST (la de vida baja, de un vídeo) y efectos desde el ZIP', async () => {
     const { planAudio } = await importScript('scripts/build-audio.mjs')
     const plans = planAudio(manifest())
-    expect(plans.filter((plan: { kind: string }) => plan.kind === 'music')).toHaveLength(14)
+    expect(plans.filter((plan: { kind: string }) => plan.kind === 'music')).toHaveLength(15)
     // Sin el pitido de vida baja: lo sustituye la música (decisión de Jose, 30/10/2026).
     expect(plans.filter((plan: { kind: string }) => plan.kind === 'sfx')).toHaveLength(17)
     expect(plans.find((plan: { id: string }) => plan.id === 'critical-health')).toMatchObject({ video: 'https://www.youtube.com/watch?v=aLVr0VfeLmk', cacheName: 'critical-health.yt' })

@@ -76,6 +76,12 @@
       "path": "audio/music/victory-pwt.m4a",
       "durationSec": 38
     },
+    "last-pokemon": {
+      "path": "audio/music/last-pokemon.m4a",
+      "durationSec": 102,
+      "loopStartSec": 25.62,
+      "loopEndSec": 67.1087
+    },
     "critical-health": {
       "path": "audio/music/critical-health.m4a",
       "durationSec": 38.753,

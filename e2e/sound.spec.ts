@@ -38,7 +38,7 @@ test.describe('Sonido', () => {
     expect(saved).toMatchObject({ sound: false, volume: 75 })
   })
 
-  test('E2E-69 sin tocar la página no se descarga audio ni hay errores; el combate pide solo la pista de su rival, la de vida baja y los efectos', async ({ page }) => {
+  test('E2E-69 sin tocar la página no se descarga audio ni hay errores; el combate pide solo la pista de su rival, la del último Pokémon, la de vida baja y los efectos', async ({ page }) => {
     const errors: string[] = []
     page.on('pageerror', (error) => errors.push(error.message))
     page.on('console', (message) => {
@@ -55,10 +55,11 @@ test.describe('Sonido', () => {
     expect(audio, 'Hoy no pide audio').toEqual([])
     const { battle } = await startBattle(page, { seed: 'a' })
     await battle.waitForActionOrResult()
-    // La del rival y la de vida baja, que se precarga para sonar en cuanto el Pokémon queda en rojo (decisión de Jose, 30/10/2026).
+    // La del rival, la del último Pokémon y la de vida baja: se precargan para sonar en cuanto hagan falta (decisiones de Jose, 30/10/2026).
     const music = audio.filter((path) => path.includes('/audio/music/'))
-    expect(music).toHaveLength(2)
+    expect(music).toHaveLength(3)
     expect(music.filter((path) => /\/audio\/music\/critical-health\.m4a$/.test(path))).toHaveLength(1)
+    expect(music.filter((path) => /\/audio\/music\/last-pokemon\.m4a$/.test(path))).toHaveLength(1)
     expect(music.filter((path) => /\/audio\/music\/(gym|champion)-(kanto|johto|hoenn|sinnoh|unova)\.m4a$/.test(path))).toHaveLength(1)
     // Todos los efectos del índice.
     expect(new Set(audio.filter((path) => path.includes('/audio/sfx/'))).size).toBe(Object.keys(audioIndex.sfx).length)

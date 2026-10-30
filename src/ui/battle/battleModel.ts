@@ -8,13 +8,23 @@ import { isFaintedCondition } from '../../battle/condition'
 export const fillFor = (percent: number): 'green' | 'yellow' | 'red' => (percent > 50 ? 'green' : percent > 20 ? 'yellow' : 'red')
 
 /**
- * El Pokémon activo del jugador tiene la barra en rojo y sigue en pie: suena el pitido de vida baja (decisión de Jose, como en N2/B2:
- * nunca por el rival, y se corta al debilitarse).
+ * El Pokémon activo del jugador tiene la barra en rojo y sigue en pie: suena la música de vida baja (decisión de Jose, como en N2/B2:
+ * nunca por el rival, y se corta al debilitarse; hasta el 30/10/2026, un pitido).
  */
 export function playerInPinch(view: BattleView | null): boolean {
   const active = view?.player.active
   const mon = active == null ? null : view?.player.team[active]
   return !!mon && !mon.fainted && mon.hpPercent > 0 && fillFor(mon.hpPercent) === 'red'
+}
+
+/**
+ * El rival ya tiene en el campo su último Pokémon en pie: suena el tema del último Pokémon en vez del suyo (decisión de Jose, 30/10/2026,
+ * con todos los rivales). Mientras el penúltimo cae y aún no ha salido el último, no.
+ */
+export function rivalOnLastPokemon(view: BattleView | null): boolean {
+  const active = view?.rival.active
+  const mon = active == null ? null : view?.rival.team[active]
+  return view?.rival.remaining === 1 && !!mon && !mon.fainted && mon.hpPercent > 0
 }
 
 const STRUGGLE_ID = 'struggle'

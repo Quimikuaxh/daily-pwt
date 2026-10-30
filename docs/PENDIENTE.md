@@ -4,6 +4,9 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 **Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). El sonido va en `feature/f3-sonido` (desde `main`): los audios ya están descargados y versionados (se descargaron en local, desde la nube las fuentes están bloqueadas); falta implementarlo según «Sonido: plan de implementación».
 
+## Tema del último Pokémon del rival (30/10/2026, directo a `main`)
+- **Hecho:** «Victory Lies Before You!» con el último Pokémon de cualquier rival, con transición y respetando la música de vida baja (PRD §0, RF-90, UT-122). Solo web y audio, sin migración.
+
 ## Repetición que empieza sola y música de vida baja (30/10/2026, rama `feature/repeticion-autoplay`)
 - **Hecho:** el visor empieza reproduciéndose, sin pulsar «Reproducir» (RF-128, UT-107). Música de vida baja en vez del pitido (PRD §0, UT-121). Solo web, sin migración.
 - **Desplegado** el 30/10/2026, con el visto bueno de Jose tras escucharlo en una repetición. Aviso «Toca para activar el sonido» en el visor (el navegador no deja sonar hasta el primer toque).
