@@ -61,9 +61,19 @@ export class BattlePage {
     await this.page.getByRole('group', { name: /Qué hacer con/ }).getByRole('button', { name: 'Cambiar', exact: true }).click()
   }
 
-  /** Abre Luchar si hace falta y pulsa el primer movimiento activo. */
+  /**
+   * Abre Luchar si hace falta y pulsa el primer movimiento activo. Con la máquina cargada, `waitForActionOrResult` puede ver aún activo el
+   * menú del turno que se acaba de elegir y, si ese turno termina el combate, Luchar ya no vuelve: se espera a Luchar o al resultado, y si
+   * sale el resultado no se pulsa nada (30/10/2026: E2E-05 y E2E-06 se quedaban esperando con «Victoria» en pantalla).
+   */
   async chooseFirstMove(): Promise<void> {
-    if ((await this.enabledMoves.count()) === 0) await this.fightButton.click()
+    if ((await this.enabledMoves.count()) === 0) {
+      await this.fightButton.and(this.page.locator(':enabled')).or(this.resultTitle).first().waitFor({ timeout: 60_000 })
+      if (await this.resultTitle.isVisible()) return
+      await this.fightButton.click()
+    }
+    await this.enabledMoves.first().or(this.resultTitle).first().waitFor({ timeout: 60_000 })
+    if (await this.resultTitle.isVisible()) return
     await this.enabledMoves.first().click()
   }
 

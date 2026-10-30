@@ -79,17 +79,18 @@ describe('efectos de movimientos', () => {
   })
 
   // Cambio de requisito del 30/10/2026 (Jose): cuarta tanda con los cuatro climas propios (la lluvia ya lo era) y 20 movimientos más, y
-  // quinta tanda con los 20 siguientes por uso.
-  it('104 movimientos con animación propia (cinco tandas de 20, Maldición y tres climas); el resto usa la genérica de su clase (Poder Oculto de cualquier tipo, la suya)', () => {
-    expect(Object.keys(CUSTOM_EFFECTS)).toHaveLength(104)
+  // de la quinta a la octava, los 20 siguientes por uso en cada una.
+  it('164 movimientos con animación propia (ocho tandas de 20, Maldición y tres climas); el resto usa la genérica de su clase (Poder Oculto de cualquier tipo, la suya)', () => {
+    expect(Object.keys(CUSTOM_EFFECTS)).toHaveLength(164)
     for (const id of ['sunnyday', 'raindance', 'sandstorm', 'hail', 'trick', 'dragondance', 'lightscreen', 'reflect']) expect(effectFor(id, 'foe'), id).toBe(CUSTOM_EFFECTS[id])
     expect(effectFor('flamethrower', 'shot', 'Fire')).toBe(CUSTOM_EFFECTS.flamethrower)
     expect(effectFor('crunch', 'bite', 'Dark')).toBe(CUSTOM_EFFECTS.crunch)
     expect(effectFor('earthquake', 'hit')).toBe(CUSTOM_EFFECTS.earthquake)
     expect(effectFor('hiddenpowerfire', 'shot')).toBe(CUSTOM_EFFECTS.hiddenpower)
     expect(effectFor('tackle', 'hit')).toBe(GENERIC_EFFECTS.hit)
-    expect(effectFor('agility', 'boost')).toBe(GENERIC_EFFECTS.boost)
-    expect(effectFor('firefang', 'bite', 'Fire')).toBe(GENERIC_EFFECTS.bite)
+    expect(effectFor('calmmind', 'boost')).not.toBe(GENERIC_EFFECTS.boost)
+    expect(effectFor('growth', 'boost')).toBe(GENERIC_EFFECTS.boost)
+    expect(effectFor('thunderfang', 'bite', 'Electric')).toBe(GENERIC_EFFECTS.bite)
   })
 
   // UT-74 · Estados y bayas (decisiones de Jose del 23/10/2026).

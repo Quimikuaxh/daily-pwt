@@ -67,6 +67,11 @@ describe('tema del último Pokémon del rival (UT-122)', () => {
     await settle(8000)
     expect(play).toHaveBeenLastCalledWith('last-pokemon', { crossfadeMs: MUSIC_CHANGE_FADE_MS })
     expect(stop).not.toHaveBeenCalled()
+    // UT-127 (Jose, 30/10/2026): cae el último y sigue su tema; no vuelve el del rival.
+    const calls = play.mock.calls.length
+    client.emit(mkUpdate({ lines: ['|faint|p2a: Gyarados'], view: rivalDown(5, 6) }))
+    await settle(8000)
+    expect(play.mock.calls.slice(calls).filter(([id]) => id !== 'last-pokemon')).toEqual([])
     unmount()
     expect(stop).toHaveBeenCalled()
     play.mockRestore()

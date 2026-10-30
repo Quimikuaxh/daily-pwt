@@ -20,7 +20,7 @@ import { PartyScreen } from './party/PartyScreen'
 import { PARTY_SCREEN_IMAGES, useImagesReady } from './preloadAssets'
 import { partyMembers, requestFromView, rivalMembers } from './party/partyModel'
 import { TouchScreen, type TouchMode } from './TouchScreen'
-import { canChoose, hasOnlyForcedMove, isForcedSwitch, moveOptions, playerInPinch, rivalOnLastPokemon, switchBlockedReason, switchOptions } from './battleModel'
+import { canChoose, hasOnlyForcedMove, isForcedSwitch, moveOptions, playerInPinch, lastPokemonThemeOn, switchBlockedReason, switchOptions } from './battleModel'
 import { avatarForSeed } from './introAssets'
 import { menuSoundFor } from './menuSounds'
 import { SCREEN_HEIGHT, SCREEN_WIDTH, STAGE_HEIGHT, useStageScale } from './useStageScale'
@@ -120,9 +120,10 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   // Música del rival (DEC-57): se descargan su pista y los efectos al entrar; suena desde el iris de la intro (o desde el principio al
   // reanudar un oficial, que no tiene intro) y se funde al terminar el combate, al salir o al desmontar. La velocidad no la cambia.
   // En el visor (RF-128) la pantalla se vuelve a montar en cada salto: la música sigue sin cortarse y la para el visor al salir.
-  // Con el último Pokémon del rival en el campo, su tema en vez del del rival, con transición (decisión de Jose, 30/10/2026).
+  // Con el último Pokémon del rival en el campo, su tema en vez del del rival, con transición (decisión de Jose, 30/10/2026); sigue
+  // sonando cuando ese último cae.
   const rivalMusic = battleMusicFor(trainer)
-  const music = rivalOnLastPokemon(battle.view) ? LAST_POKEMON_MUSIC : rivalMusic
+  const music = lastPokemonThemeOn(battle.view) ? LAST_POKEMON_MUSIC : rivalMusic
   useEffect(() => getAudio().preload([rivalMusic, LAST_POKEMON_MUSIC, CRITICAL_HEALTH_MUSIC], SFX_IDS), [rivalMusic])
   const musicOn = battle.introPhase !== 'loading' && (mode === 'replay' || !ended)
   // Parar va aparte de cambiar de tema: al pasar al del último Pokémon no se para la música (ni se pierde la de vida baja).

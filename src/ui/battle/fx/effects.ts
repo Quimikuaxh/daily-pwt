@@ -2459,6 +2459,974 @@ const bulldoze: Effect = {
   shake: (progress) => (inPhase(progress, 0.3, 0.9) ? { who: 'target', dx: Math.round(Math.sin(progress * 100) * 2), dy: Math.round(Math.cos(progress * 70)) } : null),
 }
 
+// ---------- sexta tanda (30/10/2026): los 20 siguientes por uso ----------
+
+/** Vendaval: un tornado gris y blanco se alza sobre el objetivo, girando, con briznas que salen despedidas. */
+const hurricane: Effect = {
+  duration: 1000,
+  draw(paint, progress, c) {
+    const rise = phase(progress, 0, 0.35)
+    const fade = phase(progress, 0.85, 1)
+    if (fade >= 1) return
+    for (let level = 0; level < 9 * rise; level += 1) {
+      const y = c.target.y + 18 - level * 9
+      const radius = 8 + level * 3
+      for (let k = 0; k < 10; k += 1) {
+        const angle = (k / 10) * Math.PI * 2 + progress * 20 + level * 0.6
+        paint.dot(c.target.x + Math.cos(angle) * radius, y + Math.sin(angle) * radius * 0.25, 2, k % 3 ? '#d0d8e0' : '#ffffff')
+      }
+    }
+    const seeds = seedsFor(c, 16)
+    shards(paint, { x: c.target.x, y: c.target.y - 30 }, phase(progress, 0.4, 0.95), seeds, '#a8b0b8', 50)
+  },
+  shake: (progress) => (inPhase(progress, 0.3, 0.9) ? { who: 'target', dx: Math.round(Math.sin(progress * 70) * 2), dy: 0 } : null),
+}
+
+/** Giro Rápido: el usuario gira con arcos blancos a su alrededor y lanza esquirlas fuera (barre las trampas). */
+const rapidspin: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    const spin = phase(progress, 0, 0.6)
+    if (spin > 0 && spin < 1) {
+      for (let k = 0; k < 3; k += 1) crescent(paint, c.user, progress * 30 + (k * Math.PI * 2) / 3, 24, '#c8c8c8', '#ffffff')
+    }
+    const seeds = seedsFor(c, 16)
+    shards(paint, c.user, phase(progress, 0.45, 0.95), seeds, '#a08848', 60)
+    burst(paint, c.target, phase(progress, 0.5, 0.8), '#f8f8f8', '#f8e070', 6, 20)
+  },
+  shake: shakeTarget(0.5, 0.75),
+}
+
+/** Chispazo: el usuario suelta rayos en zigzag en todas direcciones; uno alcanza al objetivo. */
+const discharge: Effect = {
+  duration: 850,
+  draw(paint, progress, c) {
+    sparks(paint, c.user, phase(progress, 0.05, 0.55), 10)
+    const bolt = phase(progress, 0.3, 0.7)
+    if (bolt > 0 && progress < 0.8) {
+      const steps = Math.floor(bolt * 12)
+      for (let k = 0; k <= steps; k += 1) {
+        const at = lerpPoint(c.user, c.target, k / 12)
+        paint.dot(at.x + (k % 2 ? 5 : -5), at.y, 3, k % 2 ? '#f8f080' : '#f8c818')
+      }
+    }
+    sparks(paint, c.target, phase(progress, 0.65, 1), 6)
+  },
+  shake: shakeTarget(0.65, 0.95),
+}
+
+/** Síntesis: motas de luz verde y dorada caen sobre el usuario, que brilla. */
+const synthesis: Effect = {
+  duration: 900,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 24)
+    for (let i = 0; i < 12; i += 1) {
+      const t = (progress * 1.4 + seeds[i]) % 1
+      if (progress > 0.85) break
+      paint.dot(c.user.x - 26 + seeds[i + 12] * 52, c.user.y - 60 + t * 56, 3, i % 2 ? '#a8e070' : '#f8e070')
+    }
+    const glow = phase(progress, 0.5, 1)
+    if (glow > 0 && glow < 1) ring(paint, c.user, 14 + glow * 10, '#a8e070', 3, 16, progress * 6)
+  },
+}
+
+/** Rayo Solar: un haz ancho, blanco y amarillo, sale del usuario hasta el objetivo con chispas en los bordes. */
+const solarbeam: Effect = {
+  duration: 900,
+  draw(paint, progress, c) {
+    const charge = phase(progress, 0, 0.25)
+    if (progress < 0.3) orb(paint, c.user, 4 + charge * 8, '#f8f0a0', '#ffffff')
+    const shot = phase(progress, 0.2, 0.5)
+    if (shot > 0 && progress < 0.85) {
+      beam(paint, c.user, lerpPoint(c.user, c.target, shot), 1, '#f8e070', '#ffffff', 7)
+      beam(paint, c.user, lerpPoint(c.user, c.target, shot), 1, '#f8f8d0', '#ffffff', 3, 6)
+    }
+    const hit = phase(progress, 0.5, 0.95)
+    if (hit > 0 && hit < 1) orb(paint, c.target, 10 + hit * 10, '#f8f0a0', '#ffffff')
+  },
+  shake: shakeTarget(0.5, 0.9, 3),
+}
+
+/** Latigazo: una liana verde azota al objetivo dos veces en arco. */
+const powerwhip: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    for (let k = 0; k < 2; k += 1) {
+      const t = phase(progress, 0.05 + k * 0.3, 0.35 + k * 0.3)
+      if (t <= 0 || t >= 1) continue
+      for (let s = 0; s < 14; s += 1) {
+        const along2 = s / 14
+        const angle = -2.4 + t * 2.2 + along2 * 0.6 * (k ? -1 : 1)
+        paint.dot(c.target.x + Math.cos(angle) * along2 * 44, c.target.y + Math.sin(angle) * along2 * 44, 4, s % 3 ? '#58a838' : '#a8e070')
+      }
+    }
+    burst(paint, c.target, phase(progress, 0.6, 0.9), '#58a838', '#c8f0a0', 6, 22)
+  },
+  shake: (progress) => (inPhase(progress, 0.3, 0.4) || inPhase(progress, 0.6, 0.75) ? { who: 'target', dx: Math.round(Math.sin(progress * 90) * 3), dy: 0 } : null),
+}
+
+/** Envite Ígneo: el usuario, envuelto en llamas, embiste y estalla en fuego; el retroceso lo sacude. */
+const flareblitz: Effect = {
+  duration: 900,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 16)
+    const dash = phase(progress, 0.1, 0.5)
+    if (progress < 0.5) {
+      const at = lerpPoint(c.user, c.target, dash)
+      orb(paint, at, 12, '#f87830', '#f8d050')
+      flames(paint, at, (progress * 3) % 1, seeds)
+    }
+    const blast = phase(progress, 0.5, 0.9)
+    if (blast > 0 && blast < 1) {
+      orb(paint, c.target, 8 + blast * 16, blast < 0.5 ? '#f8f0a0' : '#f87830', '#f8d050')
+      flames(paint, c.target, blast, seeds)
+    }
+  },
+  shake: (progress) => (inPhase(progress, 0.5, 0.8) ? { who: 'target', dx: Math.round(Math.sin(progress * 90) * 3), dy: 0 } : inPhase(progress, 0.8, 0.95) ? { who: 'user', dx: Math.round(Math.sin(progress * 90) * 2), dy: 0 } : null),
+}
+
+/** Deseo: una estrella sube del usuario hacia el cielo y titila. */
+const wish: Effect = {
+  duration: 950,
+  draw(paint, progress, c) {
+    const rise = phase(progress, 0.05, 0.6)
+    if (progress > 0.95) return
+    const at = { x: c.user.x + rise * 20, y: c.user.y - 20 - rise * 80 }
+    star(paint, at, 6 + Math.round(Math.sin(progress * 30) * 2), '#f8e070')
+    for (let k = 1; k <= 4; k += 1) {
+      const trail = { x: c.user.x + Math.max(0, rise - k * 0.07) * 20, y: c.user.y - 20 - Math.max(0, rise - k * 0.07) * 80 }
+      paint.dot(trail.x, trail.y, 2, '#f8f8d0')
+    }
+  },
+}
+
+/** Bomba Germen: semillas en arco que estallan en verde sobre el objetivo (varias). */
+const seedbomb: Effect = {
+  duration: 850,
+  draw(paint, progress, c) {
+    for (let i = 0; i < 3; i += 1) {
+      const t = phase(progress, i * 0.1, 0.4 + i * 0.1)
+      if (t > 0 && t < 1) orb(paint, along(c, t, 30 + i * 10), 4, '#a07838', '#d8b070')
+      burst(paint, { x: c.target.x - 14 + i * 14, y: c.target.y - 4 + (i % 2) * 8 }, phase(progress, 0.4 + i * 0.1, 0.65 + i * 0.1), '#58a838', '#c8f0a0', 6, 18)
+    }
+  },
+  shake: shakeTarget(0.4, 0.85),
+}
+
+/** Puño Bala: puños metálicos pequeños golpean muy rápido, uno tras otro. */
+const bulletpunch: Effect = {
+  duration: 650,
+  draw(paint, progress, c) {
+    for (let k = 0; k < 3; k += 1) {
+      const t = phase(progress, k * 0.18, k * 0.18 + 0.2)
+      if (t <= 0 || t >= 1) continue
+      const at = { x: c.target.x - 12 + k * 12, y: c.target.y - 8 + (k % 2) * 12 }
+      if (t < 0.7) fist(paint, at, 2 + t * 2, '#a8a8c0', '#f8f8f8')
+      else star(paint, at, 10, '#f8f8f8')
+    }
+  },
+  shake: shakeTarget(0.1, 0.65, 2),
+}
+
+/** Garra Dragón: tres zarpazos verdes y morados cruzan al objetivo en diagonal. */
+const dragonclaw: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    for (let k = 0; k < 3; k += 1) {
+      const t = phase(progress, 0.05 + k * 0.08, 0.4 + k * 0.08)
+      if (t <= 0 || t >= 1) continue
+      const from = { x: c.target.x - 26 + k * 12, y: c.target.y - 30 }
+      beam(paint, from, { x: from.x + 20, y: from.y + 56 }, t, k === 1 ? '#7038f8' : '#58c878', '#e0f8e8', 3)
+    }
+    burst(paint, c.target, phase(progress, 0.55, 0.85), '#7038f8', '#b8a0f8', 6, 20)
+  },
+  shake: shakeTarget(0.35, 0.75),
+}
+
+/** Testarazo: el usuario carga como una roca y el choque revienta en piedras; el retroceso lo sacude. */
+const headsmash: Effect = {
+  duration: 900,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 20)
+    const dash = phase(progress, 0.1, 0.5)
+    if (progress < 0.5) rock(paint, lerpPoint(c.user, c.target, dash), 10)
+    const hit = phase(progress, 0.5, 0.95)
+    if (hit > 0 && hit < 1) {
+      star(paint, c.target, 12 + hit * 14, '#f8f8f8')
+      shards(paint, c.target, hit, seeds, '#a08848', 46)
+    }
+  },
+  shake: (progress) => (inPhase(progress, 0.5, 0.8) ? { who: 'screen', dx: Math.round(Math.sin(progress * 100) * 3), dy: 0 } : inPhase(progress, 0.8, 0.95) ? { who: 'user', dx: Math.round(Math.sin(progress * 90) * 2), dy: 0 } : null),
+}
+
+/** Campana: una campana dorada suena sobre el usuario y salen notas. */
+function bell(paint: Painter, center: Point, swing: number): void {
+  const rows = ['..##..', '.####.', '.####.', '######', '######', '..##..']
+  rows.forEach((row, y) => {
+    for (let x = 0; x < row.length; x += 1) if (row[x] === '#') paint.dot(center.x + (x - 3) * 3 + swing * (5 - y), center.y + (y - 3) * 3, 3, y === 5 ? '#a07838' : y < 2 ? '#f8f0a0' : '#f8c838')
+  })
+}
+
+/** Cascabel Cura: suena una campana sobre el usuario y salen notas y destellos. */
+const healbell: Effect = {
+  duration: 950,
+  draw(paint, progress, c) {
+    if (progress > 0.95) return
+    bell(paint, { x: c.user.x, y: c.user.y - 46 }, Math.round(Math.sin(progress * 24)))
+    for (let i = 0; i < 4; i += 1) {
+      const t = (progress * 1.4 + i / 4) % 1
+      const note = { x: c.user.x - 30 + i * 20 + Math.sin(t * 6) * 4, y: c.user.y - 40 - t * 24 }
+      paint.dot(note.x, note.y, 4, '#f8f8f8')
+      for (let k = 1; k <= 3; k += 1) paint.dot(note.x + 3, note.y - k * 3, 2, '#f8f8f8')
+    }
+  },
+}
+
+/** Pulimento: el usuario brilla: destellos en rombo giran a su alrededor y un reflejo lo recorre. */
+const rockpolish: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    for (let k = 0; k < 5; k += 1) {
+      const angle = progress * 12 + (k / 5) * Math.PI * 2
+      diamond(paint, { x: c.user.x + Math.cos(angle) * 26, y: c.user.y - 10 + Math.sin(angle) * 12 }, 3, '#d8c090', '#ffffff')
+    }
+    const shine = phase(progress, 0.3, 0.8)
+    if (shine > 0 && shine < 1) beam(paint, { x: c.user.x - 22 + shine * 44, y: c.user.y - 34 }, { x: c.user.x - 34 + shine * 44, y: c.user.y + 10 }, 1, '#f8f8f8', '#ffffff', 3)
+  },
+}
+
+/** Puño Certero: el usuario se concentra (anillos que se cierran) y un puño enorme golpea al objetivo. */
+const focuspunch: Effect = {
+  duration: 950,
+  draw(paint, progress, c) {
+    for (let k = 0; k < 3; k += 1) {
+      const t = phase(progress, k * 0.1, k * 0.1 + 0.3)
+      if (t > 0 && t < 1) ring(paint, c.user, 34 - t * 26, '#f8a050', 3, 18)
+    }
+    const punchT = phase(progress, 0.45, 0.7)
+    if (punchT > 0 && progress < 0.75) fist(paint, lerpPoint(c.user, c.target, punchT), 3 + punchT * 2, '#e83030', '#f8a0a0')
+    burst(paint, c.target, phase(progress, 0.7, 0.95), '#e83030', '#f8f8f8', 10, 36)
+  },
+  shake: shakeTarget(0.7, 0.95, 3),
+}
+
+/** Golpe Aéreo: dos tajos blancos en aspa, rapidísimos, que no fallan. */
+const aerialace: Effect = {
+  duration: 650,
+  draw(paint, progress, c) {
+    const first = phase(progress, 0.05, 0.35)
+    const second = phase(progress, 0.25, 0.55)
+    if (first > 0 && first < 1) beam(paint, { x: c.target.x - 28, y: c.target.y - 28 }, { x: c.target.x + 28, y: c.target.y + 28 }, first, '#f8f8f8', '#ffffff', 3)
+    if (second > 0 && second < 1) beam(paint, { x: c.target.x + 28, y: c.target.y - 28 }, { x: c.target.x - 28, y: c.target.y + 28 }, second, '#f8f8f8', '#ffffff', 3)
+    burst(paint, c.target, phase(progress, 0.55, 0.85), '#f8f8f8', '#a8d8f8', 8, 22)
+  },
+  shake: shakeTarget(0.35, 0.7),
+}
+
+/** Doble Equipo: siluetas del usuario aparecen y desaparecen a los lados, parpadeando. */
+const doubleteam: Effect = {
+  duration: 850,
+  draw(paint, progress, c) {
+    if (progress > 0.92) return
+    const spread = phase(progress, 0, 0.4)
+    for (const side of [-1, 1]) {
+      if (Math.floor(progress * 14 + (side > 0 ? 1 : 0)) % 2) continue
+      const center = { x: c.user.x + side * spread * 40, y: c.user.y - 16 }
+      for (let k = 0; k < 16; k += 1) {
+        const angle = (k / 16) * Math.PI * 2
+        paint.dot(center.x + Math.cos(angle) * 16, center.y + Math.sin(angle) * 24, 3, '#e0e8f0')
+      }
+    }
+  },
+}
+
+/** Energibola: una bola verde de luz, con remolinos, crece en el usuario y vuela hasta el objetivo. */
+const energyball: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    const travel = phase(progress, 0.15, 0.6)
+    if (progress < 0.6) {
+      const at = lerpPoint(c.user, c.target, travel)
+      const size = 4 + phase(progress, 0, 0.15) * 6
+      orb(paint, at, size, '#58c058', '#d8f8c0')
+      for (let k = 0; k < 3; k += 1) {
+        const angle = progress * 20 + (k / 3) * Math.PI * 2
+        paint.dot(at.x + Math.cos(angle) * (size + 4), at.y + Math.sin(angle) * (size + 4), 2, '#f8f8d0')
+      }
+    }
+    burst(paint, c.target, phase(progress, 0.6, 0.95), '#58c058', '#d8f8c0', 10, 30)
+  },
+  shake: shakeTarget(0.6, 0.9),
+}
+
+/** Viento Hielo: una ráfaga helada cruza hacia el objetivo con copos y rayas azules. */
+const icywind: Effect = {
+  duration: 850,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 40)
+    for (let i = 0; i < 16; i += 1) {
+      const t = phase(progress, seeds[i] * 0.3, seeds[i] * 0.3 + 0.6)
+      if (t <= 0 || t >= 1) continue
+      const at = lerpPoint(c.user, c.target, t)
+      const point = { x: at.x + (seeds[i + 16] - 0.5) * 40, y: at.y + (seeds[(i + 7) % 40] - 0.5) * 40 + Math.sin(t * 10 + i) * 4 }
+      if (i % 2) snowflake(paint, point, '#a8d8f8')
+      else for (let k = 0; k < 3; k += 1) paint.dot(point.x - k * 4 * Math.sign(c.target.x - c.user.x), point.y, 2, '#c8e8f8')
+    }
+  },
+  shake: shakeTarget(0.55, 0.9),
+}
+
+/** Mazazo: un tronco enorme cae sobre el objetivo y salen hojas y astillas; el retroceso sacude al usuario. */
+const woodhammer: Effect = {
+  duration: 900,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 16)
+    const fall = phase(progress, 0.1, 0.45)
+    if (progress < 0.5) {
+      const top = c.target.y - 70 + fall * 50
+      for (let y = 0; y < 18; y += 3) for (let x = -18; x <= 18; x += 3) paint.dot(c.target.x + x, top + y, 3, y === 0 || x === -18 ? '#d8b070' : y % 6 ? '#a07838' : '#785028')
+    }
+    shards(paint, c.target, phase(progress, 0.45, 0.95), seeds, '#58a838', 40)
+    burst(paint, c.target, phase(progress, 0.45, 0.75), '#a07838', '#d8b070', 8, 26)
+  },
+  shake: (progress) => (inPhase(progress, 0.45, 0.75) ? { who: 'target', dx: 0, dy: Math.round(Math.sin(progress * 90) * 3) } : inPhase(progress, 0.75, 0.9) ? { who: 'user', dx: Math.round(Math.sin(progress * 90) * 2), dy: 0 } : null),
+}
+
+// ---------- séptima tanda (30/10/2026): los 20 siguientes por uso ----------
+
+/** Colmillo Hielo: unas fauces blancas muerden y saltan cristales de hielo. */
+const icefang: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 16)
+    if (progress < 0.55) jaws(paint, c.target, phase(progress, 0.1, 0.45), 3, '#f8f8f8')
+    for (let i = 0; i < 6; i += 1) {
+      const t = phase(progress, 0.45, 0.95)
+      if (t <= 0 || t >= 1) continue
+      const angle = seeds[i] * Math.PI * 2
+      diamond(paint, { x: c.target.x + Math.cos(angle) * t * 30, y: c.target.y + Math.sin(angle) * t * 24 }, 3, '#88c8f0', '#e8f8f8')
+    }
+  },
+  shake: shakeTarget(0.4, 0.75),
+}
+
+/** Colmillo Ígneo: unas fauces muerden y prenden llamas en el objetivo. */
+const firefang: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 16)
+    if (progress < 0.55) jaws(paint, c.target, phase(progress, 0.1, 0.45), 3, '#f8f8f8')
+    flames(paint, c.target, phase(progress, 0.45, 1), seeds)
+  },
+  shake: shakeTarget(0.4, 0.75),
+}
+
+/** Joya de Luz: gemas de colores salen disparadas del usuario y destellan al llegar. */
+const powergem: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    const colors = [['#e83030', '#f8a0a0'], ['#3878e8', '#a8c8f8'], ['#38b848', '#a8f0a8'], ['#f8c818', '#f8f0a0']]
+    for (let i = 0; i < 4; i += 1) {
+      const t = phase(progress, i * 0.06, 0.45 + i * 0.06)
+      if (t > 0 && t < 1) diamond(paint, along(c, t, 10 + i * 8), 5, colors[i][0], colors[i][1])
+    }
+    const hit = phase(progress, 0.6, 0.95)
+    if (hit > 0 && hit < 1) star(paint, c.target, 8 + hit * 14, '#f8f8f8')
+  },
+  shake: shakeTarget(0.6, 0.9),
+}
+
+/** Danza Aleteo: escamas irisadas suben en ocho alrededor del usuario, como alas de mariposa. */
+const quiverdance: Effect = {
+  duration: 950,
+  draw(paint, progress, c) {
+    if (progress > 0.95) return
+    const colors = ['#f878c8', '#78c8f8', '#f8e070', '#a8f0a8']
+    for (let i = 0; i < 16; i += 1) {
+      const t = (progress + i / 16) % 1
+      const angle = t * Math.PI * 2
+      const x = c.user.x + Math.sin(angle) * 30
+      const y = c.user.y - 20 + Math.sin(angle * 2) * 14 - progress * 16
+      paint.dot(x, y, 3, colors[i % 4])
+    }
+  },
+}
+
+/** Cola Dragón: una cola morada barre al objetivo y lo saca de lado. */
+const dragontail: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    const swing = phase(progress, 0.05, 0.5)
+    if (swing > 0 && swing < 1) for (let k = 0; k < 4; k += 1) crescent(paint, c.target, -2.6 + (swing - k * 0.08) * 3.4, 30 - k * 3, '#7038f8', '#b8a0f8')
+    burst(paint, c.target, phase(progress, 0.5, 0.8), '#7038f8', '#b8a0f8', 8, 26)
+  },
+  shake: (progress) => (inPhase(progress, 0.5, 0.95) ? { who: 'target', dx: Math.round(phase(progress, 0.5, 0.95) * 6), dy: 0 } : null),
+}
+
+/** Imagen: el usuario se enfurece (aura roja que late) y embiste. */
+const facade: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    const angry = phase(progress, 0, 0.35)
+    if (angry > 0 && angry < 1) ring(paint, c.user, 18 + Math.sin(progress * 40) * 3, '#e83030', 3, 16)
+    const dash = phase(progress, 0.35, 0.6)
+    if (dash > 0 && dash < 1) orb(paint, lerpPoint(c.user, c.target, dash), 8, '#e83030', '#f8a0a0')
+    burst(paint, c.target, phase(progress, 0.6, 0.9), '#f8f8f8', '#f8a0a0', 8, 28)
+  },
+  shake: shakeTarget(0.6, 0.85, 3),
+}
+
+/** Ultrapuño: un puño entra a toda velocidad, con rayas de velocidad, antes que nadie. */
+const machpunch: Effect = {
+  duration: 600,
+  draw(paint, progress, c) {
+    const dash = phase(progress, 0.05, 0.4)
+    if (dash > 0 && progress < 0.45) {
+      speedLines(paint, c, dash, 3, '#f8f8f8')
+      fist(paint, lerpPoint(c.user, c.target, dash), 2 + dash * 2, '#e88038', '#f8c890')
+    }
+    burst(paint, c.target, phase(progress, 0.4, 0.75), '#e88038', '#f8f8f8', 8, 26)
+  },
+  shake: shakeTarget(0.4, 0.7, 3),
+}
+
+/** Rizo Algodón: bolas de algodón se juntan alrededor del usuario y lo envuelven. */
+const cottonguard: Effect = {
+  duration: 900,
+  draw(paint, progress, c) {
+    const gather = phase(progress, 0, 0.6)
+    if (progress > 0.95) return
+    for (let i = 0; i < 10; i += 1) {
+      const angle = (i / 10) * Math.PI * 2 + progress * 2
+      const radius = 60 - gather * 34
+      orb(paint, { x: c.user.x + Math.cos(angle) * radius, y: c.user.y - 10 + Math.sin(angle) * radius * 0.7 }, 5, '#e8e8f0', '#ffffff')
+    }
+  },
+}
+
+/** Come Sueños: una nube de sueño rosa sale del objetivo y sus orbes vuelven en arco al usuario. */
+const dreameater: Effect = {
+  duration: 950,
+  draw(paint, progress, c) {
+    const cloud = phase(progress, 0, 0.3)
+    if (progress < 0.5) for (let k = 0; k < 3; k += 1) orb(paint, { x: c.target.x - 10 + k * 10, y: c.target.y - 30 - cloud * 6 }, 5 + Math.round(cloud * 3), '#f8a8d8', '#f8e8f0')
+    for (let i = 0; i < 5; i += 1) {
+      const t = phase(progress, 0.3 + i * 0.06, 0.75 + i * 0.04)
+      if (t > 0 && t < 1) orb(paint, along({ ...c, user: c.target, target: c.user }, t, 20 + i * 5), 3, '#f878c8', '#f8e8f0')
+    }
+    const glow = phase(progress, 0.75, 1)
+    if (glow > 0 && glow < 1) ring(paint, c.user, 10 + glow * 12, '#f878c8', 2, 14)
+  },
+  shake: shakeTarget(0.1, 0.4),
+}
+
+/** Agilidad: el usuario deja estelas blancas a los lados, como si se moviera muy deprisa. */
+const agility: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    if (progress > 0.9) return
+    for (let k = 0; k < 5; k += 1) {
+      const t = (progress * 2 + k / 5) % 1
+      const y = c.user.y - 34 + k * 9
+      const x = c.user.x - 40 + t * 80
+      for (let s = 0; s < 5; s += 1) paint.dot(x - s * 5, y, 3, s < 2 ? '#ffffff' : '#c8d8f0')
+    }
+  },
+}
+
+/** Superdiente: dos colmillos enormes muerden el objetivo y un destello rojo marca el golpe. */
+const superfang: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    if (progress < 0.55) jaws(paint, c.target, phase(progress, 0.1, 0.45), 1, '#f8f8f8')
+    const hit = phase(progress, 0.45, 0.8)
+    if (hit > 0 && hit < 1) orb(paint, c.target, 6 + hit * 12, '#e83030', '#f8a0a0')
+  },
+  shake: shakeTarget(0.45, 0.8, 3),
+}
+
+/** Espora: nubes de esporas caen meciéndose sobre el objetivo. */
+const spore: Effect = {
+  duration: 900,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 30)
+    for (let i = 0; i < 15; i += 1) {
+      const t = (phase(progress, 0, 0.9) + seeds[i] * 0.4) % 1
+      if (progress > 0.9) break
+      const x = c.target.x - 30 + seeds[i + 15] * 60 + Math.sin(t * 8 + i) * 5
+      paint.dot(x, c.target.y - 60 + t * 70, 4, i % 2 ? '#c8b070' : '#a8c060')
+    }
+  },
+}
+
+/** Remolino: un torbellino viaja hasta el objetivo y lo arrastra fuera de la pantalla. */
+const whirlwind: Effect = {
+  duration: 900,
+  draw(screenPaint, progress, c) {
+    const paint = clipped(screenPaint)
+    const travel = phase(progress, 0, 0.5)
+    const push = phase(progress, 0.5, 1)
+    if (push >= 1) return
+    const dir = c.target.x > c.user.x ? 1 : -1
+    const center = push > 0 ? { x: c.target.x + dir * push * 80, y: c.target.y } : lerpPoint(c.user, c.target, travel)
+    for (let level = 0; level < 5; level += 1) {
+      for (let k = 0; k < 8; k += 1) {
+        const angle = (k / 8) * Math.PI * 2 + progress * 24
+        paint.dot(center.x + Math.cos(angle) * (6 + level * 3), center.y + 10 - level * 7 + Math.sin(angle) * 3, 2, '#d0d8e0')
+      }
+    }
+  },
+  shake: (progress) => (inPhase(progress, 0.5, 0.95) ? { who: 'target', dx: Math.round(phase(progress, 0.5, 0.95) * 6), dy: 0 } : null),
+}
+
+/** Rayo Confuso: una luz fantasmal que cambia de color va ondulando hasta el objetivo y parpadea sobre él. */
+const confuseray: Effect = {
+  duration: 900,
+  draw(paint, progress, c) {
+    const colors = ['#f87878', '#f8e070', '#78f878', '#78c8f8', '#c878f8']
+    const t = phase(progress, 0.05, 0.6)
+    if (progress < 0.95) {
+      const at = along(c, t, 0)
+      const point = { x: at.x, y: at.y + Math.sin(progress * 30) * 10 }
+      orb(paint, point, 6, colors[Math.floor(progress * 20) % 5], '#ffffff')
+    }
+  },
+}
+
+/** Rayo Carga: chispas se juntan en el usuario y sale un haz eléctrico ondulado. */
+const chargebeam: Effect = {
+  duration: 850,
+  draw(paint, progress, c) {
+    sparks(paint, c.user, phase(progress, 0, 0.3), 6)
+    const shot = phase(progress, 0.25, 0.6)
+    if (shot > 0 && progress < 0.75) beam(paint, c.user, lerpPoint(c.user, c.target, shot), 1, '#f8c818', '#f8f080', 4, 4)
+    sparks(paint, c.target, phase(progress, 0.6, 0.95), 6)
+  },
+  shake: shakeTarget(0.6, 0.9),
+}
+
+/** Taladradora: un taladro de tierra gira y se clava en el objetivo. */
+const drillrun: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    const t = phase(progress, 0.05, 0.5)
+    if (progress < 0.6) {
+      const at = lerpPoint(c.user, c.target, t)
+      const heading = Math.atan2(c.target.y - c.user.y, c.target.x - c.user.x)
+      for (let k = 0; k < 6; k += 1) {
+        const radius = 14 - k * 2.2
+        const offset = { x: at.x - Math.cos(heading) * k * 4, y: at.y - Math.sin(heading) * k * 4 }
+        const spin = progress * 40 + k
+        paint.dot(offset.x + Math.cos(spin) * radius * -Math.sin(heading), offset.y + Math.cos(spin) * radius * Math.cos(heading), 3, k % 2 ? '#a07838' : '#d8b070')
+        paint.dot(offset.x - Math.cos(spin) * radius * -Math.sin(heading), offset.y - Math.cos(spin) * radius * Math.cos(heading), 3, '#785028')
+      }
+    }
+    burst(paint, c.target, phase(progress, 0.5, 0.85), '#a07838', '#d8b070', 8, 26)
+  },
+  shake: shakeTarget(0.45, 0.85, 3),
+}
+
+/** Garra Umbría: garras de sombra salen del suelo bajo el objetivo y lo arañan hacia arriba. */
+const shadowclaw: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    for (let k = 0; k < 3; k += 1) {
+      const t = phase(progress, 0.1 + k * 0.07, 0.45 + k * 0.07)
+      if (t <= 0 || t >= 1) continue
+      const from = { x: c.target.x - 16 + k * 14, y: c.target.y + 24 }
+      beam(paint, from, { x: from.x + 6, y: from.y - 56 }, t, '#504078', '#a890d0', 4)
+    }
+  },
+  shake: shakeTarget(0.3, 0.7),
+}
+
+/** Masa Cósmica: estrellas moradas y azules caen del cielo sobre el usuario, que brilla. */
+const cosmicpower: Effect = {
+  duration: 900,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 24)
+    for (let i = 0; i < 10; i += 1) {
+      const t = (progress * 1.3 + seeds[i]) % 1
+      if (progress > 0.85) break
+      const at = { x: c.user.x - 30 + seeds[i + 10] * 60, y: c.user.y - 70 + t * 60 }
+      paint.dot(at.x, at.y, 3, i % 2 ? '#a878f8' : '#78a8f8')
+      paint.dot(at.x - 3, at.y + 1, 1, '#ffffff')
+      paint.dot(at.x + 4, at.y + 1, 1, '#ffffff')
+    }
+    const glow = phase(progress, 0.55, 1)
+    if (glow > 0 && glow < 1) ring(paint, c.user, 12 + glow * 12, '#a878f8', 3, 16, progress * 5)
+  },
+}
+
+/** Patada Salto Alta: el pie sube muy alto y cae en picado sobre el objetivo. */
+const highjumpkick: Effect = {
+  duration: 850,
+  draw(paint, progress, c) {
+    const rise = phase(progress, 0.05, 0.35)
+    const dive = phase(progress, 0.35, 0.6)
+    if (progress < 0.6) {
+      const peak = { x: c.target.x - 20, y: c.target.y - 80 }
+      const at = dive > 0 ? lerpPoint(peak, c.target, dive) : lerpPoint({ x: c.target.x - 40, y: c.target.y }, peak, rise)
+      boot(paint, at, 3, '#c03028', '#f08070')
+    }
+    burst(paint, c.target, phase(progress, 0.6, 0.9), '#c03028', '#f8f8f8', 10, 32)
+  },
+  shake: shakeTarget(0.6, 0.85, 3),
+}
+
+/** Psicocorte: hojas de energía rosa, en media luna, vuelan y cortan al objetivo. */
+const psychocut: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    const heading = Math.atan2(c.target.y - c.user.y, c.target.x - c.user.x)
+    for (let k = 0; k < 3; k += 1) {
+      const t = phase(progress, k * 0.08, 0.45 + k * 0.08)
+      if (t > 0 && t < 1) crescent(paint, along(c, t, 10), heading, 18, '#f858a8', '#f8c8e0')
+    }
+    burst(paint, c.target, phase(progress, 0.6, 0.9), '#f858a8', '#f8c8e0', 6, 22)
+  },
+  shake: shakeTarget(0.55, 0.85),
+}
+
+// ---------- octava tanda (30/10/2026): los 20 siguientes por uso ----------
+
+/** Meteorobola: una bola sube fuera de la pantalla y cae sobre el objetivo. */
+const weatherball: Effect = {
+  duration: 850,
+  draw(screenPaint, progress, c) {
+    const paint = clipped(screenPaint)
+    const up = phase(progress, 0.05, 0.35)
+    const down = phase(progress, 0.4, 0.65)
+    if (progress < 0.35) orb(paint, { x: c.user.x, y: c.user.y - up * 140 }, 10, c.color, c.light)
+    else if (progress < 0.65) orb(paint, { x: c.target.x, y: c.target.y - 140 + down * 140 }, 10, c.color, c.light)
+    burst(paint, c.target, phase(progress, 0.65, 0.95), c.color, c.light, 10, 30)
+  },
+  shake: shakeTarget(0.65, 0.9),
+}
+
+/** Poder Pasado: rocas flotan girando alrededor del usuario y salen hacia el objetivo. */
+const ancientpower: Effect = {
+  duration: 900,
+  draw(paint, progress, c) {
+    for (let i = 0; i < 4; i += 1) {
+      const orbit = phase(progress, 0, 0.4)
+      const fly = phase(progress, 0.4 + i * 0.05, 0.75 + i * 0.05)
+      const angle = (i / 4) * Math.PI * 2 + progress * 10
+      const around = { x: c.user.x + Math.cos(angle) * 26 * orbit, y: c.user.y - 16 + Math.sin(angle) * 12 * orbit }
+      if (fly >= 1) continue
+      rock(paint, fly > 0 ? lerpPoint(around, c.target, fly) : around, 5)
+    }
+    burst(paint, c.target, phase(progress, 0.75, 1), '#a08848', '#d8c090', 8, 26)
+  },
+  shake: shakeTarget(0.75, 0.98),
+}
+
+/** Alud: bloques de nieve caen desde arriba sobre el objetivo y lo sepultan. */
+const avalanche: Effect = {
+  duration: 900,
+  draw(screenPaint, progress, c) {
+    const paint = clipped(screenPaint)
+    for (let i = 0; i < 5; i += 1) {
+      const t = phase(progress, i * 0.08, 0.45 + i * 0.08)
+      if (t <= 0 || t >= 1) continue
+      const x = c.target.x - 30 + i * 15
+      const y = -10 + t * (c.target.y + 10 + (i % 2) * 6)
+      for (let dy = -6; dy <= 6; dy += 3) for (let dx = -6; dx <= 6; dx += 3) paint.dot(x + dx, y + dy, 3, dy < -3 ? '#ffffff' : '#c8e0f0')
+    }
+    for (let i = 0; i < 6; i += 1) {
+      const t = phase(progress, 0.6, 1)
+      if (t > 0 && t < 1) snowflake(paint, { x: c.target.x - 30 + i * 12, y: c.target.y + 10 - t * 20 }, '#a8d8f8')
+    }
+  },
+  shake: (progress) => (inPhase(progress, 0.35, 0.85) ? { who: 'target', dx: 0, dy: Math.round(Math.sin(progress * 80) * 3) } : null),
+}
+
+/** Nitrocarga: el usuario se envuelve en llamas y embiste dejando una estela de fuego. */
+const flamecharge: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 16)
+    flames(paint, c.user, phase(progress, 0, 0.3), seeds)
+    const dash = phase(progress, 0.25, 0.6)
+    if (dash > 0 && dash < 1) {
+      for (let k = 0; k < 4; k += 1) orb(paint, lerpPoint(c.user, c.target, Math.max(0, dash - k * 0.08)), 8 - k * 2, '#f87830', '#f8d050')
+    }
+    burst(paint, c.target, phase(progress, 0.6, 0.9), '#f87830', '#f8d050', 8, 26)
+  },
+  shake: shakeTarget(0.6, 0.85),
+}
+
+/** Carámbano en píxel: rombo alargado de hielo, la punta hacia abajo. */
+function icicle(paint: Painter, center: Point): void {
+  for (let y = -12; y <= 12; y += 3) {
+    const half = Math.max(0, Math.round((12 - Math.abs(y)) / 3))
+    for (let x = -half; x <= half; x += 1) paint.dot(center.x + x * 2, center.y + y, 2, x < 0 ? '#ffffff' : '#88c8f0')
+  }
+}
+
+/** Chuzos: carámbanos caen desde arriba y se clavan en el objetivo. */
+const iciclecrash: Effect = {
+  duration: 850,
+  draw(screenPaint, progress, c) {
+    const paint = clipped(screenPaint)
+    const seeds = seedsFor(c, 16)
+    for (let i = 0; i < 3; i += 1) {
+      const t = phase(progress, i * 0.1, 0.4 + i * 0.1)
+      if (t > 0 && t < 1) icicle(paint, { x: c.target.x - 16 + i * 16, y: -10 + t * (c.target.y + 10) })
+    }
+    shards(paint, c.target, phase(progress, 0.5, 0.95), seeds, '#c8e8f8', 30)
+  },
+  shake: shakeTarget(0.4, 0.8, 3),
+}
+
+/** Relajo: el usuario se tumba (zetas) y lo envuelve un brillo verde de curación. */
+const slackoff: Effect = {
+  duration: 900,
+  draw(paint, progress, c) {
+    if (progress > 0.95) return
+    sleepZ(paint, { x: c.user.x + 14, y: c.user.y - 36 - phase(progress, 0, 0.8) * 14 }, 2, '#f8f8f8')
+    const glow = phase(progress, 0.3, 1)
+    if (glow > 0 && glow < 1) ring(paint, c.user, 26 - glow * 14, '#78e078', 3, 18, progress * 6)
+  },
+}
+
+/** Pétalos que caen o giran (Danza Pétalo): rombos rosas. */
+function petal(paint: Painter, center: Point, k: number): void {
+  diamond(paint, center, 3, k % 2 ? '#f878a8' : '#f8a8c8', '#f8e0e8')
+}
+
+/** Danza Pétalo: un remolino de pétalos rosas sale del usuario y baila alrededor del objetivo. */
+const petaldance: Effect = {
+  duration: 950,
+  draw(paint, progress, c) {
+    for (let i = 0; i < 14; i += 1) {
+      const t = phase(progress, i * 0.02, 0.5 + i * 0.02)
+      const swirl = phase(progress, 0.5, 1)
+      if (t <= 0 || swirl >= 1) continue
+      const angle = i * 0.9 + progress * 12
+      const center = t < 1 ? along(c, t, 24) : c.target
+      const radius = t < 1 ? 12 : 28 - swirl * 12
+      petal(paint, { x: center.x + Math.cos(angle) * radius, y: center.y + Math.sin(angle) * radius * 0.6 }, i)
+    }
+  },
+  shake: shakeTarget(0.5, 0.95),
+}
+
+/** Rugido: ondas de sonido enormes salen del usuario y empujan al objetivo fuera. */
+const roar: Effect = {
+  duration: 900,
+  draw(screenPaint, progress, c) {
+    const paint = clipped(screenPaint)
+    const heading = Math.atan2(c.target.y - c.user.y, c.target.x - c.user.x)
+    for (let k = 0; k < 4; k += 1) {
+      const t = phase(progress, k * 0.1, k * 0.1 + 0.55)
+      if (t <= 0 || t >= 1) continue
+      const at = along(c, t)
+      for (let s = -3; s <= 3; s += 1) {
+        const angle = heading + s * 0.3
+        paint.dot(at.x + Math.cos(angle) * (14 + t * 14), at.y + Math.sin(angle) * (14 + t * 14), 3, k % 2 ? '#f8f8f8' : '#d0d8e0')
+      }
+    }
+  },
+  shake: (progress) => (inPhase(progress, 0.5, 0.95) ? { who: 'target', dx: Math.round(phase(progress, 0.5, 0.95) * 6), dy: 0 } : null),
+}
+
+/** Sombra Vil: la sombra del usuario repta por el suelo hasta el objetivo y lo golpea desde abajo. */
+const shadowsneak: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    const creep = phase(progress, 0.05, 0.45)
+    if (creep > 0 && progress < 0.6) {
+      const from = { x: c.user.x, y: c.user.y + 16 }
+      const to = { x: c.target.x, y: c.target.y + 16 }
+      beam(paint, from, lerpPoint(from, to, creep), 1, '#302838', '#504078', 5, 2)
+    }
+    const strike = phase(progress, 0.45, 0.75)
+    if (strike > 0 && strike < 1) beam(paint, { x: c.target.x, y: c.target.y + 18 }, { x: c.target.x, y: c.target.y - 30 }, strike, '#504078', '#a890d0', 5)
+  },
+  shake: shakeTarget(0.5, 0.8),
+}
+
+/** Deslumbrar: unos ojos amarillos destellan y lanzan rayos que paralizan al objetivo. */
+const glare: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    if (progress > 0.9) return
+    const eyes = { x: c.user.x, y: c.user.y - 34 }
+    const blink = Math.floor(progress * 12) % 3 !== 0
+    for (const dx of [-8, 8]) if (blink) diamond(paint, { x: eyes.x + dx, y: eyes.y }, 3, '#f8c818', '#ffffff')
+    const ray = phase(progress, 0.3, 0.7)
+    if (ray > 0 && ray < 1) for (const dy of [-6, 6]) beam(paint, eyes, lerpPoint(eyes, { x: c.target.x, y: c.target.y + dy }, ray), 1, '#f8e070', '#ffffff', 2)
+  },
+  shake: shakeTarget(0.6, 0.85),
+}
+
+/** Canto Mortal: notas oscuras flotan sobre todos los Pokémon del campo. */
+const perishsong: Effect = {
+  duration: 1000,
+  draw(paint, progress, c) {
+    if (progress > 0.95) return
+    for (const who of [c.user, c.target]) {
+      for (let i = 0; i < 3; i += 1) {
+        const t = (progress * 1.2 + i / 3) % 1
+        const note = { x: who.x - 20 + i * 20 + Math.sin(t * 6 + i) * 4, y: who.y - 30 - t * 30 }
+        paint.dot(note.x, note.y, 4, '#504078')
+        for (let k = 1; k <= 3; k += 1) paint.dot(note.x + 3, note.y - k * 3, 2, '#504078')
+      }
+    }
+  },
+}
+
+/** Reserva: orbes de energía blanca se juntan y entran en el usuario. */
+const stockpile: Effect = {
+  duration: 850,
+  draw(paint, progress, c) {
+    for (let i = 0; i < 6; i += 1) {
+      const t = phase(progress, i * 0.06, 0.5 + i * 0.06)
+      if (t <= 0 || t >= 1) continue
+      const angle = (i / 6) * Math.PI * 2
+      const radius = (1 - t) * 50
+      orb(paint, { x: c.user.x + Math.cos(angle) * radius, y: c.user.y - 10 + Math.sin(angle) * radius * 0.7 }, 4, '#f8f0c8', '#ffffff')
+    }
+    const glow = phase(progress, 0.7, 1)
+    if (glow > 0 && glow < 1) orb(paint, c.user, 6 + glow * 6, '#f8f0c8', '#ffffff')
+  },
+}
+
+/** Defensa Férrea: placas metálicas cubren al usuario y un reflejo las recorre. */
+const irondefense: Effect = {
+  duration: 850,
+  draw(paint, progress, c) {
+    const cover = phase(progress, 0, 0.45)
+    const shine = phase(progress, 0.45, 0.85)
+    if (progress > 0.95) return
+    for (let row = 0; row < 4; row += 1) {
+      for (let col = 0; col < 4; col += 1) {
+        if ((row * 4 + col) / 16 > cover) continue
+        const at = { x: c.user.x - 18 + col * 12, y: c.user.y - 34 + row * 12 }
+        const lit = shine > 0 && Math.abs((col + row) / 6 - shine) < 0.15
+        for (let dy = 0; dy < 9; dy += 3) for (let dx = 0; dx < 9; dx += 3) paint.dot(at.x + dx, at.y + dy, 3, lit ? '#ffffff' : dy === 0 ? '#e0e0f0' : '#a8a8c0')
+      }
+    }
+  },
+}
+
+/** Luz Lunar: una luna creciente aparece sobre el usuario y caen rayos de luz suave. */
+const moonlight: Effect = {
+  duration: 950,
+  draw(paint, progress, c) {
+    if (progress > 0.95) return
+    const moon = { x: c.user.x, y: c.user.y - 64 }
+    const show = phase(progress, 0, 0.3)
+    for (let y = -10; y <= 10; y += 2) {
+      for (let x = -10; x <= 10; x += 2) {
+        const inside = x * x + y * y <= 100 * show
+        const bite = (x - 5) * (x - 5) + (y + 2) * (y + 2) <= 64 * show
+        if (inside && !bite) paint.dot(moon.x + x, moon.y + y, 2, '#f8f0c8')
+      }
+    }
+    const rays = phase(progress, 0.3, 0.9)
+    for (let k = -2; k <= 2; k += 1) {
+      for (let d = 14; d < 14 + rays * 44; d += 4) paint.dot(moon.x + k * 6 + k * d * 0.15, moon.y + d, 2, '#f8f8e0')
+    }
+  },
+}
+
+/** Juego Sucio: el objetivo se golpea a sí mismo con su propia fuerza: un puño oscuro sale de él y vuelve. */
+const foulplay: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    const out = phase(progress, 0.05, 0.35)
+    const back = phase(progress, 0.35, 0.6)
+    if (progress < 0.6) {
+      const away = { x: c.target.x, y: c.target.y - 40 }
+      fist(paint, back > 0 ? lerpPoint(away, c.target, back) : lerpPoint(c.target, away, out), 3, '#302838', '#e83030')
+    }
+    burst(paint, c.target, phase(progress, 0.6, 0.9), '#302838', '#e83030', 8, 26)
+  },
+  shake: shakeTarget(0.6, 0.85, 3),
+}
+
+/** Recurrente: semillas disparadas en ráfaga, en línea recta (se repite en cada golpe). */
+const bulletseed: Effect = {
+  duration: 550,
+  draw(paint, progress, c) {
+    for (let i = 0; i < 4; i += 1) {
+      const t = phase(progress, i * 0.07, 0.4 + i * 0.07)
+      if (t > 0 && t < 1) orb(paint, lerpPoint(c.user, c.target, t), 5, '#a07838', '#d8b070')
+    }
+    burst(paint, c.target, phase(progress, 0.55, 0.85), '#58a838', '#c8f0a0', 6, 22)
+  },
+  shake: shakeTarget(0.5, 0.8),
+}
+
+/** Afilagarras: tres garras se afilan sobre el usuario con un destello en cada punta. */
+const honeclaws: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    if (progress > 0.92) return
+    for (let k = 0; k < 3; k += 1) {
+      const t = phase(progress, k * 0.1, k * 0.1 + 0.4)
+      if (t <= 0) continue
+      const from = { x: c.user.x - 14 + k * 12, y: c.user.y - 50 }
+      beam(paint, from, { x: from.x + 8, y: from.y + 26 }, Math.min(1, t), '#c8c8d8', '#ffffff', 3)
+      if (t >= 1 && Math.floor(progress * 16 + k) % 2) star(paint, from, 4, '#ffffff')
+    }
+  },
+}
+
+/** Frío Polar: un bloque de hielo encierra al objetivo y estalla en esquirlas. */
+const sheercold: Effect = {
+  duration: 1000,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 20)
+    const freeze = phase(progress, 0.05, 0.55)
+    if (freeze > 0 && progress < 0.7) {
+      const half = { x: 28, y: 30 }
+      for (let x = -half.x; x <= half.x; x += 3) {
+        if (Math.abs(x) / half.x > freeze) continue
+        paint.dot(c.target.x + x, c.target.y - half.y, 3, '#c8e8f8')
+        paint.dot(c.target.x + x, c.target.y + half.y - 10, 3, '#88c8f0')
+      }
+      for (let y = -half.y; y <= half.y - 10; y += 3) {
+        if (Math.abs(y) / half.y > freeze) continue
+        paint.dot(c.target.x - half.x, c.target.y + y, 3, '#ffffff')
+        paint.dot(c.target.x + half.x, c.target.y + y, 3, '#88c8f0')
+      }
+    }
+    shards(paint, c.target, phase(progress, 0.65, 1), seeds, '#c8e8f8', 50)
+  },
+  shake: shakeTarget(0.6, 0.85, 3),
+}
+
+/** Tajo Cruzado: dos golpes de canto de mano se cruzan en aspa sobre el objetivo. */
+const crosschop: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    const first = phase(progress, 0.05, 0.4)
+    const second = phase(progress, 0.2, 0.55)
+    if (first > 0 && first < 1) beam(paint, { x: c.target.x - 30, y: c.target.y - 30 }, { x: c.target.x + 30, y: c.target.y + 30 }, first, '#e88038', '#f8d8b0', 5)
+    if (second > 0 && second < 1) beam(paint, { x: c.target.x + 30, y: c.target.y - 30 }, { x: c.target.x - 30, y: c.target.y + 30 }, second, '#e88038', '#f8d8b0', 5)
+    burst(paint, c.target, phase(progress, 0.55, 0.85), '#e88038', '#f8f8f8', 8, 28)
+  },
+  shake: shakeTarget(0.4, 0.8, 3),
+}
+
+/** Enrosque: una espiral morada se enrosca alrededor del usuario y se aprieta. */
+const coil: Effect = {
+  duration: 850,
+  draw(paint, progress, c) {
+    if (progress > 0.95) return
+    const tighten = phase(progress, 0, 0.7)
+    for (let k = 0; k < 64; k += 1) {
+      const t = k / 64
+      const angle = t * Math.PI * 6 + progress * 8
+      const radius = 30 - tighten * 12
+      paint.dot(c.user.x + Math.cos(angle) * radius, c.user.y + 10 - t * 54 + Math.sin(angle) * 6, 3, Math.sin(angle) > 0 ? '#c878f8' : '#9040a0')
+    }
+  },
+}
+
 // ---------- estados y objetos (sobre el Pokémon que los sufre: `user` y `target` son él; decisiones de Jose del 23/10/2026) ----------
 
 /** Quemado: llamas que suben por el Pokémon, que se encoge de dolor. */
@@ -2609,6 +3577,66 @@ export const CONDITION_EFFECTS: Record<string, Effect> = {
 
 /** Los movimientos con animación propia: los 60 más usados entre rivales y pool del jugador (tres tandas de 20, 22 y 23/10/2026) y Maldición. */
 export const CUSTOM_EFFECTS: Record<string, Effect> = {
+  icefang,
+  powergem,
+  quiverdance,
+  dragontail,
+  facade,
+  machpunch,
+  cottonguard,
+  dreameater,
+  firefang,
+  agility,
+  superfang,
+  spore,
+  whirlwind,
+  confuseray,
+  chargebeam,
+  drillrun,
+  shadowclaw,
+  cosmicpower,
+  highjumpkick,
+  psychocut,
+  weatherball,
+  ancientpower,
+  avalanche,
+  flamecharge,
+  iciclecrash,
+  slackoff,
+  petaldance,
+  roar,
+  shadowsneak,
+  glare,
+  perishsong,
+  stockpile,
+  irondefense,
+  moonlight,
+  foulplay,
+  bulletseed,
+  honeclaws,
+  sheercold,
+  crosschop,
+  coil,
+  hurricane,
+  rapidspin,
+  discharge,
+  synthesis,
+  solarbeam,
+  powerwhip,
+  flareblitz,
+  wish,
+  seedbomb,
+  bulletpunch,
+  dragonclaw,
+  headsmash,
+  healbell,
+  rockpolish,
+  focuspunch,
+  aerialace,
+  doubleteam,
+  energyball,
+  icywind,
+  woodhammer,
   rockblast,
   ironhead,
   fakeout,

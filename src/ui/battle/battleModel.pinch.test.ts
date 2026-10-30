@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { BattleView } from '../../battle/protocol'
 import { mkView, pMon, rMon } from '../../test-utils/view'
-import { fillFor, playerInPinch, rivalOnLastPokemon } from './battleModel'
+import { fillFor, lastPokemonThemeOn, playerInPinch, rivalOnLastPokemon } from './battleModel'
 
 // UT-80 · Música de vida baja (antes, pitido; DEC-57): solo con el Pokémon activo del jugador en rojo y en pie.
 describe('playerInPinch', () => {
@@ -40,5 +40,19 @@ describe('rivalOnLastPokemon', () => {
     expect(rivalOnLastPokemon(view({ rival: [fainted('snorlax'), rMon('gyarados')], rActive: 0 }))).toBe(false)
     expect(rivalOnLastPokemon(view({ rival: [fainted('snorlax'), fainted('gyarados')], rActive: 1 }))).toBe(false)
     expect(rivalOnLastPokemon(null)).toBe(false)
+  })
+})
+
+// UT-127 · Cambio de requisito (Jose, 30/10/2026): al caer el último Pokémon del rival sigue su tema, no vuelve el del rival.
+describe('lastPokemonThemeOn', () => {
+  const view = (over: Parameters<typeof mkView>[0]) => mkView(over) as BattleView
+  const fainted = (id: string) => rMon(id, 0)
+
+  it('con el último en el campo y también cuando cae; con más de uno en pie, mientras sale el último o sin vista, no', () => {
+    expect(lastPokemonThemeOn(view({ rival: [fainted('snorlax'), rMon('gyarados', 80)], rActive: 1 }))).toBe(true)
+    expect(lastPokemonThemeOn(view({ rival: [fainted('snorlax'), fainted('gyarados')], rActive: 1 }))).toBe(true)
+    expect(lastPokemonThemeOn(view({ rival: [rMon('snorlax', 40), rMon('gyarados')] }))).toBe(false)
+    expect(lastPokemonThemeOn(view({ rival: [fainted('snorlax'), rMon('gyarados')], rActive: 0 }))).toBe(false)
+    expect(lastPokemonThemeOn(null)).toBe(false)
   })
 })

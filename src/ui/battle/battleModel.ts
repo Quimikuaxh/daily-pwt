@@ -27,6 +27,14 @@ export function rivalOnLastPokemon(view: BattleView | null): boolean {
   return view?.rival.remaining === 1 && !!mon && !mon.fainted && mon.hpPercent > 0
 }
 
+/**
+ * Suena el tema del último Pokémon: con él en el campo y también cuando cae (el rival ya no tiene ninguno), hasta que la música se funde
+ * al terminar (Jose, 30/10/2026: antes, al caer el último volvía a sonar el tema del rival).
+ */
+export function lastPokemonThemeOn(view: BattleView | null): boolean {
+  return rivalOnLastPokemon(view) || view?.rival.remaining === 0
+}
+
 const STRUGGLE_ID = 'struggle'
 
 export type MoveOption = {
