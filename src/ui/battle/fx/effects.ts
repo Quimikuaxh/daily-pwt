@@ -2114,6 +2114,351 @@ const trick: Effect = {
   },
 }
 
+// ---------- quinta tanda (30/10/2026): los 20 siguientes por uso ----------
+
+/** Pintor que descarta lo que cae fuera de la pantalla (efectos que la cruzan entera: meteoros, ondas expansivas). */
+const clipped = (paint: Painter): Painter => ({
+  dot: (x, y, size, color) => {
+    if (x >= -4 && x <= 260 && y >= -8 && y <= 196) paint.dot(x, y, size, color)
+  },
+})
+
+/** Roca en píxel (rombo terroso con brillo). */
+function rock(paint: Painter, center: Point, radius: number): void {
+  diamond(paint, center, radius, '#a08848', '#d8c090')
+}
+
+/** Pedrada: rocas lanzadas en arco que revientan en esquirlas sobre el objetivo (se repite en cada golpe). */
+const rockblast: Effect = {
+  duration: 650,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 16)
+    const flight = phase(progress, 0.05, 0.5)
+    if (flight > 0 && flight < 1) rock(paint, along(c, flight, 30), 8)
+    shards(paint, c.target, phase(progress, 0.5, 0.95), seeds, '#a08848', 40)
+    burst(paint, c.target, phase(progress, 0.5, 0.8), '#a08848', '#d8c090', 6, 22)
+  },
+  shake: shakeTarget(0.5, 0.8),
+}
+
+/** Cabeza de Hierro: el usuario embiste envuelto en un brillo metálico y un destello en estrella al chocar. */
+const ironhead: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    const dash = phase(progress, 0.05, 0.5)
+    if (dash > 0 && dash < 1) {
+      const at = lerpPoint(c.user, c.target, dash)
+      orb(paint, at, 9, '#a8a8c0', '#f8f8f8')
+      paint.dot(at.x - 5, at.y - 6, 3, '#ffffff')
+    }
+    const hit = phase(progress, 0.5, 0.9)
+    if (hit > 0 && hit < 1) star(paint, c.target, 10 + hit * 14, hit < 0.5 ? '#f8f8f8' : '#a8a8c0')
+  },
+  shake: shakeTarget(0.5, 0.85, 3),
+}
+
+/** Sorpresa: dos manos dan una palmada justo delante del objetivo y saltan estrellas. */
+const fakeout: Effect = {
+  duration: 650,
+  draw(paint, progress, c) {
+    const close = phase(progress, 0.05, 0.35)
+    if (progress < 0.45) {
+      for (const side of [-1, 1]) {
+        const x = c.target.x + side * (4 + (1 - close) * 30)
+        for (let y = -12; y <= 10; y += 3) paint.dot(x - 3, c.target.y + y, 7, y < -8 ? '#f8f8f8' : '#f8d8b0')
+      }
+    }
+    burst(paint, c.target, phase(progress, 0.35, 0.75), '#f8f8f8', '#f8e070', 8, 30)
+  },
+  shake: shakeTarget(0.35, 0.7, 3),
+}
+
+/** Bomba Lodo: una masa de lodo morado vuela en arco y salpica gotas que escurren. */
+const sludgebomb: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 16)
+    const flight = phase(progress, 0.05, 0.5)
+    if (flight > 0 && flight < 1) orb(paint, along(c, flight, 36), 8, '#9040a0', '#d888e0')
+    const splash = phase(progress, 0.5, 1)
+    if (splash > 0 && splash < 1) {
+      for (let i = 0; i < 8; i += 1) {
+        const x = c.target.x - 24 + seeds[i] * 48
+        paint.dot(x, c.target.y - 14 + seeds[i + 8] * 20 + splash * 18, 4, i % 2 ? '#9040a0' : '#d888e0')
+      }
+    }
+  },
+  shake: shakeTarget(0.5, 0.85),
+}
+
+/** Drenadoras: tres semillas vuelan al objetivo y brotan lianas que se enroscan alrededor. */
+const leechseed: Effect = {
+  duration: 950,
+  draw(paint, progress, c) {
+    for (let i = 0; i < 3; i += 1) {
+      const t = phase(progress, i * 0.08, 0.4 + i * 0.08)
+      if (t > 0 && t < 1) orb(paint, along(c, t, 26 + i * 8), 5, '#a07838', '#d8b070')
+    }
+    const grow = phase(progress, 0.5, 0.9)
+    if (grow > 0 && progress < 0.97) {
+      for (const side of [-1, 1]) {
+        for (let k = 0; k < 18 * grow; k += 1) {
+          const angle = k * 0.5 * side
+          paint.dot(c.target.x + Math.cos(angle) * (20 - k * 0.4), c.target.y + 16 - k * 2.6, 4, k % 3 ? '#58a838' : '#a8e070')
+        }
+      }
+    }
+  },
+}
+
+/** Sofoco: el usuario se pone al rojo y una llamarada enorme envuelve al objetivo, con anillos de calor. */
+const overheat: Effect = {
+  duration: 950,
+  draw(paint, progress, c) {
+    const glow = phase(progress, 0, 0.3)
+    if (progress < 0.35) orb(paint, c.user, 6 + glow * 8, '#f8f8d0', '#ffffff')
+    const travel = phase(progress, 0.25, 0.55)
+    if (travel > 0 && travel < 1) beam(paint, c.user, lerpPoint(c.user, c.target, travel), 1, '#f87830', '#f8f8d0', 7, 3)
+    const blast = phase(progress, 0.55, 1)
+    if (blast > 0 && blast < 1) {
+      orb(paint, c.target, 10 + blast * 12, blast < 0.5 ? '#f8f8d0' : '#f87830', '#f8d050')
+      ring(paint, c.target, 20 + blast * 22, '#f85020', 3, 22)
+    }
+  },
+  shake: (progress) => (inPhase(progress, 0.55, 0.9) ? { who: 'screen', dx: Math.round(Math.sin(progress * 90) * 2), dy: 0 } : null),
+}
+
+/** Cometa Draco: meteoros caen del cielo en diagonal sobre el objetivo y estallan. */
+const dracometeor: Effect = {
+  duration: 1000,
+  draw(screenPaint, progress, c) {
+    const paint = clipped(screenPaint)
+    for (let i = 0; i < 4; i += 1) {
+      const t = phase(progress, i * 0.12, 0.45 + i * 0.12)
+      if (t <= 0 || t >= 1) continue
+      const land = { x: c.target.x - 24 + i * 16, y: c.target.y + (i % 2) * 8 }
+      const from = { x: land.x - 70, y: -14 }
+      const at = lerpPoint(from, land, t)
+      beam(paint, from, at, 1, '#7038f8', '#f8a050', 3)
+      orb(paint, at, 6, '#f87830', '#f8f0a0')
+    }
+    for (let i = 0; i < 4; i += 1) burst(paint, { x: c.target.x - 24 + i * 16, y: c.target.y + (i % 2) * 8 }, phase(progress, 0.45 + i * 0.12, 0.7 + i * 0.1), '#7038f8', '#f8a050', 6, 18)
+  },
+  shake: (progress) => (inPhase(progress, 0.45, 0.95) ? { who: 'screen', dx: 0, dy: Math.round(Math.sin(progress * 80) * 2) } : null),
+}
+
+/** Lluevehojas: un remolino de hojas sale del usuario y envuelve al objetivo girando. */
+const leafstorm: Effect = {
+  duration: 950,
+  draw(paint, progress, c) {
+    for (let i = 0; i < 16; i += 1) {
+      const t = phase(progress, i * 0.02, 0.55 + i * 0.02)
+      if (t <= 0) continue
+      const swirl = phase(progress, 0.55, 1)
+      if (swirl >= 1) continue
+      const angle = i * 0.8 + progress * 14
+      const radius = t < 1 ? 10 : 30 - swirl * 10
+      const center = t < 1 ? along(c, t, 18) : c.target
+      diamond(paint, { x: center.x + Math.cos(angle) * radius, y: center.y + Math.sin(angle) * radius * 0.6 }, 3, i % 2 ? '#58a838' : '#88d050', '#c8f0a0')
+    }
+  },
+  shake: shakeTarget(0.55, 0.95),
+}
+
+/** Pulso Dragón: una onda azul y morada, ancha y ondulante, cruza hasta el objetivo con una cabeza brillante. */
+const dragonpulse: Effect = {
+  duration: 850,
+  draw(paint, progress, c) {
+    const t = phase(progress, 0.05, 0.6)
+    if (t > 0 && progress < 0.75) {
+      beam(paint, c.user, lerpPoint(c.user, c.target, t), 1, '#5838c8', '#88b8f8', 6, 5)
+      orb(paint, lerpPoint(c.user, c.target, t), 9, '#5838c8', '#c8d8f8')
+    }
+    burst(paint, c.target, phase(progress, 0.6, 0.95), '#5838c8', '#88b8f8', 10, 32)
+  },
+  shake: shakeTarget(0.6, 0.9),
+}
+
+/** Doble Filo: el usuario embiste a toda velocidad; el choque sacude a los dos (el retroceso le hace daño). */
+const doubleedge: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    const dash = phase(progress, 0.05, 0.45)
+    if (dash > 0 && dash < 1) {
+      for (let k = 0; k < 4; k += 1) orb(paint, lerpPoint(c.user, c.target, Math.max(0, dash - k * 0.07)), 9 - k * 2, k ? '#c8c8c8' : '#f8f8f8', '#ffffff')
+    }
+    burst(paint, c.target, phase(progress, 0.45, 0.8), '#f8f8f8', '#f8e070', 10, 34)
+    burst(paint, c.user, phase(progress, 0.6, 0.9), '#e83030', '#f8a0a0', 6, 18)
+  },
+  shake: (progress) => (inPhase(progress, 0.45, 0.7) ? { who: 'target', dx: Math.round(Math.sin(progress * 90) * 3), dy: 0 } : inPhase(progress, 0.7, 0.9) ? { who: 'user', dx: Math.round(Math.sin(progress * 90) * 2), dy: 0 } : null),
+}
+
+/** Explosión: el usuario estalla en una bola blanca y naranja y una onda recorre la pantalla, que tiembla. */
+const explosion: Effect = {
+  duration: 1000,
+  draw(screenPaint, progress, c) {
+    const paint = clipped(screenPaint)
+    const blast = phase(progress, 0.1, 0.6)
+    if (blast > 0 && progress < 0.8) {
+      orb(paint, c.user, 8 + blast * 30, blast < 0.4 ? '#ffffff' : '#f87830', '#f8f0a0')
+      orb(paint, c.user, 4 + blast * 14, '#ffffff', '#ffffff')
+    }
+    const wave = phase(progress, 0.3, 1)
+    if (wave > 0 && wave < 1) ring(paint, c.user, 30 + wave * 150, wave < 0.5 ? '#f8d050' : '#f87830', 4, 40)
+  },
+  shake: (progress) => (inPhase(progress, 0.15, 0.85) ? { who: 'screen', dx: Math.round(Math.sin(progress * 110) * 3), dy: Math.round(Math.cos(progress * 90) * 2) } : null),
+}
+
+/** Relevo: un testigo sale girando del usuario hacia arriba dejando un rastro de destellos. */
+const batonpass: Effect = {
+  duration: 850,
+  draw(paint, progress, c) {
+    const rise = phase(progress, 0.1, 0.85)
+    if (rise <= 0 || rise >= 1) return
+    const at = { x: c.user.x, y: c.user.y - 10 - rise * 90 }
+    const angle = progress * 24
+    for (let k = -4; k <= 4; k += 1) paint.dot(at.x + Math.cos(angle) * k * 3, at.y + Math.sin(angle) * k * 3, 4, Math.abs(k) === 4 ? '#e83030' : '#f8f8f8')
+    for (let k = 1; k <= 4; k += 1) {
+      const trail = { x: c.user.x + Math.sin((rise - k * 0.05) * 20) * 6, y: c.user.y - 10 - Math.max(0, rise - k * 0.06) * 90 }
+      paint.dot(trail.x, trail.y, 3, '#f8e070')
+    }
+  },
+}
+
+/** Canto Helado: esquirlas de hielo salen disparadas en fila, muy rápido, y se rompen en el objetivo. */
+const iceshard: Effect = {
+  duration: 550,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 16)
+    for (let i = 0; i < 3; i += 1) {
+      const t = phase(progress, i * 0.07, 0.35 + i * 0.07)
+      if (t > 0 && t < 1) diamond(paint, lerpPoint(c.user, c.target, t), 6, '#88c8f0', '#e8f8f8')
+    }
+    shards(paint, c.target, phase(progress, 0.45, 0.95), seeds, '#c8e8f8', 26)
+  },
+  shake: shakeTarget(0.45, 0.75),
+}
+
+/** Foco Resplandor: un anillo de luz plateada se carga delante del usuario y dispara un haz blanco. */
+const flashcannon: Effect = {
+  duration: 850,
+  draw(paint, progress, c) {
+    const charge = phase(progress, 0, 0.3)
+    if (progress < 0.35) ring(paint, c.user, 20 - charge * 12, '#c8c8d8', 3, 16, progress * 10)
+    const shot = phase(progress, 0.3, 0.6)
+    if (shot > 0 && progress < 0.75) beam(paint, c.user, lerpPoint(c.user, c.target, shot), 1, '#c8c8d8', '#ffffff', 6)
+    const hit = phase(progress, 0.6, 0.95)
+    if (hit > 0 && hit < 1) orb(paint, c.target, 8 + hit * 10, '#ffffff', '#ffffff')
+  },
+  shake: shakeTarget(0.6, 0.9),
+}
+
+/** Hoja Aguda: una hoja verde, como una espada, corta al objetivo en diagonal. */
+const leafblade: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    const cut = phase(progress, 0.1, 0.5)
+    if (cut > 0 && progress < 0.6) {
+      const from = { x: c.target.x - 30, y: c.target.y - 30 }
+      beam(paint, from, { x: c.target.x + 30, y: c.target.y + 26 }, cut, '#58a838', '#c8f0a0', 4)
+      diamond(paint, lerpPoint(from, { x: c.target.x + 30, y: c.target.y + 26 }, cut), 5, '#58a838', '#c8f0a0')
+    }
+    burst(paint, c.target, phase(progress, 0.5, 0.85), '#58a838', '#c8f0a0', 6, 22)
+  },
+  shake: shakeTarget(0.5, 0.8),
+}
+
+/** Sonámbulo: el usuario, dormido, suelta zetas y una nota sale de su boca. */
+const sleeptalk: Effect = {
+  duration: 900,
+  draw(paint, progress, c) {
+    if (progress > 0.95) return
+    for (let i = 0; i < 2; i += 1) {
+      const t = (progress * 1.2 + i * 0.5) % 1
+      sleepZ(paint, { x: c.user.x + 10 + i * 10 + Math.sin(t * 6) * 4, y: c.user.y - 30 - t * 30 }, 2, '#f8f8f8')
+    }
+    const note = { x: c.user.x - 16, y: c.user.y - 34 - phase(progress, 0.2, 0.9) * 18 }
+    paint.dot(note.x, note.y, 4, '#f8f8f8')
+    for (let k = 1; k <= 3; k += 1) paint.dot(note.x + 3, note.y - k * 3, 2, '#f8f8f8')
+  },
+}
+
+/** Puya Nociva: un pincho morado se clava en el objetivo y suben burbujas de veneno. */
+const poisonjab: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    const thrust = phase(progress, 0.05, 0.4)
+    if (thrust > 0 && progress < 0.5) {
+      const dir = c.target.x > c.user.x ? 1 : -1
+      const tip = { x: c.target.x - dir * 34 * (1 - thrust), y: c.target.y }
+      beam(paint, { x: tip.x - dir * 26, y: tip.y + 8 }, tip, 1, '#9040a0', '#d888e0', 6)
+    }
+    for (let i = 0; i < 5; i += 1) {
+      const t = phase(progress, 0.4 + i * 0.06, 0.85 + i * 0.03)
+      if (t > 0 && t < 1) ring(paint, { x: c.target.x - 20 + i * 10, y: c.target.y - t * 32 }, 4, '#d888e0', 2, 10)
+    }
+  },
+  shake: shakeTarget(0.4, 0.7),
+}
+
+/** Líneas de velocidad entre el usuario y el objetivo (`count` rayas paralelas). */
+function speedLines(paint: Painter, c: FxContext, t: number, count: number, color: string): void {
+  const length = Math.hypot(c.target.x - c.user.x, c.target.y - c.user.y)
+  const nx = -(c.target.y - c.user.y) / length
+  const ny = (c.target.x - c.user.x) / length
+  for (let k = 0; k < count; k += 1) {
+    const offset = (k - (count - 1) / 2) * 8
+    const shift = { x: nx * offset, y: ny * offset }
+    const head = lerpPoint(c.user, c.target, t)
+    const tail = lerpPoint(c.user, c.target, Math.max(0, t - 0.35))
+    beam(paint, { x: tail.x + shift.x, y: tail.y + shift.y }, { x: head.x + shift.x, y: head.y + shift.y }, 1, color, '#ffffff', 2)
+  }
+}
+
+/** Ataque Rápido: rayas de velocidad blancas hasta el objetivo y un golpe seco. */
+const quickattack: Effect = {
+  duration: 550,
+  draw(paint, progress, c) {
+    const dash = phase(progress, 0.05, 0.4)
+    if (dash > 0 && progress < 0.5) speedLines(paint, c, dash, 3, '#f8f8f8')
+    burst(paint, c.target, phase(progress, 0.4, 0.75), '#f8f8f8', '#f8e070', 8, 24)
+  },
+  shake: shakeTarget(0.4, 0.7),
+}
+
+/** Velocidad Extrema: el usuario zigzaguea por el campo dejando estelas doradas y golpea con un destello. */
+const extremespeed: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    const zig = phase(progress, 0.05, 0.5)
+    const corners = [c.user, { x: c.target.x, y: c.user.y - 10 }, { x: c.user.x + 30, y: c.target.y }, c.target]
+    for (let k = 0; k < 3; k += 1) {
+      const t = phase(zig, k / 3, (k + 1) / 3)
+      if (t > 0 && progress < 0.6) beam(paint, corners[k], lerpPoint(corners[k], corners[k + 1], t), 1, '#f8d050', '#ffffff', 3)
+    }
+    const hit = phase(progress, 0.5, 0.85)
+    if (hit > 0 && hit < 1) {
+      orb(paint, c.target, 6 + hit * 10, '#ffffff', '#ffffff')
+      burst(paint, c.target, hit, '#f8d050', '#ffffff', 10, 30)
+    }
+  },
+  shake: shakeTarget(0.5, 0.8, 3),
+}
+
+/** Terratemblor: ondas de tierra salen del usuario por el suelo hasta el objetivo, que tiembla. */
+const bulldoze: Effect = {
+  duration: 850,
+  draw(paint, progress, c) {
+    for (let k = 0; k < 4; k += 1) {
+      const t = phase(progress, k * 0.1, k * 0.1 + 0.55)
+      if (t <= 0 || t >= 1) continue
+      const at = lerpPoint({ x: c.user.x, y: c.user.y + 14 }, { x: c.target.x, y: c.target.y + 14 }, t)
+      for (let s = -3; s <= 3; s += 1) paint.dot(at.x + s * 6, at.y - Math.abs(Math.sin(s + progress * 10)) * 6, 3, k % 2 ? '#a07838' : '#d8b070')
+    }
+  },
+  shake: (progress) => (inPhase(progress, 0.3, 0.9) ? { who: 'target', dx: Math.round(Math.sin(progress * 100) * 2), dy: Math.round(Math.cos(progress * 70)) } : null),
+}
+
 // ---------- estados y objetos (sobre el Pokémon que los sufre: `user` y `target` son él; decisiones de Jose del 23/10/2026) ----------
 
 /** Quemado: llamas que suben por el Pokémon, que se encoge de dolor. */
@@ -2264,6 +2609,26 @@ export const CONDITION_EFFECTS: Record<string, Effect> = {
 
 /** Los movimientos con animación propia: los 60 más usados entre rivales y pool del jugador (tres tandas de 20, 22 y 23/10/2026) y Maldición. */
 export const CUSTOM_EFFECTS: Record<string, Effect> = {
+  rockblast,
+  ironhead,
+  fakeout,
+  sludgebomb,
+  leechseed,
+  overheat,
+  dracometeor,
+  leafstorm,
+  dragonpulse,
+  doubleedge,
+  explosion,
+  batonpass,
+  iceshard,
+  flashcannon,
+  leafblade,
+  sleeptalk,
+  poisonjab,
+  quickattack,
+  extremespeed,
+  bulldoze,
   sunnyday,
   sandstorm,
   hail,

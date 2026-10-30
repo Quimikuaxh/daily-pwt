@@ -78,9 +78,10 @@ describe('efectos de movimientos', () => {
     }
   })
 
-  // Cambio de requisito del 30/10/2026 (Jose): cuarta tanda con los cuatro climas propios (la lluvia ya lo era) y 20 movimientos más.
-  it('84 movimientos con animación propia (cuatro tandas de 20, Maldición y tres climas); el resto usa la genérica de su clase (Poder Oculto de cualquier tipo, la suya)', () => {
-    expect(Object.keys(CUSTOM_EFFECTS)).toHaveLength(84)
+  // Cambio de requisito del 30/10/2026 (Jose): cuarta tanda con los cuatro climas propios (la lluvia ya lo era) y 20 movimientos más, y
+  // quinta tanda con los 20 siguientes por uso.
+  it('104 movimientos con animación propia (cinco tandas de 20, Maldición y tres climas); el resto usa la genérica de su clase (Poder Oculto de cualquier tipo, la suya)', () => {
+    expect(Object.keys(CUSTOM_EFFECTS)).toHaveLength(104)
     for (const id of ['sunnyday', 'raindance', 'sandstorm', 'hail', 'trick', 'dragondance', 'lightscreen', 'reflect']) expect(effectFor(id, 'foe'), id).toBe(CUSTOM_EFFECTS[id])
     expect(effectFor('flamethrower', 'shot', 'Fire')).toBe(CUSTOM_EFFECTS.flamethrower)
     expect(effectFor('crunch', 'bite', 'Dark')).toBe(CUSTOM_EFFECTS.crunch)
@@ -114,12 +115,12 @@ describe('efectos de movimientos', () => {
   it('los ataques especiales sin animación propia usan la de su tipo (cada tipo, la suya; Lanzallamas no son bolas)', () => {
     expect(Object.keys(SPECIAL_BY_TYPE).sort()).toEqual([...TYPES].sort())
     expect(new Set(Object.values(SPECIAL_BY_TYPE)).size).toBe(TYPES.length)
-    // Lanzallamas y Surf tienen animación propia desde la tercera tanda (23/10/2026) y Onda Ígnea desde la cuarta (30/10/2026): de
-    // ejemplo, Sofoco y Agua Lodosa.
-    expect(effectFor('overheat', 'shot', 'Fire')).toBe(SPECIAL_BY_TYPE.Fire)
+    // Lanzallamas y Surf tienen animación propia desde la tercera tanda (23/10/2026), Onda Ígnea desde la cuarta y Sofoco desde la quinta
+    // (30/10/2026): de ejemplo, Danza Llama y Agua Lodosa.
+    expect(effectFor('fierydance', 'shot', 'Fire')).toBe(SPECIAL_BY_TYPE.Fire)
     expect(effectFor('muddywater', 'shot', 'Water')).toBe(SPECIAL_BY_TYPE.Water)
     expect(effectFor('icebeam', 'shot', 'Ice')).toBe(CUSTOM_EFFECTS.icebeam)
-    expect(effectFor('overheat', 'shot')).toBe(GENERIC_EFFECTS.shot)
+    expect(effectFor('fierydance', 'shot')).toBe(GENERIC_EFFECTS.shot)
   })
 
   it('move-fx.json: cada movimiento tiene una clase conocida y los de estado están bien clasificados', () => {
