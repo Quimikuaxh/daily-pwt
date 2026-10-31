@@ -43,11 +43,11 @@ Hoy (DEC-12) la IA conoce tu equipo entero desde el principio (`ai/state.ts`) y 
 
 ## Aviso de nombre y cuenta (31/10/2026, directo a `main`)
 - **Hecho:** RF-94b, UT-128, UT-129.
-- **Para que salga (Jose):** aplicar en producción `20261031000000_pwt_nombre_elegido.sql` (SQL Editor). Sin ella la web funciona igual y el aviso no sale.
+- **Migración `20261031000000_pwt_nombre_elegido.sql` aplicada en producción** (31/10/2026).
 
 ## Rankings con 0 (29/10/2026, directo a `main`)
 - **Hecho:** salen con 0 quienes han terminado algún oficial (RF-107b, UT-126). Solo servidor: la web no cambia.
-- **Para que se vea (Jose):** aplicar en producción `20261029060000_pwt_rankings_con_cero.sql` (SQL Editor). Se puede volver a ejecutar.
+- **Migración `20261029060000_pwt_rankings_con_cero.sql` aplicada en producción** (31/10/2026).
 
 ## Investigar: E2E-19 y E2E-01 fallan a veces en webkit por avisos de precarga (29/10/2026)
 - **Qué:** en la tanda completa, webkit avisa por consola de que algún fichero precargado (`hpBar-*.js`, `MemberIcon-*.js`, `icon-index-*.js`) «no se usó en los primeros segundos» y los tests que exigen consola limpia (E2E-19, E2E-01) fallan. Solos pasan siempre (3 de 3). Pasó tres veces el 29/10/2026, una en `main` antes de los cambios del día.
