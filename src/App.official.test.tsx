@@ -37,6 +37,12 @@ function mountApp(date = LAUNCH, h = 12, mi = 0, s = 0) {
   return { user, ...utils }
 }
 const store = () => new LocalStorageStore(storage)
+/** Deja el oficial del día ya terminado: la práctica solo se abre tras él (RF-84; Jose, 31/10/2026). */
+function officialDone(date = LAUNCH) {
+  const challenge = getDailyChallenge(date, data)
+  store().startOfficial({ date, challengeNumber: 1, trainerId: challenge.trainer.id, variantId: challenge.variant.id, dataVersion: data.dataVersion, startedAt: new Date().toISOString(), battle: { seed: 's', ai: 'heuristic', leadIndex: 0 } })
+  store().finishOfficial(date, WIN as never, new Date().toISOString())
+}
 const official = () => screen.getByRole('button', { name: /^combate oficial/i })
 const practice = () => screen.getByRole('button', { name: /^pr[aá]ctica$/i })
 const chooseLead = (user: ReturnType<typeof userEvent.setup>, index = 2) => user.click(screen.getAllByRole('button', { name: /primero/i })[index])
@@ -146,30 +152,35 @@ describe('un combate oficial por día', () => {
 })
 
 describe('prácticas', () => {
-  it('antes del oficial: ilimitadas, con etiqueta PRÁCTICA, y no se guardan ni gastan el oficial', async () => {
+  // Cambio de requisito (Jose, 31/10/2026; RF-84, UT-132): antes se podía practicar antes del oficial; ahora solo tras él.
+  it('antes del oficial no se puede practicar; tras él, ilimitadas, con etiqueta PRÁCTICA, y no se guardan', async () => {
+    const before = mountApp()
+    await chooseLead(before.user)
+    expect(practice()).toBeDisabled()
+    before.unmount()
+    officialDone()
+    const saved = JSON.stringify(store().listDays())
     const first = mountApp()
     await chooseLead(first.user)
     await first.user.click(practice())
     expect(screen.getByTestId('battle-mode')).toHaveAttribute('data-mode', 'practice')
     expect(screen.getByTestId('battle-mode')).toHaveTextContent('PRÁCTICA')
-    expect(store().listDays()).toEqual([])
     clients[0].emit(mkUpdate({ request: null, ended: WIN }))
     await settle()
-    expect(store().listDays()).toEqual([])
-    await first.user.click(screen.getByRole('button', { name: /volver a hoy/i }))
-    await chooseLead(first.user)
-    expect(official()).toBeEnabled()
-    expect(official()).toHaveTextContent(/jugar/i)
+    expect(JSON.stringify(store().listDays())).toBe(saved)
   })
 
   it('una práctica a medias no se reanuda al recargar', async () => {
+    officialDone()
+    const saved = JSON.stringify(store().listDays())
     const first = mountApp()
     await chooseLead(first.user)
     await first.user.click(practice())
+    expect(screen.getByTestId('battle-mode')).toHaveAttribute('data-mode', 'practice')
     first.unmount()
     mountApp()
-    expect(official()).toHaveTextContent(/jugar/i)
-    expect(store().listDays()).toEqual([])
+    expect(screen.queryByRole('button', { name: /reanudar/i })).toBeNull()
+    expect(JSON.stringify(store().listDays())).toBe(saved)
   })
 
   it('después del oficial: se puede practicar y no cambia nada del oficial', async () => {
@@ -235,6 +246,7 @@ describe('el día es el del reto, no el de la hora de terminar', () => {
   })
 
   it('una práctica a medianoche sigue con su reto', async () => {
+    officialDone()
     const { user } = mountApp(LAUNCH, 23, 59, 50)
     await chooseLead(user)
     await user.click(practice())
@@ -311,6 +323,7 @@ describe('Ajustes (F3): velocidad guardada y borrar datos locales', () => {
 
   it('el combate empieza con la velocidad guardada y cambiarla en el combate se guarda', async () => {
     window.localStorage.setItem('daily-pwt:settings', JSON.stringify({ version: 1, speed: 4 }))
+    officialDone()
     const { user } = mountApp()
     await chooseLead(user)
     await user.click(practice())

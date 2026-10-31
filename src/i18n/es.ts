@@ -183,6 +183,7 @@ export const es = {
     fightHint: 'Elige tu Pokémon inicial para poder combatir.',
     officialFight: 'Combate oficial',
     practiceFight: 'Práctica',
+    practiceAfterOfficial: 'La práctica se abre al terminar el combate oficial de hoy.',
     practiceHint: 'La práctica es ilimitada, no cuenta para nada y no se guarda.',
     official: {
       play: 'Jugar',

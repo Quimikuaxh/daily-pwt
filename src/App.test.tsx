@@ -27,10 +27,17 @@ beforeEach(() => {
 })
 afterEach(() => { vi.useRealTimers() })
 
-function mountApp(date = LAUNCH, h = 12, mi = 0, s = 0) {
+/** Con `officialDone`, el oficial del día ya terminado: la práctica solo se abre tras él (RF-84; Jose, 31/10/2026). */
+function mountApp(date = LAUNCH, h = 12, mi = 0, s = 0, officialDone = false) {
   setMadridTime(date, h, mi, s)
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-  render(<App data={data} store={new LocalStorageStore(null)} createClient={() => { const c = mockClient(); clients.push(c); return c as any }} />)
+  const store = new LocalStorageStore(null)
+  if (officialDone) {
+    const challenge = getDailyChallenge(date, data)
+    store.startOfficial({ date, challengeNumber: 1, trainerId: challenge.trainer.id, variantId: challenge.variant.id, dataVersion: data.dataVersion, startedAt: new Date().toISOString(), battle: { seed: 's', ai: 'heuristic', leadIndex: 0 } })
+    store.finishOfficial(date, WIN as never, new Date().toISOString())
+  }
+  render(<App data={data} store={store} createClient={() => { const c = mockClient(); clients.push(c); return c as any }} />)
   return user
 }
 const initCalls = () => clients.flatMap((c) => c.init.mock.calls.map((x) => x[0]))
@@ -121,7 +128,7 @@ describe('navegación', () => {
 
 describe('medianoche en una práctica (REQUISITOS §5; el oficial, RF-80b en App.official)', () => {
   it('con combate en curso sigue el reto con que empezó: la pantalla de combate no cambia', async () => {
-    const user = mountApp(LAUNCH, 23, 59, 50)
+    const user = mountApp(LAUNCH, 23, 59, 50, true)
     await startBattle(user, 2, 'practice')
     await settle(20_000)
     expect(screen.getByTestId('battle-screen')).toBeInTheDocument()
@@ -129,7 +136,7 @@ describe('medianoche en una práctica (REQUISITOS §5; el oficial, RF-80b en App
   })
 
   it('el "Otro combate" tras la medianoche sigue usando el reto original', async () => {
-    const user = mountApp(LAUNCH, 23, 59, 50)
+    const user = mountApp(LAUNCH, 23, 59, 50, true)
     await startBattle(user, 2, 'practice')
     await settle(20_000)
     await finish()
@@ -139,7 +146,7 @@ describe('medianoche en una práctica (REQUISITOS §5; el oficial, RF-80b en App
   })
 
   it('al volver a Hoy se muestra el reto nuevo (#2)', async () => {
-    const user = mountApp(LAUNCH, 23, 59, 50)
+    const user = mountApp(LAUNCH, 23, 59, 50, true)
     await startBattle(user, 2, 'practice')
     await settle(20_000)
     await finish()

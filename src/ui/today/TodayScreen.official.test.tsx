@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { TodayScreen } from './TodayScreen'
 import { getDailyChallenge } from '../../core/challenge'
@@ -113,11 +113,23 @@ describe('botón de práctica', () => {
     expect(onStart).toHaveBeenCalledWith(expect.objectContaining({ date: LAUNCH }), 1, 'practice')
   })
 
-  it('con el oficial en curso también se puede practicar', async () => {
+  // UT-132 · Cambio de requisito (Jose, 31/10/2026; RF-84): la práctica se abre al terminar el oficial; antes, también antes y durante.
+  it('sin jugar el oficial o con él a medias, la práctica no se puede (con aviso); anulado, sí', async () => {
     const { user, onStart } = mount(savedStore())
     await pickLead(user)
-    await user.click(practice())
-    expect(onStart).toHaveBeenCalledWith(expect.anything(), 0, 'practice')
+    expect(practice()).toBeDisabled()
+    expect(practice()).toHaveAccessibleDescription('La práctica se abre al terminar el combate oficial de hoy.')
+    cleanup()
+    const fresh = mount(new LocalStorageStore(new MemoryStorage()))
+    await pickLead(fresh.user)
+    expect(practice()).toBeDisabled()
+    cleanup()
+    const voided = savedStore()
+    voided.voidOfficial(LAUNCH, 'replayFailed', new Date().toISOString())
+    const third = mount(voided)
+    await pickLead(third.user)
+    expect(practice()).toBeEnabled()
+    expect(onStart).not.toHaveBeenCalled()
   })
 })
 

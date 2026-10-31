@@ -71,12 +71,15 @@ function TodayContent({ challenge, data, onStart, onResume, store, dayWins }: To
   usePreloadChallengeSprites(challenge, data)
   const playerHeadingId = useId()
   const hintId = useId()
+  const practiceHintId = useId()
   const [leadIndex, setLeadIndex] = useState(null as number | null)
   const canFight = leadIndex !== null
   const day = store?.getDay(challenge.date) ?? null
   const officialInProgress = day?.status === 'inProgress'
   const officialDone = day !== null && !officialInProgress
   const officialDisabled = officialDone || (!officialInProgress && !canFight)
+  // La práctica se abre al terminar el oficial del día (ganado, perdido o anulado; Jose, 31/10/2026). Sin almacén no hay oficial que esperar.
+  const practiceLocked = store !== undefined && !officialDone
 
   return (
     <>
@@ -111,8 +114,8 @@ function TodayContent({ challenge, data, onStart, onResume, store, dayWins }: To
           <button
             type="button"
             className="btn btn-secondary btn-fight btn-practice"
-            disabled={!canFight}
-            aria-describedby={canFight ? undefined : hintId}
+            disabled={!canFight || practiceLocked}
+            aria-describedby={practiceLocked ? practiceHintId : canFight ? undefined : hintId}
             onClick={() => leadIndex !== null && onStart(challenge, leadIndex, 'practice')}
           >
             {es.today.practiceFight}
@@ -121,6 +124,7 @@ function TodayContent({ challenge, data, onStart, onResume, store, dayWins }: To
         {!canFight && !officialInProgress && <p id={hintId} className="fight-hint">{es.today.fightHint}</p>}
         {officialDone && <p className="fight-hint">{es.today.official.doneHint}</p>}
         {officialInProgress && <p className="fight-hint">{es.today.official.resumeHint}</p>}
+        {practiceLocked && <p id={practiceHintId} className="fight-hint">{es.today.practiceAfterOfficial}</p>}
         {store && !store.persistent && <p className="fight-hint" role="status">{es.today.official.notSaved}</p>}
       </div>
     </>

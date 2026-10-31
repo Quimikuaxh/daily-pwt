@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test'
 import { BattlePage } from './pages/BattlePage'
 import { TodayPage } from './pages/TodayPage'
-import { DEFAULT_SCENARIO, collectProblems, startBattle } from './support'
+import { DEFAULT_SCENARIO, collectProblems, finishOfficial, startBattle } from './support'
 
 // DEC-43 · PRD §4.3 y §11 · criterios 7-10 y 17. Cada test usa un contexto nuevo de Playwright, así que arranca sin datos guardados.
 const STORAGE_KEY = 'daily-pwt:v1'
@@ -144,19 +144,23 @@ test.describe('Combate oficial: un intento por día', () => {
     await expect(page.getByRole('dialog')).toHaveCount(0)
   })
 
-  test('E2E-55 una práctica antes del oficial no lo gasta ni se reanuda al recargar', async ({ page }) => {
+  // Cambio de requisito (Jose, 31/10/2026; RF-84): antes, una práctica antes del oficial no lo gastaba; ahora no se puede practicar antes.
+  test('E2E-55 la práctica no se puede antes de terminar el oficial; al terminarlo, sí, y no cambia lo guardado', async ({ page }) => {
     const today = new TodayPage(page)
     await today.goto(DEFAULT_SCENARIO, 'seed=a&ai=trivial')
+    await today.chooseLead(0)
+    await expect(today.practiceButton).toBeDisabled()
+    await expect(page.getByText('La práctica se abre al terminar el combate oficial de hoy.')).toBeVisible()
+    await finishOfficial(page)
+    const saved = await storedDays(page)
     await today.chooseLead(0)
     await today.practiceButton.click()
     const battle = new BattlePage(page)
     await battle.waitForActionOrResult()
-    expect(await storedDays(page)).toEqual({ version: 1, days: {} })
     await page.reload()
     await today.challengeNumber.waitFor()
-    await expect(today.officialStatus).toHaveText('Jugar')
-    await today.chooseLead(0)
-    await expect(today.fightButton).toBeEnabled()
+    expect(await storedDays(page), 'la práctica no cambia lo guardado ni se reanuda').toEqual(saved)
+    await expect(page.getByRole('button', { name: /Reanudar/ })).toHaveCount(0)
   })
 
   test('E2E-56 RF-80b: un oficial a medias a medianoche es derrota del día N; vuelve a Hoy con el aviso y el reto nuevo con su oficial libre @timing', async ({ page }) => {

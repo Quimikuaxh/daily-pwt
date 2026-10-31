@@ -139,7 +139,7 @@ test.describe('Combate', () => {
     await expect(new TodayPage(page).challengeNumber).toHaveText('#1')
   })
 
-  test('E2E-08 Salir del combate pide confirmación; el oficial queda para reanudar y la práctica se descarta', async ({ page }) => {
+  test('E2E-08 Salir del combate pide confirmación; el oficial queda para reanudar y, mientras, no hay práctica', async ({ page }) => {
     const { battle, today } = await startBattle(page, { seed: 'a' })
     await battle.maxSpeed()
     await battle.waitForActionOrResult()
@@ -159,10 +159,10 @@ test.describe('Combate', () => {
     await expect(today.fightButton, 'salir no gasta otro intento: el oficial se puede reanudar').toHaveText(/Reanudar/)
     await expect(today.practiceButton, 'Hoy vuelve sin inicial elegido').toBeDisabled()
 
+    // Cambio de requisito (Jose, 31/10/2026; RF-84): con el oficial a medias no se puede practicar.
     await today.chooseLead(0)
-    await today.practiceButton.click()
-    await battle.waitForActionOrResult()
-    expect((await battle.logLines()).filter((l) => /^Turno/.test(l)), 'combate nuevo desde el turno 1').toEqual(['Turno 1'])
+    await expect(today.practiceButton, 'sin práctica hasta terminar el oficial').toBeDisabled()
+    await expect(page.getByText('La práctica se abre al terminar el combate oficial de hoy.')).toBeVisible()
   })
 
   test('E2E-18 la táctil queda en espera durante animación y turno rival (sin botones); cinco clics = una decisión; «Turno N» no sale en pantalla', async ({ page }) => {

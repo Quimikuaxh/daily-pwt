@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { BattlePage } from './pages/BattlePage'
 import { TodayPage } from './pages/TodayPage'
-import { stageScale, startBattle } from './support'
+import { finishOfficial, stageScale, startBattle } from './support'
 
 // F3 · PRD §10.5, §10.6 y decisiones del 22/10/2026: Ayuda, Ajustes (velocidad guardada, borrar datos) y marco de consola en escritorio.
 test.describe('Ayuda y Ajustes', () => {
@@ -27,6 +27,7 @@ test.describe('Ayuda y Ajustes', () => {
     await page.getByRole('button', { name: 'Ajustes' }).click()
     await expect(page.getByRole('button', { name: 'x4' })).toHaveAttribute('aria-pressed', 'true')
     await page.keyboard.press('Escape')
+    await finishOfficial(page)
     await today.chooseLead(0)
     await today.practiceButton.click()
     const battle = new BattlePage(page)

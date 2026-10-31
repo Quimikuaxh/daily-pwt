@@ -56,9 +56,29 @@ export function collectProblems(page: Page): string[] {
 }
 
 /**
+ * Termina el oficial de hoy rindiéndose, si aún está por jugar: la práctica solo se abre tras él (RF-84; Jose, 31/10/2026). Vuelve a Hoy.
+ * Devuelve si lo ha jugado.
+ */
+export async function finishOfficial(page: Page): Promise<boolean> {
+  const today = new TodayPage(page)
+  if ((await today.officialStatus.textContent()) !== 'Jugar') return false
+  await today.leadButtons.nth(0).click()
+  await today.fightButton.click()
+  const battle = new BattlePage(page)
+  await battle.root.waitFor()
+  await battle.waitForActionOrResult()
+  await battle.forfeitButton.click()
+  await page.getByRole('button', { name: 'Sí, rendirme' }).click()
+  await battle.resultTitle.waitFor()
+  await page.getByRole('button', { name: 'Volver a Hoy' }).click()
+  await today.challengeNumber.waitFor()
+  return true
+}
+
+/**
  * Abre Hoy con ganchos (fecha, semilla de combate y IA trivial), elige el inicial y entra en combate. `mode` es el botón que se pulsa:
  * por defecto el oficial, que solo se puede jugar una vez por día del reto y contexto (DEC-43); un test que juega más de una partida
- * en el mismo contexto usa `practice`.
+ * en el mismo contexto usa `practice`, que antes termina el oficial (`finishOfficial`) si aún no se había jugado.
  */
 export async function startBattle(
   page: Page,
@@ -68,6 +88,11 @@ export async function startBattle(
   const query = [scenarioQuery(opts.scenario ?? DEFAULT_SCENARIO), `seed=${opts.seed ?? 'a'}`, 'ai=trivial'].join('&')
   await page.goto(`./?${query}`)
   await today.challengeNumber.waitFor()
+  // Tras el oficial se recarga: con `?seed=` las semillas van numeradas por carga y la práctica debe ser el primer combate (como antes).
+  if (opts.mode === 'practice' && (await finishOfficial(page))) {
+    await page.goto(`./?${query}`)
+    await today.challengeNumber.waitFor()
+  }
   const press = (locator: Locator) => (opts.tap ? locator.tap() : locator.click())
   await press(today.leadButtons.nth(opts.lead ?? 0))
   await press(opts.mode === 'practice' ? today.practiceButton : today.fightButton)
