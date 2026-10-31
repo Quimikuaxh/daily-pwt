@@ -63,17 +63,19 @@ export class BattlePage {
 
   /**
    * Abre Luchar si hace falta y pulsa el primer movimiento activo. Con la máquina cargada, `waitForActionOrResult` puede ver aún activo el
-   * menú del turno que se acaba de elegir y, si ese turno termina el combate, Luchar ya no vuelve: se espera a Luchar o al resultado, y si
-   * sale el resultado no se pulsa nada (30/10/2026: E2E-05 y E2E-06 se quedaban esperando con «Victoria» en pantalla).
+   * menú del turno que se acaba de elegir y, si ese turno termina el combate o acaba en un cambio forzado, Luchar no vuelve: se espera a
+   * Luchar, al resultado o a la pantalla de equipo, y en los dos últimos casos no se pulsa nada (quien llama vuelve a mirar). 30/10/2026:
+   * E2E-05 y E2E-06 se quedaban esperando con «Victoria» o con «Elige el siguiente Pokémon» en pantalla.
    */
   async chooseFirstMove(): Promise<void> {
+    const elsewhere = this.resultTitle.or(this.page.locator('.bt-party'))
     if ((await this.enabledMoves.count()) === 0) {
-      await this.fightButton.and(this.page.locator(':enabled')).or(this.resultTitle).first().waitFor({ timeout: 60_000 })
-      if (await this.resultTitle.isVisible()) return
+      await this.fightButton.and(this.page.locator(':enabled')).or(elsewhere).first().waitFor({ timeout: 60_000 })
+      if ((await elsewhere.count()) > 0) return
       await this.fightButton.click()
     }
-    await this.enabledMoves.first().or(this.resultTitle).first().waitFor({ timeout: 60_000 })
-    if (await this.resultTitle.isVisible()) return
+    await this.enabledMoves.first().or(elsewhere).first().waitFor({ timeout: 60_000 })
+    if ((await elsewhere.count()) > 0) return
     await this.enabledMoves.first().click()
   }
 

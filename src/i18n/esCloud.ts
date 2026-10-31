@@ -3,6 +3,15 @@
  * fuera de `es.ts` para que no entren en la ruta crítica (E2E-21). Lo que se pinta al cargar sigue en `es.ts`.
  */
 export const esCloud = {
+  // Aviso de Hoy (RF-94b; Jose, 31/10/2026): a quien no ha elegido nombre o juega sin cuenta, como mucho una vez al día.
+  welcome: {
+    title: 'Tu nombre y tu cuenta',
+    name: (nickname: string) => `Ahora apareces en los rankings como «${nickname}». Puedes elegir tu propio nombre en Cuenta.`,
+    account: 'Si inicias sesión con Google, tus estadísticas y tu racha se guardan en tu cuenta y te siguen en cualquier dispositivo.',
+    open: 'Ir a Cuenta',
+    later: 'Ahora no',
+    never: 'No volver a mostrar',
+  },
   account: {
     title: 'Cuenta',
     history: 'Historial de combates',

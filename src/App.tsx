@@ -12,6 +12,8 @@ import { useChallengeDay } from './hooks/useToday'
 import { es } from './i18n/es'
 import { LocalStorageStore } from './storage/localStorageStore'
 import { clearSettings, DEFAULT_SETTINGS, loadSettings, saveSettings, type Settings } from './storage/settings'
+import { browserStorage } from './storage/browserStorage'
+import { clearWelcome } from './storage/welcomePrompt'
 import type { MenuContext } from './ui/menu/AppMenu'
 import type { BattleMode, DayRecord, GameStore, VoidReason } from './storage/gameStore'
 import { readTestHooks } from './testHooks'
@@ -65,14 +67,6 @@ function historyArtFor(item: HistoryItem, data: GameData | null): HistoryArt | n
   }
 }
 
-/** Acceder a `localStorage` puede lanzar (cookies bloqueadas, modo privado): sin él el sitio funciona igual, sin guardar. */
-function browserStorage(): Storage | null {
-  try {
-    return window.localStorage
-  } catch {
-    return null
-  }
-}
 
 export default function App({ data, createClient, store: injectedStore, cloud = null }: AppProps) {
   const [hooks] = useState(() => readTestHooks(window.location.search))
@@ -177,6 +171,7 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
       localStore.clear()
       if (store !== localStore) store.clear()
       clearSettings(browserStorage())
+      clearWelcome(browserStorage())
       setSettings(DEFAULT_SETTINGS)
       setDataGeneration((generation) => generation + 1)
     },

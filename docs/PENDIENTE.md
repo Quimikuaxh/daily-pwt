@@ -41,6 +41,10 @@ Hoy (DEC-12) la IA conoce tu equipo entero desde el principio (`ai/state.ts`) y 
 - Simetría: tú sí puedes ver los sets del rival (ocultos por defecto, PRD P6); ¿se mantiene?
 - Desde qué día se aplica: cambia lo que hace el rival en los retos (no el reto en sí); las repeticiones y reanudar siguen valiendo si la IA sigue siendo determinista con su semilla (`Prng(battleSeed+":ai")`), pero un oficial a medias al desplegar se reanudaría con otra IA.
 
+## Aviso de nombre y cuenta (31/10/2026, directo a `main`)
+- **Hecho:** RF-94b, UT-128, UT-129.
+- **Para que salga (Jose):** aplicar en producción `20261031000000_pwt_nombre_elegido.sql` (SQL Editor). Sin ella la web funciona igual y el aviso no sale.
+
 ## Rankings con 0 (29/10/2026, directo a `main`)
 - **Hecho:** salen con 0 quienes han terminado algún oficial (RF-107b, UT-126). Solo servidor: la web no cambia.
 - **Para que se vea (Jose):** aplicar en producción `20261029060000_pwt_rankings_con_cero.sql` (SQL Editor). Se puede volver a ejecutar.

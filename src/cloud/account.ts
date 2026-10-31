@@ -246,7 +246,7 @@ export class Account {
   async setNickname(nickname: string): Promise<void> {
     if (!isPlayer(this.state) || !this.cloud) return
     const saved = await this.cloud.api.setNickname(nickname)
-    if (isPlayer(this.state)) this.set({ ...this.state, nickname: saved })
+    if (isPlayer(this.state)) this.set({ ...this.state, nickname: saved, summary: this.state.summary ? { ...this.state.summary, nickname: saved, nicknameChosen: true } : null })
   }
 
   // Réplica del oficial (RF-100, RF-101). Sin sesión (desactivado o sin red al abrir) no se envía nada y el oficial no cuenta.

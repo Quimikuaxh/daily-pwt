@@ -19,3 +19,13 @@ export const isPlayer = (state: AccountState): state is Extract<AccountState, { 
 export const DISABLED: AccountState = { status: 'disabled' }
 export const CONNECTING: AccountState = { status: 'connecting' }
 export const OFFLINE: AccountState = { status: 'offline' }
+
+/** Qué le falta al jugador para el aviso de Hoy (RF-94b): elegir nombre, iniciar sesión o las dos cosas. */
+export type WelcomeNeeds = { name: boolean; account: boolean }
+
+/** `null` si no le falta nada o si aún no se sabe (sin resumen, o servidor sin `nicknameChosen`). */
+export function welcomeNeeds(state: AccountState | undefined): WelcomeNeeds | null {
+  if (!state || !isPlayer(state) || !state.summary || state.summary.nicknameChosen === undefined) return null
+  const needs = { name: !state.summary.nicknameChosen, account: state.status === 'guest' }
+  return needs.name || needs.account ? needs : null
+}

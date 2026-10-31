@@ -13,7 +13,8 @@ export type StartResult = { created: boolean; day: CloudDay }
 
 export type DayPoints = { date: string; points: number; provisional: boolean }
 
-export type Summary = { nickname: string | null; registered: boolean; points: DayPoints[]; incomingRequests: number }
+/** `nicknameChosen`: si ha elegido su nombre o sigue con el provisional (RF-94b); falta si el servidor aún no tiene esa migración. */
+export type Summary = { nickname: string | null; nicknameChosen?: boolean; registered: boolean; points: DayPoints[]; incomingRequests: number }
 
 export type RankingScope = 'global' | 'friends'
 /** `verified`: jugador con cuenta (tick). `nickname` es `null` si era sin cuenta y su nombre se liberó (RF-113). */

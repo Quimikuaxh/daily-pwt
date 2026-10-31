@@ -1,18 +1,21 @@
-import { lazy, Suspense, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import type { Account } from '../../cloud/account'
-import type { AccountState } from '../../cloud/state'
+import { welcomeNeeds, type AccountState } from '../../cloud/state'
 import type { HistoryItem } from '../../cloud/api'
 import type { HistoryArt } from '../replay/historyArt'
 import { es } from '../../i18n/es'
 import { VerifiedIcon } from '../common/VerifiedIcon'
 import type { GameStore } from '../../storage/gameStore'
 import type { Settings } from '../../storage/settings'
+import { browserStorage } from '../../storage/browserStorage'
+import { dismissWelcomeForever, markWelcomeShown, welcomeDue } from '../../storage/welcomePrompt'
 
 // Las ventanas solo hacen falta al abrirlas: fuera de la ruta crítica (E2E-21).
 const StatsDialog = lazy(() => import('../stats/StatsDialog').then((module) => ({ default: module.StatsDialog })))
 const HelpDialog = lazy(() => import('./HelpDialog').then((module) => ({ default: module.HelpDialog })))
 const SettingsDialog = lazy(() => import('./SettingsDialog').then((module) => ({ default: module.SettingsDialog })))
 const AccountDialog = lazy(() => import('../account/AccountSection').then((module) => ({ default: module.AccountDialog })))
+const WelcomePrompt = lazy(() => import('../account/WelcomePrompt').then((module) => ({ default: module.WelcomePrompt })))
 const MatchHistoryDialog = lazy(() => import('../replay/replayModule').then((module) => ({ default: module.MatchHistoryDialog })))
 
 function HistoryIcon() {
@@ -74,20 +77,34 @@ export type AppMenuProps = {
   historyArt?: (item: HistoryItem) => HistoryArt | null
   /** Abrir una repetición del historial de un amigo (desde Estadísticas › Amigos). */
   onWatchFriendReplay?: (nickname: string, date: string) => void
+  /** Solo en Hoy: aviso para elegir nombre e iniciar sesión (RF-94b), como mucho una vez al día. */
+  welcome?: boolean
 }
 
 /** Lo que el menú necesita de App; la fecha la pone cada pantalla. */
 export type MenuContext = Omit<AppMenuProps, 'today'>
 
-type Open = 'account' | 'history' | 'stats' | 'help' | 'settings' | null
+type Open = 'account' | 'history' | 'stats' | 'help' | 'settings' | 'welcome' | null
 
 /**
  * Accesos de la cabecera de Hoy y de Resultado: Cuenta (con Supabase configurado; RF-93, decisión de Jose del 28/10/2026), Estadísticas,
  * Ayuda y Ajustes, con sus ventanas.
  */
-export function AppMenu({ store, today, settings, onSettingsChange, onClearData, account, accountState, trainerName, onWatchReplay, historyArt, onWatchFriendReplay }: AppMenuProps) {
+export function AppMenu({ store, today, settings, onSettingsChange, onClearData, account, accountState, trainerName, onWatchReplay, historyArt, onWatchFriendReplay, welcome = false }: AppMenuProps) {
   const [open, setOpen] = useState(null as Open)
   const close = () => setOpen(null)
+  // RF-94b: a quien no ha elegido nombre o juega sin cuenta, al entrar en Hoy, como mucho una vez al día y salvo «No volver a mostrar».
+  const needs = welcome && account ? welcomeNeeds(accountState) : null
+  const welcomeChecked = useRef(false)
+  useEffect(() => {
+    if (!needs || welcomeChecked.current || open !== null) return
+    welcomeChecked.current = true
+    if (!welcomeDue(browserStorage(), today)) return
+    markWelcomeShown(browserStorage(), today)
+    // Se abre al llegar el resumen de la cuenta (asíncrono), no al pintar: por eso va en un efecto y una sola vez (`welcomeChecked`).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setOpen('welcome')
+  }, [needs, today, open])
   // RF-111: aviso en la cabecera si hay solicitudes de amistad pendientes.
   const pending = accountState?.status === 'signedIn' ? (accountState.summary?.incomingRequests ?? 0) : 0
   const withAccount = account && accountState && accountState.status !== 'disabled'
@@ -131,6 +148,17 @@ export function AppMenu({ store, today, settings, onSettingsChange, onClearData,
         ))}
       </nav>
       <Suspense fallback={null}>
+      {open === 'welcome' && needs && (
+        <WelcomePrompt
+          needs={needs}
+          nickname={accountState && 'nickname' in accountState ? accountState.nickname : null}
+          onOpenAccount={() => setOpen('account')}
+          onClose={(never) => {
+            if (never) dismissWelcomeForever(browserStorage())
+            setOpen((current) => (current === 'welcome' ? null : current))
+          }}
+        />
+      )}
       {open === 'account' && account && accountState && <AccountDialog account={account} state={accountState} onClose={close} onOpenHistory={withHistory ? () => setOpen('history') : undefined} />}
       {open === 'history' && account && trainerName && onWatchReplay && (
         <MatchHistoryDialog

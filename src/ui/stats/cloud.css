@@ -303,3 +303,22 @@
   font-size: 22px;
   overflow-wrap: anywhere;
 }
+
+/* Aviso de Hoy (RF-94b): la casilla «No volver a mostrar» encima de los botones. */
+.welcome-dialog p {
+  margin: 0 0 0.75rem;
+}
+
+.welcome-never {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.25rem 0 0.75rem;
+  cursor: pointer;
+}
+
+.welcome-dialog .account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 10px;
+}

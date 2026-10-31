@@ -42,6 +42,25 @@ const addDays = (date: string, days: number) => {
 }
 
 describe('perfil y nickname (UT-90)', () => {
+  // UT-128 · Aviso de Hoy (Jose, 31/10/2026): `nicknameChosen` dice si el jugador ha elegido su nombre o sigue con el provisional.
+  it('el nombre provisional no cuenta como elegido; cambiarlo sí; al liberarlo y volver, otra vez no; el traspaso lo conserva', async () => {
+    const chosen = (player: Caller) => t.call<boolean>(player, `select (pwt.my_summary() ->> 'nicknameChosen')::boolean`)
+    const [fresh, guest, member] = [await t.user(true), await t.user(true), await t.user()]
+    for (const player of [fresh, guest, member]) await t.call(player, `select pwt.ensure_profile()`)
+    expect(await chosen(fresh)).toBe(false)
+    await t.call(fresh, `select pwt.set_nickname('Elegido_1')`)
+    expect(await chosen(fresh)).toBe(true)
+    // Nombre liberado por inactividad (RF-113): al volver recibe otro provisional.
+    await t.admin(`update pwt.profiles set nickname = null where id = $1`, [fresh.id])
+    await t.call(fresh, `select pwt.ensure_profile()`)
+    expect(await chosen(fresh)).toBe(false)
+    // El traspaso de invitado a cuenta se lleva el nombre elegido y su marca.
+    await t.call(guest, `select pwt.set_nickname('Elegido_2')`)
+    const code = await t.call<string>(guest, `select pwt.create_guest_claim()`)
+    await t.call(member, `select pwt.claim_guest($1)`, [code])
+    expect(await chosen(member)).toBe(true)
+  })
+
   it('crea el perfil con un nickname provisional y no lo repite', async () => {
     const user = await t.user()
     const first = await t.call<{ nickname: string; created: boolean }>(user, `select pwt.ensure_profile()`)
