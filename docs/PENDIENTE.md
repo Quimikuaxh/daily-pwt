@@ -41,6 +41,14 @@ Hoy (DEC-12) la IA conoce tu equipo entero desde el principio (`ai/state.ts`) y 
 - Simetría: tú sí puedes ver los sets del rival (ocultos por defecto, PRD P6); ¿se mantiene?
 - Desde qué día se aplica: cambia lo que hace el rival en los retos (no el reto en sí); las repeticiones y reanudar siguen valiendo si la IA sigue siendo determinista con su semilla (`Prng(battleSeed+":ai")`), pero un oficial a medias al desplegar se reanudaría con otra IA.
 
+## Gritos de los Pokémon (31/10/2026, DEC-75)
+- **Hecho:** el código y el script; sin gritos descargados no suenan.
+- **Pendiente de Jose, en local:** `npm run gen:cries` (necesita `ffmpeg`; Showdown está bloqueado desde la nube) y subir `public/audio/cries/` y `src/generated/cries-index.json`. Si alguna especie no tiene grito en Showdown, el script la lista.
+
+## Combate de hoy en el historial de un amigo (31/10/2026)
+- **Hecho:** RF-111b, UT-130.
+- **Para que se vea (Jose):** aplicar en producción `20261031010000_pwt_amigo_hoy.sql` (SQL Editor). Sin ella, el de hoy sigue sin salir hasta medianoche.
+
 ## Aviso de nombre y cuenta (31/10/2026, directo a `main`)
 - **Hecho:** RF-94b, UT-128, UT-129.
 - **Migración `20261031000000_pwt_nombre_elegido.sql` aplicada en producción** (31/10/2026).

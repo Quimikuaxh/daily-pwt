@@ -455,7 +455,8 @@ describe('vista de un amigo (UT-118)', () => {
     return { eva, fede, gema }
   }
 
-  it('un amigo ve sus días cerrados, sus puntos y su historial; el día de hoy, no', async () => {
+  // Cambio de requisito del 31/10/2026 (Jose, UT-130): el combate de hoy sale en el historial, pero su repetición no hasta mañana.
+  it('un amigo ve sus días cerrados, sus puntos y su historial con el combate de hoy; la repetición de hoy, no', async () => {
     const { eva, fede } = await friends('v')
     // Un día pasado que no usa ningún otro test (la base y sus días cerrados son los mismos en todo el fichero).
     const closed = addDays(t.today, -200)
@@ -469,7 +470,7 @@ describe('vista de un amigo (UT-118)', () => {
     expect(profile.days.map((day) => day.date)).toEqual([closed])
     expect(profile.days[0]).not.toHaveProperty('battle')
     expect(profile.points).toEqual([expect.objectContaining({ date: closed, points: 5.33 })])
-    expect(profile.history).toEqual([expect.objectContaining({ date: closed, sharedId: null })])
+    expect(profile.history).toEqual([expect.objectContaining({ date: t.today, sharedId: null }), expect.objectContaining({ date: closed, sharedId: null })])
     expect(await t.call(eva, `select pwt.get_friend_replay('fede_v', $1::date)`, [closed])).toBe('datos')
     await expect(t.call(eva, `select pwt.get_friend_replay('fede_v', $1::date)`, [t.today])).rejects.toThrow('replay_not_found')
   })

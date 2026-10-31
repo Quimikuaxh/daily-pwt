@@ -98,7 +98,7 @@ function assertSafeSpriteId(kind, id) {
   return id
 }
 
-function loadTargets() {
+export function loadTargets() {
   const dex = JSON.parse(readFileSync(fromRoot('src', 'generated', 'dex-gen5.json'), 'utf8'))
   const { trainers } = JSON.parse(readFileSync(fromRoot('data', 'trainers.json'), 'utf8'))
   const pool = JSON.parse(readFileSync(fromRoot('data', 'player-sets.json'), 'utf8'))

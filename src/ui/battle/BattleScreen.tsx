@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { battleMusicFor, CRITICAL_HEALTH_MUSIC, getAudio, LAST_POKEMON_MUSIC, SFX_IDS } from '../../audio/audio'
 import { MUSIC_CHANGE_FADE_MS } from '../../audio/audioEngine'
 import type { BattleClient } from '../../battle/client'
@@ -71,6 +71,8 @@ const isInteractive = (target: EventTarget | null): boolean => target instanceof
 export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', controls, replay, onDecision, onSettled, onReplayFailed, paused, initialSpeed, onSpeedChange, animations = 'always', sound, onSoundChange, onFinish, onExit }: BattleScreenProps) {
   const { trainer, rivalTeam, playerTeam } = challenge
   const speciesName = (speciesId: string, fallback: string): string => data.names.species[speciesId] ?? fallback
+  // Grito de una especie: va por su `spriteId` (las formas tienen el suyo o el de la especie base; `gen:cries`).
+  const cryIdOf = useCallback((speciesId: string): string => data.dex.species[speciesId]?.spriteId ?? speciesId, [data])
 
   const battle = useBattle({
     client,
@@ -88,6 +90,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
     paused,
     initialSpeed,
     onSpeedChange,
+    playCry: (species, faint) => getAudio().playCry(cryIdOf(species), { faint }),
   })
 
   const reducedMotion = useReducedMotion(animations)
@@ -124,7 +127,9 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   // sonando cuando ese último cae.
   const rivalMusic = battleMusicFor(trainer)
   const music = lastPokemonThemeOn(battle.view) ? LAST_POKEMON_MUSIC : rivalMusic
-  useEffect(() => getAudio().preload([rivalMusic, LAST_POKEMON_MUSIC, CRITICAL_HEALTH_MUSIC], SFX_IDS), [rivalMusic])
+  // Gritos (Jose, 31/10/2026): solo los de los Pokémon de este combate, como la música.
+  const cries = useMemo(() => [...playerTeam, ...rivalTeam].map((set) => cryIdOf(set.species)), [playerTeam, rivalTeam, cryIdOf])
+  useEffect(() => getAudio().preload([rivalMusic, LAST_POKEMON_MUSIC, CRITICAL_HEALTH_MUSIC], SFX_IDS, cries), [rivalMusic, cries])
   const musicOn = battle.introPhase !== 'loading' && (mode === 'replay' || !ended)
   // Parar va aparte de cambiar de tema: al pasar al del último Pokémon no se para la música (ni se pierde la de vida baja).
   useEffect(() => {

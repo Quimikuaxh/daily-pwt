@@ -1,4 +1,5 @@
 import audioIndex from '../generated/audio-index.json'
+import criesIndex from '../generated/cries-index.json'
 import { createAudioEngine, type AudioContextLike, type AudioEngine, type AudioIndex } from './audioEngine'
 
 /** Música y efectos de cada momento (PRD §0, «Fuentes y temas del sonido»). */
@@ -35,7 +36,8 @@ let engine: AudioEngine | null = null
 /** El motor de la página (uno solo: un `AudioContext` por pestaña). */
 export function getAudio(): AudioEngine {
   engine ??= createAudioEngine({
-    index: audioIndex as AudioIndex,
+    // Gritos aparte (`gen:cries`): los descarga Jose en local; sin ellos, el índice va vacío y no suenan.
+    index: { ...(audioIndex as AudioIndex), cries: criesIndex as AudioIndex['cries'] },
     baseUrl: import.meta.env.BASE_URL,
     createContext: browserContext,
     fetchBytes: async (url) => {

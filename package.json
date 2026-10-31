@@ -33,7 +33,8 @@
     "gen:pwt": "node scripts/merge-pwt.mjs",
     "validate:data": "node scripts/validate-data.mjs",
     "gen": "npm run gen:names && npm run gen:dex && npm run gen:player-sets",
-    "gen:audio": "node scripts/build-audio.mjs"
+    "gen:audio": "node scripts/build-audio.mjs",
+    "gen:cries": "node scripts/fetch-cries.mjs"
   },
   "dependencies": {
     "@pkmn/sim": "0.10.11",

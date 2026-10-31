@@ -57,6 +57,7 @@ npm install
 | `npm run gen:sprites` | Descarga a `public/sprites/` los sprites que falten (requiere red). |
 | `npm run gen:ui` | Descarga y recorta a `public/ui/` los gráficos de interfaz de N2/B2 (`--force` los rehace todos). Requiere red. |
 | `npm run gen:audio` | Codifica a `public/audio/` la música (OST de N2/B2, se descarga) y los efectos de sonido (ZIP descargado a mano) y escribe `src/generated/audio-index.json` (`--force` los rehace todos). Requiere `ffmpeg`, `ffprobe` y `unzip`. Ver «Sonido». |
+| `npm run gen:cries` | Baja de Pokémon Showdown los gritos de las especies del juego (rivales y pool del jugador), los codifica a `public/audio/cries/<spriteId>.m4a` y escribe `src/generated/cries-index.json`. Requiere `ffmpeg` y `ffprobe`. Desde la nube Showdown está bloqueado: se lanza en local. Lo ya convertido no se vuelve a bajar. Ver «Sonido». |
 
 `gen:sprites`, `gen:ui`, `gen:audio`, `gen:pwt-raw` y `gen:pwt` no forman parte de `npm run gen`. Tras cargar o cambiar entrenadores: `npm run gen:pwt -- --write`, `npm run gen`, `npm run gen:sprites` (si faltan sprites), `npm run gen:sprite-boxes`, `gen:icon-index`, `gen:descriptions`, `gen:ui-index` (si cambian sprites o especies) y `npm run validate:data`.
 
@@ -244,6 +245,7 @@ Traducciones manuales que prevalecen sobre las de PokeAPI.
 - **Puntos de bucle** (`loopStartSec`/`loopEndSec` de cada pista de combate en `data/audio.json`, que `gen:audio` copia al índice): `python3 scripts/find-loops.py public/audio/music/<id>.m4a` (necesita `ffmpeg` y `numpy`) los calcula sobre el `.m4a` y los imprime para copiarlos; se pueden retocar a mano (en segundos) y volver a lanzar `npm run gen:audio`, que no recodifica nada. El reproductor hace un fundido de 40 ms en la costura (DEC-57).
 - Efectos que el código ya pide y faltan en el manifiesto: `menu-select` y `menu-cancel` (botones del menú de batalla) y `status-brn`, `status-psn`, `status-par`, `status-slp`, `status-frz` y `status-confusion` (estados); la tabla está en PENDIENTE.md. Mientras no estén, no suenan.
 - Para añadir un efecto: entrada nueva en `sfx` de `data/audio.json` (`entry` es la ruta dentro del ZIP; `unzip -l` las lista) y `npm run gen:audio`.
+- **Gritos** (31/10/2026, Jose): de Pokémon Showdown (`audio/cries/<id>.mp3`; se prueba el `spriteId`, sin guion y la especie base), con `npm run gen:cries` en local. Suenan al salir cada Pokémon (intro y cambios) y, más graves, al debilitarse; cada combate descarga solo los de sus 12 Pokémon. Sin descargar (índice vacío), no suenan y no pasa nada.
 
 ### Sprites (`public/sprites/`)
 

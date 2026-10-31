@@ -10,6 +10,7 @@ import { viewReducer } from '../battle/viewReducer'
 import { conditionFx, createMultiHitTracker, usedMove, type FxCue } from './moveFxCues'
 import { BALL_SFX_MS, hitSoundAt, conditionSoundFor, switchBallTimes } from './battleSfx'
 import { getAudio, type SfxId } from '../audio/audio'
+import { toId } from '../core/id'
 import type { MoveFxEvent } from '../ui/battle/fx/MoveFx'
 
 export type { BattleSpeed }
@@ -76,6 +77,18 @@ export type BattleParams = {
   paused?: boolean
   /** Efectos de sonido (DEC-57); por defecto, el motor de la página. Nunca suenan al reproducir un combate guardado. */
   playSfx?: (id: SfxId) => void
+  /** Grito de un Pokémon (id de especie) al salir o, con `faint`, al debilitarse (Jose, 31/10/2026). Por defecto, el motor de la página. */
+  playCry?: (species: string, faint: boolean) => void
+}
+
+/** Especie del Pokémon que entra en `|switch|p1a: X|Garchomp, L50, M|…` (id). */
+const switchSpecies = (line: string): string => toId((line.split('|')[3] ?? '').split(',')[0])
+
+/** Especie del activo del bando de `|faint|p2a: X` en la vista de antes de caer. */
+function faintSpecies(line: string, view: BattleView): string | null {
+  const side = /^p([12])/.exec(line.split('|')[2] ?? '')?.[1] === '1' ? 'player' : 'rival'
+  const active = view[side].active
+  return active === null ? null : (view[side].team[active]?.species ?? null)
 }
 
 export type BattleController = {
@@ -231,6 +244,19 @@ export function useBattle(params: BattleParams): BattleController {
       timers.add(timer)
     }
 
+    /** Grito a `milliseconds` (a x1) de ahora, como los efectos de la Poké Ball (`sfxLater`): al abrirse, sale el Pokémon y grita. */
+    const cryLater = (species: string | null, milliseconds: number, intro: boolean) => {
+      if (!species || replaying || (intro && skipIntroRef.current)) return
+      const timer = setTimeout(() => {
+        timers.delete(timer)
+        if (!cancelled && !(intro && skipIntroRef.current)) (paramsRef.current.playCry ?? ((id: string) => getAudio().playCry(id)))(species, false)
+      }, milliseconds / speedRef.current)
+      timers.add(timer)
+    }
+    const cry = (species: string | null, faint: boolean) => {
+      if (species && !replaying) (paramsRef.current.playCry ?? ((id: string, down: boolean) => getAudio().playCry(id, { faint: down })))(species, faint)
+    }
+
     const playFx = (cue: FxCue) => {
       moveFxCount.current += 1
       setMoveFx({ key: moveFxCount.current, ...cue })
@@ -252,6 +278,8 @@ export function useBattle(params: BattleParams): BattleController {
           if (step.phase === 'rivalSend' || step.phase === 'playerSend') {
             sfxLater('ball-throw', BALL_SFX_MS[step.phase].throw, true)
             sfxLater('ball-open', BALL_SFX_MS[step.phase].open, true)
+            const side = shown[step.phase === 'rivalSend' ? 'rival' : 'player']
+            cryLater(side.active === null ? null : (side.team[side.active]?.species ?? null), BALL_SFX_MS[step.phase].open, true)
           }
         }
         const switching = !replaying && step.line !== null && !step.phase ? switchAnimationFor(step.line, shown) : null
@@ -260,6 +288,7 @@ export function useBattle(params: BattleParams): BattleController {
           const ball = switchBallTimes(switching.endsWith('-send'))
           sfxLater('ball-throw', ball.throw, false)
           sfxLater('ball-open', ball.open, false)
+          cryLater(switchSpecies(step.line as string), ball.open, false)
           if (!switching.endsWith('-send')) await pause(SWITCH_DURATIONS_MS.recall, false, false)
           if (cancelled) return
         }
@@ -284,6 +313,7 @@ export function useBattle(params: BattleParams): BattleController {
           setMessage(text)
           await pause(FAINT_MESSAGE_LEAD_MS)
           if (cancelled) return
+          cry(faintSpecies(step.line as string, shown), true)
           shown = viewReducer(shown, { type: 'lines', lines: [step.line as string] })
           setView(shown)
           sfx('faint')

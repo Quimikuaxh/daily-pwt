@@ -6,7 +6,8 @@
 
 export type MusicEntry = { path: string; durationSec: number; loopStartSec?: number; loopEndSec?: number }
 export type SfxEntry = { path: string; durationSec: number }
-export type AudioIndex = { music: Record<string, MusicEntry>; sfx: Record<string, SfxEntry> }
+/** `cries`: gritos de los Pokémon por `spriteId` (`gen:cries`, `src/generated/cries-index.json`); vacío hasta descargarlos. */
+export type AudioIndex = { music: Record<string, MusicEntry>; sfx: Record<string, SfxEntry>; cries?: Record<string, SfxEntry> }
 
 /** Lo que el motor usa de Web Audio: así los tests pueden darle uno falso. */
 export type AudioContextLike = Pick<BaseAudioContext, 'currentTime' | 'destination' | 'state' | 'createGain' | 'createBufferSource' | 'decodeAudioData'> & {
@@ -34,6 +35,8 @@ export const PINCH_EXIT_FADE_MS = 800
 export const MUSIC_RETURN_FADE_IN_MS = 1500
 /** Cambio de tema con transición (el del último Pokémon del rival, decisión de Jose, 30/10/2026): uno se apaga mientras entra el otro. */
 export const MUSIC_CHANGE_FADE_MS = 800
+/** Grito al debilitarse: más lento y grave que al salir (como en N2/B2). */
+export const FAINT_CRY_RATE = 0.8
 const UNLOCK_EVENTS = ['pointerdown', 'keydown'] as const
 
 /** Volumen de Ajustes (0-100) a ganancia: curva cuadrática, que se percibe más pareja que la lineal. */
@@ -80,8 +83,8 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
   const buffers = new Map<string, Promise<AudioBuffer | null>>()
 
   const entryOf = (key: string): MusicEntry | SfxEntry | undefined => {
-    const [kind, id] = key.split(':') as ['music' | 'sfx', string]
-    return index[kind]?.[id]
+    const [kind, id] = key.split(':') as ['music' | 'sfx' | 'cry', string]
+    return kind === 'cry' ? index.cries?.[id] : index[kind]?.[id]
   }
 
   function bytesOf(key: string): Promise<ArrayBuffer | null> {
@@ -115,6 +118,20 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
       buffers.set(key, pending)
     }
     return pending
+  }
+
+  /** Sonido de una vez (efecto o grito) a la velocidad `rate` (1, normal; menos, más grave). */
+  function playOnce(key: string, rate: number) {
+    if (!unlocked || !context) return
+    void bufferOf(key).then((buffer) => {
+      const ctx = context
+      if (!buffer || !ctx || !master) return
+      const source = ctx.createBufferSource()
+      source.buffer = buffer
+      source.playbackRate.value = rate
+      source.connect(master)
+      source.start()
+    })
   }
 
   function applyVolume() {
@@ -214,8 +231,8 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
       applyVolume()
     },
     /** Descarga (y, con contexto, decodifica) antes de que haga falta: la pista del rival y los efectos al entrar al combate. */
-    preload(music: readonly string[], sfx: readonly string[]) {
-      for (const key of [...music.map((id) => `music:${id}`), ...sfx.map((id) => `sfx:${id}`)]) {
+    preload(music: readonly string[], sfx: readonly string[], cries: readonly string[] = []) {
+      for (const key of [...music.map((id) => `music:${id}`), ...sfx.map((id) => `sfx:${id}`), ...cries.map((id) => `cry:${id}`)]) {
         if (context) void bufferOf(key)
         else void bytesOf(key)
       }
@@ -238,15 +255,14 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
     },
     /** Efecto de una vez. Antes de la primera interacción no suena (no se guarda para después). */
     playSfx(id: string) {
-      if (!unlocked || !context) return
-      void bufferOf(`sfx:${id}`).then((buffer) => {
-        const ctx = context
-        if (!buffer || !ctx || !master) return
-        const source = ctx.createBufferSource()
-        source.buffer = buffer
-        source.connect(master)
-        source.start()
-      })
+      playOnce(`sfx:${id}`, 1)
+    },
+    /**
+     * Grito de un Pokémon (`spriteId`) al salir al campo o, con `faint`, al debilitarse: más grave, como en el juego (Jose, 31/10/2026).
+     * Sin grito descargado, nada.
+     */
+    playCry(id: string, { faint = false }: { faint?: boolean } = {}) {
+      playOnce(`cry:${id}`, faint ? FAINT_CRY_RATE : 1)
     },
     /**
      * Música de vida baja (decisión de Jose, 30/10/2026): con un id, corta la música que suena y pone esa desde el principio, en bucle;

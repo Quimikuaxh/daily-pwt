@@ -229,7 +229,11 @@ describe('cuenta en la interfaz (UT-100)', () => {
         nickname,
         days: [cloudDay({ date: '2026-10-25', status: 'won' }), cloudDay({ date: '2026-10-26', status: 'lost', survivors: 0 })],
         points: [{ date: '2026-10-25', points: 4.5, provisional: false }],
-        history: [{ date: '2026-10-26', challengeNumber: 3, trainerId: 'misty', variantId: 'misty-1', status: 'lost', turns: 12, survivors: 0, playerFainted: null, sharedId: null }],
+        history: [
+          // UT-130 (Jose, 31/10/2026): el combate de hoy sale, pero sin «Ver repetición» hasta mañana.
+          { date: TODAY, challengeNumber: 4, trainerId: 'misty', variantId: 'misty-1', status: 'won', turns: 9, survivors: 3, playerFainted: null, sharedId: null },
+          { date: '2026-10-26', challengeNumber: 3, trainerId: 'misty', variantId: 'misty-1', status: 'lost', turns: 12, survivors: 0, playerFainted: null, sharedId: null },
+        ],
       }),
     })
     const { user } = await mount(GOOGLE, api, { trainerName: () => 'Misty', onWatchFriendReplay })
@@ -243,6 +247,8 @@ describe('cuenta en la interfaz (UT-100)', () => {
     // De otro: sin botón de compartir; su historial solo con «Ver repetición».
     expect(screen.queryByRole('button', { name: /Compartir/ })).toBeNull()
     expect(screen.getByText('#3 · 26/10/2026 · Misty')).toBeInTheDocument()
+    expect(screen.getByText('#4 · 27/10/2026 · Misty')).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: 'Ver repetición' })).toHaveLength(1)
     await user.click(screen.getByRole('button', { name: 'Ver repetición' }))
     expect(onWatchFriendReplay).toHaveBeenCalledWith('Eva', '2026-10-26')
   })

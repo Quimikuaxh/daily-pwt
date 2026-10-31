@@ -90,9 +90,9 @@ export const esCloud = {
     open: (nickname: string) => `Ver las estadísticas de ${nickname}`,
     back: '‹ Amigos',
     history: 'Historial',
-    noHistory: 'Aún no tiene combates con repetición de días ya cerrados.',
+    noHistory: 'Aún no tiene combates con repetición.',
     profileFailed: 'No se han podido cargar sus datos.',
-    todayHidden: 'Su combate de hoy se verá cuando se cierre el día (a medianoche, hora de Madrid).',
+    todayHidden: 'Sus estadísticas cuentan los días ya cerrados: su combate de hoy entra a medianoche (hora de Madrid), y su repetición se puede ver desde entonces.',
     failed: 'No se ha podido completar. Inténtalo de nuevo.',
   },
 } as const

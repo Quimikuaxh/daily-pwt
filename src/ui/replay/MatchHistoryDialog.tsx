@@ -101,6 +101,8 @@ type HistoryListProps = {
   trainerName: (trainerId: string) => string
   art?: (item: HistoryItem) => HistoryArt | null
   onWatch: (date: string) => void
+  /** Si se puede ver la repetición de ese combate; sin ella, todas. La del combate de hoy de un amigo, no hasta mañana (RF-111b). */
+  canWatch?: (item: HistoryItem) => boolean
   /** Botones detrás de «Ver repetición» (los del propio historial: compartir y dejar de compartir). */
   actions?: (item: HistoryItem) => ReactNode
   /** Lo que va debajo de cada combate (el aviso tras compartir). */
@@ -108,7 +110,7 @@ type HistoryListProps = {
 }
 
 /** Lista de combates del historial: la del propio jugador y, solo con «Ver repetición», la de un amigo (decisión de Jose, 29/10/2026). */
-export function HistoryList({ items, trainerName, art, onWatch, actions, after }: HistoryListProps) {
+export function HistoryList({ items, trainerName, art, onWatch, canWatch, actions, after }: HistoryListProps) {
   return (
     <ul className="history-items">
       {items.map((item) => (
@@ -116,7 +118,9 @@ export function HistoryList({ items, trainerName, art, onWatch, actions, after }
           <HistoryItemHeader item={item} name={trainerName(item.trainerId)} art={art?.(item) ?? null}>
             {/* Botones cuadrados con icono, a la derecha (decisión de Jose, 28/10/2026); el nombre va en la etiqueta y en la ayuda. */}
             <div className="history-item-actions">
-              <button type="button" className="btn btn-small history-icon-button" aria-label={text.watch} title={text.watch} onClick={() => onWatch(item.date)}><HistoryIcon icon="play" /></button>
+              {(canWatch?.(item) ?? true) && (
+                <button type="button" className="btn btn-small history-icon-button" aria-label={text.watch} title={text.watch} onClick={() => onWatch(item.date)}><HistoryIcon icon="play" /></button>
+              )}
               {actions?.(item)}
             </div>
           </HistoryItemHeader>

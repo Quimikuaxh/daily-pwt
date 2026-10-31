@@ -15,9 +15,9 @@ const REQUEST_TIMEOUT_MS = 300_000
 const SAFE_ID = /^[a-z0-9-]+$/
 /** AAC en MP4: lo decodifican Chromium, Firefox y Safari (también iOS) con `decodeAudioData`. */
 const MUSIC_ARGS = ['-vn', '-ar', '48000', '-ac', '2', '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart']
-const SFX_ARGS = ['-vn', '-ar', '48000', '-ac', '2', '-c:a', 'aac', '-b:a', '96k', '-movflags', '+faststart']
+export const SFX_ARGS = ['-vn', '-ar', '48000', '-ac', '2', '-c:a', 'aac', '-b:a', '96k', '-movflags', '+faststart']
 /** Quita el silencio del principio y del final: el efecto debe sonar en cuanto se pide. */
-const TRIM_SILENCE = 'silenceremove=start_periods=1:start_threshold=-60dB,areverse,silenceremove=start_periods=1:start_threshold=-60dB,areverse'
+export const TRIM_SILENCE = 'silenceremove=start_periods=1:start_threshold=-60dB,areverse,silenceremove=start_periods=1:start_threshold=-60dB,areverse'
 /** Solo el del principio: una pista que debe sonar en cuanto se pide (la de vida baja); sus puntos de bucle cuentan ya sin él. */
 const TRIM_LEADING_SILENCE = 'silenceremove=start_periods=1:start_threshold=-60dB'
 
@@ -67,7 +67,7 @@ export function planAudio(manifest) {
   return [...manifest.music.map(plan('music')), ...manifest.sfx.map(plan('sfx'))]
 }
 
-const ffprobeDuration = (file) =>
+export const ffprobeDuration = (file) =>
   Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file]).toString().trim())
 
 /** Una página de error guardada como FLAC no debe llegar a codificarse. */

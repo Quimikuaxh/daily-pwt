@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { createAudioEngine, crossfadeLoopSeam, LOOP_CROSSFADE_MS, MUSIC_CHANGE_FADE_MS, PINCH_EXIT_FADE_MS, volumeToGain, type AudioContextLike, type AudioIndex } from './audioEngine'
+import { createAudioEngine, crossfadeLoopSeam, FAINT_CRY_RATE, LOOP_CROSSFADE_MS, MUSIC_CHANGE_FADE_MS, PINCH_EXIT_FADE_MS, volumeToGain, type AudioContextLike, type AudioIndex } from './audioEngine'
 
 // UT-76 · Motor de sonido (DEC-57) con un AudioContext falso.
 const index: AudioIndex = {
@@ -10,9 +10,10 @@ const index: AudioIndex = {
     'last-pokemon': { path: 'audio/music/last-pokemon.m4a', durationSec: 102, loopStartSec: 25.62, loopEndSec: 67.11 },
   },
   sfx: { faint: { path: 'audio/sfx/faint.m4a', durationSec: 0.5 } },
+  cries: { gyarados: { path: 'audio/cries/gyarados.m4a', durationSec: 1.2 } },
 }
 
-type FakeSource = { buffer: unknown; loop: boolean; loopStart: number; loopEnd: number; started: boolean; offset: number; stoppedAt: number | null; connect: () => void; start: (when?: number, offset?: number) => void; stop: (at?: number) => void }
+type FakeSource = { buffer: unknown; playbackRate: { value: number }; loop: boolean; loopStart: number; loopEnd: number; started: boolean; offset: number; stoppedAt: number | null; connect: () => void; start: (when?: number, offset?: number) => void; stop: (at?: number) => void }
 
 function fakeContext() {
   const sources: FakeSource[] = []
@@ -39,6 +40,7 @@ function fakeContext() {
     createBufferSource() {
       const source: FakeSource = {
         buffer: null,
+        playbackRate: { value: 1 },
         loop: false,
         loopStart: 0,
         loopEnd: 0,
@@ -82,6 +84,21 @@ function setup(withContext = true) {
 }
 
 describe('motor de sonido', () => {
+  // UT-131 · Gritos (Jose, 31/10/2026): al salir, a velocidad normal; al debilitarse, más graves; sin grito descargado, nada.
+  it('gritos: se precargan con el combate, suenan al salir y más graves al debilitarse; uno que no está no suena', async () => {
+    const { engine, fake, fetchBytes, interact, settle } = setup()
+    engine.preload([], [], ['gyarados', 'missingno'])
+    expect(fetchBytes).toHaveBeenCalledWith('/daily-pwt/audio/cries/gyarados.m4a')
+    interact()
+    engine.playCry('gyarados')
+    engine.playCry('gyarados', { faint: true })
+    engine.playCry('missingno')
+    await settle()
+    const played = fake.sources.filter((source) => source.started)
+    expect(played.map((source) => (source.buffer as { name: string }).name)).toEqual(['/daily-pwt/audio/cries/gyarados.m4a', '/daily-pwt/audio/cries/gyarados.m4a'])
+    expect(played.map((source) => source.playbackRate.value)).toEqual([1, FAINT_CRY_RATE])
+  })
+
   it('no suena nada hasta la primera interacción; la música pedida antes empieza al tocar', async () => {
     const { engine, fake, interact, settle, listeners } = setup()
     engine.playMusic('gym-kanto')
