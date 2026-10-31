@@ -42,8 +42,7 @@ Hoy (DEC-12) la IA conoce tu equipo entero desde el principio (`ai/state.ts`) y 
 - Desde qué día se aplica: cambia lo que hace el rival en los retos (no el reto en sí); las repeticiones y reanudar siguen valiendo si la IA sigue siendo determinista con su semilla (`Prng(battleSeed+":ai")`), pero un oficial a medias al desplegar se reanudaría con otra IA.
 
 ## Gritos de los Pokémon (31/10/2026, DEC-75)
-- **Hecho:** el código y el script; sin gritos descargados no suenan.
-- **Pendiente de Jose, en local:** `npm run gen:cries` (necesita `ffmpeg`; Showdown está bloqueado desde la nube) y subir `public/audio/cries/` y `src/generated/cries-index.json`. Si alguna especie no tiene grito en Showdown, el script la lista.
+- **Hecho:** el código, el script y los gritos descargados (31/10/2026, en local con `gen:cries`): las 331 especies del juego, unos 5 MB. Al añadir especies, volver a lanzar `npm run gen:cries` en local.
 
 ## Combate de hoy en el historial de un amigo (31/10/2026)
 - **Hecho:** RF-111b, UT-130.
