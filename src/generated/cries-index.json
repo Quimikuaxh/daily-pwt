@@ -1,1 +1,1326 @@
-{}
+{
+  "abomasnow": {
+    "path": "audio/cries/abomasnow.m4a",
+    "durationSec": 1.842
+  },
+  "absol": {
+    "path": "audio/cries/absol.m4a",
+    "durationSec": 0.597
+  },
+  "accelgor": {
+    "path": "audio/cries/accelgor.m4a",
+    "durationSec": 0.857
+  },
+  "aerodactyl": {
+    "path": "audio/cries/aerodactyl.m4a",
+    "durationSec": 1.396
+  },
+  "aggron": {
+    "path": "audio/cries/aggron.m4a",
+    "durationSec": 1.373
+  },
+  "alakazam": {
+    "path": "audio/cries/alakazam.m4a",
+    "durationSec": 1.608
+  },
+  "alomomola": {
+    "path": "audio/cries/alomomola.m4a",
+    "durationSec": 1.455
+  },
+  "altaria": {
+    "path": "audio/cries/altaria.m4a",
+    "durationSec": 0.631
+  },
+  "ambipom": {
+    "path": "audio/cries/ambipom.m4a",
+    "durationSec": 0.939
+  },
+  "amoonguss": {
+    "path": "audio/cries/amoonguss.m4a",
+    "durationSec": 0.642
+  },
+  "ampharos": {
+    "path": "audio/cries/ampharos.m4a",
+    "durationSec": 0.909
+  },
+  "arbok": {
+    "path": "audio/cries/arbok.m4a",
+    "durationSec": 0.946
+  },
+  "arcanine": {
+    "path": "audio/cries/arcanine.m4a",
+    "durationSec": 0.956
+  },
+  "archeops": {
+    "path": "audio/cries/archeops.m4a",
+    "durationSec": 1.143
+  },
+  "ariados": {
+    "path": "audio/cries/ariados.m4a",
+    "durationSec": 0.756
+  },
+  "armaldo": {
+    "path": "audio/cries/armaldo.m4a",
+    "durationSec": 1.1
+  },
+  "articuno": {
+    "path": "audio/cries/articuno.m4a",
+    "durationSec": 1.33
+  },
+  "audino": {
+    "path": "audio/cries/audino.m4a",
+    "durationSec": 0.789
+  },
+  "azelf": {
+    "path": "audio/cries/azelf.m4a",
+    "durationSec": 1.187
+  },
+  "azumarill": {
+    "path": "audio/cries/azumarill.m4a",
+    "durationSec": 0.872
+  },
+  "banette": {
+    "path": "audio/cries/banette.m4a",
+    "durationSec": 0.946
+  },
+  "basculin": {
+    "path": "audio/cries/basculin.m4a",
+    "durationSec": 0.521
+  },
+  "bastiodon": {
+    "path": "audio/cries/bastiodon.m4a",
+    "durationSec": 1.446
+  },
+  "beartic": {
+    "path": "audio/cries/beartic.m4a",
+    "durationSec": 1.18
+  },
+  "beautifly": {
+    "path": "audio/cries/beautifly.m4a",
+    "durationSec": 0.497
+  },
+  "beedrill": {
+    "path": "audio/cries/beedrill.m4a",
+    "durationSec": 1.112
+  },
+  "beheeyem": {
+    "path": "audio/cries/beheeyem.m4a",
+    "durationSec": 1.564
+  },
+  "bellossom": {
+    "path": "audio/cries/bellossom.m4a",
+    "durationSec": 0.84
+  },
+  "bibarel": {
+    "path": "audio/cries/bibarel.m4a",
+    "durationSec": 1.151
+  },
+  "bisharp": {
+    "path": "audio/cries/bisharp.m4a",
+    "durationSec": 1.161
+  },
+  "blastoise": {
+    "path": "audio/cries/blastoise.m4a",
+    "durationSec": 1.102
+  },
+  "blaziken": {
+    "path": "audio/cries/blaziken.m4a",
+    "durationSec": 1.909
+  },
+  "blissey": {
+    "path": "audio/cries/blissey.m4a",
+    "durationSec": 0.897
+  },
+  "bouffalant": {
+    "path": "audio/cries/bouffalant.m4a",
+    "durationSec": 1.746
+  },
+  "braviary": {
+    "path": "audio/cries/braviary.m4a",
+    "durationSec": 0.955
+  },
+  "breloom": {
+    "path": "audio/cries/breloom.m4a",
+    "durationSec": 0.703
+  },
+  "bronzong": {
+    "path": "audio/cries/bronzong.m4a",
+    "durationSec": 1.705
+  },
+  "butterfree": {
+    "path": "audio/cries/butterfree.m4a",
+    "durationSec": 0.679
+  },
+  "cacturne": {
+    "path": "audio/cries/cacturne.m4a",
+    "durationSec": 1.068
+  },
+  "camerupt": {
+    "path": "audio/cries/camerupt.m4a",
+    "durationSec": 1.168
+  },
+  "carnivine": {
+    "path": "audio/cries/carnivine.m4a",
+    "durationSec": 1.146
+  },
+  "carracosta": {
+    "path": "audio/cries/carracosta.m4a",
+    "durationSec": 1.288
+  },
+  "castform": {
+    "path": "audio/cries/castform.m4a",
+    "durationSec": 0.634
+  },
+  "chandelure": {
+    "path": "audio/cries/chandelure.m4a",
+    "durationSec": 2.54
+  },
+  "charizard": {
+    "path": "audio/cries/charizard.m4a",
+    "durationSec": 1.001
+  },
+  "chatot": {
+    "path": "audio/cries/chatot.m4a",
+    "durationSec": 0.699
+  },
+  "cherrim": {
+    "path": "audio/cries/cherrim.m4a",
+    "durationSec": 1.147
+  },
+  "chimecho": {
+    "path": "audio/cries/chimecho.m4a",
+    "durationSec": 0.709
+  },
+  "cinccino": {
+    "path": "audio/cries/cinccino.m4a",
+    "durationSec": 1.321
+  },
+  "claydol": {
+    "path": "audio/cries/claydol.m4a",
+    "durationSec": 0.947
+  },
+  "clefable": {
+    "path": "audio/cries/clefable.m4a",
+    "durationSec": 0.594
+  },
+  "cloyster": {
+    "path": "audio/cries/cloyster.m4a",
+    "durationSec": 1.133
+  },
+  "cobalion": {
+    "path": "audio/cries/cobalion.m4a",
+    "durationSec": 1.562
+  },
+  "cofagrigus": {
+    "path": "audio/cries/cofagrigus.m4a",
+    "durationSec": 1.626
+  },
+  "conkeldurr": {
+    "path": "audio/cries/conkeldurr.m4a",
+    "durationSec": 1.341
+  },
+  "corsola": {
+    "path": "audio/cries/corsola.m4a",
+    "durationSec": 0.648
+  },
+  "cradily": {
+    "path": "audio/cries/cradily.m4a",
+    "durationSec": 1.433
+  },
+  "crawdaunt": {
+    "path": "audio/cries/crawdaunt.m4a",
+    "durationSec": 1.204
+  },
+  "cresselia": {
+    "path": "audio/cries/cresselia.m4a",
+    "durationSec": 1.547
+  },
+  "crobat": {
+    "path": "audio/cries/crobat.m4a",
+    "durationSec": 1.223
+  },
+  "crustle": {
+    "path": "audio/cries/crustle.m4a",
+    "durationSec": 1.246
+  },
+  "cryogonal": {
+    "path": "audio/cries/cryogonal.m4a",
+    "durationSec": 1.543
+  },
+  "darmanitan": {
+    "path": "audio/cries/darmanitan.m4a",
+    "durationSec": 1.453
+  },
+  "delcatty": {
+    "path": "audio/cries/delcatty.m4a",
+    "durationSec": 1.107
+  },
+  "delibird": {
+    "path": "audio/cries/delibird.m4a",
+    "durationSec": 0.749
+  },
+  "dewgong": {
+    "path": "audio/cries/dewgong.m4a",
+    "durationSec": 1.075
+  },
+  "dodrio": {
+    "path": "audio/cries/dodrio.m4a",
+    "durationSec": 1.156
+  },
+  "donphan": {
+    "path": "audio/cries/donphan.m4a",
+    "durationSec": 1.083
+  },
+  "dragonite": {
+    "path": "audio/cries/dragonite.m4a",
+    "durationSec": 1.062
+  },
+  "drapion": {
+    "path": "audio/cries/drapion.m4a",
+    "durationSec": 0.922
+  },
+  "drifblim": {
+    "path": "audio/cries/drifblim.m4a",
+    "durationSec": 1.455
+  },
+  "druddigon": {
+    "path": "audio/cries/druddigon.m4a",
+    "durationSec": 1.802
+  },
+  "dugtrio": {
+    "path": "audio/cries/dugtrio.m4a",
+    "durationSec": 1.243
+  },
+  "dunsparce": {
+    "path": "audio/cries/dunsparce.m4a",
+    "durationSec": 0.868
+  },
+  "durant": {
+    "path": "audio/cries/durant.m4a",
+    "durationSec": 1.085
+  },
+  "dusknoir": {
+    "path": "audio/cries/dusknoir.m4a",
+    "durationSec": 1.946
+  },
+  "dustox": {
+    "path": "audio/cries/dustox.m4a",
+    "durationSec": 0.684
+  },
+  "eelektross": {
+    "path": "audio/cries/eelektross.m4a",
+    "durationSec": 1.333
+  },
+  "electivire": {
+    "path": "audio/cries/electivire.m4a",
+    "durationSec": 1.987
+  },
+  "electrode": {
+    "path": "audio/cries/electrode.m4a",
+    "durationSec": 1.351
+  },
+  "emboar": {
+    "path": "audio/cries/emboar.m4a",
+    "durationSec": 1.267
+  },
+  "emolga": {
+    "path": "audio/cries/emolga.m4a",
+    "durationSec": 0.507
+  },
+  "empoleon": {
+    "path": "audio/cries/empoleon.m4a",
+    "durationSec": 1.313
+  },
+  "entei": {
+    "path": "audio/cries/entei.m4a",
+    "durationSec": 1.25
+  },
+  "escavalier": {
+    "path": "audio/cries/escavalier.m4a",
+    "durationSec": 1.266
+  },
+  "espeon": {
+    "path": "audio/cries/espeon.m4a",
+    "durationSec": 1.095
+  },
+  "excadrill": {
+    "path": "audio/cries/excadrill.m4a",
+    "durationSec": 1.446
+  },
+  "exeggutor": {
+    "path": "audio/cries/exeggutor.m4a",
+    "durationSec": 1.586
+  },
+  "exploud": {
+    "path": "audio/cries/exploud.m4a",
+    "durationSec": 1.44
+  },
+  "farfetchd": {
+    "path": "audio/cries/farfetchd.m4a",
+    "durationSec": 0.542
+  },
+  "fearow": {
+    "path": "audio/cries/fearow.m4a",
+    "durationSec": 0.93
+  },
+  "feraligatr": {
+    "path": "audio/cries/feraligatr.m4a",
+    "durationSec": 1.508
+  },
+  "ferrothorn": {
+    "path": "audio/cries/ferrothorn.m4a",
+    "durationSec": 1.432
+  },
+  "flareon": {
+    "path": "audio/cries/flareon.m4a",
+    "durationSec": 1.339
+  },
+  "floatzel": {
+    "path": "audio/cries/floatzel.m4a",
+    "durationSec": 1.382
+  },
+  "flygon": {
+    "path": "audio/cries/flygon.m4a",
+    "durationSec": 1.328
+  },
+  "forretress": {
+    "path": "audio/cries/forretress.m4a",
+    "durationSec": 1.012
+  },
+  "froslass": {
+    "path": "audio/cries/froslass.m4a",
+    "durationSec": 1.871
+  },
+  "furret": {
+    "path": "audio/cries/furret.m4a",
+    "durationSec": 0.409
+  },
+  "gallade": {
+    "path": "audio/cries/gallade.m4a",
+    "durationSec": 1.607
+  },
+  "galvantula": {
+    "path": "audio/cries/galvantula.m4a",
+    "durationSec": 0.992
+  },
+  "garbodor": {
+    "path": "audio/cries/garbodor.m4a",
+    "durationSec": 1.235
+  },
+  "garchomp": {
+    "path": "audio/cries/garchomp.m4a",
+    "durationSec": 0.985
+  },
+  "gardevoir": {
+    "path": "audio/cries/gardevoir.m4a",
+    "durationSec": 1.322
+  },
+  "gastrodon": {
+    "path": "audio/cries/gastrodon.m4a",
+    "durationSec": 1.406
+  },
+  "gengar": {
+    "path": "audio/cries/gengar.m4a",
+    "durationSec": 0.843
+  },
+  "gigalith": {
+    "path": "audio/cries/gigalith.m4a",
+    "durationSec": 1.904
+  },
+  "girafarig": {
+    "path": "audio/cries/girafarig.m4a",
+    "durationSec": 0.854
+  },
+  "glaceon": {
+    "path": "audio/cries/glaceon.m4a",
+    "durationSec": 1.918
+  },
+  "glalie": {
+    "path": "audio/cries/glalie.m4a",
+    "durationSec": 1.169
+  },
+  "gliscor": {
+    "path": "audio/cries/gliscor.m4a",
+    "durationSec": 1.37
+  },
+  "golduck": {
+    "path": "audio/cries/golduck.m4a",
+    "durationSec": 0.726
+  },
+  "golem": {
+    "path": "audio/cries/golem.m4a",
+    "durationSec": 1.118
+  },
+  "golurk": {
+    "path": "audio/cries/golurk.m4a",
+    "durationSec": 1.593
+  },
+  "gorebyss": {
+    "path": "audio/cries/gorebyss.m4a",
+    "durationSec": 1.11
+  },
+  "gothitelle": {
+    "path": "audio/cries/gothitelle.m4a",
+    "durationSec": 1.91
+  },
+  "granbull": {
+    "path": "audio/cries/granbull.m4a",
+    "durationSec": 1.171
+  },
+  "grumpig": {
+    "path": "audio/cries/grumpig.m4a",
+    "durationSec": 0.643
+  },
+  "gyarados": {
+    "path": "audio/cries/gyarados.m4a",
+    "durationSec": 1.1
+  },
+  "hariyama": {
+    "path": "audio/cries/hariyama.m4a",
+    "durationSec": 0.856
+  },
+  "haxorus": {
+    "path": "audio/cries/haxorus.m4a",
+    "durationSec": 1.541
+  },
+  "heatmor": {
+    "path": "audio/cries/heatmor.m4a",
+    "durationSec": 1.583
+  },
+  "heatran": {
+    "path": "audio/cries/heatran.m4a",
+    "durationSec": 1.727
+  },
+  "heracross": {
+    "path": "audio/cries/heracross.m4a",
+    "durationSec": 0.909
+  },
+  "hippowdon": {
+    "path": "audio/cries/hippowdon.m4a",
+    "durationSec": 1.695
+  },
+  "hitmonchan": {
+    "path": "audio/cries/hitmonchan.m4a",
+    "durationSec": 0.956
+  },
+  "hitmonlee": {
+    "path": "audio/cries/hitmonlee.m4a",
+    "durationSec": 0.99
+  },
+  "hitmontop": {
+    "path": "audio/cries/hitmontop.m4a",
+    "durationSec": 0.767
+  },
+  "honchkrow": {
+    "path": "audio/cries/honchkrow.m4a",
+    "durationSec": 1.275
+  },
+  "houndoom": {
+    "path": "audio/cries/houndoom.m4a",
+    "durationSec": 1.076
+  },
+  "huntail": {
+    "path": "audio/cries/huntail.m4a",
+    "durationSec": 0.794
+  },
+  "hydreigon": {
+    "path": "audio/cries/hydreigon.m4a",
+    "durationSec": 1.946
+  },
+  "hypno": {
+    "path": "audio/cries/hypno.m4a",
+    "durationSec": 1.573
+  },
+  "illumise": {
+    "path": "audio/cries/illumise.m4a",
+    "durationSec": 0.926
+  },
+  "infernape": {
+    "path": "audio/cries/infernape.m4a",
+    "durationSec": 1.658
+  },
+  "jellicent": {
+    "path": "audio/cries/jellicent.m4a",
+    "durationSec": 0.989
+  },
+  "jolteon": {
+    "path": "audio/cries/jolteon.m4a",
+    "durationSec": 0.911
+  },
+  "jumpluff": {
+    "path": "audio/cries/jumpluff.m4a",
+    "durationSec": 0.874
+  },
+  "jynx": {
+    "path": "audio/cries/jynx.m4a",
+    "durationSec": 2.311
+  },
+  "kabutops": {
+    "path": "audio/cries/kabutops.m4a",
+    "durationSec": 0.793
+  },
+  "kangaskhan": {
+    "path": "audio/cries/kangaskhan.m4a",
+    "durationSec": 1.012
+  },
+  "kecleon": {
+    "path": "audio/cries/kecleon.m4a",
+    "durationSec": 0.512
+  },
+  "kingdra": {
+    "path": "audio/cries/kingdra.m4a",
+    "durationSec": 0.832
+  },
+  "kingler": {
+    "path": "audio/cries/kingler.m4a",
+    "durationSec": 1.254
+  },
+  "klinklang": {
+    "path": "audio/cries/klinklang.m4a",
+    "durationSec": 2.066
+  },
+  "kricketune": {
+    "path": "audio/cries/kricketune.m4a",
+    "durationSec": 1.905
+  },
+  "krookodile": {
+    "path": "audio/cries/krookodile.m4a",
+    "durationSec": 1.494
+  },
+  "landorus": {
+    "path": "audio/cries/landorus.m4a",
+    "durationSec": 1.667
+  },
+  "landorus-therian": {
+    "path": "audio/cries/landorus-therian.m4a",
+    "durationSec": 1.785
+  },
+  "lanturn": {
+    "path": "audio/cries/lanturn.m4a",
+    "durationSec": 0.705
+  },
+  "lapras": {
+    "path": "audio/cries/lapras.m4a",
+    "durationSec": 0.871
+  },
+  "latias": {
+    "path": "audio/cries/latias.m4a",
+    "durationSec": 0.679
+  },
+  "latios": {
+    "path": "audio/cries/latios.m4a",
+    "durationSec": 1.127
+  },
+  "leafeon": {
+    "path": "audio/cries/leafeon.m4a",
+    "durationSec": 1.151
+  },
+  "leavanny": {
+    "path": "audio/cries/leavanny.m4a",
+    "durationSec": 1.134
+  },
+  "ledian": {
+    "path": "audio/cries/ledian.m4a",
+    "durationSec": 0.506
+  },
+  "lickilicky": {
+    "path": "audio/cries/lickilicky.m4a",
+    "durationSec": 1.42
+  },
+  "liepard": {
+    "path": "audio/cries/liepard.m4a",
+    "durationSec": 0.797
+  },
+  "lilligant": {
+    "path": "audio/cries/lilligant.m4a",
+    "durationSec": 1.22
+  },
+  "linoone": {
+    "path": "audio/cries/linoone.m4a",
+    "durationSec": 1.532
+  },
+  "lopunny": {
+    "path": "audio/cries/lopunny.m4a",
+    "durationSec": 1.645
+  },
+  "lucario": {
+    "path": "audio/cries/lucario.m4a",
+    "durationSec": 0.668
+  },
+  "ludicolo": {
+    "path": "audio/cries/ludicolo.m4a",
+    "durationSec": 0.889
+  },
+  "lumineon": {
+    "path": "audio/cries/lumineon.m4a",
+    "durationSec": 1.787
+  },
+  "lunatone": {
+    "path": "audio/cries/lunatone.m4a",
+    "durationSec": 1.183
+  },
+  "luvdisc": {
+    "path": "audio/cries/luvdisc.m4a",
+    "durationSec": 0.289
+  },
+  "luxray": {
+    "path": "audio/cries/luxray.m4a",
+    "durationSec": 1.74
+  },
+  "machamp": {
+    "path": "audio/cries/machamp.m4a",
+    "durationSec": 0.886
+  },
+  "magcargo": {
+    "path": "audio/cries/magcargo.m4a",
+    "durationSec": 1.067
+  },
+  "magmortar": {
+    "path": "audio/cries/magmortar.m4a",
+    "durationSec": 1.418
+  },
+  "magnezone": {
+    "path": "audio/cries/magnezone.m4a",
+    "durationSec": 1.657
+  },
+  "mamoswine": {
+    "path": "audio/cries/mamoswine.m4a",
+    "durationSec": 1.689
+  },
+  "mandibuzz": {
+    "path": "audio/cries/mandibuzz.m4a",
+    "durationSec": 1.146
+  },
+  "manectric": {
+    "path": "audio/cries/manectric.m4a",
+    "durationSec": 1.245
+  },
+  "mantine": {
+    "path": "audio/cries/mantine.m4a",
+    "durationSec": 0.897
+  },
+  "maractus": {
+    "path": "audio/cries/maractus.m4a",
+    "durationSec": 0.98
+  },
+  "marowak": {
+    "path": "audio/cries/marowak.m4a",
+    "durationSec": 0.833
+  },
+  "masquerain": {
+    "path": "audio/cries/masquerain.m4a",
+    "durationSec": 0.912
+  },
+  "mawile": {
+    "path": "audio/cries/mawile.m4a",
+    "durationSec": 0.68
+  },
+  "medicham": {
+    "path": "audio/cries/medicham.m4a",
+    "durationSec": 0.885
+  },
+  "meganium": {
+    "path": "audio/cries/meganium.m4a",
+    "durationSec": 0.928
+  },
+  "mesprit": {
+    "path": "audio/cries/mesprit.m4a",
+    "durationSec": 1.889
+  },
+  "metagross": {
+    "path": "audio/cries/metagross.m4a",
+    "durationSec": 1.871
+  },
+  "mienshao": {
+    "path": "audio/cries/mienshao.m4a",
+    "durationSec": 0.925
+  },
+  "mightyena": {
+    "path": "audio/cries/mightyena.m4a",
+    "durationSec": 1.029
+  },
+  "milotic": {
+    "path": "audio/cries/milotic.m4a",
+    "durationSec": 1.845
+  },
+  "miltank": {
+    "path": "audio/cries/miltank.m4a",
+    "durationSec": 0.864
+  },
+  "minun": {
+    "path": "audio/cries/minun.m4a",
+    "durationSec": 0.854
+  },
+  "mismagius": {
+    "path": "audio/cries/mismagius.m4a",
+    "durationSec": 1.502
+  },
+  "moltres": {
+    "path": "audio/cries/moltres.m4a",
+    "durationSec": 1.329
+  },
+  "mothim": {
+    "path": "audio/cries/mothim.m4a",
+    "durationSec": 0.802
+  },
+  "mrmime": {
+    "path": "audio/cries/mrmime.m4a",
+    "durationSec": 1.025
+  },
+  "muk": {
+    "path": "audio/cries/muk.m4a",
+    "durationSec": 0.882
+  },
+  "musharna": {
+    "path": "audio/cries/musharna.m4a",
+    "durationSec": 1.929
+  },
+  "nidoking": {
+    "path": "audio/cries/nidoking.m4a",
+    "durationSec": 1.347
+  },
+  "nidoqueen": {
+    "path": "audio/cries/nidoqueen.m4a",
+    "durationSec": 0.888
+  },
+  "ninetales": {
+    "path": "audio/cries/ninetales.m4a",
+    "durationSec": 1.272
+  },
+  "ninjask": {
+    "path": "audio/cries/ninjask.m4a",
+    "durationSec": 0.661
+  },
+  "noctowl": {
+    "path": "audio/cries/noctowl.m4a",
+    "durationSec": 1.05
+  },
+  "octillery": {
+    "path": "audio/cries/octillery.m4a",
+    "durationSec": 1.257
+  },
+  "omastar": {
+    "path": "audio/cries/omastar.m4a",
+    "durationSec": 0.777
+  },
+  "onix": {
+    "path": "audio/cries/onix.m4a",
+    "durationSec": 1.387
+  },
+  "pachirisu": {
+    "path": "audio/cries/pachirisu.m4a",
+    "durationSec": 0.516
+  },
+  "parasect": {
+    "path": "audio/cries/parasect.m4a",
+    "durationSec": 1.706
+  },
+  "pelipper": {
+    "path": "audio/cries/pelipper.m4a",
+    "durationSec": 0.647
+  },
+  "persian": {
+    "path": "audio/cries/persian.m4a",
+    "durationSec": 0.987
+  },
+  "pidgeot": {
+    "path": "audio/cries/pidgeot.m4a",
+    "durationSec": 0.986
+  },
+  "pikachu": {
+    "path": "audio/cries/pikachu.m4a",
+    "durationSec": 0.926
+  },
+  "pinsir": {
+    "path": "audio/cries/pinsir.m4a",
+    "durationSec": 0.719
+  },
+  "plusle": {
+    "path": "audio/cries/plusle.m4a",
+    "durationSec": 0.521
+  },
+  "politoed": {
+    "path": "audio/cries/politoed.m4a",
+    "durationSec": 1.048
+  },
+  "poliwrath": {
+    "path": "audio/cries/poliwrath.m4a",
+    "durationSec": 0.764
+  },
+  "porygonz": {
+    "path": "audio/cries/porygonz.m4a",
+    "durationSec": 1.558
+  },
+  "primeape": {
+    "path": "audio/cries/primeape.m4a",
+    "durationSec": 0.914
+  },
+  "probopass": {
+    "path": "audio/cries/probopass.m4a",
+    "durationSec": 1.67
+  },
+  "purugly": {
+    "path": "audio/cries/purugly.m4a",
+    "durationSec": 0.942
+  },
+  "quagsire": {
+    "path": "audio/cries/quagsire.m4a",
+    "durationSec": 0.735
+  },
+  "qwilfish": {
+    "path": "audio/cries/qwilfish.m4a",
+    "durationSec": 0.675
+  },
+  "raichu": {
+    "path": "audio/cries/raichu.m4a",
+    "durationSec": 1.119
+  },
+  "raikou": {
+    "path": "audio/cries/raikou.m4a",
+    "durationSec": 1.229
+  },
+  "rampardos": {
+    "path": "audio/cries/rampardos.m4a",
+    "durationSec": 1.663
+  },
+  "rapidash": {
+    "path": "audio/cries/rapidash.m4a",
+    "durationSec": 1.276
+  },
+  "raticate": {
+    "path": "audio/cries/raticate.m4a",
+    "durationSec": 0.535
+  },
+  "regice": {
+    "path": "audio/cries/regice.m4a",
+    "durationSec": 1.531
+  },
+  "regigigas": {
+    "path": "audio/cries/regigigas.m4a",
+    "durationSec": 1.996
+  },
+  "regirock": {
+    "path": "audio/cries/regirock.m4a",
+    "durationSec": 1.635
+  },
+  "registeel": {
+    "path": "audio/cries/registeel.m4a",
+    "durationSec": 1.201
+  },
+  "relicanth": {
+    "path": "audio/cries/relicanth.m4a",
+    "durationSec": 0.987
+  },
+  "reuniclus": {
+    "path": "audio/cries/reuniclus.m4a",
+    "durationSec": 0.984
+  },
+  "rhyperior": {
+    "path": "audio/cries/rhyperior.m4a",
+    "durationSec": 1.325
+  },
+  "roserade": {
+    "path": "audio/cries/roserade.m4a",
+    "durationSec": 1.245
+  },
+  "rotom": {
+    "path": "audio/cries/rotom.m4a",
+    "durationSec": 1.502
+  },
+  "rotom-fan": {
+    "path": "audio/cries/rotom-fan.m4a",
+    "durationSec": 1.502
+  },
+  "rotom-frost": {
+    "path": "audio/cries/rotom-frost.m4a",
+    "durationSec": 1.502
+  },
+  "rotom-heat": {
+    "path": "audio/cries/rotom-heat.m4a",
+    "durationSec": 1.502
+  },
+  "rotom-mow": {
+    "path": "audio/cries/rotom-mow.m4a",
+    "durationSec": 1.502
+  },
+  "rotom-wash": {
+    "path": "audio/cries/rotom-wash.m4a",
+    "durationSec": 1.502
+  },
+  "sableye": {
+    "path": "audio/cries/sableye.m4a",
+    "durationSec": 0.655
+  },
+  "salamence": {
+    "path": "audio/cries/salamence.m4a",
+    "durationSec": 1.305
+  },
+  "samurott": {
+    "path": "audio/cries/samurott.m4a",
+    "durationSec": 2.388
+  },
+  "sandslash": {
+    "path": "audio/cries/sandslash.m4a",
+    "durationSec": 0.7
+  },
+  "sawk": {
+    "path": "audio/cries/sawk.m4a",
+    "durationSec": 0.973
+  },
+  "sawsbuck": {
+    "path": "audio/cries/sawsbuck.m4a",
+    "durationSec": 0.965
+  },
+  "sceptile": {
+    "path": "audio/cries/sceptile.m4a",
+    "durationSec": 1.312
+  },
+  "scizor": {
+    "path": "audio/cries/scizor.m4a",
+    "durationSec": 1.134
+  },
+  "scolipede": {
+    "path": "audio/cries/scolipede.m4a",
+    "durationSec": 1.986
+  },
+  "scrafty": {
+    "path": "audio/cries/scrafty.m4a",
+    "durationSec": 1.036
+  },
+  "seaking": {
+    "path": "audio/cries/seaking.m4a",
+    "durationSec": 0.968
+  },
+  "seismitoad": {
+    "path": "audio/cries/seismitoad.m4a",
+    "durationSec": 0.825
+  },
+  "serperior": {
+    "path": "audio/cries/serperior.m4a",
+    "durationSec": 1.267
+  },
+  "seviper": {
+    "path": "audio/cries/seviper.m4a",
+    "durationSec": 0.663
+  },
+  "sharpedo": {
+    "path": "audio/cries/sharpedo.m4a",
+    "durationSec": 1.14
+  },
+  "shedinja": {
+    "path": "audio/cries/shedinja.m4a",
+    "durationSec": 0.456
+  },
+  "shiftry": {
+    "path": "audio/cries/shiftry.m4a",
+    "durationSec": 0.954
+  },
+  "shuckle": {
+    "path": "audio/cries/shuckle.m4a",
+    "durationSec": 0.605
+  },
+  "sigilyph": {
+    "path": "audio/cries/sigilyph.m4a",
+    "durationSec": 1.323
+  },
+  "simipour": {
+    "path": "audio/cries/simipour.m4a",
+    "durationSec": 0.694
+  },
+  "simisage": {
+    "path": "audio/cries/simisage.m4a",
+    "durationSec": 0.685
+  },
+  "simisear": {
+    "path": "audio/cries/simisear.m4a",
+    "durationSec": 0.669
+  },
+  "skarmory": {
+    "path": "audio/cries/skarmory.m4a",
+    "durationSec": 1.186
+  },
+  "skuntank": {
+    "path": "audio/cries/skuntank.m4a",
+    "durationSec": 1.624
+  },
+  "slaking": {
+    "path": "audio/cries/slaking.m4a",
+    "durationSec": 0.617
+  },
+  "slowbro": {
+    "path": "audio/cries/slowbro.m4a",
+    "durationSec": 0.763
+  },
+  "slowking": {
+    "path": "audio/cries/slowking.m4a",
+    "durationSec": 1.25
+  },
+  "smeargle": {
+    "path": "audio/cries/smeargle.m4a",
+    "durationSec": 0.63
+  },
+  "snorlax": {
+    "path": "audio/cries/snorlax.m4a",
+    "durationSec": 0.416
+  },
+  "solrock": {
+    "path": "audio/cries/solrock.m4a",
+    "durationSec": 0.812
+  },
+  "spinda": {
+    "path": "audio/cries/spinda.m4a",
+    "durationSec": 0.685
+  },
+  "spiritomb": {
+    "path": "audio/cries/spiritomb.m4a",
+    "durationSec": 1.898
+  },
+  "stantler": {
+    "path": "audio/cries/stantler.m4a",
+    "durationSec": 1.078
+  },
+  "staraptor": {
+    "path": "audio/cries/staraptor.m4a",
+    "durationSec": 1.737
+  },
+  "starmie": {
+    "path": "audio/cries/starmie.m4a",
+    "durationSec": 1.144
+  },
+  "steelix": {
+    "path": "audio/cries/steelix.m4a",
+    "durationSec": 1.751
+  },
+  "stoutland": {
+    "path": "audio/cries/stoutland.m4a",
+    "durationSec": 1.163
+  },
+  "stunfisk": {
+    "path": "audio/cries/stunfisk.m4a",
+    "durationSec": 1.539
+  },
+  "sudowoodo": {
+    "path": "audio/cries/sudowoodo.m4a",
+    "durationSec": 0.859
+  },
+  "suicune": {
+    "path": "audio/cries/suicune.m4a",
+    "durationSec": 1.012
+  },
+  "sunflora": {
+    "path": "audio/cries/sunflora.m4a",
+    "durationSec": 0.87
+  },
+  "swalot": {
+    "path": "audio/cries/swalot.m4a",
+    "durationSec": 0.913
+  },
+  "swampert": {
+    "path": "audio/cries/swampert.m4a",
+    "durationSec": 1.175
+  },
+  "swanna": {
+    "path": "audio/cries/swanna.m4a",
+    "durationSec": 1.032
+  },
+  "swellow": {
+    "path": "audio/cries/swellow.m4a",
+    "durationSec": 0.523
+  },
+  "swoobat": {
+    "path": "audio/cries/swoobat.m4a",
+    "durationSec": 1.092
+  },
+  "tangrowth": {
+    "path": "audio/cries/tangrowth.m4a",
+    "durationSec": 1.397
+  },
+  "tauros": {
+    "path": "audio/cries/tauros.m4a",
+    "durationSec": 1.047
+  },
+  "tentacruel": {
+    "path": "audio/cries/tentacruel.m4a",
+    "durationSec": 1.365
+  },
+  "terrakion": {
+    "path": "audio/cries/terrakion.m4a",
+    "durationSec": 1.119
+  },
+  "throh": {
+    "path": "audio/cries/throh.m4a",
+    "durationSec": 0.821
+  },
+  "thundurus": {
+    "path": "audio/cries/thundurus.m4a",
+    "durationSec": 1.987
+  },
+  "thundurus-therian": {
+    "path": "audio/cries/thundurus-therian.m4a",
+    "durationSec": 1.978
+  },
+  "togekiss": {
+    "path": "audio/cries/togekiss.m4a",
+    "durationSec": 1.906
+  },
+  "torkoal": {
+    "path": "audio/cries/torkoal.m4a",
+    "durationSec": 0.619
+  },
+  "tornadus": {
+    "path": "audio/cries/tornadus.m4a",
+    "durationSec": 1.707
+  },
+  "tornadus-therian": {
+    "path": "audio/cries/tornadus-therian.m4a",
+    "durationSec": 1.819
+  },
+  "torterra": {
+    "path": "audio/cries/torterra.m4a",
+    "durationSec": 1.731
+  },
+  "toxicroak": {
+    "path": "audio/cries/toxicroak.m4a",
+    "durationSec": 1.64
+  },
+  "tropius": {
+    "path": "audio/cries/tropius.m4a",
+    "durationSec": 1.626
+  },
+  "typhlosion": {
+    "path": "audio/cries/typhlosion.m4a",
+    "durationSec": 1.87
+  },
+  "tyranitar": {
+    "path": "audio/cries/tyranitar.m4a",
+    "durationSec": 1.297
+  },
+  "umbreon": {
+    "path": "audio/cries/umbreon.m4a",
+    "durationSec": 0.848
+  },
+  "unfezant": {
+    "path": "audio/cries/unfezant.m4a",
+    "durationSec": 0.83
+  },
+  "ursaring": {
+    "path": "audio/cries/ursaring.m4a",
+    "durationSec": 1.374
+  },
+  "uxie": {
+    "path": "audio/cries/uxie.m4a",
+    "durationSec": 1.525
+  },
+  "vanilluxe": {
+    "path": "audio/cries/vanilluxe.m4a",
+    "durationSec": 1.067
+  },
+  "vaporeon": {
+    "path": "audio/cries/vaporeon.m4a",
+    "durationSec": 1.631
+  },
+  "venomoth": {
+    "path": "audio/cries/venomoth.m4a",
+    "durationSec": 0.946
+  },
+  "venusaur": {
+    "path": "audio/cries/venusaur.m4a",
+    "durationSec": 1.046
+  },
+  "vespiquen": {
+    "path": "audio/cries/vespiquen.m4a",
+    "durationSec": 1.484
+  },
+  "victreebel": {
+    "path": "audio/cries/victreebel.m4a",
+    "durationSec": 1.072
+  },
+  "vileplume": {
+    "path": "audio/cries/vileplume.m4a",
+    "durationSec": 1.255
+  },
+  "virizion": {
+    "path": "audio/cries/virizion.m4a",
+    "durationSec": 1.182
+  },
+  "volbeat": {
+    "path": "audio/cries/volbeat.m4a",
+    "durationSec": 0.668
+  },
+  "volcarona": {
+    "path": "audio/cries/volcarona.m4a",
+    "durationSec": 1.984
+  },
+  "wailord": {
+    "path": "audio/cries/wailord.m4a",
+    "durationSec": 1.973
+  },
+  "walrein": {
+    "path": "audio/cries/walrein.m4a",
+    "durationSec": 1.808
+  },
+  "watchog": {
+    "path": "audio/cries/watchog.m4a",
+    "durationSec": 0.524
+  },
+  "weavile": {
+    "path": "audio/cries/weavile.m4a",
+    "durationSec": 0.799
+  },
+  "weezing": {
+    "path": "audio/cries/weezing.m4a",
+    "durationSec": 1.134
+  },
+  "whimsicott": {
+    "path": "audio/cries/whimsicott.m4a",
+    "durationSec": 1.329
+  },
+  "whiscash": {
+    "path": "audio/cries/whiscash.m4a",
+    "durationSec": 1.046
+  },
+  "wigglytuff": {
+    "path": "audio/cries/wigglytuff.m4a",
+    "durationSec": 0.468
+  },
+  "wobbuffet": {
+    "path": "audio/cries/wobbuffet.m4a",
+    "durationSec": 1.119
+  },
+  "wormadam": {
+    "path": "audio/cries/wormadam.m4a",
+    "durationSec": 1.259
+  },
+  "wormadam-sandy": {
+    "path": "audio/cries/wormadam-sandy.m4a",
+    "durationSec": 1.259
+  },
+  "wormadam-trash": {
+    "path": "audio/cries/wormadam-trash.m4a",
+    "durationSec": 1.259
+  },
+  "xatu": {
+    "path": "audio/cries/xatu.m4a",
+    "durationSec": 0.791
+  },
+  "yanmega": {
+    "path": "audio/cries/yanmega.m4a",
+    "durationSec": 1.754
+  },
+  "zangoose": {
+    "path": "audio/cries/zangoose.m4a",
+    "durationSec": 0.657
+  },
+  "zapdos": {
+    "path": "audio/cries/zapdos.m4a",
+    "durationSec": 0.915
+  },
+  "zebstrika": {
+    "path": "audio/cries/zebstrika.m4a",
+    "durationSec": 1.356
+  },
+  "zoroark": {
+    "path": "audio/cries/zoroark.m4a",
+    "durationSec": 1.32
+  }
+}
