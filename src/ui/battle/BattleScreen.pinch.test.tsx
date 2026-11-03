@@ -77,4 +77,21 @@ describe('tema del último Pokémon del rival (UT-122)', () => {
     play.mockRestore()
     stop.mockRestore()
   })
+
+  // UT-134 (Jose, 03/11/2026): el golpe que deja al último a 0 y su caída no tocan la música (antes volvía la del rival y el tema del
+  // último empezaba otra vez).
+  it('al dejar al último a 0 y caer, no cambia la música', async () => {
+    const audio = getAudio()
+    const play = vi.spyOn(audio, 'playMusic')
+    const client = mockClient()
+    const { unmount } = render(<BattleScreen client={client as never} data={data} challenge={challenge} playerLead={0} battleSeed="s" onFinish={vi.fn()} onExit={vi.fn()} />)
+    client.emit(mkUpdate({ view: rivalDown(5) }))
+    await settle(8000)
+    play.mockClear()
+    client.emit(mkUpdate({ lines: ['|move|p1a: Garchomp|Earthquake|p2a: Gyarados', '|-damage|p2a: Gyarados|0 fnt', '|faint|p2a: Gyarados'], view: rivalDown(5, 6) }))
+    for (let step = 0; step < 40; step++) await settle(100)
+    expect(play).not.toHaveBeenCalled()
+    unmount()
+    play.mockRestore()
+  })
 })

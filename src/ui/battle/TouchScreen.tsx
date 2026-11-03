@@ -96,7 +96,8 @@ export function TouchScreen(props: TouchScreenProps) {
           <button
             type="button"
             className="bt-pokemon"
-            disabled={!canAct || switchBlockedReason !== null}
+            // Sin poder cambiar (atrapado, nadie más en pie) se abre igual: el equipo y sus Datos se pueden ver (Jose, 03/11/2026).
+            disabled={!canAct}
             aria-describedby={switchBlockedReason ? reasonId : undefined}
             onClick={() => props.onMode('switch')}
           >

@@ -25,6 +25,8 @@ type PartyScreenProps = {
   onClose: () => void
   /** Equipo del rival (botón RIVAL): solo se consulta, sin Cambiar; `prompt` sustituye al texto de la barra de abajo. */
   readOnly?: { prompt: string; label: string }
+  /** Motivo por el que no se puede cambiar a nadie (atrapado): Cambiar queda desactivado con él, y Datos sigue (Jose, 03/11/2026). */
+  switchBlocked?: string | null
 }
 
 type PanelColor = 'blue' | 'red' | 'green'
@@ -90,7 +92,7 @@ function whyCannotSwitch(member: PartyMember): string | null {
  * Pantalla de equipo del combate (ocupa las dos pantallas, como en el juego): cuadrícula de 6 placas y, al elegir una,
  * el menú Cambiar / Datos / Cancelar. Datos abre la pantalla de datos del Pokémon. En el cambio forzado no hay Cancelar ni Volver.
  */
-export function PartyScreen({ members, data, forced, enabled, onChoose, onClose, onRival, readOnly }: PartyScreenProps) {
+export function PartyScreen({ members, data, forced, enabled, onChoose, onClose, onRival, readOnly, switchBlocked = null }: PartyScreenProps) {
   const [selectedSlot, setSelectedSlot] = useState(null as number | null)
   const [summarySlot, setSummarySlot] = useState(null as number | null)
   const summaryReady = useImagesReady(SUMMARY_SCREEN_IMAGES, summarySlot !== null)
@@ -102,7 +104,7 @@ export function PartyScreen({ members, data, forced, enabled, onChoose, onClose,
   const imagesLoaded = useImagesLoadedIn(rootRef)
 
   const selected = members.find((member) => member.slot === selectedSlot) ?? null
-  const blockedReason = selected ? whyCannotSwitch(selected) : null
+  const blockedReason = selected ? (whyCannotSwitch(selected) ?? switchBlocked) : null
 
   useEffect(() => {
     if (selected) (switchRef.current ?? summaryRef.current)?.focus()

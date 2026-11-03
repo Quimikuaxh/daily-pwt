@@ -254,6 +254,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                   onChoose={chooseSwitch}
                   onClose={closeToMain}
                   onRival={forcedSwitchPending ? () => setRivalPeek(menuRequest) : undefined}
+                  switchBlocked={forcedSwitch ? null : blockedReason}
                 />
               )}
               {rivalOpen && (

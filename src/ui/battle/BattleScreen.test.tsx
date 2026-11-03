@@ -259,19 +259,32 @@ describe('cambiar de Pokémon (CMP-13, RF-47, RF-70)', () => {
     expect(fightBtn()).toBeEnabled()
   })
 
-  it('atrapado: Cambiar está desactivado con motivo accesible', async () => {
-    await ready({ request: mkRequest({ moves: MOVES, side: sidePokemon(), trapped: true }) })
+  // UT-133 · Cambio de requisito (Jose, 03/11/2026): sin poder cambiar, el equipo se abre igual para ver sus Datos; Cambiar, desactivado
+  // con su motivo. Antes el botón del equipo estaba desactivado.
+  it('atrapado: el equipo se abre con motivo accesible; en él, Cambiar desactivado con el motivo y Datos disponible', async () => {
+    const { user } = await ready({ request: mkRequest({ moves: MOVES, side: sidePokemon(), trapped: true }) })
     const b = screen.getByRole('button', { name: /cambiar/i })
-    expect(b).toBeDisabled()
+    expect(b).toBeEnabled()
     expect(b).toHaveAccessibleDescription(/atrapado/i)
+    await user.click(b)
+    const team = screen.getByRole('group', { name: /^equipo$/i })
+    await user.click(within(team).getAllByRole('button')[1])
+    const options = screen.getByRole('group', { name: /qué hacer con/i })
+    expect(within(options).getByRole('button', { name: /^cambiar$/i })).toHaveAttribute('aria-disabled', 'true')
+    expect(within(options).getByRole('button', { name: /^cambiar$/i })).toHaveAccessibleDescription(/atrapado/i)
+    expect(within(options).getByRole('button', { name: /datos/i })).toBeEnabled()
   })
 
-  it('sin nadie a quien cambiar: Cambiar está desactivado con motivo accesible', async () => {
+  it('sin nadie a quien cambiar: el equipo se abre con motivo accesible y los Datos se pueden ver', async () => {
     const side = [mkSidePokemon('Garchomp', { active: true }), mkSidePokemon('Gengar', { fainted: true })]
-    await ready({ request: mkRequest({ moves: MOVES, side }) })
+    const { user } = await ready({ request: mkRequest({ moves: MOVES, side }) })
     const b = screen.getByRole('button', { name: /cambiar/i })
-    expect(b).toBeDisabled()
+    expect(b).toBeEnabled()
     expect(b).toHaveAccessibleDescription(/no hay|ning[uú]n|nadie/i)
+    await user.click(b)
+    const team = screen.getByRole('group', { name: /^equipo$/i })
+    await user.click(within(team).getAllByRole('button')[0])
+    expect(within(screen.getByRole('group', { name: /qué hacer con/i })).getByRole('button', { name: /datos/i })).toBeEnabled()
   })
 })
 

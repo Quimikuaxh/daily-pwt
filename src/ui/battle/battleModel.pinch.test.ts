@@ -55,4 +55,10 @@ describe('lastPokemonThemeOn', () => {
     expect(lastPokemonThemeOn(view({ rival: [fainted('snorlax'), rMon('gyarados')], rActive: 0 }))).toBe(false)
     expect(lastPokemonThemeOn(null)).toBe(false)
   })
+
+  // UT-134 (Jose, 03/11/2026): con la barra del último a 0 (antes de caer) sigue su tema; el penúltimo a 0 no lo pone.
+  it('con la barra del último a 0 antes de caer, sí; con la del penúltimo a 0 y el último sin salir, no', () => {
+    expect(lastPokemonThemeOn(view({ rival: [fainted('snorlax'), rMon('gyarados', 0, { fainted: false })], rActive: 1 }))).toBe(true)
+    expect(lastPokemonThemeOn(view({ rival: [rMon('snorlax', 0, { fainted: false }), rMon('gyarados')], rActive: 0 }))).toBe(false)
+  })
 })

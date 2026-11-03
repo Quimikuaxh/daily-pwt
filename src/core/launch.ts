@@ -19,3 +19,10 @@ export const LAUNCH_OPENING: readonly string[] = ['misty', 'fredo', 'anton', 'mi
  * día ya publicado que cambie de reglas cambia su equipo.
  */
 export const TEAM_RULES_2_FROM = '2026-10-29'
+
+/**
+ * Desde este día cada Pokémon del reto (del jugador y del rival) tiene género, con la proporción de su especie (Jose, 03/11/2026); los sin
+ * género (Metagross), ninguno. Cuenta en el combate (Atracción, Rivalidad…): los retos ya publicados no cambian. Al desplegar, debe ser el
+ * día siguiente al despliegue.
+ */
+export const GENDERS_FROM = '2026-11-04'

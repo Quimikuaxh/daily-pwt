@@ -180,3 +180,17 @@ export function poolWithoutRival(pool: readonly PokemonSet[], rivalTrainerId: st
   const rivalTag = sourceTagOf(rivalTrainerId)
   return pool.filter((set) => !set.tags?.includes(rivalTag))
 }
+
+/**
+ * Género de cada Pokémon que no lo trae fijado (Jose, 03/11/2026): con la proporción de machos de su especie (`maleRatio`); sin género
+ * (`null`) o sin el dato, ninguno. Un número del PRNG por Pokémon con género variable, en el orden del equipo: determinista por reto.
+ */
+export function withGenders(team: readonly ResolvedSet[], dex: DexData, rng: Prng): ResolvedSet[] {
+  return team.map((set) => {
+    if (set.gender) return set
+    const ratio = dex.species[set.species]?.maleRatio
+    if (ratio === null || ratio === undefined) return set
+    const gender = ratio >= 1 ? 'M' : ratio <= 0 ? 'F' : rng.next() < ratio ? 'M' : 'F'
+    return { ...set, gender }
+  })
+}

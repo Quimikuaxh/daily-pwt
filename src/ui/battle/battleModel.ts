@@ -28,11 +28,14 @@ export function rivalOnLastPokemon(view: BattleView | null): boolean {
 }
 
 /**
- * Suena el tema del último Pokémon: con él en el campo y también cuando cae (el rival ya no tiene ninguno), hasta que la música se funde
- * al terminar (Jose, 30/10/2026: antes, al caer el último volvía a sonar el tema del rival).
+ * Suena el tema del último Pokémon: con él en el campo, también mientras su barra llega a 0 y cuando cae, hasta que la música se funde
+ * al terminar. Basta con que todos los demás del rival estén debilitados (Jose, 30/10/2026 y 03/11/2026: al caer el último volvía el
+ * tema del rival y, al llegar su barra a 0, el del último volvía a empezar).
  */
 export function lastPokemonThemeOn(view: BattleView | null): boolean {
-  return rivalOnLastPokemon(view) || view?.rival.remaining === 0
+  const active = view?.rival.active
+  if (!view || active == null || !view.rival.team[active]) return false
+  return view.rival.team.every((mon, index) => index === active || mon.fainted)
 }
 
 const STRUGGLE_ID = 'struggle'

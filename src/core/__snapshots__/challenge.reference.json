@@ -2754,7 +2754,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "pelipper",
@@ -2784,7 +2785,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "swellow",
@@ -2814,7 +2816,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "skarmory",
@@ -2844,7 +2847,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "tropius",
@@ -2874,7 +2878,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "honchkrow",
@@ -2904,7 +2909,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       }
     ],
     "playerTeam": [
@@ -2936,7 +2942,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "crawdaunt",
@@ -2966,7 +2973,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "empoleon",
@@ -2996,7 +3004,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "miltank",
@@ -3026,7 +3035,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "gigalith",
@@ -3056,7 +3066,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "victreebel",
@@ -3086,7 +3097,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       }
     ],
     "meta": {
@@ -3140,7 +3152,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "pikachu",
@@ -3170,7 +3183,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "venusaur",
@@ -3200,7 +3214,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "charizard",
@@ -3230,7 +3245,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "snorlax",
@@ -3260,7 +3276,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "lapras",
@@ -3290,7 +3307,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       }
     ],
     "playerTeam": [
@@ -3322,7 +3340,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "charizard",
@@ -3352,7 +3371,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "samurott",
@@ -3382,7 +3402,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "vanilluxe",
@@ -3412,7 +3433,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "weezing",
@@ -3442,7 +3464,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "mantine",
@@ -3472,7 +3495,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       }
     ],
     "meta": {
@@ -3527,7 +3551,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "luxray",
@@ -3557,7 +3582,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "raichu",
@@ -3587,7 +3613,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "rotom",
@@ -3647,7 +3674,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "electrode",
@@ -3709,7 +3737,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "xatu",
@@ -3739,7 +3768,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "porygonz",
@@ -3799,7 +3829,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "drapion",
@@ -3829,7 +3860,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "tauros",
@@ -3859,7 +3891,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       }
     ],
     "meta": {
@@ -3914,7 +3947,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "shuckle",
@@ -3944,7 +3978,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "heracross",
@@ -3974,7 +4009,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "pinsir",
@@ -4004,7 +4040,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "armaldo",
@@ -4034,7 +4071,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "yanmega",
@@ -4064,7 +4102,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       }
     ],
     "playerTeam": [
@@ -4096,7 +4135,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "probopass",
@@ -4126,7 +4166,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "cacturne",
@@ -4156,7 +4197,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "aerodactyl",
@@ -4186,7 +4228,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "musharna",
@@ -4216,7 +4259,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "politoed",
@@ -4246,7 +4290,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       }
     ],
     "meta": {
@@ -4301,7 +4346,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "camerupt",
@@ -4331,7 +4377,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "chandelure",
@@ -4361,7 +4408,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "blaziken",
@@ -4391,7 +4439,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "houndoom",
@@ -4421,7 +4470,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "magmortar",
@@ -4451,7 +4501,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       }
     ],
     "playerTeam": [
@@ -4483,7 +4534,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "mothim",
@@ -4513,7 +4565,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "cradily",
@@ -4543,7 +4596,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "omastar",
@@ -4573,7 +4627,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "claydol",
@@ -4633,7 +4688,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       }
     ],
     "meta": {
@@ -4688,7 +4744,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "probopass",
@@ -4718,7 +4775,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "archeops",
@@ -4748,7 +4806,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "crustle",
@@ -4778,7 +4837,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "golem",
@@ -4808,7 +4868,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "relicanth",
@@ -4838,7 +4899,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       }
     ],
     "playerTeam": [
@@ -4900,7 +4962,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "tentacruel",
@@ -4930,7 +4993,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "samurott",
@@ -4960,7 +5024,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "rotomheat",
@@ -5020,7 +5085,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       }
     ],
     "meta": {
@@ -5075,7 +5141,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "carracosta",
@@ -5105,7 +5172,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "starmie",
@@ -5165,7 +5233,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "cloyster",
@@ -5195,7 +5264,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "wailord",
@@ -5225,7 +5295,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       }
     ],
     "playerTeam": [
@@ -5257,7 +5328,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "F"
       },
       {
         "species": "torterra",
@@ -5287,7 +5359,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "yanmega",
@@ -5317,7 +5390,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "abomasnow",
@@ -5347,7 +5421,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "charizard",
@@ -5377,7 +5452,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       },
       {
         "species": "jolteon",
@@ -5407,7 +5483,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "gender": "M"
       }
     ],
     "meta": {

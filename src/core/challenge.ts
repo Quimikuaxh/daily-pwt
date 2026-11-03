@@ -1,10 +1,10 @@
 import { NEUTRAL_NATURE } from './constants'
-import { LAUNCH_DATE, LAUNCH_OPENING, TEAM_RULES_2_FROM } from './launch'
+import { GENDERS_FROM, LAUNCH_DATE, LAUNCH_OPENING, TEAM_RULES_2_FROM } from './launch'
 import { rivalForDay, type TrainerTraits } from './bag'
 import { challengeNumber, dayIndex } from './date'
 import { DataError } from './errors'
 import { Prng, deriveSeed } from './prng'
-import { buildPlayerTeam, poolWithoutRival, TEAM_RULES_1, TEAM_RULES_2 } from './team'
+import { buildPlayerTeam, poolWithoutRival, TEAM_RULES_1, TEAM_RULES_2, withGenders } from './team'
 import type { Challenge, GameData, PokemonSet, ResolvedSet, TeamVariant, Trainer } from './types'
 
 const SEED_PREFIX = 'daily-pwt:v1:'
@@ -98,7 +98,11 @@ export function challengeFor({ date, trainerId, variantId }: ChallengeSelection,
 
   const pool = poolWithoutRival(data.playerSets, trainer.id)
   const player = buildPlayerTeam(pool, rivalTeam, new Prng(deriveSeed(daySeed, 'player')), data.dex, date >= TEAM_RULES_2_FROM ? TEAM_RULES_2 : TEAM_RULES_1)
-  const playerTeam = player.team.map((member) => ({ ...member, nameEs: spanishName(data, member.species) }))
+  const namedPlayerTeam = player.team.map((member) => ({ ...member, nameEs: spanishName(data, member.species) }))
+  // Géneros (Jose, 03/11/2026): con su propio flujo del PRNG, para no mover nada más del reto; desde `GENDERS_FROM`.
+  const genderRng = date >= GENDERS_FROM ? new Prng(deriveSeed(daySeed, 'gender')) : null
+  const finalRivalTeam = genderRng ? withGenders(rivalTeam, data.dex, genderRng) : rivalTeam
+  const playerTeam = genderRng ? withGenders(namedPlayerTeam, data.dex, genderRng) : namedPlayerTeam
 
   const challengeTrainer: Challenge['trainer'] = {
     id: trainer.id,
@@ -116,7 +120,7 @@ export function challengeFor({ date, trainerId, variantId }: ChallengeSelection,
     dataVersion: data.dataVersion,
     trainer: challengeTrainer,
     variant: { id: variant.id, sourceTournament: variant.sourceTournament, sourceUrl: variant.sourceUrl },
-    rivalTeam,
+    rivalTeam: finalRivalTeam,
     playerTeam,
     meta: { teamAttempts: player.attempts, relaxedRules: player.relaxed },
   }

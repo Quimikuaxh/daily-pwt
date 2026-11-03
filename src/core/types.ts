@@ -59,6 +59,8 @@ export type DexSpecies = {
   spriteId: string
   /** Especie base, solo en las formas (`thundurustherian` → `thundurus`). */
   baseSpecies?: string
+  /** Proporción de machos (1 solo machos, 0 solo hembras); `null` sin género. Falta en datos viejos: entonces, sin género. */
+  maleRatio?: number | null
 }
 
 export type DexMove = {

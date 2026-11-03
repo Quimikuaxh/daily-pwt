@@ -4,6 +4,10 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 **Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). El sonido va en `feature/f3-sonido` (desde `main`): los audios ya están descargados y versionados (se descargaron en local, desde la nube las fuentes están bloqueadas); falta implementarlo según «Sonido: plan de implementación».
 
+## Rama `feature/genero-y-arreglos` (03/11/2026)
+- **Hecho:** género de cada Pokémon (RF-12c, DEC-76, UT-135), el equipo se abre aunque no se pueda cambiar (UT-133) y el tema del último Pokémon ya no vuelve a empezar (UT-134).
+- **Fusionada en `main` el 03/11/2026:** `GENDERS_FROM` = `2026-11-04`, el día siguiente al despliegue.
+
 ## Tema del último Pokémon del rival (30/10/2026, directo a `main`)
 - **Hecho:** «Victory Lies Before You!» con el último Pokémon de cualquier rival, con transición y respetando la música de vida baja (PRD §0, RF-90, UT-122). Solo web y audio, sin migración.
 

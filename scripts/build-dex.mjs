@@ -21,6 +21,9 @@ export function buildDex() {
       abilities: Object.values(entry.abilities).map(toId),
       nfe: Boolean(entry.nfe),
       spriteId: spriteIdOf(entry),
+      // Proporción de machos (0 a 1; 1 solo machos, 0 solo hembras) o `null` si no tiene género (Metagross): el género de cada Pokémon del
+      // reto sale de aquí (Jose, 03/11/2026).
+      maleRatio: entry.gender === 'N' ? null : entry.gender === 'M' ? 1 : entry.gender === 'F' ? 0 : entry.genderRatio.M,
       // Solo en las formas (thundurustherian → thundurus): dos formas de una especie no van en el mismo equipo (RF-12b).
       ...(toId(entry.baseSpecies) !== entry.id ? { baseSpecies: toId(entry.baseSpecies) } : {}),
     }
