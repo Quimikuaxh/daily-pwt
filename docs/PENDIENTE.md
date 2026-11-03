@@ -4,6 +4,11 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 **Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). El sonido va en `feature/f3-sonido` (desde `main`): los audios ya están descargados y versionados (se descargaron en local, desde la nube las fuentes están bloqueadas); falta implementarlo según «Sonido: plan de implementación».
 
+## Rama `feature/discord-avisos` (03/11/2026)
+- **Hecho:** aviso por Discord (RF-115 a RF-119, DEC-77, UT-140 a UT-142): migración `20261103000000_pwt_aviso_discord.sql`, Edge Function `pwt-discord` y apartado en Cuenta.
+- **Falta (Jose):** crear la aplicación y el bot de Discord y el servidor del juego, y configurar Supabase (README, «Aviso por Discord»). Después, aplicar la migración, desplegar la función y guardar los secretos.
+- **Antes de fusionar:** probarlo de verdad con una cuenta (conectar, cambiar la hora a la media hora siguiente y recibir el aviso); la web enseña el apartado en cuanto se publica, así que la migración y la función van antes que la web.
+
 ## Rama `feature/sonido-y-stats-rival` (03/11/2026)
 - **Hecho:** interruptores de las músicas especiales (UT-136, UT-137), música silenciable y pausada en las repeticiones (UT-138) y estadísticas del rival en Hoy (UT-139).
 

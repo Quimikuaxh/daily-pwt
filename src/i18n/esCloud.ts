@@ -37,6 +37,33 @@ export const esCloud = {
     } as Record<string, string>,
   },
 
+  // Aviso por Discord (RF-115 a RF-119), en Cuenta y solo con cuenta.
+  discord: {
+    title: 'Aviso por Discord',
+    hint: 'Te mando un mensaje privado por Discord a la hora que elijas si ese día aún no has jugado el combate oficial. Al conectar entras en el servidor del juego: el bot solo puede escribir a quien está en él.',
+    connect: 'Conectar Discord',
+    connecting: 'Abriendo Discord…',
+    connectFailed: 'No se ha podido abrir Discord. Inténtalo de nuevo.',
+    loading: 'Cargando…',
+    unavailable: 'No se puede consultar el aviso ahora mismo.',
+    connectedAs: (name: string) => `Conectado como ${name}.`,
+    enabledLabel: 'Aviso',
+    yes: 'Sí',
+    no: 'No',
+    timeLabel: 'Hora',
+    timeHint: (zone: string) => `Hora de este dispositivo (${zone}). El reto cambia a medianoche de Madrid.`,
+    otherZone: (zone: string) => `La hora se eligió en otra zona (${zone}); al cambiarla se usa la de este dispositivo.`,
+    saved: 'Aviso guardado.',
+    saveFailed: 'No se ha podido guardar. Inténtalo de nuevo.',
+    failed: 'El último mensaje no te llegó. Comprueba que sigues en el servidor del juego y que aceptas mensajes privados de sus miembros.',
+    unlink: 'Desconectar Discord',
+    results: {
+      ok: 'Discord conectado.',
+      cancelled: 'Has cancelado la conexión con Discord.',
+      error: 'No se ha podido conectar Discord. Inténtalo de nuevo.',
+    },
+  },
+
   // Ajustes, «Datos locales», con sesión de Google: el historial vive en la cuenta.
   settings: {
     dataHint: 'Tu historial y tus rachas se guardan en tu cuenta; en este navegador quedan una copia, el historial de cuando juegas sin cuenta y los ajustes.',

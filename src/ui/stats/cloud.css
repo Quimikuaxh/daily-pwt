@@ -322,3 +322,13 @@
   flex-wrap: wrap;
   gap: 0 10px;
 }
+
+/* Aviso por Discord (RF-116): la hora, a la derecha de su fila como los Sí / No, sin estirarse. */
+.discord-time {
+  flex: 0 0 auto;
+  width: auto;
+}
+
+.discord-section .account-actions {
+  margin-top: 12px;
+}

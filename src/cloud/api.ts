@@ -83,7 +83,16 @@ export interface CloudApi {
   shareReplay(date: string): Promise<string>
   getSharedReplay(id: string): Promise<SharedReplay>
   deleteSharedReplay(id: string): Promise<void>
+  /** Aviso por Discord (RF-115 a RF-119), o `null` sin Discord vinculado. Solo con cuenta. */
+  discordReminder(): Promise<DiscordReminder | null>
+  /** Empieza la vinculación y da la dirección a la que ir (la Edge Function, que lleva a Discord). */
+  discordLinkUrl(timeZone: string): Promise<string>
+  setDiscordReminder(enabled: boolean, minute: number, timeZone: string): Promise<void>
+  discordUnlink(): Promise<void>
 }
+
+/** Aviso por Discord: hora en minutos desde medianoche de `timeZone`; `failed`, el último mensaje no llegó. */
+export type DiscordReminder = { name: string; enabled: boolean; minute: number; timeZone: string; failed: boolean }
 
 /**
  * Error de una llamada. `permanent`: el servidor la rechazó (`raise exception` de las funciones, con `code` = el mensaje, p. ej.

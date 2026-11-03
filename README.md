@@ -98,6 +98,30 @@ Opcional: sin configurar, el juego funciona entero en local (sin cuentas ni rank
 2. En local: copiar `.env.example` a `.env.local` y rellenar `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` (Project Settings → API). Los e2e (`playwright.config.ts`) construyen siempre sin estas variables: no usan Supabase aunque exista `.env.local`.
 3. En GitHub: secretos del repositorio `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` (Settings → Secrets and variables → Actions); `deploy.yml` los pasa al build.
 
+### Aviso por Discord (Supabase, F4)
+
+Opcional ([DEC-77](docs/ARQUITECTURA.md), RF-115 a RF-119): con cuenta, un bot manda un privado por Discord a la hora que elige el jugador si aún no ha empezado el oficial del día. Sin configurar, el apartado de Cuenta da error al conectar; el resto del juego no cambia. `<ref>` es el identificador del proyecto de Supabase (el de `https://<ref>.supabase.co`).
+
+1. **Aplicación de Discord** ([portal de desarrolladores](https://discord.com/developers/applications)) → «New Application», «Daily PWT».
+   - General Information: copiar **Application ID** (`DISCORD_CLIENT_ID`).
+   - OAuth2: «Reset Secret» y copiar el **Client Secret** (`DISCORD_CLIENT_SECRET`); en «Redirects», añadir `https://<ref>.supabase.co/functions/v1/pwt-discord`.
+   - Bot: «Reset Token» y copiar el **token** (`DISCORD_BOT_TOKEN`); desactivar «Public Bot» (así nadie lo mete en otros servidores) y dejar desactivado «Requires OAuth2 Code Grant». No hace falta ningún «Privileged Gateway Intent».
+2. **Servidor del juego**: en Discord, «+» → «Crear el mío» → «Daily PWT». Con el modo desarrollador (Ajustes de usuario → Avanzado), clic derecho en el servidor → «Copiar ID del servidor» (`DISCORD_GUILD_ID`). Meter el bot con `https://discord.com/oauth2/authorize?client_id=<DISCORD_CLIENT_ID>&scope=bot&permissions=1` (permiso «Crear invitación», el que pide meter a los jugadores).
+3. **Supabase**:
+   - Database → Extensions: activar **pg_net** (con pg_cron, que ya estaba).
+   - SQL Editor: ejecutar `supabase/migrations/20261103000000_pwt_aviso_discord.sql` (programa `pwt-discord-reminders` cada 15 minutos) y guardar en Vault la dirección de la función y un secreto inventado (p. ej. `openssl rand -hex 32`):
+     ```sql
+     select vault.create_secret('https://<ref>.supabase.co/functions/v1/pwt-discord', 'pwt_discord_url');
+     select vault.create_secret('<secreto>', 'pwt_discord_cron_secret');
+     ```
+   - Edge Functions → Secrets: `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`, `DISCORD_BOT_TOKEN`, `DISCORD_GUILD_ID`, `PWT_DISCORD_CRON_SECRET` (el mismo `<secreto>`) y `PWT_SITE_URL` = `https://quimikuaxh.github.io/daily-pwt/`. `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY` ya los pone Supabase.
+   - Desplegar la función (sin JWT: Discord vuelve a ella sin sesión y `pg_cron` llama con su secreto; también lo dice `supabase/config.toml`):
+     ```sh
+     npx supabase login
+     npx supabase functions deploy pwt-discord --no-verify-jwt --project-ref <ref>
+     ```
+4. Probar: con cuenta, Cuenta → «Conectar Discord» (llega la bienvenida); poner la hora en la media hora siguiente y esperar el aviso. Lo que hace cada llamada sale en Edge Functions → `pwt-discord` → Logs, y la tarea en `select * from cron.job_run_details order by start_time desc limit 5`.
+
 ### Supabase en local
 
 Copia de Supabase en tu equipo (Docker) para probar cuentas, rankings, historial y repeticiones sin tocar producción. `npm run dev` la usa en cuanto existe `.env.development.local`, que manda sobre `.env.local` (producción) solo en desarrollo; el build y el despliegue no la leen.

@@ -8,6 +8,7 @@ import { VerifiedIcon } from '../common/VerifiedIcon'
 import type { GameStore } from '../../storage/gameStore'
 import type { Settings } from '../../storage/settings'
 import { browserStorage } from '../../storage/browserStorage'
+import { discordResultFrom, withoutDiscordParam } from '../../cloud/discordLink'
 import { dismissWelcomeForever, markWelcomeShown, welcomeDue } from '../../storage/welcomePrompt'
 
 // Las ventanas solo hacen falta al abrirlas: fuera de la ruta crítica (E2E-21).
@@ -91,7 +92,12 @@ type Open = 'account' | 'history' | 'stats' | 'help' | 'settings' | 'welcome' | 
  * Ayuda y Ajustes, con sus ventanas.
  */
 export function AppMenu({ store, today, settings, onSettingsChange, onClearData, account, accountState, trainerName, onWatchReplay, historyArt, onWatchFriendReplay, welcome = false }: AppMenuProps) {
-  const [open, setOpen] = useState(null as Open)
+  // RF-115: al volver de conectar Discord (`?discord=`), Cuenta se abre con el resultado y el parámetro se quita de la dirección.
+  const [discordResult] = useState(() => discordResultFrom(window.location.search))
+  const [open, setOpen] = useState((discordResult ? 'account' : null) as Open)
+  useEffect(() => {
+    if (discordResult) window.history.replaceState(null, '', withoutDiscordParam(window.location.href))
+  }, [discordResult])
   const close = () => setOpen(null)
   // RF-94b: a quien no ha elegido nombre o juega sin cuenta, al entrar en Hoy, como mucho una vez al día y salvo «No volver a mostrar».
   const needs = welcome && account ? welcomeNeeds(accountState) : null
@@ -159,7 +165,7 @@ export function AppMenu({ store, today, settings, onSettingsChange, onClearData,
           }}
         />
       )}
-      {open === 'account' && account && accountState && <AccountDialog account={account} state={accountState} onClose={close} onOpenHistory={withHistory ? () => setOpen('history') : undefined} />}
+      {open === 'account' && account && accountState && <AccountDialog account={account} state={accountState} discordResult={discordResult} onClose={close} onOpenHistory={withHistory ? () => setOpen('history') : undefined} />}
       {open === 'history' && account && trainerName && onWatchReplay && (
         <MatchHistoryDialog
           api={account.api}

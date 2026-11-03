@@ -2,6 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { CloudError, type CloudApi, type CloudDay, type FriendProfile, type HistoryItem, type PlayerRow, type PointsRow, type RankingPage, type SharedReplay, type StreakRow, type Summary } from './api'
 import type { Cloud } from './account'
 import { cloudConfig } from './config'
+import { discordStartUrl } from './discordLink'
 import type { CloudAuth, Session } from './auth'
 
 /** Error de PostgREST: con código (SQLSTATE o `PGRST…`) lo rechazó el servidor; sin él, falló la red. */
@@ -11,7 +12,8 @@ function toCloudError(error: { message?: string; code?: string } | null | undefi
   return new CloudError(permanent && code === 'P0001' ? (error?.message ?? code) : code || (error?.message ?? 'network'), permanent)
 }
 
-function supabaseApi(client: SupabaseClient): CloudApi {
+/** `functionsUrl`: las Edge Functions del proyecto (`…/functions/v1`), para el aviso por Discord. */
+function supabaseApi(client: SupabaseClient, functionsUrl: string): CloudApi {
   async function rpc<T>(name: string, args: Record<string, unknown> = {}): Promise<T> {
     let result
     try {
@@ -86,6 +88,10 @@ function supabaseApi(client: SupabaseClient): CloudApi {
     shareReplay: (date) => rpc<string>('share_replay', { p_date: date }),
     getSharedReplay: (id) => rpc<SharedReplay>('get_shared_replay', { p_id: id }),
     deleteSharedReplay: (id) => rpc('delete_shared_replay', { p_id: id }),
+    discordReminder: () => rpc('discord_reminder'),
+    discordLinkUrl: async (timeZone) => discordStartUrl(functionsUrl, await rpc<string>('discord_link_start', { p_time_zone: timeZone })),
+    setDiscordReminder: (enabled, minute, timeZone) => rpc('set_discord_reminder', { p_enabled: enabled, p_minute: minute, p_time_zone: timeZone }),
+    discordUnlink: () => rpc('discord_unlink'),
   }
 }
 
@@ -126,5 +132,5 @@ export async function loadCloud(config = cloudConfig()): Promise<Cloud | null> {
     db: { schema: 'pwt' },
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: 'daily-pwt:auth' },
   }) as unknown as SupabaseClient
-  return { api: supabaseApi(client), auth: supabaseAuth(client) }
+  return { api: supabaseApi(client, `${config.url}/functions/v1`), auth: supabaseAuth(client) }
 }

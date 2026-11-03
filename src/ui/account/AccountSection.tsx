@@ -7,16 +7,20 @@ import { esCloud } from '../../i18n/esCloud'
 import { Modal } from '../common/Modal'
 import '../stats/cloud.css'
 import { Loading } from '../common/Loading'
+import type { DiscordLinkResult } from '../../cloud/discordLink'
+import { DiscordSection } from './DiscordSection'
 
 const text = esCloud.account
 const NICKNAME = /^[A-Za-z0-9_]{3,16}$/
 
 /** Ventana «Cuenta» del icono de la cabecera (RF-93 a RF-96): iniciar sesión con Google, cambiar el nickname y cerrar sesión. */
-export function AccountDialog({ account, state, onClose, onOpenHistory }: { account: Account; state: AccountState; onClose: () => void; onOpenHistory?: () => void }) {
+export function AccountDialog({ account, state, onClose, onOpenHistory, discordResult = null }: { account: Account; state: AccountState; onClose: () => void; onOpenHistory?: () => void; discordResult?: DiscordLinkResult | null }) {
   const player = state.status === 'signedIn' || state.status === 'guest'
   return (
     <Modal title={text.title} onClose={onClose} className="account-dialog">
       {player ? <Player account={account} state={state} /> : <Unavailable state={state} />}
+      {/* RF-115: el aviso por Discord, solo con cuenta. */}
+      {state.status === 'signedIn' && account.api && <DiscordSection api={account.api} result={discordResult} />}
       {/* F5, RF-124: solo en el móvil (en pantallas anchas está el icono de la cabecera); el CSS lo oculta en las anchas. */}
       {player && onOpenHistory && (
         <div className="account-actions account-history-mobile">
