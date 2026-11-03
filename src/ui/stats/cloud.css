@@ -329,6 +329,15 @@
   width: auto;
 }
 
+/* Separado de «Cerrar sesión» como un apartado aparte, y el botón separado del texto (Jose, 03/11/2026). */
+.account-dialog .discord-section {
+  margin-top: 28px;
+}
+
+.discord-section > .btn {
+  margin-top: 10px;
+}
+
 .discord-section .account-actions {
   margin-top: 12px;
 }
