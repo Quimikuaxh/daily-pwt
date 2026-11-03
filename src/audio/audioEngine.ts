@@ -12,6 +12,8 @@ export type AudioIndex = { music: Record<string, MusicEntry>; sfx: Record<string
 /** Lo que el motor usa de Web Audio: así los tests pueden darle uno falso. */
 export type AudioContextLike = Pick<BaseAudioContext, 'currentTime' | 'destination' | 'state' | 'createGain' | 'createBufferSource' | 'decodeAudioData'> & {
   resume: () => Promise<void>
+  /** Para la repetición en pausa (`setPaused`); los contextos de prueba pueden no tenerlo. */
+  suspend?: () => Promise<void>
 }
 
 type Options = {
@@ -69,6 +71,8 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
   let volume = 70
   let muted = false
   let unlocked = false
+  /** Repetición en pausa (Jose, 03/11/2026): el contexto queda suspendido y todo lo que suena se congela donde iba. */
+  let paused = false
   /** Pista pedida (suene ya o espere a la interacción o a la descarga). */
   let wantedMusic: string | null = null
   /** Música de vida baja: mientras se pida, suena ella en vez de `wantedMusic`. */
@@ -213,7 +217,7 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
     }
     unlocked = true
     for (const type of UNLOCK_EVENTS) unlockTarget?.removeEventListener(type, unlock)
-    void context.resume().catch(() => undefined)
+    if (!paused) void context.resume().catch(() => undefined)
     // Lo que ya se precargó sin contexto (solo los bytes) se decodifica ahora: así la de vida baja suena en cuanto se pide.
     for (const key of [...bytes.keys()]) void bufferOf(key)
     for (const listener of [...unlockListeners]) listener()
@@ -288,8 +292,19 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
       return () => unlockListeners.delete(listener)
     },
     isUnlocked: () => unlocked,
+    /**
+     * Pausa (o reanuda) todo el sonido donde va, sin pararlo: la música de una repetición en pausa sigue por donde iba al reanudarla
+     * (Jose, 03/11/2026).
+     */
+    setPaused(value: boolean) {
+      if (paused === value) return
+      paused = value
+      if (!context || !unlocked) return
+      if (paused) void context.suspend?.().catch(() => undefined)
+      else void context.resume().catch(() => undefined)
+    },
     /** Para los tests y la depuración. */
-    state: () => ({ unlocked, volume, muted, music: playing?.id ?? null, wantedMusic, pinch: wantedPinch }),
+    state: () => ({ unlocked, paused, volume, muted, music: playing?.id ?? null, wantedMusic, pinch: wantedPinch }),
   }
 }
 

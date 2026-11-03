@@ -35,6 +35,8 @@ export const esReplay = {
     pause: 'Pausa',
     next: 'Turno siguiente',
     end: 'Al final',
+    music: 'Música',
+    musicOff: 'Música silenciada',
     deleteLink: 'Borrar enlace',
     deleteTitle: '¿Borrar el enlace?',
     deleteBody: 'Nadie podrá volver a ver esta repetición con el enlace. No se puede deshacer.',

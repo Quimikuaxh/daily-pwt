@@ -8,6 +8,7 @@ import { fewTypesData, makeGameData } from '../../test-utils/fixtures'
 import { setMadridTime } from '../../test-utils/ui'
 import { LAUNCH, addDays } from '../../test-utils/dates'
 import type { ResolvedSet } from '../../test-utils/types'
+import { es } from '../../i18n/es'
 
 // CMP-01, 03..10 · RF-30, RF-32..39. Pantalla Hoy con datos sintéticos (3 entrenadores) y relojes falsos.
 // TODO-CONTRATO (src/ui/today/TodayScreen.tsx):
@@ -161,6 +162,16 @@ describe('equipo rival y toggle (CMP-04, RF-33/34)', () => {
     expect([toggle().textContent, toggle().getAttribute('aria-expanded')]).toEqual(['Ocultar movimientos y objetos del rival', 'true'])
     await user.click(toggle())
     expect([toggle().textContent, toggle().getAttribute('aria-expanded')]).toEqual(['Ver movimientos y objetos del rival', 'false'])
+  })
+
+  // UT-139 (Jose, 03/11/2026): al desplegar, cada Pokémon del rival enseña su suma de base y sus estadísticas a nivel 50, como las propias.
+  it('al desplegar, las estadísticas del rival se ven como las del jugador; ocultas, no', async () => {
+    const { user } = renderToday()
+    expect(within(rivalRegion()).queryAllByRole('definition')).toHaveLength(0)
+    await user.click(toggle())
+    const grids = within(rivalRegion()).getAllByLabelText(es.today.statsTitle)
+    expect(grids).toHaveLength(challengeOf().rivalTeam.length)
+    expect(within(grids[0]).getAllByRole('definition')).toHaveLength(6)
   })
 
   describe('al ocultar, la página sube al panel del rival', () => {

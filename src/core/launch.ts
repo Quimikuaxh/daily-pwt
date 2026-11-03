@@ -22,7 +22,7 @@ export const TEAM_RULES_2_FROM = '2026-10-29'
 
 /**
  * Desde este día cada Pokémon del reto (del jugador y del rival) tiene género, con la proporción de su especie (Jose, 03/11/2026); los sin
- * género (Metagross), ninguno. Cuenta en el combate (Atracción, Rivalidad…): los retos ya publicados no cambian. Al desplegar, debe ser el
- * día siguiente al despliegue.
+ * género (Metagross), ninguno. Cuenta en el combate (Atracción, Rivalidad…). Adelantado al mismo día del despliegue, el 03/11/2026, por
+ * decisión de Jose (cambia el reto de ese día para quien aún no lo había jugado); los anteriores no cambian.
  */
-export const GENDERS_FROM = '2026-11-04'
+export const GENDERS_FROM = '2026-11-03'

@@ -126,6 +126,21 @@ describe('motor de sonido', () => {
     expect(fake.sources[1]).toMatchObject({ loop: false, started: true })
   })
 
+  // UT-138 · Repetición en pausa (Jose, 03/11/2026): el contexto se suspende y vuelve; antes del primer toque solo se recuerda.
+  it('pausa: suspende el contexto y al quitarla lo reanuda; si se pidió antes del primer toque, no lo arranca al tocar', async () => {
+    const { engine, fake, interact } = setup()
+    const suspend = vi.fn(async () => undefined)
+    ;(fake.context as unknown as { suspend: typeof suspend }).suspend = suspend
+    engine.setPaused(true)
+    interact()
+    expect(fake.context.resume).not.toHaveBeenCalled()
+    engine.setPaused(false)
+    expect(fake.context.resume).toHaveBeenCalledTimes(1)
+    engine.setPaused(true)
+    expect(suspend).toHaveBeenCalledTimes(1)
+    expect(engine.state().paused).toBe(true)
+  })
+
   it('volumen y silencio en la ganancia maestra, al instante', () => {
     const { engine, fake, interact } = setup()
     interact()

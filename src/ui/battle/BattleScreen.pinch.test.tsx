@@ -95,3 +95,33 @@ describe('tema del último Pokémon del rival (UT-122)', () => {
     play.mockRestore()
   })
 })
+
+// UT-137 · Ajustes (Jose, 03/11/2026): sin «Música de vida baja» no suena en rojo; sin «Tema del último Pokémon» sigue la del rival.
+describe('músicas especiales desactivadas en Ajustes (UT-137)', () => {
+  const off = { sound: true, volume: 70, pinchMusic: false, lastPokemonMusic: false }
+
+  it('en rojo no pide la música de vida baja', async () => {
+    const pinch = vi.spyOn(getAudio(), 'setPinchMusic')
+    const client = mockClient()
+    const { unmount } = render(<BattleScreen client={client as never} data={data} challenge={challenge} playerLead={0} battleSeed="s" sound={off} onSoundChange={vi.fn()} onFinish={vi.fn()} onExit={vi.fn()} />)
+    client.emit(mkUpdate({ view: viewWith(150) }))
+    await settle(8000)
+    client.emit(mkUpdate({ lines: ['|-damage|p1a: Garchomp|20/150'], view: viewWith(20) }))
+    await settle(8000)
+    expect(pinch).not.toHaveBeenCalledWith('critical-health')
+    unmount()
+    pinch.mockRestore()
+  })
+
+  it('con el último Pokémon del rival sigue su tema', async () => {
+    const play = vi.spyOn(getAudio(), 'playMusic')
+    const client = mockClient()
+    const { unmount } = render(<BattleScreen client={client as never} data={data} challenge={challenge} playerLead={0} battleSeed="s" sound={off} onSoundChange={vi.fn()} onFinish={vi.fn()} onExit={vi.fn()} />)
+    client.emit(mkUpdate({ view: rivalDown(5) }))
+    await settle(8000)
+    expect(play.mock.calls.map(([id]) => id)).not.toContain('last-pokemon')
+    expect(play.mock.calls.at(-1)?.[0]).toMatch(/^(gym|champion|rival)-/)
+    unmount()
+    play.mockRestore()
+  })
+})

@@ -54,6 +54,8 @@ type BattleScreenProps = {
   /** Sonido y volumen de Ajustes; con `onSoundChange`, el botón Sonido los cambia desde el combate (decisión de Jose, DEC-57). */
   sound?: SoundPrefs
   onSoundChange?: (sound: SoundPrefs) => void
+  /** Visor de repeticiones: música silenciada por el botón del visor (no se guarda). */
+  musicMuted?: boolean
   onFinish: (ended: EngineEnd) => void
   onExit: () => void
 }
@@ -68,7 +70,7 @@ type TouchChoice = { request: BattleRequest | null; mode: TouchMode }
 
 const isInteractive = (target: EventTarget | null): boolean => target instanceof HTMLElement && target.closest('button, a, input, select, textarea, [role="dialog"]') !== null
 
-export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', controls, replay, onDecision, onSettled, onReplayFailed, paused, initialSpeed, onSpeedChange, animations = 'always', sound, onSoundChange, onFinish, onExit }: BattleScreenProps) {
+export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', controls, replay, onDecision, onSettled, onReplayFailed, paused, initialSpeed, onSpeedChange, animations = 'always', sound, onSoundChange, musicMuted = false, onFinish, onExit }: BattleScreenProps) {
   const { trainer, rivalTeam, playerTeam } = challenge
   const speciesName = (speciesId: string, fallback: string): string => data.names.species[speciesId] ?? fallback
   // Grito de una especie: va por su `spriteId` (las formas tienen el suyo o el de la especie base; `gen:cries`).
@@ -126,11 +128,13 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   // Con el último Pokémon del rival en el campo, su tema en vez del del rival, con transición (decisión de Jose, 30/10/2026); sigue
   // sonando cuando ese último cae.
   const rivalMusic = battleMusicFor(trainer)
-  const music = lastPokemonThemeOn(battle.view) ? LAST_POKEMON_MUSIC : rivalMusic
+  // Con «Tema del último Pokémon» desactivado en Ajustes (Jose, 03/11/2026), sigue el del rival.
+  const music = sound?.lastPokemonMusic !== false && lastPokemonThemeOn(battle.view) ? LAST_POKEMON_MUSIC : rivalMusic
   // Gritos (Jose, 31/10/2026): solo los de los Pokémon de este combate, como la música.
   const cries = useMemo(() => [...playerTeam, ...rivalTeam].map((set) => cryIdOf(set.species)), [playerTeam, rivalTeam, cryIdOf])
   useEffect(() => getAudio().preload([rivalMusic, LAST_POKEMON_MUSIC, CRITICAL_HEALTH_MUSIC], SFX_IDS, cries), [rivalMusic, cries])
-  const musicOn = battle.introPhase !== 'loading' && (mode === 'replay' || !ended)
+  // `musicMuted`: la música silenciada en el visor de repeticiones (Jose, 03/11/2026); los efectos y los gritos siguen.
+  const musicOn = !musicMuted && battle.introPhase !== 'loading' && (mode === 'replay' || !ended)
   // Parar va aparte de cambiar de tema: al pasar al del último Pokémon no se para la música (ni se pierde la de vida baja).
   useEffect(() => {
     if (!musicOn || mode === 'replay') return
@@ -148,7 +152,8 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   // Música de vida baja (decisión de Jose, 30/10/2026; antes, un pitido): mientras el Pokémon del jugador tiene la barra en rojo, desde
   // que la barra termina de bajar, corta la del rival y suena ella desde el principio, en bucle. Al curarse, al cambiarlo, al debilitarse
   // (PS a 0), al terminar el combate o al salir, vuelve la del rival por donde iba; si vuelve a estar en rojo, empieza otra vez.
-  const pinch = musicOn && playerInPinch(battle.view)
+  // Con «Música de vida baja» desactivada en Ajustes (Jose, 03/11/2026), no suena.
+  const pinch = musicOn && sound?.pinchMusic !== false && playerInPinch(battle.view)
   const barMs = HP_BAR_ANIMATION_MS / battle.speed
   useEffect(() => {
     if (!pinch) return

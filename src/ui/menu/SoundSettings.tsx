@@ -22,7 +22,7 @@ export function SoundSettings({ settings, onChange, showTitle = true }: SoundSet
             type="button"
             className="btn btn-small settings-option"
             aria-pressed={settings.sound === on}
-            onClick={() => onChange({ sound: on, volume: settings.volume })}
+            onClick={() => onChange({ ...settings, sound: on })}
           >
             {on ? text.soundOn : text.soundOff}
           </button>
@@ -37,11 +37,25 @@ export function SoundSettings({ settings, onChange, showTitle = true }: SoundSet
           step={5}
           value={settings.volume}
           aria-valuetext={text.volumeValue(settings.volume)}
-          onChange={(event) => onChange({ sound: settings.sound, volume: Number(event.currentTarget.value) })}
+          onChange={(event) => onChange({ ...settings, volume: Number(event.currentTarget.value) })}
         />
         <output className="settings-volume-value" aria-hidden="true">{text.volumeValue(settings.volume)}</output>
       </label>
       <p className="settings-hint">{text.soundHint}</p>
+      {/* Música de vida baja y tema del último Pokémon (Jose, 03/11/2026): cada una con su Sí / No. */}
+      {(['pinchMusic', 'lastPokemonMusic'] as const).map((key) => (
+        <div key={key} className="settings-music">
+          <span id={`settings-${key}`}>{key === 'pinchMusic' ? text.pinchMusicTitle : text.lastPokemonMusicTitle}</span>
+          <div className="settings-options" role="group" aria-labelledby={`settings-${key}`}>
+            {[true, false].map((on) => (
+              <button key={String(on)} type="button" className="btn btn-small settings-option" aria-pressed={settings[key] === on} onClick={() => onChange({ ...settings, [key]: on })}>
+                {on ? text.musicOn : text.musicOff}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+      <p className="settings-hint">{text.specialMusicHint}</p>
     </section>
   )
 }

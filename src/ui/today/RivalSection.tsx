@@ -7,6 +7,7 @@ import { TypeBadge } from '../common/TypeBadge'
 import { TODAY_SPRITE_BOX, pokemonSpriteClass, trainerSpriteClass } from './spriteBox'
 import { cardModel } from './cardModel'
 import { MonHead } from './MonHead'
+import { MonStats } from './MonStats'
 import { MoveList } from './MoveList'
 
 /** «Victorias de jugadores: X/Y» de hoy (decisión de Jose, 29/10/2026): `undefined` sin cuenta configurada (no se enseña), `null` mientras carga. */
@@ -46,12 +47,16 @@ function RivalCard({ challenge, data, dayWins }: RivalSectionProps) {
   )
 }
 
-/** Detalle de un Pokémon del rival (RF-34): mismo formato que las tarjetas del jugador, pero solo con la habilidad elegida del día y sin estadísticas. */
+/**
+ * Detalle de un Pokémon del rival (RF-34): mismo formato que las tarjetas del jugador, solo con la habilidad elegida del día, y con sus
+ * estadísticas a nivel 50 como las propias (Jose, 03/11/2026).
+ */
 function RivalMonDetails({ set, data }: { set: Challenge['rivalTeam'][number]; data: GameData }) {
   const card = cardModel(set, data)
   return (
     <div className="rival-mon-details">
       <MonHead card={card} data={data} headingAs="h4" />
+      <MonStats card={card} />
       <MoveList moves={card.moves} label={es.today.moves} />
     </div>
   )

@@ -1,7 +1,8 @@
 import type { CSSProperties } from 'react'
 import type { GameData, ResolvedSet } from '../../core/types'
 import { es } from '../../i18n/es'
-import { cardModel, STAT_KEYS } from './cardModel'
+import { cardModel } from './cardModel'
+import { MonStats } from './MonStats'
 import { moveTileColor } from '../battle/moveTileColors'
 import { MonHead } from './MonHead'
 import { MoveList } from './MoveList'
@@ -21,18 +22,7 @@ export function PlayerCard({ set, data, isLead, onChooseLead }: PlayerCardProps)
     <article className={isLead ? 'player-card plate player-card-lead' : 'player-card plate'} style={{ '--type-edge': moveTileColor(card.types[0]?.id ?? null) } as CSSProperties}>
       <MonHead card={card} data={data} />
 
-      <p className="base-total">{es.today.baseStatTotal(card.baseStatTotal)}</p>
-
-      <dl className="stat-grid" aria-label={es.today.statsTitle}>
-        {STAT_KEYS.map((key) => (
-          <div key={key} className="stat-cell">
-            <dt>{es.today.statNames[key]}</dt>
-            {' '}
-            <dd>{card.stats[key]}</dd>
-            {' '}
-          </div>
-        ))}
-      </dl>
+      <MonStats card={card} />
 
       <MoveList moves={card.moves} />
 

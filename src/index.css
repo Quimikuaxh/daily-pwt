@@ -552,6 +552,27 @@ img.sprite,
   font-variant-numeric: tabular-nums;
 }
 
+/* Músicas especiales (Jose, 03/11/2026): cada una en su fila, el nombre a la izquierda y Sí / No a la derecha, separadas del resto. */
+.settings-music {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.settings-hint + .settings-music {
+  margin-top: 16px;
+}
+
+.settings-music .settings-options {
+  margin-bottom: 0;
+}
+
+.settings-music + .settings-hint {
+  margin-top: 10px;
+}
+
 .settings-section .btn-danger {
   margin-top: 8px;
 }

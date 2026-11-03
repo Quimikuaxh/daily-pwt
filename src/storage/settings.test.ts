@@ -6,20 +6,20 @@ import { clearSettings, DEFAULT_SETTINGS, loadSettings, saveSettings, SETTINGS_K
 describe('ajustes en localStorage', () => {
   it('sin nada guardado, o sin almacenamiento, valen los de por defecto (x1)', () => {
     expect(loadSettings(new MemoryStorage())).toEqual(DEFAULT_SETTINGS)
-    expect(loadSettings(null)).toEqual({ speed: 1, animations: 'always', sound: true, volume: 70 })
+    expect(loadSettings(null)).toEqual({ speed: 1, animations: 'always', sound: true, volume: 70, pinchMusic: true, lastPokemonMusic: true })
   })
 
   it('guarda y recupera la velocidad', () => {
     const storage = new MemoryStorage()
-    saveSettings(storage, { speed: 4, animations: 'system', sound: false, volume: 35 })
-    expect(JSON.parse(storage.getItem(SETTINGS_KEY) as string)).toEqual({ version: 1, speed: 4, animations: 'system', sound: false, volume: 35 })
-    expect(loadSettings(storage)).toEqual({ speed: 4, animations: 'system', sound: false, volume: 35 })
+    saveSettings(storage, { speed: 4, animations: 'system', sound: false, volume: 35, pinchMusic: true, lastPokemonMusic: true })
+    expect(JSON.parse(storage.getItem(SETTINGS_KEY) as string)).toEqual({ version: 1, speed: 4, animations: 'system', sound: false, volume: 35, pinchMusic: true, lastPokemonMusic: true })
+    expect(loadSettings(storage)).toEqual({ speed: 4, animations: 'system', sound: false, volume: 35, pinchMusic: true, lastPokemonMusic: true })
   })
 
   it('ajustes guardados antes de existir las animaciones o el sonido: se leen con los de por defecto', () => {
     const storage = new MemoryStorage()
     storage.setItem(SETTINGS_KEY, JSON.stringify({ version: 1, speed: 2 }))
-    expect(loadSettings(storage)).toEqual({ speed: 2, animations: 'always', sound: true, volume: 70 })
+    expect(loadSettings(storage)).toEqual({ speed: 2, animations: 'always', sound: true, volume: 70, pinchMusic: true, lastPokemonMusic: true })
   })
 
   // UT-83 · Animaciones (24/10/2026, Jose): «Siempre» por defecto; los guardados con la opción antigua se traducen.
@@ -44,6 +44,15 @@ describe('ajustes en localStorage', () => {
     }
     storage.setItem(SETTINGS_KEY, JSON.stringify({ version: 1, speed: 1, sound: false, volume: 0 }))
     expect(loadSettings(storage)).toMatchObject({ sound: false, volume: 0 })
+  })
+
+  // UT-136 (Jose, 03/11/2026): música de vida baja y tema del último Pokémon, activadas por defecto y guardadas.
+  it('las músicas especiales se guardan; las guardadas antes de existir se leen activadas', () => {
+    const storage = new MemoryStorage()
+    saveSettings(storage, { speed: 1, animations: 'always', sound: true, volume: 70, pinchMusic: false, lastPokemonMusic: true })
+    expect(loadSettings(storage)).toMatchObject({ pinchMusic: false, lastPokemonMusic: true })
+    storage.setItem(SETTINGS_KEY, JSON.stringify({ version: 1, speed: 1, sound: true, volume: 70 }))
+    expect(loadSettings(storage)).toMatchObject({ pinchMusic: true, lastPokemonMusic: true })
   })
 
   it('un valor ilegible, de otra versión o una velocidad que no existe vuelven a los de por defecto', () => {

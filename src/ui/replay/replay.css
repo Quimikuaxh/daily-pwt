@@ -318,3 +318,12 @@
   overflow-wrap: anywhere;
   user-select: all;
 }
+
+/* Botón «Música» (Jose, 03/11/2026): en la esquina de arriba a la derecha de la pantalla táctil, fuera del resto de controles. */
+.bt-replay .rp-music {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 30px;
+  height: 30px;
+}

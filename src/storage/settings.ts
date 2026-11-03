@@ -11,14 +11,18 @@ export const SPEEDS: readonly BattleSpeed[] = [1, 2, 4]
 export type AnimationMode = 'always' | 'system' | 'never'
 export const ANIMATION_MODES: readonly AnimationMode[] = ['always', 'system', 'never']
 
-export type Settings = { speed: BattleSpeed; animations: AnimationMode; sound: boolean; volume: number }
+/**
+ * `pinchMusic` y `lastPokemonMusic` (Jose, 03/11/2026): la música de vida baja y el tema del último Pokémon del rival; desactivadas, sigue
+ * el tema del rival. Activadas por defecto.
+ */
+export type Settings = { speed: BattleSpeed; animations: AnimationMode; sound: boolean; volume: number; pinchMusic: boolean; lastPokemonMusic: boolean }
 
 /** Lo que cambia el control de sonido (Ajustes y botón Sonido del combate). */
-export type SoundPrefs = Pick<Settings, 'sound' | 'volume'>
+export type SoundPrefs = Pick<Settings, 'sound' | 'volume' | 'pinchMusic' | 'lastPokemonMusic'>
 
 export const SETTINGS_KEY = 'daily-pwt:settings'
 const SCHEMA_VERSION = 1
-export const DEFAULT_SETTINGS: Settings = { speed: 1, animations: 'always', sound: true, volume: 70 }
+export const DEFAULT_SETTINGS: Settings = { speed: 1, animations: 'always', sound: true, volume: 70, pinchMusic: true, lastPokemonMusic: true }
 
 const isVolume = (value: unknown): value is number => typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 100
 
@@ -32,7 +36,7 @@ export function loadSettings(storage: Storage | null): Settings {
     if (!raw) return DEFAULT_SETTINGS
     const parsed: unknown = JSON.parse(raw)
     if (typeof parsed !== 'object' || parsed === null) return DEFAULT_SETTINGS
-    const { version, speed, animations, moveAnimations, sound, volume } = parsed as { version?: unknown; speed?: unknown; animations?: unknown; moveAnimations?: unknown; sound?: unknown; volume?: unknown }
+    const { version, speed, animations, moveAnimations, sound, volume, pinchMusic, lastPokemonMusic } = parsed as { version?: unknown; speed?: unknown; animations?: unknown; moveAnimations?: unknown; sound?: unknown; volume?: unknown; pinchMusic?: unknown; lastPokemonMusic?: unknown }
     if (version !== SCHEMA_VERSION) return DEFAULT_SETTINGS
     return {
       speed: SPEEDS.includes(speed as BattleSpeed) ? (speed as BattleSpeed) : DEFAULT_SETTINGS.speed,
@@ -41,6 +45,8 @@ export function loadSettings(storage: Storage | null): Settings {
       // Igual con el sonido: los guardados antes de existir se leen con los de por defecto.
       sound: typeof sound === 'boolean' ? sound : DEFAULT_SETTINGS.sound,
       volume: isVolume(volume) ? volume : DEFAULT_SETTINGS.volume,
+      pinchMusic: typeof pinchMusic === 'boolean' ? pinchMusic : DEFAULT_SETTINGS.pinchMusic,
+      lastPokemonMusic: typeof lastPokemonMusic === 'boolean' ? lastPokemonMusic : DEFAULT_SETTINGS.lastPokemonMusic,
     }
   } catch {
     return DEFAULT_SETTINGS

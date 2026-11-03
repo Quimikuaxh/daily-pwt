@@ -137,11 +137,25 @@ export function ReplayViewer({ replay, data, settings, onExit, onDelete, own = t
   // La música del rival la arranca la pantalla de combate y sigue entre saltos (cada salto la vuelve a montar); se para al salir del visor.
   useEffect(() => {
     const audio = getAudio()
-    return () => audio.stopMusic()
+    return () => {
+      audio.setPaused(false)
+      audio.stopMusic()
+    }
   }, [])
+
+  // Botón «Música» del visor (Jose, 03/11/2026): silencia la música de esta repetición, sin guardarlo; los efectos y los gritos siguen.
+  const [musicMuted, setMusicMuted] = useState(false)
+  useEffect(() => {
+    if (musicMuted) getAudio().stopMusic()
+  }, [musicMuted])
 
   const ended = replay.ended
   const atEnd = shown === last && !busy
+  // En pausa (no al llegar al final), el sonido se queda congelado donde iba y sigue al reanudar (Jose, 03/11/2026).
+  const userPaused = !playing && !atEnd
+  useEffect(() => {
+    getAudio().setPaused(userPaused)
+  }, [userPaused])
   const turn = busy && playingFrom !== null ? replay.steps[playingFrom].view.turn : turnShownAt(replay, shown)
   const totalTurns = ended?.turns ?? replay.steps[last].view.turn
   return (
@@ -173,6 +187,8 @@ export function ReplayViewer({ replay, data, settings, onExit, onDelete, own = t
           playerTeamLabel={own ? text.ownTeam : text.playerTeam}
           onTeam={openTeam}
           soundHint={soundLocked && settings.sound}
+          musicMuted={musicMuted}
+          onToggleMusic={() => setMusicMuted(!musicMuted)}
         />
       )}
       // Saltar a un paso: el avance rápido de la reanudación emite y pinta los pasos hasta él, sin animación ni intro.
@@ -188,6 +204,8 @@ export function ReplayViewer({ replay, data, settings, onExit, onDelete, own = t
       }}
       initialSpeed={settings.speed}
       animations={settings.animations}
+      sound={settings}
+      musicMuted={musicMuted}
       onExit={onExit}
     />
   )
@@ -221,6 +239,8 @@ type ReplayControlsProps = {
   onTeam: (side: ReplayTeam) => void
   /** Aún no ha habido ningún toque: el sonido está bloqueado por el navegador. */
   soundHint: boolean
+  musicMuted: boolean
+  onToggleMusic: () => void
 }
 
 /**
@@ -232,6 +252,9 @@ const ICONS = {
   pause: 'M2 1h2v8H2zM6 1h2v8H6z',
   next: 'M1 1h1v8H1zM2 2h1v6H2zM3 3h1v4H3zM4 4h1v2H4zM5 1h1v8H5zM6 2h1v6H6zM7 3h1v4H7zM8 4h1v2H8z',
   end: 'M1 1h1v8H1zM2 2h1v6H2zM3 3h1v4H3zM4 4h1v2H4zM7 1h2v8H7z',
+  /** Altavoz con ondas; con una X, la música silenciada (Jose, 03/11/2026: la corchea no se entendía). */
+  music: 'M0 3h2v4H0zM2 3h1v4H2zM3 2h1v6H3zM4 1h1v8H4zM6 3h1v1H6zM6 6h1v1H6zM7 4h1v2H7zM8 2h1v1H8zM8 7h1v1H8zM9 3h1v4H9z',
+  musicOff: 'M0 3h2v4H0zM2 3h1v4H2zM3 2h1v6H3zM4 1h1v8H4zM6 3h1v1H6zM8 3h1v1H8zM7 4h1v2H7zM6 6h1v1H6zM8 6h1v1H8z',
 } as const
 
 const MIRRORED = { previous: 'next', start: 'end' } as const
@@ -257,6 +280,9 @@ function ReplayControls(props: ReplayControlsProps) {
           se mueven (decisión de Jose, 30/10/2026). */}
       <button type="button" className="rp-sound-hint" data-shown={props.soundHint ? 'true' : undefined} aria-hidden={props.soundHint ? undefined : true} tabIndex={props.soundHint ? undefined : -1}>
         {text.tapForSound}
+      </button>
+      <button type="button" className="rp-button rp-music" aria-label={text.music} aria-pressed={!props.musicMuted} title={props.musicMuted ? text.musicOff : text.music} onClick={props.onToggleMusic}>
+        <ControlIcon icon={props.musicMuted ? 'musicOff' : 'music'} />
       </button>
       <p className="rp-turn" aria-live="polite">{props.label}</p>
       <div className="rp-buttons" role="group" aria-label={text.controls}>
