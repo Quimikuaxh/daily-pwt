@@ -6,8 +6,8 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 ## Rama `feature/discord-avisos` (03/11/2026)
 - **Hecho:** aviso por Discord (RF-115 a RF-119, DEC-77, UT-140 a UT-142): migración `20261103000000_pwt_aviso_discord.sql`, Edge Function `pwt-discord` y apartado en Cuenta.
-- **Falta (Jose):** crear la aplicación y el bot de Discord y el servidor del juego, y configurar Supabase (README, «Aviso por Discord»). Después, aplicar la migración, desplegar la función y guardar los secretos.
-- **Antes de fusionar:** probarlo de verdad con una cuenta (conectar, cambiar la hora a la media hora siguiente y recibir el aviso); la web enseña el apartado en cuanto se publica, así que la migración y la función van antes que la web.
+- **En producción (03/11/2026):** aplicación y bot de Discord, servidor del juego y secretos (Jose); `pg_net`, migración, Vault y función `pwt-discord` desplegada (sesión remota). La tarea de las 20:30 llamó a la función: 200 con `{"sent":0,"failed":0}`; sin el secreto, 403.
+- **Fusionada en `main` el 03/11/2026** (Jose), sin la prueba con una cuenta real. **Falta:** que Jose conecte su Discord (bienvenida por privado) y reciba un aviso un día antes de jugar.
 
 ## Rama `feature/sonido-y-stats-rival` (03/11/2026)
 - **Hecho:** interruptores de las músicas especiales (UT-136, UT-137), música silenciable y pausada en las repeticiones (UT-138) y estadísticas del rival en Hoy (UT-139).
