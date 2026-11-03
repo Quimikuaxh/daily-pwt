@@ -1,6 +1,7 @@
 import type { BattleView, MonView, SideView } from './protocol'
 import { isFaintedCondition } from './condition'
 import { toId } from '../core/id'
+import { applyFieldLine } from './fieldState'
 
 export type ViewAction = { type: 'lines'; lines: string[] } | { type: 'snapshot'; view: BattleView }
 
@@ -57,6 +58,7 @@ function applyCondition(side: SideView, mon: MonView, condition: Condition, isPl
 function applyLine(view: BattleView, line: string): void {
   const fields = line.split('|')
   const type = fields[1]
+  if (view.field) applyFieldLine(view.field, line)
 
   switch (type) {
     case 'turn':

@@ -63,6 +63,8 @@ export type MonView = {
   moves?: { id: string; pp: number; maxPp: number }[]
 }
 
+import type { FieldState } from './fieldState'
+
 /** `active` es un índice en `team`. */
 export type SideView = { remaining: number; active: number | null; team: MonView[] }
 
@@ -71,6 +73,8 @@ export type BattleView = {
   weather: string | null
   /** Turnos que le quedan al clima; `null` si es permanente (habilidad, 5.ª gen.) o no se sabe aún (llega con la instantánea). */
   weatherTurns?: number | null
+  /** Pantalla «Estado» (RF-44b): efectos del campo, de cada lado y de los dos Pokémon en combate. Las repeticiones antiguas no lo traen. */
+  field?: FieldState
   player: SideView
   rival: SideView
 }

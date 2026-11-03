@@ -3,12 +3,15 @@ import { es } from '../../i18n/es'
 import { uiAsset } from './introAssets'
 import { MoveMenu } from './MoveMenu'
 import type { MoveOption } from './battleModel'
+import type { BattleView } from '../../battle/protocol'
+import type { NamesEs } from '../../core/types'
+import { FieldPanel, FieldPill } from './FieldStatus'
 
 /**
  * Fondo de la pantalla táctil, medido de la captura de Negro/Blanco: panel #504848 con contorno negro y un saliente central
  * abajo, alas granate (#b81840, franja inferior #881830) arriba en las esquinas y zona clara #d8d8e0 debajo.
  */
-function TouchBackground() {
+export function TouchBackground() {
   return (
     <svg className="bt-touch-svg" viewBox="0 0 256 192" shapeRendering="crispEdges" aria-hidden="true">
       <rect width="256" height="192" fill="#d8d8e0" />
@@ -25,7 +28,7 @@ function TouchBackground() {
   )
 }
 
-export type TouchMode = 'main' | 'moves' | 'switch' | 'rival'
+export type TouchMode = 'main' | 'moves' | 'switch' | 'rival' | 'field'
 
 type TouchScreenProps = {
   mode: TouchMode
@@ -41,10 +44,11 @@ type TouchScreenProps = {
   /** Clima activo (id del simulador) o null, y los turnos que le quedan (null si es permanente). */
   weather?: string | null
   weatherTurns?: number | null
+  /** Pantalla «Estado» (RF-44b): la vista del combate, los nombres y el texto para la caja de mensajes al pulsar algo. */
+  view?: BattleView | null
+  names?: NamesEs
+  onNote?: (note: string) => void
 }
-
-const WEATHER_LABELS: { [id: string]: string | undefined } = es.battle.weather
-const weatherLabel = (weather: string): string => WEATHER_LABELS[weather] ?? es.battle.weatherUnknown
 
 /** Pantalla táctil (256x192): menú principal Luchar / Cambiar / Rendirse y movimientos. El equipo (Cambiar) es la pantalla de equipo, que ocupa las dos pantallas. */
 export function TouchScreen(props: TouchScreenProps) {
@@ -63,27 +67,14 @@ export function TouchScreen(props: TouchScreenProps) {
     <section className="bt-touch" data-mode={mode} aria-label={es.battle.controlsLabel}>
       <TouchBackground />
       {!canAct && <p className="sr-only">{es.battle.waitingTurn}</p>}
-      {/* Como en el juego: el clima, con su color de fondo, en el hueco central de arriba de la pantalla táctil. */}
-      {props.weather && (
-        <p data-testid="weather" className="bt-touch-weather" data-weather={props.weather}>
-          <span className="bt-touch-weather-label">
-            <span>{weatherLabel(props.weather)}</span>
-            {props.weatherTurns ? (
-              <>
-                <span className="bt-touch-weather-sep" aria-hidden="true">·</span>
-                {/* Reloj: los turnos que le quedan al clima. */}
-                <svg className="bt-touch-weather-clock" viewBox="0 0 7 7" width="7" height="7" aria-hidden="true" shapeRendering="crispEdges">
-                  <path d="M2 0h3v1H2zM1 1h1v1H1zM3 1h1v1H3zM5 1h1v1H5zM0 2h1v1H0zM3 2h1v1H3zM6 2h1v1H6zM0 3h1v1H0zM3 3h2v1H3zM6 3h1v1H6zM0 4h1v1H0zM6 4h1v1H6zM1 5h1v1H1zM5 5h1v1H5zM2 6h3v1H2z" fill="currentColor" />
-                </svg>
-                <span aria-hidden="true">{props.weatherTurns}</span>
-                <span className="sr-only">{es.battle.weatherTurnsLeft(props.weatherTurns)}</span>
-              </>
-            ) : null}
-          </span>
-        </p>
+      {/* Como en el juego: el clima, con su color de fondo, en el hueco central de arriba de la pantalla táctil. Sin clima, «Estado»; al
+          pulsarla, la pantalla «Estado» (RF-44b). */}
+      <FieldPill weather={props.weather ?? null} weatherTurns={props.weatherTurns ?? null} enabled={canAct && Boolean(props.view && props.names)} onOpen={() => props.onMode('field')} />
+      {canAct && mode === 'field' && props.view && props.names && (
+        <FieldPanel view={props.view} names={props.names} onNote={(note) => props.onNote?.(note)} onBack={() => props.onMode('main')} />
       )}
       {canAct && mode === 'moves' && <MoveMenu moves={props.moves} enabled={canAct} onChoose={props.onChooseMove} onBack={() => props.onMode('main')} />}
-      {canAct && mode !== 'moves' && (
+      {canAct && mode !== 'moves' && mode !== 'field' && (
         <div className="bt-main">
           <button ref={fightRef} type="button" className="bt-fight" disabled={!canAct} onClick={() => props.onMode('moves')}>
             <span className="bt-fight-shape" aria-hidden="true" />

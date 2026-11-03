@@ -4,6 +4,9 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 **Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). El sonido va en `feature/f3-sonido` (desde `main`): los audios ya están descargados y versionados (se descargaron en local, desde la nube las fuentes están bloqueadas); falta implementarlo según «Sonido: plan de implementación».
 
+## Pantalla «Estado» (03/11/2026, directo a `main`)
+- **Hecho:** pastilla siempre visible y pantalla «Estado» en combate y en el visor (RF-44b, DEC-78, UT-143, UT-144, E2E-76). Solo web, sin migración.
+
 ## Rama `feature/discord-avisos` (03/11/2026)
 - **Hecho:** aviso por Discord (RF-115 a RF-119, DEC-77, UT-140 a UT-142): migración `20261103000000_pwt_aviso_discord.sql`, Edge Function `pwt-discord` y apartado en Cuenta.
 - **En producción (03/11/2026):** aplicación y bot de Discord, servidor del juego y secretos (Jose); `pg_net`, migración, Vault y función `pwt-discord` desplegada (sesión remota). La tarea de las 20:30 llamó a la función: 200 con `{"sent":0,"failed":0}`; sin el secreto, 403.

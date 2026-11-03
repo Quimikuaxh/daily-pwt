@@ -224,6 +224,27 @@ export const es = {
     weather: BATTLE_WEATHER,
     weatherUnknown: 'Clima',
     weatherTurnsLeft: (turns: number) => (turns === 1 ? ', queda 1 turno' : `, quedan ${turns} turnos`),
+    // Pastilla y pantalla «Estado» (RF-44b): efectos del campo, de cada lado y de los dos Pokémon en combate.
+    fieldStatus: {
+      pill: 'Estado',
+      open: 'Ver el estado del combate',
+      title: 'Estado del combate',
+      rowTags: { field: 'CAMPO', player: 'TÚ', rival: 'RIVAL' },
+      rowNames: { field: 'Campo', player: 'Tu lado', rival: 'Lado rival' },
+      cardAria: (name: string, side: 'player' | 'rival') => `${name} (${side === 'player' ? 'tu Pokémon' : 'rival'}): ver detalle en el mensaje`,
+      rowAria: (name: string) => `${name}: ver detalle en el mensaje`,
+      nothing: 'Nada',
+      noChanges: 'Sin cambios',
+      more: (count: number) => `y ${count} más`,
+      layers: (label: string, layers: number) => `${label} ×${layers}`,
+      turnsLong: (turns: number) => (turns === 1 ? '1 turno' : `${turns} turnos`),
+      statsLong: { atk: 'Ataque', def: 'Defensa', spa: 'At. Esp.', spd: 'Def. Esp.', spe: 'Velocidad', accuracy: 'Precisión', evasion: 'Evasión' },
+      statsShort: { atk: 'Ata', def: 'Def', spa: 'AtE', spd: 'DfE', spe: 'Vel', accuracy: 'Pre', evasion: 'Eva' },
+      boost: (stat: string, amount: number) => `${stat} ${amount > 0 ? '+' : '−'}${Math.abs(amount)}`,
+      // Los que no son un movimiento (los demás, con su nombre de movimiento o habilidad).
+      effects: { confusion: 'Confusión', attract: 'Enamorado', partiallytrapped: 'Atrapado', trapped: 'Sin escapatoria', futuremove: 'Ataque futuro' } as Record<string, string>,
+      noActive: '—',
+    },
 
     movesLabel: 'Movimientos',
     ppLabel: 'PP',

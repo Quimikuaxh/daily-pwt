@@ -19,7 +19,8 @@ import { TopScreen } from './TopScreen'
 import { PartyScreen } from './party/PartyScreen'
 import { PARTY_SCREEN_IMAGES, useImagesReady } from './preloadAssets'
 import { partyMembers, requestFromView, rivalMembers } from './party/partyModel'
-import { TouchScreen, type TouchMode } from './TouchScreen'
+import { TouchBackground, TouchScreen, type TouchMode } from './TouchScreen'
+import { FieldPanel, FieldPill } from './FieldStatus'
 import { canChoose, hasOnlyForcedMove, isForcedSwitch, moveOptions, playerInPinch, lastPokemonThemeOn, switchBlockedReason, switchOptions } from './battleModel'
 import { avatarForSeed } from './introAssets'
 import { menuSoundFor } from './menuSounds'
@@ -107,6 +108,9 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   const [rivalPeek, setRivalPeek] = useState(null as BattleRequest | null)
   // Visor (F5): equipo abierto con los botones de la barra; se cierra con Volver de la pantalla de equipo.
   const [replayTeam, setReplayTeam] = useState(null as ReplayTeam | null)
+  // Pantalla «Estado» (RF-44b): abierta en el visor y lo último pulsado, que se ve en la caja de mensajes mientras no llegue otro mensaje.
+  const [replayStatus, setReplayStatus] = useState(false)
+  const [fieldNote, setFieldNote] = useState(null as { text: string; over: string | null } | null)
 
   const { request, lastChoiceRequest, choose, advance } = battle
   const menuRequest = request ?? lastChoiceRequest
@@ -185,7 +189,10 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
 
   const activePlayerName = battle.view?.player.active == null ? null : speciesName(battle.view.player.team[battle.view.player.active].species, '')
   const prompt = canActNow && !forcedSwitch && battle.introPhase === 'done' && activePlayerName ? es.battle.whatWillDo(activePlayerName) : null
-  const message = prompt ?? battle.message
+  const statusOpen = mode === 'replay' ? replayStatus : touchMode === 'field'
+  const note = statusOpen && fieldNote && fieldNote.over === battle.message ? fieldNote.text : null
+  const message = note ?? prompt ?? battle.message
+  const showNote = (text: string) => setFieldNote({ text, over: battle.message })
 
   function chooseMove(slot: number) {
     choose({ type: 'move', slot })
@@ -296,6 +303,13 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                   {mode === 'replay' && (
                     <section className="bt-touch bt-replay" style={{ height: SCREEN_HEIGHT }} aria-label={es.battle.modeReplayLabel}>
                       {controls?.(setReplayTeam)}
+                      {/* RF-44b: la pastilla y la pantalla «Estado» también en el visor, con el estado del paso que se está viendo. */}
+                      {replayStatus && battle.view && <TouchBackground />}
+                      <FieldPill weather={battle.view?.weather ?? null} weatherTurns={battle.view?.weatherTurns ?? null} enabled={battle.view !== null} onOpen={() => {
+                        setFieldNote(null)
+                        setReplayStatus(true)
+                      }} />
+                      {replayStatus && battle.view && <FieldPanel view={battle.view} names={data.names} onNote={showNote} onBack={() => setReplayStatus(false)} />}
                     </section>
                   )}
                   {mode !== 'replay' && (
@@ -307,12 +321,18 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                     forfeitEnabled={!ended}
                     moves={moves}
                     switchBlockedReason={blockedReason}
-                    onMode={(mode) => setTouchChoice({ request: menuRequest, mode })}
+                    onMode={(mode) => {
+                      if (mode === 'field') setFieldNote(null)
+                      setTouchChoice({ request: menuRequest, mode })
+                    }}
                     onChooseMove={chooseMove}
                     onForfeit={() => setDialog('forfeit')}
                     onRival={() => setTouchChoice({ request: menuRequest, mode: 'rival' })}
                     weather={battle.view?.weather ?? null}
                     weatherTurns={battle.view?.weatherTurns ?? null}
+                    view={battle.view}
+                    names={data.names}
+                    onNote={showNote}
                   />
                   )}
                   </>

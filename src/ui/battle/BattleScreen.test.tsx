@@ -494,12 +494,14 @@ describe('campo de batalla (CMP-18, RF-44)', () => {
 
   it('el clima permanente no lleva número', async () => {
     await ready({ view: { ...sixView({ weather: 'sandstorm' }), weatherTurns: null } })
-    expect(screen.getByTestId('weather')).toHaveTextContent(/^Torm\. arena$/)
+    expect(screen.getByTestId('weather')).toHaveTextContent(/^Torm\. arena\. Ver el estado del combate$/)
   })
 
-  it('sin clima no se muestra indicador de clima', async () => {
+  // Cambio de requisito (RF-44b, 03/11/2026): antes, sin clima no había pastilla; ahora dice «Estado» y abre la pantalla «Estado» (UT-144).
+  it('sin clima la pastilla dice «Estado», gris', async () => {
     await ready({ view: sixView({ weather: null }) })
-    expect(screen.queryByTestId('weather')).toBeNull()
+    expect(screen.getByTestId('weather')).toHaveTextContent(/^Estado/)
+    expect(screen.getByTestId('weather')).toHaveAttribute('data-weather', 'none')
   })
 
   it('el nombre del Pokémon activo aparece en su barra', async () => {

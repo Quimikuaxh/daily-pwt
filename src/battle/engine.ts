@@ -8,6 +8,7 @@ import { chooseTrivialAction } from './ai/trivial'
 import { evaluateEnd, forfeitBattle } from './end'
 import type { BattleRequest, Choice, EngineBattleView, EngineEnd, EngineInit, EngineUpdate, MonView } from './protocol'
 import { hpPercentOf } from './viewReducer'
+import { boostsFrom, effectsFrom, emptyActive, FIELD_EFFECTS, MON_EFFECTS, SIDE_EFFECTS, type ActiveState, type FieldState } from './fieldState'
 
 // Formato de depuración sin Team Preview (DEC-09). Reglas ausentes a propósito: sin cláusula de sueño, de KO en un golpe, de especie ni de objeto.
 const BATTLE_FORMAT = 'gen5customgame@@@!teampreview'
@@ -140,11 +141,32 @@ export function createBattleEngine(init: EngineInit): BattleEngine {
     return { remaining: team.filter((mon) => !mon.fainted).length, active: roster.indexOf(side.active[0]), team }
   }
 
+  /** RF-44b: lo que enseña la pantalla «Estado», leído del simulador (los turnos son los `duration` que le quedan a cada efecto). */
+  function fieldState(): FieldState {
+    const sideEffects = (side: Side) => [
+      ...effectsFrom(side.sideConditions, SIDE_EFFECTS),
+      ...effectsFrom(side.active[0]?.side.slotConditions[side.active[0].position] ?? {}, SIDE_EFFECTS),
+    ]
+    const activeState = (side: Side): ActiveState => {
+      const pokemon = side.active[0]
+      if (!pokemon || pokemon.fainted) return emptyActive()
+      return { boosts: boostsFrom(pokemon.boosts as unknown as Record<string, number>), effects: effectsFrom(pokemon.volatiles, MON_EFFECTS) }
+    }
+    return {
+      field: effectsFrom(battle.field.pseudoWeather, FIELD_EFFECTS),
+      player: sideEffects(playerSide),
+      rival: sideEffects(rivalSide),
+      playerActive: activeState(playerSide),
+      rivalActive: activeState(rivalSide),
+    }
+  }
+
   function buildView(): EngineBattleView {
     return {
       turn: battle.turn,
       weather: battle.field.weather || null,
       weatherTurns: battle.field.weather ? battle.field.weatherState.duration || null : null,
+      field: fieldState(),
       player: sideView(playerSide, playerRoster, playerSpecies, true),
       rival: sideView(rivalSide, rivalRoster, rivalSpecies, false),
     }

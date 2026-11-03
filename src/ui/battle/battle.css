@@ -1169,36 +1169,53 @@
   position: absolute;
   top: 0;
   left: 72px;
-  z-index: 3;
+  z-index: 4;
+  width: 112px;
+  /* Botón (RF-44b): abre la pantalla «Estado». La zona pulsable baja hasta 32 px del lienzo (44 px a 360 px, E2E-12) aunque la
+     pastilla que se ve mida 20. */
+  height: 32px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Misma forma que las teselas de movimiento: hexágono con borde negro, aro claro y dentro el dibujo del clima. */
+.bt-touch-weather-shape {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 112px;
   height: 20px;
-  margin: 0;
-  pointer-events: none;
-  /* Misma forma que las teselas de movimiento: hexágono con borde negro, aro claro y dentro el dibujo del clima. */
   background: #000;
   clip-path: polygon(1px 10px, 8px 1px, 104px 1px, 111px 10px, 104px 19px, 8px 19px);
 }
 
-.bt-touch-weather::before,
-.bt-touch-weather::after {
+.bt-touch-weather-shape::before,
+.bt-touch-weather-shape::after {
   content: "";
   position: absolute;
   inset: 0;
 }
 
-.bt-touch-weather::before {
+.bt-touch-weather-shape::before {
   background: #f0f0f0;
   clip-path: polygon(2px 10px, 9px 2px, 103px 2px, 110px 10px, 103px 18px, 9px 18px);
 }
 
-.bt-touch-weather::after {
+.bt-touch-weather-shape::after {
   background: var(--weather-art, #504848);
   clip-path: polygon(4px 10px, 10px 4px, 102px 4px, 108px 10px, 102px 16px, 10px 16px);
 }
 
 .bt-touch-weather-label {
   position: absolute;
-  inset: -1px 0 1px;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1219,6 +1236,20 @@
   top: 1px;
   margin: 0 4px 0 0;
   filter: drop-shadow(1px 0 #181818) drop-shadow(-1px 0 #181818) drop-shadow(0 1px #181818) drop-shadow(0 -1px #181818);
+}
+
+.bt-touch-weather:disabled {
+  cursor: default;
+}
+
+/* Sin clima (RF-44b): la misma forma, gris clarito con la trama de las teselas y «Estado» en oscuro. */
+.bt-touch-weather[data-weather="none"] .bt-touch-weather-shape::after {
+  background: radial-gradient(circle at 2px 2px, #e8e8f0 1px, transparent 1.5px) 0 0 / 4px 4px, #c8c8d4;
+}
+
+.bt-touch-weather[data-weather="none"] .bt-touch-weather-label {
+  color: #383840;
+  text-shadow: 1px 1px 0 #f0f0f8;
 }
 
 /* Fondos en píxel de cada clima (dibujados aquí, a la escala del lienzo). */
@@ -1563,4 +1594,290 @@
 /* Pantallas de batalla y táctil bajo la de equipo: se quedan montadas (mensajes, intro) pero inertes mientras esta se ve. */
 .bt-underlay {
   display: contents;
+}
+
+
+/* Pantalla «Estado» (RF-44b, DEC-78), en coordenadas del lienzo de 256x192: dos fichas con la forma de las teselas de movimientos
+   (borde azul la tuya, rojo la del rival) y tres franjas oscuras con el color de su etiqueta; la flecha de volver, donde siempre. */
+.bt-status {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  font-size: 11px;
+}
+
+.bt-status-card,
+.bt-status-row {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: #f8f8f8;
+  text-align: left;
+  text-shadow: 1px 1px 0 #181818;
+  cursor: pointer;
+}
+
+.bt-status-card {
+  position: absolute;
+  top: 24px;
+  width: 126px;
+  height: 86px;
+}
+
+.bt-status-player {
+  left: 1px;
+  --tile: #58a8f8;
+}
+
+.bt-status-rival {
+  left: 129px;
+  --tile: #f86060;
+}
+
+.bt-status-shape {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  clip-path: polygon(0 8px, 8px 0, 118px 0, 126px 8px, 126px 78px, 118px 86px, 8px 86px, 0 78px);
+}
+
+.bt-status-shape::before,
+.bt-status-shape::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.bt-status-shape::before {
+  background: var(--tile);
+  clip-path: polygon(1px 8px, 8px 1px, 118px 1px, 125px 8px, 125px 78px, 118px 85px, 8px 85px, 1px 78px);
+}
+
+.bt-status-shape::after {
+  background: radial-gradient(circle at 2px 2px, #484848 1px, transparent 1.5px) 0 0 / 4px 4px, #383838;
+  clip-path: polygon(4px 9px, 9px 4px, 117px 4px, 122px 9px, 122px 77px, 117px 82px, 9px 82px, 4px 77px);
+}
+
+.bt-status-name {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 5px;
+  line-height: 13px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-bottom: 0.25em;
+  margin-bottom: -0.25em;
+}
+
+/* La raya bajo el nombre, del color de la ficha. */
+.bt-status-name::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 15px;
+  height: 1px;
+  background: var(--tile);
+}
+
+.bt-status-lines {
+  position: absolute;
+  left: 11px;
+  right: 11px;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  line-height: 13px;
+}
+
+.bt-status-list,
+.bt-status-grid {
+  display: contents;
+}
+
+.bt-status-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.bt-status-effect,
+.bt-status-effects,
+.bt-status-empty {
+  color: #d8d8e0;
+}
+
+.bt-status-arrows {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.bt-arrow-up {
+  color: #60e060;
+  filter: drop-shadow(1px 1px 0 #104010);
+}
+
+.bt-arrow-down {
+  color: #f85858;
+  filter: drop-shadow(1px 1px 0 #401010);
+}
+
+.bt-status-count {
+  margin-left: 1px;
+  font-size: 10px;
+}
+
+.bt-status-turns {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* A la altura de la cifra que lo sigue: la fuente apoya los números más abajo del centro de su caja. */
+.bt-clock {
+  position: relative;
+  top: 2px;
+  flex: none;
+  margin: 0 2px 0 4px;
+}
+
+/* Modo compacto (más de 4 líneas): nombre y líneas más juntos, estadísticas abreviadas en dos columnas y los efectos en una línea. */
+.bt-status-compact .bt-status-name {
+  top: 4px;
+  font-size: 10px;
+  line-height: 11px;
+}
+
+.bt-status-compact .bt-status-name::after {
+  top: 12px;
+}
+
+.bt-status-compact .bt-status-lines {
+  top: 21px;
+  font-size: 10px;
+  line-height: 11px;
+}
+
+.bt-status-compact .bt-status-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 6px;
+}
+
+.bt-status-effects {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-bottom: 0.25em;
+  margin-bottom: -0.25em;
+}
+
+.bt-status-rows {
+  position: absolute;
+  left: 2px;
+  top: 114px;
+  width: 172px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  isolation: isolate;
+}
+
+.bt-status .bt-status-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 172px;
+  height: 17px;
+  padding: 0 7px 0 3px;
+  overflow: hidden;
+}
+
+.bt-status-row::before,
+.bt-status-row::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+.bt-status-row::before {
+  background: var(--tile);
+  clip-path: polygon(0 8px, 6px 0, 166px 0, 172px 8px, 172px 9px, 166px 17px, 6px 17px, 0 9px);
+}
+
+.bt-status-row::after {
+  background: radial-gradient(circle at 2px 2px, #484848 1px, transparent 1.5px) 0 0 / 4px 4px, #383838;
+  clip-path: polygon(2px 8px, 7px 2px, 165px 2px, 170px 8px, 170px 9px, 165px 15px, 7px 15px, 2px 9px);
+}
+
+.bt-status-row-field {
+  --tile: #a090e0;
+}
+
+.bt-status-row-player {
+  --tile: #58a8f8;
+}
+
+.bt-status-row-rival {
+  --tile: #f86060;
+}
+
+.bt-status-tag {
+  flex: none;
+  width: 30px;
+  margin: 0 4px 0 2px;
+  font-size: 9px;
+  text-align: center;
+  color: var(--tile);
+}
+
+.bt-status-text {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.bt-status-item {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+.bt-status-sep {
+  margin: 0 3px;
+  color: #909098;
+}
+
+/* Copia invisible con todos los efectos: la franja la mide para saber cuántos caben enteros. */
+.bt-status-measure {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.bt-status-card:focus-visible .bt-status-shape,
+.bt-status-row:focus-visible {
+  outline: 2px solid #7cc4ff;
+  outline-offset: -2px;
+}
+
+/* En el visor, el fondo de la pantalla táctil tapa los controles mientras está abierta. */
+.bt-replay .bt-touch-svg {
+  z-index: 2;
 }

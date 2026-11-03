@@ -330,3 +330,26 @@ test.describe('Animaciones de movimientos (DEC-53)', () => {
     await expect(page.locator('.bt-fx[data-move]')).toHaveCount(0)
   })
 })
+
+// E2E-76 · Pantalla «Estado» (RF-44b, DEC-78): la pastilla de arriba de la pantalla táctil la abre en un combate real, con los dos
+// Pokémon en combate y las tres franjas; tras un turno con subidas, la ficha las enseña; Volver deja el menú como estaba.
+test.describe('Pantalla «Estado»', () => {
+  test('E2E-76 la pastilla abre «Estado» con los dos Pokémon y las franjas; Volver regresa al menú', async ({ page }) => {
+    const { battle } = await startBattle(page)
+    await battle.maxSpeed()
+    await battle.waitForActionOrResult()
+    const pill = page.getByTestId('weather')
+    await expect(pill).toBeEnabled()
+    await pill.click()
+    const panel = page.getByRole('region', { name: 'Estado del combate' })
+    await expect(panel).toBeVisible()
+    await expect(panel.getByRole('button', { name: /\(tu Pokémon\)/ })).toBeVisible()
+    await expect(panel.getByRole('button', { name: /\(rival\)/ })).toBeVisible()
+    for (const row of [/^Campo/, /^Tu lado/, /^Lado rival/]) await expect(panel.getByRole('button', { name: row })).toBeVisible()
+    await panel.getByRole('button', { name: /^Tu lado/ }).click()
+    await expect(page.locator('.bt-message-text')).toHaveText(/^Tu lado: /)
+    await panel.getByRole('button', { name: 'Volver' }).click()
+    await expect(panel).toBeHidden()
+    await expect(battle.fightButton).toBeEnabled()
+  })
+})
