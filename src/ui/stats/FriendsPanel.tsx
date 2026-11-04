@@ -26,11 +26,14 @@ export function FriendsPanel({ api, onChange, onOpen, onWatchLive }: { api: Clou
     void reload()
   }, [reload])
   const anyPlaying = (list ?? []).some((row) => row.relation === 'friend' && row.playing)
+  // Depende de si hay directo, no de la función: quien la pasa la crea en cada render (Hoy se repinta cada segundo con la cuenta atrás)
+  // y el temporizador se borraba antes de dispararse (prueba de Jose, 04/11/2026).
+  const liveEnabled = Boolean(onWatchLive)
   useEffect(() => {
-    if (!anyPlaying || !onWatchLive) return
+    if (!anyPlaying || !liveEnabled) return
     const timer = setInterval(() => void reload(), FRIENDS_POLL_MS)
     return () => clearInterval(timer)
-  }, [anyPlaying, onWatchLive, reload])
+  }, [anyPlaying, liveEnabled, reload])
 
   async function run(action: Action) {
     setError(false)

@@ -57,9 +57,10 @@ function FriendBody({ profile, failed, today, trainerName, art, onWatch }: { pro
   if (profile === null) {
     return <Loading label={text.loading} />
   }
-  // El combate de hoy sale, pero su repetición no hasta mañana (RF-111b; Jose, 31/10/2026).
-  const beforeToday = (item: { date: string }) => {
-    return item.date < today
+  // El combate de hoy sale, pero su repetición no hasta mañana (RF-111b; Jose, 31/10/2026), salvo si quien mira ya terminó su oficial de
+  // hoy (Jose, 04/11/2026): lo decide el servidor (`watchable`).
+  const watchable = (item: { date: string; watchable?: boolean }) => {
+    return item.watchable ?? item.date < today
   }
   return (
     <>
@@ -68,7 +69,7 @@ function FriendBody({ profile, failed, today, trainerName, art, onWatch }: { pro
         <section className="friends-section">
           <h3 className="help-title">{text.history}</h3>
           {profile.history.length === 0 && <p className="settings-hint">{text.noHistory}</p>}
-          <HistoryList items={profile.history} trainerName={trainerName} art={art} onWatch={(date) => onWatch(profile.nickname, date)} canWatch={beforeToday} />
+          <HistoryList items={profile.history} trainerName={trainerName} art={art} onWatch={(date) => onWatch(profile.nickname, date)} canWatch={watchable} />
         </section>
       )}
     </>

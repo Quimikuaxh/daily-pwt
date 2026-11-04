@@ -272,7 +272,28 @@ describe('cuenta en la interfaz (UT-100)', () => {
     expect(await screen.findByTestId('stats-played')).toHaveTextContent('2')
     expect(screen.getByTestId('stats-today-survivors')).toHaveTextContent('5/6')
     expect(screen.getByText(/Los puntos de hoy se calculan a medianoche/)).toBeInTheDocument()
-    expect(screen.getByText('Su repetición de hoy se puede ver desde medianoche (hora de Madrid).')).toBeInTheDocument()
+    expect(screen.getByText(/Su repetición de hoy se puede ver en cuanto termines tu combate oficial de hoy/)).toBeInTheDocument()
+  })
+
+  // UT-151 (Jose, 04/11/2026): si el servidor la marca como visible (quien mira ya terminó su oficial de hoy), su repetición de hoy se ve.
+  it('la repetición de hoy de un amigo sale con «Ver repetición» cuando el servidor dice que se puede ver (UT-151)', async () => {
+    const onWatchFriendReplay = vi.fn()
+    const api = fakeApi({
+      mySummary: async () => ({ nickname: 'Jose', registered: true, points: [], incomingRequests: 0 }),
+      listFriends: async () => [{ nickname: 'Eva', relation: 'friend' }],
+      friendProfile: async (nickname) => ({
+        nickname,
+        days: [],
+        points: [],
+        history: [{ date: TODAY, challengeNumber: 4, trainerId: 'misty', variantId: 'misty-1', status: 'won', turns: 9, survivors: 3, playerFainted: null, sharedId: null, watchable: true }],
+      }),
+    })
+    const { user } = await mount(GOOGLE, api, { trainerName: () => 'Misty', onWatchFriendReplay })
+    await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
+    await user.click(await screen.findByRole('tab', { name: 'Amigos' }))
+    await user.click(await screen.findByRole('button', { name: 'Ver las estadísticas de Eva' }))
+    await user.click(await screen.findByRole('button', { name: 'Ver repetición' }))
+    expect(onWatchFriendReplay).toHaveBeenCalledWith('Eva', TODAY)
   })
 
   it('«‹ Amigos» vuelve a la lista; si el servidor no da sus datos (ya no es amigo), avisa (UT-119)', async () => {

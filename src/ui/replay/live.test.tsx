@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { useEffect, useState } from 'react'
 import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { getDailyChallenge } from '../../core/challenge'
@@ -88,6 +89,28 @@ describe('la fila del amigo que juega (UT-150)', () => {
     render(<FriendsPanel api={friend('accepted')} onWatchLive={onWatchLive} />)
     await user.click(await screen.findByRole('button', { name: 'Ver en directo el combate de Eva' }))
     expect(onWatchLive).toHaveBeenCalledWith('Eva')
+  })
+})
+
+describe('la lista se vuelve a pedir mientras un amigo juega (UT-150)', () => {
+  // Prueba de Jose (04/11/2026): Hoy se repinta cada segundo (cuenta atrás) y pasa `onWatchLive` nueva en cada render; el temporizador
+  // de 5 s se borraba antes de dispararse y «Ver en directo» no salía hasta cerrar y abrir Amigos.
+  it('aunque quien lo monta se repinte cada segundo con otra función, a los 5 s pide la lista otra vez', async () => {
+    const api = fakeApi({ listFriends: async () => [{ nickname: 'Eva', relation: 'friend', playing: true, live: 'pending' }] })
+    function Ticking() {
+      const [tick, setTick] = useState(0)
+      useEffect(() => {
+        const timer = setInterval(() => setTick((value) => value + 1), 1000)
+        return () => clearInterval(timer)
+      }, [])
+      return <FriendsPanel key="panel" api={api} onWatchLive={() => tick} />
+    }
+    render(<Ticking />)
+    await settle(100)
+    expect(api.listFriends).toHaveBeenCalledTimes(1)
+    // Segundo a segundo, como en el navegador: cada tic repinta antes del siguiente.
+    for (let second = 0; second < 6; second++) await settle(1_000)
+    expect(api.listFriends.mock.calls.length).toBeGreaterThanOrEqual(2)
   })
 })
 

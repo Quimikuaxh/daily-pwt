@@ -342,9 +342,12 @@
   margin-top: 12px;
 }
 
-/* Directo (RF-111c): «Jugando ahora» y su botón, en la fila del amigo. */
+/* Directo (RF-111c): «Jugando ahora» y su botón, en una línea propia bajo el nombre y «Quitar» (a 360 px, en la misma fila el nombre
+   se partía letra a letra; prueba de Jose, 04/11/2026). */
 .friend-live {
-  display: inline-flex;
+  display: flex;
+  flex: 1 1 100%;
+  order: 1;
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;

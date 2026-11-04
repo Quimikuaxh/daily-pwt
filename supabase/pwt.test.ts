@@ -472,9 +472,17 @@ describe('vista de un amigo (UT-118)', () => {
     expect(profile.days[0]).not.toHaveProperty('battle')
     // Los puntos de hoy, como los propios, no existen hasta el cierre.
     expect(profile.points).toEqual([expect.objectContaining({ date: closed, points: 5.33 })])
-    expect(profile.history).toEqual([expect.objectContaining({ date: t.today, sharedId: null }), expect.objectContaining({ date: closed, sharedId: null })])
+    expect(profile.history).toEqual([expect.objectContaining({ date: t.today, sharedId: null, watchable: false }), expect.objectContaining({ date: closed, sharedId: null, watchable: true })])
     expect(await t.call(eva, `select pwt.get_friend_replay('fede_v', $1::date)`, [closed])).toBe('datos')
     await expect(t.call(eva, `select pwt.get_friend_replay('fede_v', $1::date)`, [t.today])).rejects.toThrow('replay_not_found')
+
+    // UT-151 (Jose, 04/11/2026): con su oficial de hoy empezado, aún no; terminado (aquí, anulado: cuenta como para la práctica), sí.
+    await t.call(eva, `select pwt.start_official($1::date, 7, 'misty', 'misty-1', 'v1', 'seed', 'heuristic', 0, 6, 6)`, [t.today])
+    await expect(t.call(eva, `select pwt.get_friend_replay('fede_v', $1::date)`, [t.today])).rejects.toThrow('replay_not_found')
+    await t.as(eva, `select pwt.void_official($1::date, 'abandoned')`, [t.today])
+    const after = await t.call<{ history: Array<{ date: string; watchable: boolean }> }>(eva, `select pwt.friend_profile('FEDE_V')`)
+    expect(after.history.find((item) => item.date === t.today)?.watchable).toBe(true)
+    expect(await t.call(eva, `select pwt.get_friend_replay('fede_v', $1::date)`, [t.today])).toBe('datos')
   })
 
   it('quien no es amigo (o solo tiene la solicitud pendiente) no ve nada, ni con un nickname que no existe ni sin cuenta', async () => {

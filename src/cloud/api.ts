@@ -35,6 +35,11 @@ export type HistoryItem = {
   /** Debilitados al acabar, en el orden del equipo; `null` en los días que no lo tienen. */
   playerFainted: boolean[] | null
   sharedId: string | null
+  /**
+   * Solo en el historial de un amigo: si se puede ver su repetición (las de días cerrados y, desde el 04/11/2026, la de hoy si quien mira
+   * ya terminó su oficial de hoy). Un servidor anterior no lo trae: entonces, solo las de días cerrados.
+   */
+  watchable?: boolean
 }
 
 /** Repetición compartida (RF-132). `mine`: la compartió quien la está viendo (puede borrarla, RF-133). */

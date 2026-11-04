@@ -119,7 +119,7 @@ export const esCloud = {
     history: 'Historial',
     noHistory: 'Aún no tiene combates con repetición.',
     profileFailed: 'No se han podido cargar sus datos.',
-    todayHidden: 'Su repetición de hoy se puede ver desde medianoche (hora de Madrid).',
+    todayHidden: 'Su repetición de hoy se puede ver en cuanto termines tu combate oficial de hoy (o desde medianoche, hora de Madrid).',
     failed: 'No se ha podido completar. Inténtalo de nuevo.',
     // Directo (RF-111c).
     playing: 'Jugando ahora',
