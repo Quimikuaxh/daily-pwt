@@ -22,6 +22,8 @@ export const esReplay = {
     actionFailed: 'No se ha podido completar. Inténtalo de nuevo.',
   },
   viewer: {
+    // Contador del jugador en el enlace de otro sin nickname (liberado por inactividad, RF-113).
+    someone: 'Jugador',
     // Directo (RF-111c).
     liveBadge: 'EN DIRECTO',
     liveBadgeLabel: (nickname: string) => `Combate de ${nickname} en directo`,

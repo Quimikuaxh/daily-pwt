@@ -64,7 +64,8 @@ function FriendBody({ profile, failed, today, trainerName, art, onWatch }: { pro
   }
   return (
     <>
-      <StatsSummary days={profile.days} today={today} points={profile.points} own={false} note={text.todayHidden} />
+      {/* La nota solo si queda una repetición de hoy que aún no se puede ver (prueba de Jose, 04/11/2026). */}
+      <StatsSummary days={profile.days} today={today} points={profile.points} own={false} note={profile.history.some((item) => item.date === today && !watchable(item)) ? text.todayHidden : undefined} />
       {trainerName && onWatch && (
         <section className="friends-section">
           <h3 className="help-title">{text.history}</h3>

@@ -95,5 +95,5 @@ export function LiveScreen({ nickname, api, data, settings, createClient, onExit
       </main>
     )
   }
-  return <ReplayViewer replay={replay} data={data} settings={settings} onExit={onExit} own={false} live={{ nickname }} />
+  return <ReplayViewer replay={replay} data={data} settings={settings} onExit={onExit} own={false} live={{ nickname }} playerName={nickname} />
 }

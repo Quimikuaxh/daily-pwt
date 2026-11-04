@@ -27,6 +27,8 @@ type ReplayViewerProps = {
    * hasta el final); al ponerse al día, espera el turno siguiente.
    */
   live?: { nickname: string }
+  /** De quién es el combate si no es de quien mira (amigo, directo, enlace ajeno): su contador lleva su nickname en vez de «Tú». */
+  playerName?: string
 }
 
 /**
@@ -57,7 +59,7 @@ const turnShownAt = (replay: ReplayData, index: number) => (index === 0 ? 0 : re
  * Avanzar emite los pasos del turno siguiente, con sus mensajes y animaciones. Ir atrás o saltar vuelve a montar la pantalla en ese paso
  * con el avance rápido de la reanudación (sin animación ni intro). «Reproducir» avanza solo al terminar cada turno.
  */
-export function ReplayViewer({ replay, data, settings, onExit, onDelete, own = true, live }: ReplayViewerProps) {
+export function ReplayViewer({ replay, data, settings, onExit, onDelete, own = true, live, playerName }: ReplayViewerProps) {
   const last = replay.steps.length - 1
   // `start`: paso en el que se monta la pantalla; `mount` la vuelve a montar aunque el paso sea el mismo.
   const [position, setPosition] = useState({ start: 0, mount: 0 })
@@ -175,6 +177,7 @@ export function ReplayViewer({ replay, data, settings, onExit, onDelete, own = t
       battleSeed={replay.battleSeed}
       ai={replay.ai}
       mode="replay"
+      playerLabel={playerName}
       // EN DIRECTO hasta enseñar el final; después es una repetición más.
       replayBadge={live && !(ended && atEnd) ? { text: text.liveBadge, label: text.liveBadgeLabel(live.nickname) } : undefined}
       controls={(openTeam) => (

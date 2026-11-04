@@ -46,6 +46,8 @@ type BattleScreenProps = {
   /** Directo (RF-111c): en el oficial con cuenta, quien pida ver el combate (se contesta en la fila de los contadores). */
   liveApi?: CloudApi
   replayBadge?: { text: string; label: string }
+  /** Rótulo del contador del jugador: «Tú» o, en el visor del combate de otro (amigo, directo, enlace ajeno), su nickname. */
+  playerLabel?: string
   controls?: (openTeam: (side: ReplayTeam) => void) => ReactNode
   /** Reanudación de un oficial guardado: sin intro y con las decisiones ya tomadas reproducidas. */
   replay?: BattleParams['replay']
@@ -77,7 +79,7 @@ type TouchChoice = { request: BattleRequest | null; mode: TouchMode }
 
 const isInteractive = (target: EventTarget | null): boolean => target instanceof HTMLElement && target.closest('button, a, input, select, textarea, [role="dialog"]') !== null
 
-export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', replayBadge, liveApi, controls, replay, onDecision, onSettled, onReplayFailed, paused, initialSpeed, onSpeedChange, animations = 'always', sound, onSoundChange, musicMuted = false, onFinish, onExit }: BattleScreenProps) {
+export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', replayBadge, playerLabel = es.battle.you, liveApi, controls, replay, onDecision, onSettled, onReplayFailed, paused, initialSpeed, onSpeedChange, animations = 'always', sound, onSoundChange, musicMuted = false, onFinish, onExit }: BattleScreenProps) {
   const { trainer, rivalTeam, playerTeam } = challenge
   const speciesName = (speciesId: string, fallback: string): string => data.names.species[speciesId] ?? fallback
   // Grito de una especie: va por su `spriteId` (las formas tienen el suyo o el de la especie base; `gen:cries`).
@@ -248,7 +250,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
             {battle.view && liveAsk && <LiveRequestRow nickname={liveAsk} onAnswer={(accept) => answerLive(liveAsk, accept)} />}
             {battle.view && !liveAsk && (
               <div className="bt-counters">
-                <RemainingIndicator side={battle.view.player} label={es.battle.you} testId="remaining-player" />
+                <RemainingIndicator side={battle.view.player} label={playerLabel} testId="remaining-player" />
                 <RemainingIndicator side={battle.view.rival} label={es.battle.rival} testId="remaining-rival" />
               </div>
             )}

@@ -31,10 +31,12 @@ afterEach(() => { vi.useRealTimers() })
 
 describe('directo (UT-150)', () => {
   it('el visor en directo: EN DIRECTO; al ponerse al día espera el turno del amigo; con los pasos nuevos sigue hasta el final', async () => {
-    const { rerender } = render(<ReplayViewer replay={live(first)} data={data} settings={DEFAULT_SETTINGS} onExit={vi.fn()} own={false} live={{ nickname: 'Eva' }} />)
+    const { rerender } = render(<ReplayViewer replay={live(first)} data={data} settings={DEFAULT_SETTINGS} onExit={vi.fn()} own={false} live={{ nickname: 'Eva' }} playerName="Eva" />)
     for (let second = 0; second < 20 && !screen.queryByText('Esperando el turno de Eva…'); second++) await settle(1_000)
     expect(screen.getByTestId('battle-mode')).toHaveTextContent('EN DIRECTO')
     expect(screen.getByText('Esperando el turno de Eva…')).toBeInTheDocument()
+    // El contador del equipo que se ve es el de Eva, no «Tú» (prueba de Jose, 04/11/2026).
+    expect(screen.getByTestId('remaining-player')).toHaveTextContent(/^Eva/)
     rerender(<ReplayViewer replay={live([...first, { lines: ['|win|Jugador'], view: view(2, 0), ended: ENDED }], ENDED)} data={data} settings={DEFAULT_SETTINGS} onExit={vi.fn()} own={false} live={{ nickname: 'Eva' }} />)
     for (let second = 0; second < 20 && !screen.queryByText(/^Victoria/); second++) await settle(1_000)
     expect(screen.getByText(/^Victoria/)).toBeInTheDocument()

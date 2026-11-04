@@ -262,7 +262,8 @@ describe('cuenta en la interfaz (UT-100)', () => {
         nickname,
         days: [cloudDay({ date: '2026-10-26', status: 'won', survivors: 2 }), cloudDay({ date: TODAY, status: 'won', survivors: 5 })],
         points: [{ date: '2026-10-26', points: 4.5, provisional: false }],
-        history: [],
+        // Su combate de hoy, aún sin poder verse: la nota lo explica (solo sale en ese caso, prueba de Jose del 04/11/2026).
+        history: [{ date: TODAY, challengeNumber: 4, trainerId: 'misty', variantId: 'misty-1', status: 'won', turns: 9, survivors: 5, playerFainted: null, sharedId: null, watchable: false }],
       }),
     })
     const { user } = await mount(GOOGLE, api)
@@ -294,6 +295,8 @@ describe('cuenta en la interfaz (UT-100)', () => {
     await user.click(await screen.findByRole('button', { name: 'Ver las estadísticas de Eva' }))
     await user.click(await screen.findByRole('button', { name: 'Ver repetición' }))
     expect(onWatchFriendReplay).toHaveBeenCalledWith('Eva', TODAY)
+    // Ya se puede ver: sin la nota de que se verá al terminar (prueba de Jose, 04/11/2026).
+    expect(screen.queryByText(/Su repetición de hoy se puede ver/)).toBeNull()
   })
 
   it('«‹ Amigos» vuelve a la lista; si el servidor no da sus datos (ya no es amigo), avisa (UT-119)', async () => {
