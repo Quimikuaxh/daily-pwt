@@ -8835,7 +8835,7 @@
     "abilities": ["swiftswim", "battlearmor"],
     "moves": ["stoneedge", "aquajet", "superpower", "swordsdance"],
     "verified": true,
-    "tags": ["source:brock"]
+    "tags": ["source:brock", "quality:no-synergy"]
   },
   {
     "species": "omastar",
@@ -8844,7 +8844,7 @@
     "abilities": ["swiftswim", "shellarmor"],
     "moves": ["hydropump", "ancientpower", "earthpower", "icebeam"],
     "verified": true,
-    "tags": ["source:brock"]
+    "tags": ["source:brock", "quality:no-synergy"]
   },
   {
     "species": "aerodactyl",
@@ -8925,7 +8925,7 @@
     "abilities": ["damp", "cloudnine"],
     "moves": ["blizzard", "focusblast", "aquajet", "honeclaws"],
     "verified": true,
-    "tags": ["source:misty"]
+    "tags": ["source:misty", "quality:no-synergy"]
   },
   {
     "species": "seaking",
@@ -8943,7 +8943,7 @@
     "abilities": ["waterabsorb", "shellarmor"],
     "moves": ["hydropump", "icebeam", "thunderbolt", "confuseray"],
     "verified": true,
-    "tags": ["source:misty"]
+    "tags": ["source:misty", "quality:no-synergy"]
   },
   {
     "species": "slowbro",
@@ -8961,7 +8961,7 @@
     "abilities": ["torrent"],
     "moves": ["avalanche", "hydropump", "irontail", "irondefense"],
     "verified": true,
-    "tags": ["source:misty"]
+    "tags": ["source:misty", "quality:no-synergy"]
   },
   {
     "species": "starmie",
@@ -8997,7 +8997,7 @@
     "abilities": ["waterabsorb", "shellarmor"],
     "moves": ["hydropump", "blizzard", "iceshard", "sheercold"],
     "verified": true,
-    "tags": ["source:misty"]
+    "tags": ["source:misty", "quality:no-synergy"]
   },
   {
     "species": "quagsire",
@@ -9015,7 +9015,7 @@
     "abilities": ["torrent"],
     "moves": ["avalanche", "hydropump", "outrage", "irondefense"],
     "verified": true,
-    "tags": ["source:misty"]
+    "tags": ["source:misty", "quality:no-synergy"]
   },
   {
     "species": "raichu",
@@ -9060,7 +9060,7 @@
     "abilities": ["voltabsorb"],
     "moves": ["raindance", "shadowball", "thunder", "signalbeam"],
     "verified": true,
-    "tags": ["source:teniente-surge"]
+    "tags": ["source:teniente-surge", "quality:no-synergy"]
   },
   {
     "species": "ampharos",
@@ -9087,7 +9087,7 @@
     "abilities": ["soundproof", "static"],
     "moves": ["doubleteam", "signalbeam", "thunderwave", "electroball"],
     "verified": true,
-    "tags": ["source:teniente-surge"]
+    "tags": ["source:teniente-surge", "quality:no-synergy"]
   },
   {
     "species": "magnezone",
@@ -9114,7 +9114,7 @@
     "abilities": ["voltabsorb"],
     "moves": ["irontail", "quickattack", "voltswitch", "doubleteam"],
     "verified": true,
-    "tags": ["source:teniente-surge"]
+    "tags": ["source:teniente-surge", "quality:no-synergy"]
   },
   {
     "species": "lanturn",
@@ -9123,7 +9123,7 @@
     "abilities": ["voltabsorb", "illuminate"],
     "moves": ["hydropump", "thunder", "blizzard", "signalbeam"],
     "verified": true,
-    "tags": ["source:teniente-surge"]
+    "tags": ["source:teniente-surge", "quality:no-synergy"]
   },
   {
     "species": "vileplume",
@@ -9168,7 +9168,7 @@
     "abilities": ["chlorophyll", "leafguard"],
     "moves": ["swordsdance", "earthquake", "rockslide", "powerwhip"],
     "verified": true,
-    "tags": ["source:erika"]
+    "tags": ["source:erika", "quality:no-synergy"]
   },
   {
     "species": "bellossom",
@@ -9186,7 +9186,7 @@
     "abilities": ["chlorophyll"],
     "moves": ["swordsdance", "drainpunch", "synthesis", "sleeppowder"],
     "verified": true,
-    "tags": ["source:erika"]
+    "tags": ["source:erika", "quality:no-synergy"]
   },
   {
     "species": "venusaur",
@@ -9231,7 +9231,7 @@
     "abilities": ["snowwarning"],
     "moves": ["leechseed", "protect", "blizzard", "sheercold"],
     "verified": true,
-    "tags": ["source:erika"]
+    "tags": ["source:erika", "quality:no-synergy"]
   },
   {
     "species": "venomoth",
@@ -9267,7 +9267,7 @@
     "abilities": ["swarm", "insomnia"],
     "moves": ["poisonjab", "strugglebug", "electroweb", "suckerpunch"],
     "verified": true,
-    "tags": ["source:sachiko"]
+    "tags": ["source:sachiko", "quality:no-synergy"]
   },
   {
     "species": "arbok",
@@ -9276,7 +9276,7 @@
     "abilities": ["intimidate", "shedskin"],
     "moves": ["gunkshot", "suckerpunch", "coil", "dragontail"],
     "verified": true,
-    "tags": ["source:sachiko"]
+    "tags": ["source:sachiko", "quality:no-synergy"]
   },
   {
     "species": "crobat",
@@ -9339,7 +9339,7 @@
     "abilities": ["innerfocus"],
     "moves": ["toxic", "bravebird", "hypnosis", "protect"],
     "verified": true,
-    "tags": ["source:sachiko"]
+    "tags": ["source:sachiko", "quality:no-synergy"]
   },
   {
     "species": "alakazam",
@@ -9357,7 +9357,7 @@
     "abilities": ["insomnia", "forewarn"],
     "moves": ["hypnosis", "dreameater", "calmmind", "shadowball"],
     "verified": true,
-    "tags": ["source:sabrina"]
+    "tags": ["source:sabrina", "quality:no-synergy"]
   },
   {
     "species": "mrmime",
@@ -9366,7 +9366,7 @@
     "abilities": ["soundproof", "filter"],
     "moves": ["psychic", "lightscreen", "chargebeam", "reflect"],
     "verified": true,
-    "tags": ["source:sabrina"]
+    "tags": ["source:sabrina", "quality:no-synergy"]
   },
   {
     "species": "slowking",
@@ -9393,7 +9393,7 @@
     "abilities": ["oblivious", "forewarn"],
     "moves": ["lovelykiss", "dreameater", "frostbreath", "energyball"],
     "verified": true,
-    "tags": ["source:sabrina"]
+    "tags": ["source:sabrina", "quality:no-synergy"]
   },
   {
     "species": "alakazam",
@@ -9411,7 +9411,7 @@
     "abilities": ["clearbody"],
     "moves": ["psychic", "shadowball", "signalbeam", "grassknot"],
     "verified": true,
-    "tags": ["source:sabrina"]
+    "tags": ["source:sabrina", "quality:no-synergy"]
   },
   {
     "species": "exeggutor",
@@ -9420,7 +9420,7 @@
     "abilities": ["chlorophyll"],
     "moves": ["psychic", "dreameater", "sleeppowder", "energyball"],
     "verified": true,
-    "tags": ["source:sabrina"]
+    "tags": ["source:sabrina", "quality:no-synergy"]
   },
   {
     "species": "slowking",
@@ -9474,7 +9474,7 @@
     "abilities": ["blaze"],
     "moves": ["inferno", "dragonrush", "focusblast", "honeclaws"],
     "verified": true,
-    "tags": ["source:blaine"]
+    "tags": ["source:blaine", "quality:no-synergy"]
   },
   {
     "species": "magmortar",
@@ -9483,7 +9483,7 @@
     "abilities": ["flamebody"],
     "moves": ["fireblast", "psychic", "thunderbolt", "focusblast"],
     "verified": true,
-    "tags": ["source:blaine"]
+    "tags": ["source:blaine", "quality:no-synergy"]
   },
   {
     "species": "flareon",
@@ -9492,7 +9492,7 @@
     "abilities": ["flashfire"],
     "moves": ["flamecharge", "superpower", "flail", "yawn"],
     "verified": true,
-    "tags": ["source:blaine"]
+    "tags": ["source:blaine", "quality:no-synergy"]
   },
   {
     "species": "rapidash",
@@ -9519,7 +9519,7 @@
     "abilities": ["flashfire"],
     "moves": ["fireblast", "energyball", "psyshock", "willowisp"],
     "verified": true,
-    "tags": ["source:blaine"]
+    "tags": ["source:blaine", "quality:no-synergy"]
   },
   {
     "species": "charizard",
@@ -9537,7 +9537,7 @@
     "abilities": ["flamebody"],
     "moves": ["fireblast", "psychic", "thunderbolt", "rockslide"],
     "verified": true,
-    "tags": ["source:blaine"]
+    "tags": ["source:blaine", "quality:no-synergy"]
   },
   {
     "species": "flareon",
@@ -9699,7 +9699,7 @@
     "abilities": ["insomnia", "superluck"],
     "moves": ["aircutter", "darkpulse", "icywind", "nastyplot"],
     "verified": true,
-    "tags": ["source:pegaso"]
+    "tags": ["source:pegaso", "quality:no-synergy"]
   },
   {
     "species": "xatu",
@@ -9717,7 +9717,7 @@
     "abilities": ["insomnia", "keeneye"],
     "moves": ["hypnosis", "dreameater", "reflect", "airslash"],
     "verified": true,
-    "tags": ["source:pegaso"]
+    "tags": ["source:pegaso", "quality:no-synergy"]
   },
   {
     "species": "pidgeot",
@@ -9726,7 +9726,7 @@
     "abilities": ["keeneye", "tangledfeet"],
     "moves": ["airslash", "return", "doubleteam", "swagger"],
     "verified": true,
-    "tags": ["source:pegaso"]
+    "tags": ["source:pegaso", "quality:no-synergy"]
   },
   {
     "species": "crobat",
@@ -9735,7 +9735,7 @@
     "abilities": ["innerfocus"],
     "moves": ["taunt", "confuseray", "acrobatics", "superfang"],
     "verified": true,
-    "tags": ["source:pegaso"]
+    "tags": ["source:pegaso", "quality:no-synergy"]
   },
   {
     "species": "aerodactyl",
@@ -9780,7 +9780,7 @@
     "abilities": ["swarm", "technician"],
     "moves": ["swordsdance", "aerialace", "bulletpunch", "xscissor"],
     "verified": true,
-    "tags": ["source:anton"]
+    "tags": ["source:anton", "quality:no-synergy"]
   },
   {
     "species": "shuckle",
@@ -9789,7 +9789,7 @@
     "abilities": ["sturdy", "gluttony"],
     "moves": ["strugglebug", "gyroball", "powersplit", "substitute"],
     "verified": true,
-    "tags": ["source:anton"]
+    "tags": ["source:anton", "quality:no-synergy"]
   },
   {
     "species": "heracross",
@@ -9843,7 +9843,7 @@
     "abilities": ["sturdy", "gluttony"],
     "moves": ["stoneedge", "earthquake", "powersplit", "toxic"],
     "verified": true,
-    "tags": ["source:anton"]
+    "tags": ["source:anton", "quality:no-synergy"]
   },
   {
     "species": "heracross",
@@ -9861,7 +9861,7 @@
     "abilities": ["hypercutter", "moldbreaker"],
     "moves": ["protect", "guillotine", "bulldoze", "xscissor"],
     "verified": true,
-    "tags": ["source:anton"]
+    "tags": ["source:anton", "quality:no-synergy"]
   },
   {
     "species": "armaldo",
@@ -9933,7 +9933,7 @@
     "abilities": ["cutecharm", "magicguard"],
     "moves": ["metronome", "cosmicpower", "icebeam", "thunderbolt"],
     "verified": true,
-    "tags": ["source:blanca"]
+    "tags": ["source:blanca", "quality:no-synergy"]
   },
   {
     "species": "miltank",
@@ -9951,7 +9951,7 @@
     "abilities": ["naturalcure", "serenegrace"],
     "moves": ["softboiled", "toxic", "flamethrower", "grassknot"],
     "verified": true,
-    "tags": ["source:blanca"]
+    "tags": ["source:blanca", "quality:no-synergy"]
   },
   {
     "species": "tauros",
@@ -10023,7 +10023,7 @@
     "abilities": ["pressure"],
     "moves": ["shadowpunch", "bulldoze", "thunderpunch", "painsplit"],
     "verified": true,
-    "tags": ["source:morti"]
+    "tags": ["source:morti", "quality:no-synergy"]
   },
   {
     "species": "sableye",
@@ -10032,7 +10032,7 @@
     "abilities": ["keeneye", "stall"],
     "moves": ["ominouswind", "foulplay", "calmmind", "recover"],
     "verified": true,
-    "tags": ["source:morti"]
+    "tags": ["source:morti", "quality:no-synergy"]
   },
   {
     "species": "froslass",
@@ -10041,7 +10041,7 @@
     "abilities": ["snowcloak"],
     "moves": ["confuseray", "thunderbolt", "icebeam", "shadowball"],
     "verified": true,
-    "tags": ["source:morti"]
+    "tags": ["source:morti", "quality:no-synergy"]
   },
   {
     "species": "gengar",
@@ -10059,7 +10059,7 @@
     "abilities": ["levitate"],
     "moves": ["confuseray", "willowisp", "perishsong", "meanlook"],
     "verified": true,
-    "tags": ["source:morti"]
+    "tags": ["source:morti", "quality:no-synergy"]
   },
   {
     "species": "banette",
@@ -10077,7 +10077,7 @@
     "abilities": ["pressure"],
     "moves": ["shadowsneak", "willowisp", "firepunch", "protect"],
     "verified": true,
-    "tags": ["source:morti"]
+    "tags": ["source:morti", "quality:no-synergy"]
   },
   {
     "species": "chandelure",
@@ -10113,7 +10113,7 @@
     "abilities": ["guts", "noguard"],
     "moves": ["dualchop", "rockslide", "dynamicpunch", "bulldoze"],
     "verified": true,
-    "tags": ["source:anibal"]
+    "tags": ["source:anibal", "quality:no-synergy"]
   },
   {
     "species": "primeape",
@@ -10140,7 +10140,7 @@
     "abilities": ["keeneye", "ironfist"],
     "moves": ["bulkup", "icepunch", "machpunch", "thunderpunch"],
     "verified": true,
-    "tags": ["source:anibal"]
+    "tags": ["source:anibal", "quality:no-synergy"]
   },
   {
     "species": "hitmonlee",
@@ -10167,7 +10167,7 @@
     "abilities": ["guts", "noguard"],
     "moves": ["icepunch", "stoneedge", "dynamicpunch", "earthquake"],
     "verified": true,
-    "tags": ["source:anibal"]
+    "tags": ["source:anibal", "quality:no-synergy"]
   },
   {
     "species": "conkeldurr",
@@ -10185,7 +10185,7 @@
     "abilities": ["intimidate", "technician"],
     "moves": ["triplekick", "feint", "machpunch", "bulletpunch"],
     "verified": true,
-    "tags": ["source:anibal"]
+    "tags": ["source:anibal", "quality:no-synergy"]
   },
   {
     "species": "hitmonchan",
@@ -10194,7 +10194,7 @@
     "abilities": ["keeneye", "ironfist"],
     "moves": ["doubleteam", "icepunch", "drainpunch", "thunderpunch"],
     "verified": true,
-    "tags": ["source:anibal"]
+    "tags": ["source:anibal", "quality:no-synergy"]
   },
   {
     "species": "hitmonlee",
@@ -10248,7 +10248,7 @@
     "abilities": ["clearbody"],
     "moves": ["earthquake", "gravity", "meteormash", "bulletpunch"],
     "verified": true,
-    "tags": ["source:yasmina"]
+    "tags": ["source:yasmina", "quality:no-synergy"]
   },
   {
     "species": "mawile",
@@ -10293,7 +10293,7 @@
     "abilities": ["keeneye", "sturdy"],
     "moves": ["curse", "stealthrock", "roost", "aerialace"],
     "verified": true,
-    "tags": ["source:yasmina"]
+    "tags": ["source:yasmina", "quality:no-synergy"]
   },
   {
     "species": "metagross",
@@ -10302,7 +10302,7 @@
     "abilities": ["clearbody"],
     "moves": ["earthquake", "explosion", "meteormash", "bulletpunch"],
     "verified": true,
-    "tags": ["source:yasmina"]
+    "tags": ["source:yasmina", "quality:no-synergy"]
   },
   {
     "species": "lucario",
@@ -10356,7 +10356,7 @@
     "abilities": ["waterabsorb", "shellarmor"],
     "moves": ["psychic", "hydropump", "blizzard", "hail"],
     "verified": true,
-    "tags": ["source:fredo"]
+    "tags": ["source:fredo", "quality:no-synergy"]
   },
   {
     "species": "weavile",
@@ -10392,7 +10392,7 @@
     "abilities": ["thickfat", "hydration"],
     "moves": ["dive", "sheercold", "rest", "sleeptalk"],
     "verified": true,
-    "tags": ["source:fredo"]
+    "tags": ["source:fredo", "quality:no-synergy"]
   },
   {
     "species": "cloyster",
@@ -10437,7 +10437,7 @@
     "abilities": ["innerfocus"],
     "moves": ["honeclaws", "hurricane", "dragonrush", "stoneedge"],
     "verified": true,
-    "tags": ["source:debora"]
+    "tags": ["source:debora", "quality:no-synergy"]
   },
   {
     "species": "altaria",
@@ -10446,7 +10446,7 @@
     "abilities": ["naturalcure"],
     "moves": ["dragonbreath", "fireblast", "perishsong", "cottonguard"],
     "verified": true,
-    "tags": ["source:debora"]
+    "tags": ["source:debora", "quality:no-synergy"]
   },
   {
     "species": "salamence",
@@ -10464,7 +10464,7 @@
     "abilities": ["roughskin", "sheerforce"],
     "moves": ["glare", "crunch", "dragontail", "superpower"],
     "verified": true,
-    "tags": ["source:debora"]
+    "tags": ["source:debora", "quality:no-synergy"]
   },
   {
     "species": "garchomp",
@@ -10500,7 +10500,7 @@
     "abilities": ["naturalcure"],
     "moves": ["toxic", "fireblast", "doubleteam", "cottonguard"],
     "verified": true,
-    "tags": ["source:debora"]
+    "tags": ["source:debora", "quality:no-synergy"]
   },
   {
     "species": "salamence",
@@ -10554,7 +10554,7 @@
     "abilities": ["suctioncups"],
     "moves": ["ancientpower", "gigadrain", "stockpile", "stealthrock"],
     "verified": true,
-    "tags": ["source:petra"]
+    "tags": ["source:petra", "quality:no-synergy"]
   },
   {
     "species": "aggron",
@@ -10563,7 +10563,7 @@
     "abilities": ["sturdy", "rockhead"],
     "moves": ["irontail", "stoneedge", "outrage", "thunderwave"],
     "verified": true,
-    "tags": ["source:petra"]
+    "tags": ["source:petra", "quality:no-synergy"]
   },
   {
     "species": "relicanth",
@@ -10707,7 +10707,7 @@
     "abilities": ["shedskin", "moxie"],
     "moves": ["bulkup", "drainpunch", "dragontail", "amnesia"],
     "verified": true,
-    "tags": ["source:marcial"]
+    "tags": ["source:marcial", "quality:no-synergy"]
   },
   {
     "species": "breloom",
@@ -10725,7 +10725,7 @@
     "abilities": ["guts", "noguard"],
     "moves": ["dynamicpunch", "stoneedge", "firepunch", "earthquake"],
     "verified": true,
-    "tags": ["source:marcial"]
+    "tags": ["source:marcial", "quality:no-synergy"]
   },
   {
     "species": "mienshao",
@@ -10770,7 +10770,7 @@
     "abilities": ["soundproof", "static"],
     "moves": ["lightscreen", "chargebeam", "doubleteam", "signalbeam"],
     "verified": true,
-    "tags": ["source:erico"]
+    "tags": ["source:erico", "quality:no-synergy"]
   },
   {
     "species": "plusle",
@@ -10779,7 +10779,7 @@
     "abilities": ["plus"],
     "moves": ["discharge", "agility", "nastyplot", "batonpass"],
     "verified": true,
-    "tags": ["source:erico"]
+    "tags": ["source:erico", "quality:no-synergy"]
   },
   {
     "species": "minun",
@@ -10788,7 +10788,7 @@
     "abilities": ["minus"],
     "moves": ["faketears", "thunderwave", "voltswitch", "charm"],
     "verified": true,
-    "tags": ["source:erico"]
+    "tags": ["source:erico", "quality:no-synergy"]
   },
   {
     "species": "raichu",
@@ -10806,7 +10806,7 @@
     "abilities": ["static", "lightningrod"],
     "moves": ["doubleteam", "thunderwave", "thunderbolt", "flamethrower"],
     "verified": true,
-    "tags": ["source:erico"]
+    "tags": ["source:erico", "quality:no-synergy"]
   },
   {
     "species": "magnezone",
@@ -10824,7 +10824,7 @@
     "abilities": ["soundproof", "static"],
     "moves": ["swagger", "thunderwave", "thunder", "signalbeam"],
     "verified": true,
-    "tags": ["source:erico"]
+    "tags": ["source:erico", "quality:no-synergy"]
   },
   {
     "species": "rotomwash",
@@ -10833,7 +10833,7 @@
     "abilities": ["levitate"],
     "moves": ["willowisp", "hydropump", "thunder", "hex"],
     "verified": true,
-    "tags": ["source:erico"]
+    "tags": ["source:erico", "quality:no-synergy"]
   },
   {
     "species": "ampharos",
@@ -10842,7 +10842,7 @@
     "abilities": ["static"],
     "moves": ["firepunch", "bulldoze", "thunderpunch", "brickbreak"],
     "verified": true,
-    "tags": ["source:erico"]
+    "tags": ["source:erico", "quality:no-synergy"]
   },
   {
     "species": "raichu",
@@ -10851,7 +10851,7 @@
     "abilities": ["static"],
     "moves": ["swagger", "thunder", "grassknot", "focusblast"],
     "verified": true,
-    "tags": ["source:erico"]
+    "tags": ["source:erico", "quality:no-synergy"]
   },
   {
     "species": "torkoal",
@@ -10860,7 +10860,7 @@
     "abilities": ["whitesmoke"],
     "moves": ["fireblast", "stoneedge", "gyroball", "yawn"],
     "verified": true,
-    "tags": ["source:candela"]
+    "tags": ["source:candela", "quality:no-synergy"]
   },
   {
     "species": "camerupt",
@@ -10905,7 +10905,7 @@
     "abilities": ["flamebody"],
     "moves": ["rockslide", "crosschop", "thunderpunch", "fireblast"],
     "verified": true,
-    "tags": ["source:candela"]
+    "tags": ["source:candela", "quality:no-synergy"]
   },
   {
     "species": "torkoal",
@@ -10959,7 +10959,7 @@
     "abilities": ["flamebody"],
     "moves": ["psychic", "flamecharge", "thunderbolt", "fireblast"],
     "verified": true,
-    "tags": ["source:candela"]
+    "tags": ["source:candela", "quality:no-synergy"]
   },
   {
     "species": "slaking",
@@ -10977,7 +10977,7 @@
     "abilities": ["owntempo", "tangledfeet"],
     "moves": ["thrash", "suckerpunch", "teeterdance", "assist"],
     "verified": true,
-    "tags": ["source:norman"]
+    "tags": ["source:norman", "quality:no-synergy"]
   },
   {
     "species": "kecleon",
@@ -10986,7 +10986,7 @@
     "abilities": ["colorchange"],
     "moves": ["fakeout", "shadowclaw", "recover", "skillswap"],
     "verified": true,
-    "tags": ["source:norman"]
+    "tags": ["source:norman", "quality:no-synergy"]
   },
   {
     "species": "castform",
@@ -10995,7 +10995,7 @@
     "abilities": ["forecast"],
     "moves": ["fireblast", "icywind", "hydropump", "disable"],
     "verified": true,
-    "tags": ["source:norman"]
+    "tags": ["source:norman", "quality:no-synergy"]
   },
   {
     "species": "exploud",
@@ -11076,7 +11076,7 @@
     "abilities": ["naturalcure"],
     "moves": ["cottonguard", "dreameater", "roost", "sing"],
     "verified": true,
-    "tags": ["source:alana"]
+    "tags": ["source:alana", "quality:no-synergy"]
   },
   {
     "species": "pelipper",
@@ -11094,7 +11094,7 @@
     "abilities": ["guts"],
     "moves": ["doubleteam", "bravebird", "endeavor", "uturn"],
     "verified": true,
-    "tags": ["source:alana"]
+    "tags": ["source:alana", "quality:no-synergy"]
   },
   {
     "species": "skarmory",
@@ -11148,7 +11148,7 @@
     "abilities": ["intimidate"],
     "moves": ["dragondance", "waterfall", "icefang", "substitute"],
     "verified": true,
-    "tags": ["source:alana"]
+    "tags": ["source:alana", "quality:no-synergy"]
   },
   {
     "species": "skarmory",
@@ -11157,7 +11157,7 @@
     "abilities": ["keeneye", "sturdy"],
     "moves": ["aerialace", "steelwing", "whirlwind", "spikes"],
     "verified": true,
-    "tags": ["source:alana"]
+    "tags": ["source:alana", "quality:no-synergy"]
   },
   {
     "species": "tropius",
@@ -11166,7 +11166,7 @@
     "abilities": ["chlorophyll", "solarpower"],
     "moves": ["sunnyday", "attract", "airslash", "solarbeam"],
     "verified": true,
-    "tags": ["source:alana"]
+    "tags": ["source:alana", "quality:no-synergy"]
   },
   {
     "species": "honchkrow",
@@ -11193,7 +11193,7 @@
     "abilities": ["synchronize", "earlybird"],
     "moves": ["psychic", "shadowball", "featherdance", "trickroom"],
     "verified": true,
-    "tags": ["source:vito"]
+    "tags": ["source:vito", "quality:no-synergy"]
   },
   {
     "species": "chimecho",
@@ -11202,7 +11202,7 @@
     "abilities": ["levitate"],
     "moves": ["hypnosis", "dreameater", "energyball", "trickroom"],
     "verified": true,
-    "tags": ["source:vito"]
+    "tags": ["source:vito", "quality:no-synergy"]
   },
   {
     "species": "grumpig",
@@ -11211,7 +11211,7 @@
     "abilities": ["thickfat", "owntempo"],
     "moves": ["psyshock", "sleeptalk", "rest", "calmmind"],
     "verified": true,
-    "tags": ["source:vito"]
+    "tags": ["source:vito", "quality:no-synergy"]
   },
   {
     "species": "gallade",
@@ -11292,7 +11292,7 @@
     "abilities": ["levitate"],
     "moves": ["hypnosis", "dreameater", "icebeam", "cosmicpower"],
     "verified": true,
-    "tags": ["source:leti"]
+    "tags": ["source:leti", "quality:no-synergy"]
   },
   {
     "species": "xatu",
@@ -11310,7 +11310,7 @@
     "abilities": ["levitate"],
     "moves": ["lightscreen", "psychic", "yawn", "reflect"],
     "verified": true,
-    "tags": ["source:leti"]
+    "tags": ["source:leti", "quality:no-synergy"]
   },
   {
     "species": "grumpig",
@@ -11328,7 +11328,7 @@
     "abilities": ["synchronize", "trace"],
     "moves": ["dreameater", "shadowball", "thunderbolt", "hypnosis"],
     "verified": true,
-    "tags": ["source:leti"]
+    "tags": ["source:leti", "quality:no-synergy"]
   },
   {
     "species": "claydol",
@@ -11346,7 +11346,7 @@
     "abilities": ["levitate"],
     "moves": ["grassknot", "signalbeam", "trickroom", "cosmicpower"],
     "verified": true,
-    "tags": ["source:leti"]
+    "tags": ["source:leti", "quality:no-synergy"]
   },
   {
     "species": "xatu",
@@ -11445,7 +11445,7 @@
     "abilities": ["swiftswim"],
     "moves": ["shellsmash", "psychic", "icywind", "hydropump"],
     "verified": true,
-    "tags": ["source:galano"]
+    "tags": ["source:galano", "quality:no-synergy"]
   },
   {
     "species": "kingdra",
@@ -11508,7 +11508,7 @@
     "abilities": ["moldbreaker"],
     "moves": ["stoneedge", "zenheadbutt", "earthquake", "outrage"],
     "verified": true,
-    "tags": ["source:roco"]
+    "tags": ["source:roco", "quality:no-synergy"]
   },
   {
     "species": "probopass",
@@ -11526,7 +11526,7 @@
     "abilities": ["sturdy", "rockhead"],
     "moves": ["stoneedge", "hammerarm", "woodhammer", "suckerpunch"],
     "verified": true,
-    "tags": ["source:roco"]
+    "tags": ["source:roco", "quality:no-synergy"]
   },
   {
     "species": "golem",
@@ -11535,7 +11535,7 @@
     "abilities": ["rockhead", "sturdy"],
     "moves": ["stoneedge", "gyroball", "hammerarm", "curse"],
     "verified": true,
-    "tags": ["source:roco"]
+    "tags": ["source:roco", "quality:no-synergy"]
   },
   {
     "species": "relicanth",
@@ -11544,7 +11544,7 @@
     "abilities": ["swiftswim", "rockhead"],
     "moves": ["rockslide", "amnesia", "sleeptalk", "rest"],
     "verified": true,
-    "tags": ["source:roco"]
+    "tags": ["source:roco", "quality:no-synergy"]
   },
   {
     "species": "rampardos",
@@ -11553,7 +11553,7 @@
     "abilities": ["moldbreaker"],
     "moves": ["stoneedge", "superpower", "earthquake", "avalanche"],
     "verified": true,
-    "tags": ["source:roco"]
+    "tags": ["source:roco", "quality:no-synergy"]
   },
   {
     "species": "probopass",
@@ -11562,7 +11562,7 @@
     "abilities": ["sturdy", "magnetpull"],
     "moves": ["stealthrock", "earthpower", "discharge", "painsplit"],
     "verified": true,
-    "tags": ["source:roco"]
+    "tags": ["source:roco", "quality:no-synergy"]
   },
   {
     "species": "archeops",
@@ -11571,7 +11571,7 @@
     "abilities": ["defeatist"],
     "moves": ["stoneedge", "earthquake", "focusblast", "quickattack"],
     "verified": true,
-    "tags": ["source:roco"]
+    "tags": ["source:roco", "quality:no-synergy"]
   },
   {
     "species": "crustle",
@@ -11616,7 +11616,7 @@
     "abilities": ["levitate"],
     "moves": ["powerwhip", "crunch", "bugbite", "swordsdance"],
     "verified": true,
-    "tags": ["source:gardenia"]
+    "tags": ["source:gardenia", "quality:no-synergy"]
   },
   {
     "species": "cherrim",
@@ -11634,7 +11634,7 @@
     "abilities": ["chlorophyll", "leafguard"],
     "moves": ["powerwhip", "earthquake", "ancientpower", "focusblast"],
     "verified": true,
-    "tags": ["source:gardenia"]
+    "tags": ["source:gardenia", "quality:no-synergy"]
   },
   {
     "species": "leafeon",
@@ -11688,7 +11688,7 @@
     "abilities": ["chlorophyll", "leafguard"],
     "moves": ["powerwhip", "earthquake", "sludgebomb", "focusblast"],
     "verified": true,
-    "tags": ["source:gardenia"]
+    "tags": ["source:gardenia", "quality:no-synergy"]
   },
   {
     "species": "leafeon",
@@ -11715,7 +11715,7 @@
     "abilities": ["steadfast", "innerfocus"],
     "moves": ["crosschop", "bonerush", "extremespeed", "swordsdance"],
     "verified": true,
-    "tags": ["source:brega"]
+    "tags": ["source:brega", "quality:no-synergy"]
   },
   {
     "species": "infernape",
@@ -11760,7 +11760,7 @@
     "abilities": ["guts", "noguard"],
     "moves": ["crosschop", "stoneedge", "icepunch", "focusenergy"],
     "verified": true,
-    "tags": ["source:brega"]
+    "tags": ["source:brega", "quality:no-synergy"]
   },
   {
     "species": "lucario",
@@ -11814,7 +11814,7 @@
     "abilities": ["guts", "noguard"],
     "moves": ["crosschop", "stoneedge", "icepunch", "bulletpunch"],
     "verified": true,
-    "tags": ["source:brega"]
+    "tags": ["source:brega", "quality:no-synergy"]
   },
   {
     "species": "floatzel",
@@ -11823,7 +11823,7 @@
     "abilities": ["swiftswim"],
     "moves": ["aquajet", "icepunch", "focusblast", "bulkup"],
     "verified": true,
-    "tags": ["source:mananti"]
+    "tags": ["source:mananti", "quality:no-synergy"]
   },
   {
     "species": "empoleon",
@@ -11832,7 +11832,7 @@
     "abilities": ["torrent"],
     "moves": ["surf", "blizzard", "grassknot", "featherdance"],
     "verified": true,
-    "tags": ["source:mananti"]
+    "tags": ["source:mananti", "quality:no-synergy"]
   },
   {
     "species": "lumineon",
@@ -11877,7 +11877,7 @@
     "abilities": ["swiftswim"],
     "moves": ["aquajet", "icepunch", "focusblast", "bulkup"],
     "verified": true,
-    "tags": ["source:mananti"]
+    "tags": ["source:mananti", "quality:no-synergy"]
   },
   {
     "species": "ludicolo",
@@ -11949,7 +11949,7 @@
     "abilities": ["pressure"],
     "moves": ["curse", "confuseray", "painsplit", "shadowsneak"],
     "verified": true,
-    "tags": ["source:fantina"]
+    "tags": ["source:fantina", "quality:no-synergy"]
   },
   {
     "species": "rotom",
@@ -11958,7 +11958,7 @@
     "abilities": ["levitate"],
     "moves": ["substitute", "chargebeam", "painsplit", "shadowball"],
     "verified": true,
-    "tags": ["source:fantina"]
+    "tags": ["source:fantina", "quality:no-synergy"]
   },
   {
     "species": "gengar",
@@ -11967,7 +11967,7 @@
     "abilities": ["levitate"],
     "moves": ["hypnosis", "dreameater", "nightmare", "hex"],
     "verified": true,
-    "tags": ["source:fantina"]
+    "tags": ["source:fantina", "quality:no-synergy"]
   },
   {
     "species": "mismagius",
@@ -12003,7 +12003,7 @@
     "abilities": ["pressure"],
     "moves": ["curse", "willowisp", "painsplit", "shadowsneak"],
     "verified": true,
-    "tags": ["source:fantina"]
+    "tags": ["source:fantina", "quality:no-synergy"]
   },
   {
     "species": "jellicent",
@@ -12021,7 +12021,7 @@
     "abilities": ["levitate"],
     "moves": ["hypnosis", "thunderbolt", "nightmare", "shadowball"],
     "verified": true,
-    "tags": ["source:fantina"]
+    "tags": ["source:fantina", "quality:no-synergy"]
   },
   {
     "species": "bastiodon",
@@ -12039,7 +12039,7 @@
     "abilities": ["rockhead", "sturdy"],
     "moves": ["gyroball", "dragontail", "curse", "stealthrock"],
     "verified": true,
-    "tags": ["source:aceron"]
+    "tags": ["source:aceron", "quality:no-synergy"]
   },
   {
     "species": "bronzong",
@@ -12057,7 +12057,7 @@
     "abilities": ["magnetpull", "sturdy"],
     "moves": ["flashcannon", "chargebeam", "barrier", "lightscreen"],
     "verified": true,
-    "tags": ["source:aceron"]
+    "tags": ["source:aceron", "quality:no-synergy"]
   },
   {
     "species": "aggron",
@@ -12075,7 +12075,7 @@
     "abilities": ["sturdy"],
     "moves": ["gyroball", "irondefense", "lightscreen", "spikes"],
     "verified": true,
-    "tags": ["source:aceron"]
+    "tags": ["source:aceron", "quality:no-synergy"]
   },
   {
     "species": "bastiodon",
@@ -12165,7 +12165,7 @@
     "abilities": ["snowcloak"],
     "moves": ["icywind", "shadowball", "signalbeam", "yawn"],
     "verified": true,
-    "tags": ["source:inverna"]
+    "tags": ["source:inverna", "quality:no-synergy"]
   },
   {
     "species": "mamoswine",
@@ -12219,7 +12219,7 @@
     "abilities": ["snowcloak"],
     "moves": ["blizzard", "shadowball", "signalbeam", "iceshard"],
     "verified": true,
-    "tags": ["source:inverna"]
+    "tags": ["source:inverna", "quality:no-synergy"]
   },
   {
     "species": "mamoswine",
@@ -12237,7 +12237,7 @@
     "abilities": ["innerfocus", "icebody"],
     "moves": ["hail", "blizzard", "crunch", "rollout"],
     "verified": true,
-    "tags": ["source:inverna"]
+    "tags": ["source:inverna", "quality:no-synergy"]
   },
   {
     "species": "electivire",
@@ -12264,7 +12264,7 @@
     "abilities": ["static"],
     "moves": ["focusblast", "grassknot", "charge", "chargebeam"],
     "verified": true,
-    "tags": ["source:lectro"]
+    "tags": ["source:lectro", "quality:no-synergy"]
   },
   {
     "species": "rotom",
@@ -12282,7 +12282,7 @@
     "abilities": ["voltabsorb"],
     "moves": ["shadowball", "charm", "thunderbolt", "wish"],
     "verified": true,
-    "tags": ["source:lectro"]
+    "tags": ["source:lectro", "quality:no-synergy"]
   },
   {
     "species": "electrode",
@@ -12336,7 +12336,7 @@
     "abilities": ["voltabsorb"],
     "moves": ["shadowball", "charm", "thunderbolt", "wish"],
     "verified": true,
-    "tags": ["source:lectro"]
+    "tags": ["source:lectro", "quality:no-synergy"]
   },
   {
     "species": "electrode",
@@ -12345,7 +12345,7 @@
     "abilities": ["soundproof", "static"],
     "moves": ["taunt", "torment", "thunder", "signalbeam"],
     "verified": true,
-    "tags": ["source:lectro"]
+    "tags": ["source:lectro", "quality:no-synergy"]
   },
   {
     "species": "simisage",
@@ -12354,7 +12354,7 @@
     "abilities": ["gluttony"],
     "moves": ["seedbomb", "lowkick", "acrobatics", "tickle"],
     "verified": true,
-    "tags": ["source:millo"]
+    "tags": ["source:millo", "quality:no-synergy"]
   },
   {
     "species": "ferrothorn",
@@ -12381,7 +12381,7 @@
     "abilities": ["chlorophyll", "leafguard"],
     "moves": ["leechseed", "cottonspore", "sleeppowder", "gigadrain"],
     "verified": true,
-    "tags": ["source:millo"]
+    "tags": ["source:millo", "quality:no-synergy"]
   },
   {
     "species": "whimsicott",
@@ -12399,7 +12399,7 @@
     "abilities": ["chlorophyll", "owntempo"],
     "moves": ["petaldance", "quiverdance", "sleeppowder", "teeterdance"],
     "verified": true,
-    "tags": ["source:millo"]
+    "tags": ["source:millo", "quality:no-synergy"]
   },
   {
     "species": "simisage",
@@ -12444,7 +12444,7 @@
     "abilities": ["chlorophyll", "owntempo"],
     "moves": ["petaldance", "quiverdance", "sleeppowder", "dreameater"],
     "verified": true,
-    "tags": ["source:millo"]
+    "tags": ["source:millo", "quality:no-synergy"]
   },
   {
     "species": "simisear",
@@ -12480,7 +12480,7 @@
     "abilities": ["intimidate", "flashfire"],
     "moves": ["fireblast", "dragonpulse", "solarbeam", "sunnyday"],
     "verified": true,
-    "tags": ["source:zeo"]
+    "tags": ["source:zeo", "quality:no-synergy"]
   },
   {
     "species": "camerupt",
@@ -12498,7 +12498,7 @@
     "abilities": ["flamebody"],
     "moves": ["thunderbolt", "flamecharge", "rockslide", "psychic"],
     "verified": true,
-    "tags": ["source:zeo"]
+    "tags": ["source:zeo", "quality:no-synergy"]
   },
   {
     "species": "simisear",
@@ -12516,7 +12516,7 @@
     "abilities": ["gluttony", "flashfire"],
     "moves": ["fireblast", "suckerpunch", "focusblast", "sunnyday"],
     "verified": true,
-    "tags": ["source:zeo"]
+    "tags": ["source:zeo", "quality:no-synergy"]
   },
   {
     "species": "darmanitan",
@@ -12561,7 +12561,7 @@
     "abilities": ["gluttony"],
     "moves": ["hydropump", "grassknot", "acrobatics", "workup"],
     "verified": true,
-    "tags": ["source:maiz"]
+    "tags": ["source:maiz", "quality:no-synergy"]
   },
   {
     "species": "golduck",
@@ -12570,7 +12570,7 @@
     "abilities": ["damp", "cloudnine"],
     "moves": ["hydropump", "psychic", "icebeam", "calmmind"],
     "verified": true,
-    "tags": ["source:maiz"]
+    "tags": ["source:maiz", "quality:no-synergy"]
   },
   {
     "species": "floatzel",
@@ -12615,7 +12615,7 @@
     "abilities": ["gluttony"],
     "moves": ["hydropump", "lowkick", "acrobatics", "crunch"],
     "verified": true,
-    "tags": ["source:maiz"]
+    "tags": ["source:maiz", "quality:no-synergy"]
   },
   {
     "species": "crawdaunt",
@@ -12669,7 +12669,7 @@
     "abilities": ["illuminate", "keeneye"],
     "moves": ["hypnosis", "confuseray", "superfang", "lowkick"],
     "verified": true,
-    "tags": ["source:aloe"]
+    "tags": ["source:aloe", "quality:no-synergy"]
   },
   {
     "species": "audino",
@@ -12678,7 +12678,7 @@
     "abilities": ["healer", "regenerator"],
     "moves": ["blizzard", "fireblast", "thunder", "calmmind"],
     "verified": true,
-    "tags": ["source:aloe"]
+    "tags": ["source:aloe", "quality:no-synergy"]
   },
   {
     "species": "clefable",
@@ -12687,7 +12687,7 @@
     "abilities": ["cutecharm", "magicguard"],
     "moves": ["meteormash", "cosmicpower", "thunderpunch", "wish"],
     "verified": true,
-    "tags": ["source:aloe"]
+    "tags": ["source:aloe", "quality:no-synergy"]
   },
   {
     "species": "kangaskhan",
@@ -12696,7 +12696,7 @@
     "abilities": ["earlybird", "scrappy"],
     "moves": ["fakeout", "hammerarm", "aquatail", "outrage"],
     "verified": true,
-    "tags": ["source:aloe"]
+    "tags": ["source:aloe", "quality:no-synergy"]
   },
   {
     "species": "sawsbuck",
@@ -12714,7 +12714,7 @@
     "abilities": ["serenegrace", "runaway"],
     "moves": ["coil", "roost", "glare", "rockslide"],
     "verified": true,
-    "tags": ["source:aloe"]
+    "tags": ["source:aloe", "quality:no-synergy"]
   },
   {
     "species": "watchog",
@@ -12723,7 +12723,7 @@
     "abilities": ["illuminate", "keeneye"],
     "moves": ["hypnosis", "confuseray", "superfang", "flail"],
     "verified": true,
-    "tags": ["source:aloe"]
+    "tags": ["source:aloe", "quality:no-synergy"]
   },
   {
     "species": "braviary",
@@ -12741,7 +12741,7 @@
     "abilities": ["cutecharm", "technician"],
     "moves": ["focusblast", "swift", "thunderbolt", "grassknot"],
     "verified": true,
-    "tags": ["source:aloe"]
+    "tags": ["source:aloe", "quality:no-synergy"]
   },
   {
     "species": "kangaskhan",
@@ -12750,7 +12750,7 @@
     "abilities": ["earlybird", "scrappy"],
     "moves": ["fakeout", "hammerarm", "suckerpunch", "icepunch"],
     "verified": true,
-    "tags": ["source:aloe"]
+    "tags": ["source:aloe", "quality:no-synergy"]
   },
   {
     "species": "sawsbuck",
@@ -12768,7 +12768,7 @@
     "abilities": ["owntempo", "oblivious"],
     "moves": ["surf", "icebeam", "thunderbolt", "flamethrower"],
     "verified": true,
-    "tags": ["source:aloe"]
+    "tags": ["source:aloe", "quality:no-synergy"]
   },
   {
     "species": "leavanny",
@@ -12867,7 +12867,7 @@
     "abilities": ["hydration", "stickyhold"],
     "moves": ["doubleteam", "focusblast", "bugbuzz", "gigadrain"],
     "verified": true,
-    "tags": ["source:camus"]
+    "tags": ["source:camus", "quality:no-synergy"]
   },
   {
     "species": "durant",
@@ -12912,7 +12912,7 @@
     "abilities": ["static"],
     "moves": ["voltswitch", "thunderwave", "acrobatics", "attract"],
     "verified": true,
-    "tags": ["source:camila"]
+    "tags": ["source:camila", "quality:no-synergy"]
   },
   {
     "species": "eelektross",
@@ -12921,7 +12921,7 @@
     "abilities": ["levitate"],
     "moves": ["coil", "zapcannon", "flamethrower", "dragonclaw"],
     "verified": true,
-    "tags": ["source:camila"]
+    "tags": ["source:camila", "quality:no-synergy"]
   },
   {
     "species": "stunfisk",
@@ -12957,7 +12957,7 @@
     "abilities": ["rivalry", "intimidate"],
     "moves": ["firefang", "wildcharge", "icefang", "quickattack"],
     "verified": true,
-    "tags": ["source:camila"]
+    "tags": ["source:camila", "quality:no-synergy"]
   },
   {
     "species": "emolga",
@@ -12966,7 +12966,7 @@
     "abilities": ["static"],
     "moves": ["wildcharge", "uturn", "acrobatics", "charm"],
     "verified": true,
-    "tags": ["source:camila"]
+    "tags": ["source:camila", "quality:no-synergy"]
   },
   {
     "species": "eelektross",
@@ -13119,7 +13119,7 @@
     "abilities": ["unaware", "klutz"],
     "moves": ["psychic", "calmmind", "airslash", "attract"],
     "verified": true,
-    "tags": ["source:gerania"]
+    "tags": ["source:gerania", "quality:no-synergy"]
   },
   {
     "species": "archeops",
@@ -13146,7 +13146,7 @@
     "abilities": ["bigpecks", "overcoat"],
     "moves": ["bravebird", "roost", "doubleteam", "toxic"],
     "verified": true,
-    "tags": ["source:gerania"]
+    "tags": ["source:gerania", "quality:no-synergy"]
   },
   {
     "species": "swanna",
@@ -13209,7 +13209,7 @@
     "abilities": ["levitate"],
     "moves": ["doubleteam", "confuseray", "flashcannon", "blizzard"],
     "verified": true,
-    "tags": ["source:junco"]
+    "tags": ["source:junco", "quality:no-synergy"]
   },
   {
     "species": "beartic",
@@ -13227,7 +13227,7 @@
     "abilities": ["icebody"],
     "moves": ["hail", "weatherball", "flashcannon", "blizzard"],
     "verified": true,
-    "tags": ["source:junco"]
+    "tags": ["source:junco", "quality:no-synergy"]
   },
   {
     "species": "weavile",
@@ -13263,7 +13263,7 @@
     "abilities": ["levitate"],
     "moves": ["iceshard", "sheercold", "flashcannon", "blizzard"],
     "verified": true,
-    "tags": ["source:junco"]
+    "tags": ["source:junco", "quality:no-synergy"]
   },
   {
     "species": "beartic",
@@ -13281,7 +13281,7 @@
     "abilities": ["icebody"],
     "moves": ["hail", "weatherball", "protect", "blizzard"],
     "verified": true,
-    "tags": ["source:junco"]
+    "tags": ["source:junco", "quality:no-synergy"]
   },
   {
     "species": "weavile",
@@ -13299,7 +13299,7 @@
     "abilities": ["thickfat", "hydration"],
     "moves": ["fakeout", "drillrun", "aquajet", "frostbreath"],
     "verified": true,
-    "tags": ["source:junco"]
+    "tags": ["source:junco", "quality:no-synergy"]
   },
   {
     "species": "walrein",
@@ -13353,7 +13353,7 @@
     "abilities": ["naturalcure"],
     "moves": ["outrage", "dragondance", "cottonguard", "roost"],
     "verified": true,
-    "tags": ["source:lirio"]
+    "tags": ["source:lirio", "quality:no-synergy"]
   },
   {
     "species": "salamence",
@@ -13362,7 +13362,7 @@
     "abilities": ["intimidate"],
     "moves": ["dragonrush", "thunderfang", "fireblast", "honeclaws"],
     "verified": true,
-    "tags": ["source:lirio"]
+    "tags": ["source:lirio", "quality:no-synergy"]
   },
   {
     "species": "haxorus",
@@ -13380,7 +13380,7 @@
     "abilities": ["roughskin", "sheerforce"],
     "moves": ["dragontail", "firefang", "rest", "glare"],
     "verified": true,
-    "tags": ["source:lirio"]
+    "tags": ["source:lirio", "quality:no-synergy"]
   },
   {
     "species": "hydreigon",
@@ -13425,7 +13425,7 @@
     "abilities": ["intimidate", "sandrush"],
     "moves": ["takedown", "crunch", "wildcharge", "reversal"],
     "verified": true,
-    "tags": ["source:cheren"]
+    "tags": ["source:cheren", "quality:no-synergy"]
   },
   {
     "species": "zangoose",
@@ -13443,7 +13443,7 @@
     "abilities": ["cutecharm", "technician"],
     "moves": ["tailslap", "rockblast", "bulletseed", "uturn"],
     "verified": true,
-    "tags": ["source:cheren"]
+    "tags": ["source:cheren", "quality:no-synergy"]
   },
   {
     "species": "lopunny",
@@ -13452,7 +13452,7 @@
     "abilities": ["cutecharm", "klutz"],
     "moves": ["dizzypunch", "jumpkick", "icepunch", "charm"],
     "verified": true,
-    "tags": ["source:cheren"]
+    "tags": ["source:cheren", "quality:no-synergy"]
   },
   {
     "species": "castform",
@@ -13488,7 +13488,7 @@
     "abilities": ["adaptability", "download"],
     "moves": ["shadowball", "psychic", "signalbeam", "thunder"],
     "verified": true,
-    "tags": ["source:cheren"]
+    "tags": ["source:cheren", "quality:no-synergy"]
   },
   {
     "species": "cinccino",
@@ -13497,7 +13497,7 @@
     "abilities": ["cutecharm", "technician"],
     "moves": ["tailslap", "rockblast", "bulletseed", "aquatail"],
     "verified": true,
-    "tags": ["source:cheren"]
+    "tags": ["source:cheren", "quality:no-synergy"]
   },
   {
     "species": "lickilicky",
@@ -13506,7 +13506,7 @@
     "abilities": ["owntempo", "oblivious"],
     "moves": ["hammerarm", "powerwhip", "thunder", "icepunch"],
     "verified": true,
-    "tags": ["source:cheren"]
+    "tags": ["source:cheren", "quality:no-synergy"]
   },
   {
     "species": "castform",
@@ -13533,7 +13533,7 @@
     "abilities": ["poisonpoint", "swarm"],
     "moves": ["megahorn", "earthquake", "toxicspikes", "rockslide"],
     "verified": true,
-    "tags": ["source:hiedra"]
+    "tags": ["source:hiedra", "quality:no-synergy"]
   },
   {
     "species": "seviper",
@@ -13551,7 +13551,7 @@
     "abilities": ["stench", "weakarmor"],
     "moves": ["gunkshot", "rockblast", "clearsmog", "stockpile"],
     "verified": true,
-    "tags": ["source:hiedra"]
+    "tags": ["source:hiedra", "quality:no-synergy"]
   },
   {
     "species": "crobat",
@@ -13578,7 +13578,7 @@
     "abilities": ["effectspore"],
     "moves": ["toxic", "spore", "gigadrain", "substitute"],
     "verified": true,
-    "tags": ["source:hiedra"]
+    "tags": ["source:hiedra", "quality:no-synergy"]
   },
   {
     "species": "scolipede",
@@ -13605,7 +13605,7 @@
     "abilities": ["stench", "weakarmor"],
     "moves": ["psychic", "thunderbolt", "focusblast", "protect"],
     "verified": true,
-    "tags": ["source:hiedra"]
+    "tags": ["source:hiedra", "quality:no-synergy"]
   },
   {
     "species": "crobat",
@@ -13650,7 +13650,7 @@
     "abilities": ["solidrock", "sturdy"],
     "moves": ["stoneedge", "shellsmash", "hydropump", "earthquake"],
     "verified": true,
-    "tags": ["source:ciprian"]
+    "tags": ["source:ciprian", "quality:no-synergy"]
   },
   {
     "species": "starmie",
@@ -13677,7 +13677,7 @@
     "abilities": ["swiftswim", "waterabsorb"],
     "moves": ["signalbeam", "icebeam", "hydropump", "agility"],
     "verified": true,
-    "tags": ["source:ciprian"]
+    "tags": ["source:ciprian", "quality:no-synergy"]
   },
   {
     "species": "wailord",
@@ -13686,7 +13686,7 @@
     "abilities": ["waterveil", "oblivious"],
     "moves": ["hydropump", "avalanche", "aquaring", "amnesia"],
     "verified": true,
-    "tags": ["source:ciprian"]
+    "tags": ["source:ciprian", "quality:no-synergy"]
   },
   {
     "species": "jellicent",
@@ -13794,7 +13794,7 @@
     "abilities": ["rockhead", "pressure"],
     "moves": ["stoneedge", "earthquake", "icefang", "fireblast"],
     "verified": true,
-    "tags": ["source:azul"]
+    "tags": ["source:azul", "quality:no-synergy"]
   },
   {
     "species": "exeggutor",
@@ -13803,7 +13803,7 @@
     "abilities": ["chlorophyll"],
     "moves": ["leafstorm", "woodhammer", "zenheadbutt", "leechseed"],
     "verified": true,
-    "tags": ["source:azul"]
+    "tags": ["source:azul", "quality:no-synergy"]
   },
   {
     "species": "gyarados",
@@ -13956,7 +13956,7 @@
     "abilities": ["marvelscale"],
     "moves": ["scald", "icywind", "rest", "sleeptalk"],
     "verified": true,
-    "tags": ["source:plubio"]
+    "tags": ["source:plubio", "quality:no-synergy"]
   },
   {
     "species": "sharpedo",
@@ -14082,7 +14082,7 @@
     "abilities": ["overcoat", "magicguard"],
     "moves": ["psychic", "reflect", "toxic", "lightscreen"],
     "verified": true,
-    "tags": ["source:mirto"]
+    "tags": ["source:mirto", "quality:no-synergy"]
   },
   {
     "species": "krookodile",

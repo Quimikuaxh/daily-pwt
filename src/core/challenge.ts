@@ -1,5 +1,5 @@
 import { NEUTRAL_NATURE } from './constants'
-import { GENDERS_FROM, LAUNCH_DATE, LAUNCH_OPENING, TEAM_RULES_2_FROM } from './launch'
+import { GENDERS_FROM, LAUNCH_DATE, LAUNCH_OPENING, NO_SYNERGY_TAG, POOL_RULES_FROM, TEAM_RULES_2_FROM } from './launch'
 import { rivalForDay, type TrainerTraits } from './bag'
 import { challengeNumber, dayIndex } from './date'
 import { DataError } from './errors'
@@ -96,7 +96,9 @@ export function challengeFor({ date, trainerId, variantId }: ChallengeSelection,
   const resolvedTeam = variant.team.map((set) => resolveRivalSet(set, trainer, abilityRng, data))
   const rivalTeam = putLeadFirst(resolvedTeam, trainer, new Prng(deriveSeed(daySeed, 'lead')))
 
-  const pool = poolWithoutRival(data.playerSets, trainer.id)
+  // Desde `POOL_RULES_FROM`, sin los sets del PWT sin sinergia (Jose, 04/11/2026).
+  const fullPool = poolWithoutRival(data.playerSets, trainer.id)
+  const pool = date >= POOL_RULES_FROM ? fullPool.filter((set) => !set.tags?.includes(NO_SYNERGY_TAG)) : fullPool
   const player = buildPlayerTeam(pool, rivalTeam, new Prng(deriveSeed(daySeed, 'player')), data.dex, date >= TEAM_RULES_2_FROM ? TEAM_RULES_2 : TEAM_RULES_1)
   const namedPlayerTeam = player.team.map((member) => ({ ...member, nameEs: spanishName(data, member.species) }))
   // Géneros (Jose, 03/11/2026): con su propio flujo del PRNG, para no mover nada más del reto; desde `GENDERS_FROM`.

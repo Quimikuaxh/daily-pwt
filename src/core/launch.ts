@@ -26,3 +26,13 @@ export const TEAM_RULES_2_FROM = '2026-10-29'
  * decisión de Jose (cambia el reto de ese día para quien aún no lo había jugado); los anteriores no cambian.
  */
 export const GENDERS_FROM = '2026-11-03'
+
+/**
+ * Desde este día el equipo del jugador ya no sale de los sets del PWT sin sinergia (Jose, 04/11/2026; DEC-79): los marcados con
+ * `quality:no-synergy` en `data/player-sets.json` (regla en `scripts/lib/set-synergy.mjs`). Los de Smogon no cambian. Como las otras: al
+ * desplegar, el día siguiente al despliegue.
+ */
+export const POOL_RULES_FROM = '2026-11-05'
+
+/** Etiqueta de esos sets (la pone `gen:player-sets`). */
+export const NO_SYNERGY_TAG = 'quality:no-synergy'

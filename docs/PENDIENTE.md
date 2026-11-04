@@ -4,6 +4,12 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 **Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). El sonido va en `feature/f3-sonido` (desde `main`): los audios ya están descargados y versionados (se descargaron en local, desde la nube las fuentes están bloqueadas); falta implementarlo según «Sonido: plan de implementación».
 
+## Sets del PWT con sinergia (04/11/2026, directo a `main`)
+- **Hecho:** 169 sets del PWT fuera del equipo del jugador desde el 05/11/2026 (DEC-79, UT-145, UT-146). Solo web, sin migración. Al cambiar la regla, `npm run gen:player-sets` y mover `POOL_RULES_FROM` al día siguiente del despliegue.
+
+## Ideas para más adelante (Jose, 04/11/2026)
+- **Iris en el roster:** hoy fuera porque no está en el PWT (PRD §7.1). Haría falta un equipo de fuera del PWT (p. ej. el de la Liga de N2/B2 a Nv. 50) y cambiar el roster, que cambia el reparto de los retos aún no publicados. De momento no.
+
 ## Pantalla «Estado» (03/11/2026, directo a `main`)
 - **Hecho:** pastilla siempre visible y pantalla «Estado» en combate y en el visor (RF-44b, DEC-78, UT-143, UT-144, E2E-76). Solo web, sin migración.
 

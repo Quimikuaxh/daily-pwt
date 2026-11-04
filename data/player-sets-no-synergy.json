@@ -1,0 +1,678 @@
+[
+  {
+    "set": "kabutops: stoneedge, aquajet, superpower, swordsdance (source:brock)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "omastar: hydropump, ancientpower, earthpower, icebeam (source:brock)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "golduck: blizzard, focusblast, aquajet, honeclaws (source:misty)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "lapras: hydropump, icebeam, thunderbolt, confuseray (source:misty)",
+    "problems": ["movimientos de azar o de relleno: confuseray"]
+  },
+  {
+    "set": "blastoise: avalanche, hydropump, irontail, irondefense (source:misty)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "lapras: hydropump, blizzard, iceshard, sheercold (source:misty)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "blastoise: avalanche, hydropump, outrage, irondefense (source:misty)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "jolteon: raindance, shadowball, thunder, signalbeam (source:teniente-surge)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "electrode: doubleteam, signalbeam, thunderwave, electroball (source:teniente-surge)",
+    "problems": ["movimientos de azar o de relleno: doubleteam"]
+  },
+  {
+    "set": "jolteon: irontail, quickattack, voltswitch, doubleteam (source:teniente-surge)",
+    "problems": ["2 ataques del lado flojo (físico)", "movimientos de azar o de relleno: doubleteam"]
+  },
+  {
+    "set": "lanturn: hydropump, thunder, blizzard, signalbeam (source:teniente-surge)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "tangrowth: swordsdance, earthquake, rockslide, powerwhip (source:erika)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "vileplume: swordsdance, drainpunch, synthesis, sleeppowder (source:erika)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "abomasnow: leechseed, protect, blizzard, sheercold (source:erika)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo", "todos sus ataques con 80 de precisión o menos"]
+  },
+  {
+    "set": "ariados: poisonjab, strugglebug, electroweb, suckerpunch (source:sachiko)",
+    "problems": ["2 ataques del lado flojo (especial)"]
+  },
+  {
+    "set": "arbok: gunkshot, suckerpunch, coil, dragontail (source:sachiko)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "crobat: toxic, bravebird, hypnosis, protect (source:sachiko)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "hypno: hypnosis, dreameater, calmmind, shadowball (source:sabrina)",
+    "problems": ["movimientos de azar o de relleno: dreameater"]
+  },
+  {
+    "set": "mrmime: psychic, lightscreen, chargebeam, reflect (source:sabrina)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "jynx: lovelykiss, dreameater, frostbreath, energyball (source:sabrina)",
+    "problems": ["movimientos de azar o de relleno: dreameater"]
+  },
+  {
+    "set": "metagross: psychic, shadowball, signalbeam, grassknot (source:sabrina)",
+    "problems": ["4 ataques del lado flojo (especial)"]
+  },
+  {
+    "set": "exeggutor: psychic, dreameater, sleeppowder, energyball (source:sabrina)",
+    "problems": ["movimientos de azar o de relleno: dreameater"]
+  },
+  {
+    "set": "charizard: inferno, dragonrush, focusblast, honeclaws (source:blaine)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo", "todos sus ataques con 80 de precisión o menos"]
+  },
+  {
+    "set": "magmortar: fireblast, psychic, thunderbolt, focusblast (source:blaine)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "flareon: flamecharge, superpower, flail, yawn (source:blaine)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "ninetales: fireblast, energyball, psyshock, willowisp (source:blaine)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "magmortar: fireblast, psychic, thunderbolt, rockslide (source:blaine)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "honchkrow: aircutter, darkpulse, icywind, nastyplot (source:pegaso)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "noctowl: hypnosis, dreameater, reflect, airslash (source:pegaso)",
+    "problems": ["movimientos de azar o de relleno: dreameater"]
+  },
+  {
+    "set": "pidgeot: airslash, return, doubleteam, swagger (source:pegaso)",
+    "problems": ["movimientos de azar o de relleno: doubleteam, swagger"]
+  },
+  {
+    "set": "crobat: taunt, confuseray, acrobatics, superfang (source:pegaso)",
+    "problems": ["movimientos de azar o de relleno: confuseray"]
+  },
+  {
+    "set": "scizor: swordsdance, aerialace, bulletpunch, xscissor (source:anton)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "shuckle: strugglebug, gyroball, powersplit, substitute (source:anton)",
+    "problems": ["un solo ataque fuerte", "ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "shuckle: stoneedge, earthquake, powersplit, toxic (source:anton)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "pinsir: protect, guillotine, bulldoze, xscissor (source:anton)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "clefable: metronome, cosmicpower, icebeam, thunderbolt (source:blanca)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo", "movimientos de azar o de relleno: metronome"]
+  },
+  {
+    "set": "blissey: softboiled, toxic, flamethrower, grassknot (source:blanca)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "dusknoir: shadowpunch, bulldoze, thunderpunch, painsplit (source:morti)",
+    "problems": ["un solo ataque fuerte", "ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "sableye: ominouswind, foulplay, calmmind, recover (source:morti)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "froslass: confuseray, thunderbolt, icebeam, shadowball (source:morti)",
+    "problems": ["movimientos de azar o de relleno: confuseray"]
+  },
+  {
+    "set": "mismagius: confuseray, willowisp, perishsong, meanlook (source:morti)",
+    "problems": ["ningún ataque fuerte", "ningún ataque fuerte y preciso de su tipo", "movimientos de azar o de relleno: confuseray"]
+  },
+  {
+    "set": "dusknoir: shadowsneak, willowisp, firepunch, protect (source:morti)",
+    "problems": ["un solo ataque fuerte", "ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "machamp: dualchop, rockslide, dynamicpunch, bulldoze (source:anibal)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "hitmonchan: bulkup, icepunch, machpunch, thunderpunch (source:anibal)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "machamp: icepunch, stoneedge, dynamicpunch, earthquake (source:anibal)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "hitmontop: triplekick, feint, machpunch, bulletpunch (source:anibal)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "hitmonchan: doubleteam, icepunch, drainpunch, thunderpunch (source:anibal)",
+    "problems": ["movimientos de azar o de relleno: doubleteam"]
+  },
+  {
+    "set": "metagross: earthquake, gravity, meteormash, bulletpunch (source:yasmina)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "skarmory: curse, stealthrock, roost, aerialace (source:yasmina)",
+    "problems": ["ningún ataque fuerte", "ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "metagross: earthquake, explosion, meteormash, bulletpunch (source:yasmina)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "lapras: psychic, hydropump, blizzard, hail (source:fredo)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "dewgong: dive, sheercold, rest, sleeptalk (source:fredo)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "dragonite: honeclaws, hurricane, dragonrush, stoneedge (source:debora)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo", "todos sus ataques con 80 de precisión o menos"]
+  },
+  {
+    "set": "altaria: dragonbreath, fireblast, perishsong, cottonguard (source:debora)",
+    "problems": ["un solo ataque fuerte", "ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "druddigon: glare, crunch, dragontail, superpower (source:debora)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "altaria: toxic, fireblast, doubleteam, cottonguard (source:debora)",
+    "problems": ["un solo ataque fuerte", "ningún ataque fuerte y preciso de su tipo", "movimientos de azar o de relleno: doubleteam"]
+  },
+  {
+    "set": "cradily: ancientpower, gigadrain, stockpile, stealthrock (source:petra)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "aggron: irontail, stoneedge, outrage, thunderwave (source:petra)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "scrafty: bulkup, drainpunch, dragontail, amnesia (source:marcial)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "machamp: dynamicpunch, stoneedge, firepunch, earthquake (source:marcial)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "electrode: lightscreen, chargebeam, doubleteam, signalbeam (source:erico)",
+    "problems": ["un solo ataque fuerte", "ningún ataque fuerte y preciso de su tipo", "movimientos de azar o de relleno: doubleteam"]
+  },
+  {
+    "set": "plusle: discharge, agility, nastyplot, batonpass (source:erico)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "minun: faketears, thunderwave, voltswitch, charm (source:erico)",
+    "problems": ["un solo ataque fuerte", "movimientos sin uso: charm"]
+  },
+  {
+    "set": "manectric: doubleteam, thunderwave, thunderbolt, flamethrower (source:erico)",
+    "problems": ["movimientos de azar o de relleno: doubleteam"]
+  },
+  {
+    "set": "electrode: swagger, thunderwave, thunder, signalbeam (source:erico)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo", "movimientos de azar o de relleno: swagger"]
+  },
+  {
+    "set": "rotomwash: willowisp, hydropump, thunder, hex (source:erico)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "ampharos: firepunch, bulldoze, thunderpunch, brickbreak (source:erico)",
+    "problems": ["4 ataques del lado flojo (físico)"]
+  },
+  {
+    "set": "raichu: swagger, thunder, grassknot, focusblast (source:erico)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo", "movimientos de azar o de relleno: swagger"]
+  },
+  {
+    "set": "torkoal: fireblast, stoneedge, gyroball, yawn (source:candela)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "magmortar: rockslide, crosschop, thunderpunch, fireblast (source:candela)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo", "3 ataques del lado flojo (físico)"]
+  },
+  {
+    "set": "magmortar: psychic, flamecharge, thunderbolt, fireblast (source:candela)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "spinda: thrash, suckerpunch, teeterdance, assist (source:norman)",
+    "problems": ["movimientos sin uso: teeterdance"]
+  },
+  {
+    "set": "kecleon: fakeout, shadowclaw, recover, skillswap (source:norman)",
+    "problems": ["un solo ataque fuerte", "ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "castform: fireblast, icywind, hydropump, disable (source:norman)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "altaria: cottonguard, dreameater, roost, sing (source:alana)",
+    "problems": ["un solo ataque fuerte", "ningún ataque fuerte y preciso de su tipo", "movimientos de azar o de relleno: dreameater, sing"]
+  },
+  {
+    "set": "swellow: doubleteam, bravebird, endeavor, uturn (source:alana)",
+    "problems": ["movimientos de azar o de relleno: doubleteam"]
+  },
+  {
+    "set": "gyarados: dragondance, waterfall, icefang, substitute (source:alana)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "skarmory: aerialace, steelwing, whirlwind, spikes (source:alana)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "tropius: sunnyday, attract, airslash, solarbeam (source:alana)",
+    "problems": ["movimientos de azar o de relleno: attract"]
+  },
+  {
+    "set": "xatu: psychic, shadowball, featherdance, trickroom (source:vito)",
+    "problems": ["movimientos sin uso: featherdance"]
+  },
+  {
+    "set": "chimecho: hypnosis, dreameater, energyball, trickroom (source:vito)",
+    "problems": ["movimientos de azar o de relleno: dreameater"]
+  },
+  {
+    "set": "grumpig: psyshock, sleeptalk, rest, calmmind (source:vito)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "lunatone: hypnosis, dreameater, icebeam, cosmicpower (source:leti)",
+    "problems": ["movimientos de azar o de relleno: dreameater"]
+  },
+  {
+    "set": "chimecho: lightscreen, psychic, yawn, reflect (source:leti)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "gardevoir: dreameater, shadowball, thunderbolt, hypnosis (source:leti)",
+    "problems": ["movimientos de azar o de relleno: dreameater"]
+  },
+  {
+    "set": "lunatone: grassknot, signalbeam, trickroom, cosmicpower (source:leti)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "gorebyss: shellsmash, psychic, icywind, hydropump (source:galano)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "rampardos: stoneedge, zenheadbutt, earthquake, outrage (source:roco)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "sudowoodo: stoneedge, hammerarm, woodhammer, suckerpunch (source:roco)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "golem: stoneedge, gyroball, hammerarm, curse (source:roco)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "relicanth: rockslide, amnesia, sleeptalk, rest (source:roco)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "rampardos: stoneedge, superpower, earthquake, avalanche (source:roco)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "probopass: stealthrock, earthpower, discharge, painsplit (source:roco)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "archeops: stoneedge, earthquake, focusblast, quickattack (source:roco)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "carnivine: powerwhip, crunch, bugbite, swordsdance (source:gardenia)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "tangrowth: powerwhip, earthquake, ancientpower, focusblast (source:gardenia)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "tangrowth: powerwhip, earthquake, sludgebomb, focusblast (source:gardenia)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "lucario: crosschop, bonerush, extremespeed, swordsdance (source:brega)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "machamp: crosschop, stoneedge, icepunch, focusenergy (source:brega)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo", "movimientos sin uso: focusenergy"]
+  },
+  {
+    "set": "machamp: crosschop, stoneedge, icepunch, bulletpunch (source:brega)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "floatzel: aquajet, icepunch, focusblast, bulkup (source:mananti)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "empoleon: surf, blizzard, grassknot, featherdance (source:mananti)",
+    "problems": ["movimientos sin uso: featherdance"]
+  },
+  {
+    "set": "floatzel: aquajet, icepunch, focusblast, bulkup (source:mananti)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "dusknoir: curse, confuseray, painsplit, shadowsneak (source:fantina)",
+    "problems": ["ningún ataque fuerte", "ningún ataque fuerte y preciso de su tipo", "movimientos de azar o de relleno: confuseray"]
+  },
+  {
+    "set": "rotom: substitute, chargebeam, painsplit, shadowball (source:fantina)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "gengar: hypnosis, dreameater, nightmare, hex (source:fantina)",
+    "problems": ["movimientos de azar o de relleno: dreameater, nightmare"]
+  },
+  {
+    "set": "dusknoir: curse, willowisp, painsplit, shadowsneak (source:fantina)",
+    "problems": ["ningún ataque fuerte", "ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "gengar: hypnosis, thunderbolt, nightmare, shadowball (source:fantina)",
+    "problems": ["movimientos de azar o de relleno: nightmare"]
+  },
+  {
+    "set": "steelix: gyroball, dragontail, curse, stealthrock (source:aceron)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "magnezone: flashcannon, chargebeam, barrier, lightscreen (source:aceron)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "forretress: gyroball, irondefense, lightscreen, spikes (source:aceron)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "glaceon: icywind, shadowball, signalbeam, yawn (source:inverna)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "glaceon: blizzard, shadowball, signalbeam, iceshard (source:inverna)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "glalie: hail, blizzard, crunch, rollout (source:inverna)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "raichu: focusblast, grassknot, charge, chargebeam (source:lectro)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "jolteon: shadowball, charm, thunderbolt, wish (source:lectro)",
+    "problems": ["movimientos sin uso: charm"]
+  },
+  {
+    "set": "jolteon: shadowball, charm, thunderbolt, wish (source:lectro)",
+    "problems": ["movimientos sin uso: charm"]
+  },
+  {
+    "set": "electrode: taunt, torment, thunder, signalbeam (source:lectro)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "simisage: seedbomb, lowkick, acrobatics, tickle (source:millo)",
+    "problems": ["movimientos sin uso: tickle"]
+  },
+  {
+    "set": "jumpluff: leechseed, cottonspore, sleeppowder, gigadrain (source:millo)",
+    "problems": ["movimientos sin uso: cottonspore"]
+  },
+  {
+    "set": "lilligant: petaldance, quiverdance, sleeppowder, teeterdance (source:millo)",
+    "problems": ["un solo ataque fuerte", "movimientos sin uso: teeterdance"]
+  },
+  {
+    "set": "lilligant: petaldance, quiverdance, sleeppowder, dreameater (source:millo)",
+    "problems": ["movimientos de azar o de relleno: dreameater"]
+  },
+  {
+    "set": "arcanine: fireblast, dragonpulse, solarbeam, sunnyday (source:zeo)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "magmortar: thunderbolt, flamecharge, rockslide, psychic (source:zeo)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo", "2 ataques del lado flojo (físico)"]
+  },
+  {
+    "set": "heatmor: fireblast, suckerpunch, focusblast, sunnyday (source:zeo)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "simipour: hydropump, grassknot, acrobatics, workup (source:maiz)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "golduck: hydropump, psychic, icebeam, calmmind (source:maiz)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "simipour: hydropump, lowkick, acrobatics, crunch (source:maiz)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "watchog: hypnosis, confuseray, superfang, lowkick (source:aloe)",
+    "problems": ["movimientos de azar o de relleno: confuseray"]
+  },
+  {
+    "set": "audino: blizzard, fireblast, thunder, calmmind (source:aloe)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "clefable: meteormash, cosmicpower, thunderpunch, wish (source:aloe)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "kangaskhan: fakeout, hammerarm, aquatail, outrage (source:aloe)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "dunsparce: coil, roost, glare, rockslide (source:aloe)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "watchog: hypnosis, confuseray, superfang, flail (source:aloe)",
+    "problems": ["movimientos de azar o de relleno: confuseray"]
+  },
+  {
+    "set": "cinccino: focusblast, swift, thunderbolt, grassknot (source:aloe)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo", "4 ataques del lado flojo (especial)"]
+  },
+  {
+    "set": "kangaskhan: fakeout, hammerarm, suckerpunch, icepunch (source:aloe)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "lickilicky: surf, icebeam, thunderbolt, flamethrower (source:aloe)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "accelgor: doubleteam, focusblast, bugbuzz, gigadrain (source:camus)",
+    "problems": ["movimientos de azar o de relleno: doubleteam"]
+  },
+  {
+    "set": "emolga: voltswitch, thunderwave, acrobatics, attract (source:camila)",
+    "problems": ["movimientos de azar o de relleno: attract"]
+  },
+  {
+    "set": "eelektross: coil, zapcannon, flamethrower, dragonclaw (source:camila)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "luxray: firefang, wildcharge, icefang, quickattack (source:camila)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "emolga: wildcharge, uturn, acrobatics, charm (source:camila)",
+    "problems": ["movimientos sin uso: charm"]
+  },
+  {
+    "set": "swoobat: psychic, calmmind, airslash, attract (source:gerania)",
+    "problems": ["movimientos de azar o de relleno: attract"]
+  },
+  {
+    "set": "mandibuzz: bravebird, roost, doubleteam, toxic (source:gerania)",
+    "problems": ["movimientos de azar o de relleno: doubleteam"]
+  },
+  {
+    "set": "cryogonal: doubleteam, confuseray, flashcannon, blizzard (source:junco)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo", "movimientos de azar o de relleno: doubleteam, confuseray"]
+  },
+  {
+    "set": "vanilluxe: hail, weatherball, flashcannon, blizzard (source:junco)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "cryogonal: iceshard, sheercold, flashcannon, blizzard (source:junco)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "vanilluxe: hail, weatherball, protect, blizzard (source:junco)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "dewgong: fakeout, drillrun, aquajet, frostbreath (source:junco)",
+    "problems": ["un solo ataque fuerte", "ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "altaria: outrage, dragondance, cottonguard, roost (source:lirio)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "salamence: dragonrush, thunderfang, fireblast, honeclaws (source:lirio)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "druddigon: dragontail, firefang, rest, glare (source:lirio)",
+    "problems": ["ningún ataque fuerte", "ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "stoutland: takedown, crunch, wildcharge, reversal (source:cheren)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "cinccino: tailslap, rockblast, bulletseed, uturn (source:cheren)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "lopunny: dizzypunch, jumpkick, icepunch, charm (source:cheren)",
+    "problems": ["movimientos sin uso: charm"]
+  },
+  {
+    "set": "porygonz: shadowball, psychic, signalbeam, thunder (source:cheren)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "cinccino: tailslap, rockblast, bulletseed, aquatail (source:cheren)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "lickilicky: hammerarm, powerwhip, thunder, icepunch (source:cheren)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "scolipede: megahorn, earthquake, toxicspikes, rockslide (source:hiedra)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "garbodor: gunkshot, rockblast, clearsmog, stockpile (source:hiedra)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "amoonguss: toxic, spore, gigadrain, substitute (source:hiedra)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "garbodor: psychic, thunderbolt, focusblast, protect (source:hiedra)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo", "3 ataques del lado flojo (especial)"]
+  },
+  {
+    "set": "carracosta: stoneedge, shellsmash, hydropump, earthquake (source:ciprian)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "mantine: signalbeam, icebeam, hydropump, agility (source:ciprian)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "wailord: hydropump, avalanche, aquaring, amnesia (source:ciprian)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "aerodactyl: stoneedge, earthquake, icefang, fireblast (source:azul)",
+    "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "exeggutor: leafstorm, woodhammer, zenheadbutt, leechseed (source:azul)",
+    "problems": ["2 ataques del lado flojo (físico)"]
+  },
+  {
+    "set": "milotic: scald, icywind, rest, sleeptalk (source:plubio)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
+    "set": "reuniclus: psychic, reflect, toxic, lightscreen (source:mirto)",
+    "problems": ["un solo ataque fuerte"]
+  }
+]
