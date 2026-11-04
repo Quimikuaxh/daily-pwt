@@ -4,7 +4,7 @@ import { isMain } from './lib/cli.mjs'
 import { gen5, toId } from './lib/dex.mjs'
 import { fromRoot } from './lib/paths.mjs'
 import { SMOGON_TIERS } from './fetch-smogon-sets.mjs'
-import { NO_SYNERGY_TAG, synergyProblems } from './lib/set-synergy.mjs'
+import { NO_SYNERGY_TAG, solarBeamProblems, synergyProblems } from './lib/set-synergy.mjs'
 
 const pwtRules = JSON.parse(readFileSync(fromRoot('src', 'core', 'pwt-rules.json'), 'utf8'))
 const NEUTRAL_NATURE = 'Serious'
@@ -108,11 +108,10 @@ export function buildPlayerPool(trainers, smogonByTier) {
     }
   }
   // Sets del PWT sin sinergia (Jose, 04/11/2026; DEC-79): se quedan en el pool con su etiqueta y el reto deja de usarlos desde
-  // `POOL_RULES_FROM`. Los que también están en Smogon no se miran.
+  // `POOL_RULES_FROM`. Los que también están en Smogon solo se miran por Rayo Solar (Jose, 04/11/2026).
   const noSynergy = []
   for (const set of pool.values()) {
-    if (set.tags.some((tag) => tag.startsWith('source:smogon-'))) continue
-    const problems = synergyProblems(set)
+    const problems = set.tags.some((tag) => tag.startsWith('source:smogon-')) ? solarBeamProblems(set) : synergyProblems(set)
     if (problems.length === 0) continue
     set.tags.push(NO_SYNERGY_TAG)
     noSynergy.push({ set: `${set.species}: ${set.moves.join(', ')} (${set.tags.filter((tag) => tag.startsWith('source:')).join(', ')})`, problems })
@@ -137,5 +136,5 @@ if (isMain(import.meta.url)) {
   writeFileSync(fromRoot('data', 'smogon', 'discarded.json'), compactArrays(JSON.stringify(discarded, null, 2)) + '\n')
   writeFileSync(fromRoot('data', 'player-sets-no-synergy.json'), compactArrays(JSON.stringify(noSynergy, null, 2)) + '\n')
   const species = new Set(sets.map((set) => set.species))
-  console.log(`player-sets.json: ${sets.length} sets, ${species.size} especies; descartados por inválidos: ${discarded.length} (data/smogon/discarded.json); del PWT sin sinergia: ${noSynergy.length} (data/player-sets-no-synergy.json)`)
+  console.log(`player-sets.json: ${sets.length} sets, ${species.size} especies; descartados por inválidos: ${discarded.length} (data/smogon/discarded.json); sin sinergia: ${noSynergy.length} (data/player-sets-no-synergy.json)`)
 }

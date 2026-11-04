@@ -2076,7 +2076,7 @@
     "abilities": ["chlorophyll"],
     "moves": ["sunnyday", "solarbeam", "hiddenpower", "sleeppowder"],
     "verified": true,
-    "tags": ["source:smogon-uu"]
+    "tags": ["source:smogon-uu", "quality:no-synergy"]
   },
   {
     "species": "exeggutor",
@@ -2184,7 +2184,7 @@
     "abilities": ["pressure"],
     "moves": ["sunnyday", "calmmind", "fireblast", "solarbeam"],
     "verified": true,
-    "tags": ["source:smogon-uu"]
+    "tags": ["source:smogon-uu", "quality:no-synergy"]
   },
   {
     "species": "suicune",
@@ -2391,7 +2391,7 @@
     "abilities": ["intimidate", "flashfire"],
     "moves": ["sunnyday", "fireblast", "solarbeam", "morningsun"],
     "verified": true,
-    "tags": ["source:smogon-uu"]
+    "tags": ["source:smogon-uu", "quality:no-synergy"]
   },
   {
     "species": "machamp",
@@ -3840,7 +3840,7 @@
     "abilities": ["solarpower"],
     "moves": ["sunnyday", "fireblast", "solarbeam", "roost"],
     "verified": true,
-    "tags": ["source:smogon-ru"]
+    "tags": ["source:smogon-ru", "quality:no-synergy"]
   },
   {
     "species": "butterfree",
@@ -4326,7 +4326,7 @@
     "abilities": ["chlorophyll"],
     "moves": ["sunnyday", "solarbeam", "psyshock", "sleeppowder"],
     "verified": true,
-    "tags": ["source:smogon-ru"]
+    "tags": ["source:smogon-ru", "quality:no-synergy"]
   },
   {
     "species": "exeggutor",
@@ -6324,7 +6324,7 @@
     "abilities": ["chlorophyll"],
     "moves": ["sunnyday", "solarbeam", "psychic", "sleeppowder"],
     "verified": true,
-    "tags": ["source:smogon-nu"]
+    "tags": ["source:smogon-nu", "quality:no-synergy"]
   },
   {
     "species": "noctowl",
@@ -9159,7 +9159,7 @@
     "abilities": ["chlorophyll"],
     "moves": ["psyshock", "solarbeam", "hypnosis", "sunnyday"],
     "verified": true,
-    "tags": ["source:erika"]
+    "tags": ["source:erika", "quality:no-synergy"]
   },
   {
     "species": "tangrowth",
@@ -9222,7 +9222,7 @@
     "abilities": ["chlorophyll", "leafguard"],
     "moves": ["solarbeam", "focusblast", "ancientpower", "synthesis"],
     "verified": true,
-    "tags": ["source:erika"]
+    "tags": ["source:erika", "quality:no-synergy"]
   },
   {
     "species": "abomasnow",
@@ -11670,7 +11670,7 @@
     "abilities": ["chlorophyll", "solarpower"],
     "moves": ["solarbeam", "airslash", "synthesis", "sunnyday"],
     "verified": true,
-    "tags": ["source:gardenia"]
+    "tags": ["source:gardenia", "quality:no-synergy"]
   },
   {
     "species": "breloom",

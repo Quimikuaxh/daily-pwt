@@ -10,6 +10,8 @@ import { gen5 } from './dex.mjs'
  * 4. Movimientos sin uso en un combate 1 contra 1 a Nv. 50 (Danza Caos, Gruñido, Malicioso…).
  * 5. Movimientos de azar o de relleno que Jose no quiere en su equipo (Doble Equipo, Rayo Confuso, Contoneo, Atracción, Comesueños…).
  * 6. Precisión: no todos sus ataques pueden tener 80 de precisión o menos (Megapatada, Electrocañón…); los que no fallan cuentan como 100.
+ * Rayo Solar no cuenta como ataque fuerte en 1 y 2 (Jose, 04/11/2026): sin sol carga un turno y con Día Soleado gasta otro en ponerlo.
+ * Esta regla, y solo esta, también se aplica a los de Smogon (`solarBeamProblems`): fuera los que están dentro por Rayo Solar.
  */
 
 /** Etiqueta de los sets del PWT que no pasan: el reto no los usa desde `POOL_RULES_FROM` (`src/core/launch.ts`). */
@@ -29,21 +31,36 @@ const STRONG_POWER = 70
 const MIN_STAB_ACCURACY = 90
 const SIDE_GAP = 30
 
+/** Reglas 1 y 2: los ataques fuertes y el de su tipo preciso. Con `solarBeamStrong`, Rayo Solar cuenta como fuerte. */
+function strongProblems(set, solarBeamStrong) {
+  const species = gen5.species.get(set.species)
+  const attacks = set.moves.map((id) => gen5.moves.get(id)).filter((move) => move.category !== 'Status')
+  const problems = []
+  // Fuertes: 70 o más de potencia, de varios golpes (Triple Patada, Carámbano…), de potencia variable o de daño fijo.
+  const strong = attacks.filter((move) => (solarBeamStrong || move.id !== 'solarbeam') && (FIXED_DAMAGE.has(move.id) || VARIABLE_POWER.has(move.id) || Boolean(move.multihit) || move.basePower >= STRONG_POWER))
+  // Muro: recupera PS y pone un estado o una trampa; le basta un ataque fuerte.
+  const wall = set.moves.some((id) => RECOVERY.has(id)) && set.moves.some((id) => STATUS_OR_HAZARD.has(id))
+  if (strong.length < (wall ? 1 : 2)) problems.push(strong.length === 0 ? 'ningún ataque fuerte' : 'un solo ataque fuerte')
+  // De esos, al menos uno de su tipo (o de daño fijo) y con 90 o más de precisión (los que no fallan cuentan como 100).
+  const accurate = (move) => move.accuracy === true || move.accuracy >= MIN_STAB_ACCURACY
+  if (!strong.some((move) => (FIXED_DAMAGE.has(move.id) || species.types.includes(move.type)) && accurate(move))) problems.push('ningún ataque fuerte y preciso de su tipo')
+  return problems
+}
+
+/** Los de Smogon: lo que falla de las reglas 1 y 2 solo porque Rayo Solar no cuenta (vacío si no depende de él). */
+export function solarBeamProblems(set) {
+  if (!set.moves.includes('solarbeam')) return []
+  const withIt = strongProblems(set, true)
+  return strongProblems(set, false)
+    .filter((problem) => !withIt.includes(problem))
+    .map((problem) => `${problem} sin Rayo Solar`)
+}
+
 export function synergyProblems(set) {
   const species = gen5.species.get(set.species)
   const moves = set.moves.map((id) => gen5.moves.get(id))
   const attacks = moves.filter((move) => move.category !== 'Status')
-  const problems = []
-
-  // Fuertes: 70 o más de potencia, de varios golpes (Triple Patada, Carámbano…), de potencia variable o de daño fijo.
-  const strong = attacks.filter((move) => FIXED_DAMAGE.has(move.id) || VARIABLE_POWER.has(move.id) || Boolean(move.multihit) || move.basePower >= STRONG_POWER)
-  // Muro: recupera PS y pone un estado o una trampa; le basta un ataque fuerte.
-  const wall = set.moves.some((id) => RECOVERY.has(id)) && set.moves.some((id) => STATUS_OR_HAZARD.has(id))
-  if (strong.length < (wall ? 1 : 2)) problems.push(strong.length === 0 ? 'ningún ataque fuerte' : 'un solo ataque fuerte')
-
-  // De esos, al menos uno de su tipo (o de daño fijo) y con 90 o más de precisión (los que no fallan cuentan como 100).
-  const accurate = (move) => move.accuracy === true || move.accuracy >= MIN_STAB_ACCURACY
-  if (!strong.some((move) => (FIXED_DAMAGE.has(move.id) || species.types.includes(move.type)) && accurate(move))) problems.push('ningún ataque fuerte y preciso de su tipo')
+  const problems = strongProblems(set, false)
 
   const { atk, spa } = species.baseStats
   if (Math.abs(atk - spa) >= SIDE_GAP) {

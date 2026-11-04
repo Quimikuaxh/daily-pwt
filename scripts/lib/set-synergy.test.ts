@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 // @ts-expect-error módulo .mjs sin tipos
-import { NO_SYNERGY_TAG, synergyProblems } from './set-synergy.mjs'
+import { NO_SYNERGY_TAG, solarBeamProblems, synergyProblems } from './set-synergy.mjs'
 import { NO_SYNERGY_TAG as CORE_TAG } from '../../src/core/launch'
 
 // UT-145 · Sets del PWT con sinergia (Jose, 04/11/2026; DEC-79).
@@ -29,17 +29,24 @@ describe('sinergia de los sets del PWT (UT-145)', () => {
     expect(synergyProblems(set('charizard', ['inferno', 'dragonrush', 'focusblast', 'honeclaws']))).toContain('todos sus ataques con 80 de precisión o menos')
   })
 
-  it('el pool marca los del PWT que no pasan (nunca uno de Smogon) y la etiqueta es la misma que lee el reto', () => {
+  it('Rayo Solar no cuenta como ataque fuerte; a los de Smogon solo se les mira eso (Jose, 04/11/2026)', () => {
+    expect(synergyProblems(set('exeggutor', ['psyshock', 'solarbeam', 'hypnosis', 'sunnyday']))).toContain('un solo ataque fuerte')
+    expect(solarBeamProblems(set('exeggutor', ['sunnyday', 'solarbeam', 'psyshock', 'sleeppowder']))).toEqual(['un solo ataque fuerte sin Rayo Solar'])
+    // De cobertura o sin depender de él (Lluvia Ígnea no es precisa ni con Rayo Solar ni sin él): se quedan.
+    expect(solarBeamProblems(set('crustle', ['rockslide', 'xscissor', 'solarbeam', 'shellsmash']))).toEqual([])
+    expect(solarBeamProblems(set('heatran', ['magmastorm', 'sunnyday', 'solarbeam', 'earthpower']))).toEqual([])
+    expect(solarBeamProblems(set('garchomp', ['earthquake', 'outrage', 'stoneedge', 'swordsdance']))).toEqual([])
+  })
+
+  // Cambia el requisito (Jose, 04/11/2026): antes nunca se marcaba uno de Smogon; ahora sí, los que están dentro por Rayo Solar.
+  it('el pool marca los del PWT que no pasan y los de Smogon que dependen de Rayo Solar; la etiqueta es la misma que lee el reto', () => {
     expect(NO_SYNERGY_TAG).toBe(CORE_TAG)
     const pool: { species: string; moves: string[]; tags: string[] }[] = JSON.parse(readFileSync(join(import.meta.dirname, '..', '..', 'data', 'player-sets.json'), 'utf8'))
+    const smogon = (entry: { tags: string[] }) => entry.tags.some((tag) => tag.startsWith('source:smogon-'))
+    const problems = (entry: { species: string; moves: string[]; tags: string[] }) => (smogon(entry) ? solarBeamProblems(entry) : synergyProblems(entry))
     const marked = pool.filter((entry) => entry.tags.includes(NO_SYNERGY_TAG))
-    expect(marked.length).toBeGreaterThan(0)
-    for (const entry of marked) {
-      expect(entry.tags.some((tag) => tag.startsWith('source:smogon-'))).toBe(false)
-      expect(synergyProblems(entry).length).toBeGreaterThan(0)
-    }
-    for (const entry of pool.filter((candidate) => !candidate.tags.includes(NO_SYNERGY_TAG) && !candidate.tags.some((tag) => tag.startsWith('source:smogon-')))) {
-      expect(synergyProblems(entry)).toEqual([])
-    }
+    expect(marked.some(smogon)).toBe(true)
+    for (const entry of marked) expect(problems(entry).length).toBeGreaterThan(0)
+    for (const entry of pool.filter((candidate) => !candidate.tags.includes(NO_SYNERGY_TAG))) expect(problems(entry)).toEqual([])
   })
 })

@@ -12,7 +12,7 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 - **Fusionada en `main` el 04/11/2026** (`bc0c572`, Jose) y desplegada.
 
 ## Sets del PWT con sinergia (04/11/2026, directo a `main`)
-- **Hecho:** 169 sets del PWT fuera del equipo del jugador desde el 05/11/2026 (DEC-79, UT-145, UT-146). Solo web, sin migración. Al cambiar la regla, `npm run gen:player-sets` y mover `POOL_RULES_FROM` al día siguiente del despliegue.
+- **Hecho:** 169 sets del PWT fuera del equipo del jugador desde el 05/11/2026 (DEC-79, UT-145, UT-146); después, 9 más que solo estaban por Rayo Solar (3 del PWT y 6 de Smogon; el Exeggutor del 04/11/2026), 178 en total. Solo web, sin migración. Al cambiar la regla, `npm run gen:player-sets` y mover `POOL_RULES_FROM` al día siguiente del despliegue.
 
 ## Ideas para más adelante (Jose, 04/11/2026)
 - **Iris en el roster:** hoy fuera porque no está en el PWT (PRD §7.1). Haría falta un equipo de fuera del PWT (p. ej. el de la Liga de N2/B2 a Nv. 50) y cambiar el roster, que cambia el reparto de los retos aún no publicados. De momento no.

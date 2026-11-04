@@ -1,5 +1,29 @@
 [
   {
+    "set": "exeggutor: sunnyday, solarbeam, hiddenpower, sleeppowder (source:smogon-uu)",
+    "problems": ["un solo ataque fuerte sin Rayo Solar", "ningún ataque fuerte y preciso de su tipo sin Rayo Solar"]
+  },
+  {
+    "set": "entei: sunnyday, calmmind, fireblast, solarbeam (source:smogon-uu)",
+    "problems": ["un solo ataque fuerte sin Rayo Solar"]
+  },
+  {
+    "set": "arcanine: sunnyday, fireblast, solarbeam, morningsun (source:smogon-uu)",
+    "problems": ["un solo ataque fuerte sin Rayo Solar"]
+  },
+  {
+    "set": "charizard: sunnyday, fireblast, solarbeam, roost (source:smogon-ru)",
+    "problems": ["un solo ataque fuerte sin Rayo Solar"]
+  },
+  {
+    "set": "exeggutor: sunnyday, solarbeam, psyshock, sleeppowder (source:smogon-ru)",
+    "problems": ["un solo ataque fuerte sin Rayo Solar"]
+  },
+  {
+    "set": "exeggutor: sunnyday, solarbeam, psychic, sleeppowder (source:smogon-nu)",
+    "problems": ["un solo ataque fuerte sin Rayo Solar"]
+  },
+  {
     "set": "kabutops: stoneedge, aquajet, superpower, swordsdance (source:brock)",
     "problems": ["ningún ataque fuerte y preciso de su tipo"]
   },
@@ -44,12 +68,20 @@
     "problems": ["ningún ataque fuerte y preciso de su tipo"]
   },
   {
+    "set": "exeggutor: psyshock, solarbeam, hypnosis, sunnyday (source:erika)",
+    "problems": ["un solo ataque fuerte"]
+  },
+  {
     "set": "tangrowth: swordsdance, earthquake, rockslide, powerwhip (source:erika)",
     "problems": ["ningún ataque fuerte y preciso de su tipo"]
   },
   {
     "set": "vileplume: swordsdance, drainpunch, synthesis, sleeppowder (source:erika)",
     "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "tangrowth: solarbeam, focusblast, ancientpower, synthesis (source:erika)",
+    "problems": ["un solo ataque fuerte", "ningún ataque fuerte y preciso de su tipo"]
   },
   {
     "set": "abomasnow: leechseed, protect, blizzard, sheercold (source:erika)",
@@ -313,7 +345,7 @@
   },
   {
     "set": "tropius: sunnyday, attract, airslash, solarbeam (source:alana)",
-    "problems": ["movimientos de azar o de relleno: attract"]
+    "problems": ["un solo ataque fuerte", "movimientos de azar o de relleno: attract"]
   },
   {
     "set": "xatu: psychic, shadowball, featherdance, trickroom (source:vito)",
@@ -382,6 +414,10 @@
   {
     "set": "tangrowth: powerwhip, earthquake, ancientpower, focusblast (source:gardenia)",
     "problems": ["ningún ataque fuerte y preciso de su tipo"]
+  },
+  {
+    "set": "tropius: solarbeam, airslash, synthesis, sunnyday (source:gardenia)",
+    "problems": ["un solo ataque fuerte"]
   },
   {
     "set": "tangrowth: powerwhip, earthquake, sludgebomb, focusblast (source:gardenia)",
