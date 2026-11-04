@@ -4,11 +4,12 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 **Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). El sonido va en `feature/f3-sonido` (desde `main`): los audios ya están descargados y versionados (se descargaron en local, desde la nube las fuentes están bloqueadas); falta implementarlo según «Sonido: plan de implementación».
 
-## Rama `feature/amigos-en-directo` (04/11/2026)
+## Rama `feature/amigos-en-directo` (04/11/2026, fusionada)
 - **Hecho:** estadísticas de un amigo al día (RF-111b, cambio; UT-147) y ver en directo su oficial (RF-111c, DEC-80, UT-148 a UT-150).
 - **Hecho también:** la repetición de hoy de un amigo, para quien ya terminó su oficial de hoy (UT-151, migración `20261104020000_pwt_repeticion_hoy.sql`). Arreglos de la prueba de Jose: «Ver en directo» no salía solo (el temporizador de la lista se reiniciaba cada segundo) y a 360 px el nombre se partía letra a letra.
 - **Probado** por la sesión remota con dos cuentas en local (escritorio y 360 px, dos vueltas): todo bien. Tras la prueba: la nota de la repetición de hoy solo sale si queda una sin poder verse, y en el visor del combate de otro (amigo, directo, enlace ajeno) el contador del jugador lleva su nickname en vez de «Tú».
-- **Migraciones aplicadas en producción** (04/11/2026): `20261104000000_pwt_amigo_al_dia.sql`, `20261104010000_pwt_directo.sql` y `20261104020000_pwt_repeticion_hoy.sql`. Antes, como se dijo (sin la segunda, la lista de amigos de la web nueva no dice quién juega y pedir el directo da error). Probarlo con dos cuentas.
+- **Migraciones aplicadas en producción** (04/11/2026): `20261104000000_pwt_amigo_al_dia.sql`, `20261104010000_pwt_directo.sql` y `20261104020000_pwt_repeticion_hoy.sql`, antes de publicar la web.
+- **Fusionada en `main` el 04/11/2026** (`bc0c572`, Jose) y desplegada.
 
 ## Sets del PWT con sinergia (04/11/2026, directo a `main`)
 - **Hecho:** 169 sets del PWT fuera del equipo del jugador desde el 05/11/2026 (DEC-79, UT-145, UT-146). Solo web, sin migración. Al cambiar la regla, `npm run gen:player-sets` y mover `POOL_RULES_FROM` al día siguiente del despliegue.
