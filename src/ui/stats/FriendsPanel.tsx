@@ -112,9 +112,15 @@ export function FriendsPanel({ api, onChange, onOpen, onWatchLive }: { api: Clou
           <li key={row.nickname}>
             {/* Al pulsarlo, sus estadísticas e historial (decisión de Jose, 29/10/2026). */}
             {onOpen ? (
-              <button type="button" className="friend-open" aria-label={text.open(row.nickname)} onClick={() => onOpen(row.nickname)}>{row.nickname}</button>
+              <button type="button" className="friend-open" aria-label={text.open(row.nickname)} onClick={() => onOpen(row.nickname)}>
+                {row.playing && onWatchLive && <PlayingDot />}
+                {row.nickname}
+              </button>
             ) : (
-              <span>{row.nickname}</span>
+              <span>
+                {row.playing && onWatchLive && <PlayingDot />}
+                {row.nickname}
+              </span>
             )}
             {row.playing && onWatchLive && <LiveControl row={row} onRequest={() => run(() => api.requestLive(row.nickname))} onWatch={() => onWatchLive(row.nickname)} />}
             <button type="button" className="btn btn-small" onClick={() => run(() => api.removeFriend(row.nickname))}>{text.remove}</button>
@@ -134,17 +140,49 @@ function FriendSection({ title, children }: { title: string; children: React.Rea
   )
 }
 
-/** RF-111c: un amigo jugando su oficial; según la solicitud de hoy, pedirla, esperar, volver a pedirla o verlo. */
-function LiveControl({ row, onRequest, onWatch }: { row: PlayerRow; onRequest: () => void; onWatch: () => void }) {
+/** «Jugando ahora» (RF-111c): un punto rojo delante del nombre (Jose, 04/11/2026); el texto, para lectores de pantalla. */
+function PlayingDot() {
   return (
-    <span className="friend-live">
-      <span className="friend-playing">{text.playing}</span>
-      {row.live === 'accepted' && <button type="button" className="btn btn-small" aria-label={text.watchLiveAria(row.nickname)} onClick={onWatch}>{text.watchLive}</button>}
-      {row.live === 'pending' && <span className="settings-hint">{text.livePending}</span>}
-      {row.live === 'rejected' && <span className="settings-hint">{text.liveRejected}</span>}
-      {(!row.live || row.live === 'rejected') && (
-        <button type="button" className="btn btn-small" aria-label={text.liveRequestAria(row.nickname)} onClick={onRequest}>{row.live === 'rejected' ? text.liveAgain : text.requestLive}</button>
-      )}
+    <span className="friend-playing" title={text.playing}>
+      <span className="sr-only">{text.playing}</span>
     </span>
+  )
+}
+
+function PlayIcon() {
+  return (
+    <svg viewBox="0 0 4 7" width="8" height="14" aria-hidden="true" shapeRendering="crispEdges">
+      <path d="M0 0h1v7H0zM1 1h1v5H1zM2 2h1v3H2zM3 3h1v1H3z" fill="currentColor" />
+    </svg>
+  )
+}
+
+/**
+ * RF-111c: un amigo jugando su oficial. Un botón pequeño con un «play» (Jose, 04/11/2026): pedirlo (o pedirlo otra vez tras un
+ * rechazo), esperar (desactivado, «…») o, aceptado, verlo (en rojo). El estado, en el texto oculto y en el `title`.
+ */
+function LiveControl({ row, onRequest, onWatch }: { row: PlayerRow; onRequest: () => void; onWatch: () => void }) {
+  if (row.live === 'accepted') {
+    return (
+      <button type="button" className="btn btn-small friend-live friend-live-on" aria-label={text.watchLiveAria(row.nickname)} title={text.watchLive} onClick={onWatch}>
+        <PlayIcon />
+      </button>
+    )
+  }
+  if (row.live === 'pending') {
+    return (
+      <button type="button" className="btn btn-small friend-live" disabled title={text.livePending}>
+        <span aria-hidden="true">…</span>
+        <span className="sr-only">{text.livePending}</span>
+      </button>
+    )
+  }
+  const rejected = row.live === 'rejected'
+  return (
+    <button type="button" className="btn btn-small friend-live" aria-label={text.liveRequestAria(row.nickname)} title={rejected ? `${text.liveRejected}. ${text.liveAgain}` : text.requestLive} onClick={onRequest}>
+      <PlayIcon />
+      {rejected && <span className="sr-only">{text.liveRejected}</span>}
+      <span className="sr-only">{rejected ? text.liveAgain : text.requestLive}</span>
+    </button>
   )
 }

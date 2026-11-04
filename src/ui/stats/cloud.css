@@ -342,21 +342,29 @@
   margin-top: 12px;
 }
 
-/* Directo (RF-111c): «Jugando ahora» y su botón, en una línea propia bajo el nombre y «Quitar» (a 360 px, en la misma fila el nombre
-   se partía letra a letra; prueba de Jose, 04/11/2026). */
-.friend-live {
-  display: flex;
-  flex: 1 1 100%;
-  order: 1;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
+/* Directo (RF-111c): un punto rojo delante del nombre y un botón cuadrado con un «play» junto a «Quitar» (Jose, 04/11/2026: la
+   etiqueta y el botón con texto se veían feos). Caben en la fila a 360 px sin partir el nombre. */
+.friend-playing {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  vertical-align: 0.1em;
+  background: #e02020;
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgb(224 32 32 / 0.8);
 }
 
-.friend-playing {
-  padding: 0 6px;
-  font-size: 13px;
+.btn.friend-live {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.btn.friend-live-on {
   color: #f8f8f8;
-  background: rgb(216 32 32 / 0.9);
-  border: 1px solid #f8f8f8;
+  background: #c81818;
 }
