@@ -409,22 +409,22 @@ describe('amigos (UT-95)', () => {
     await expect(t.call(eva, `select pwt.send_friend_request('eva_x')`)).rejects.toThrow('self_request')
     await expect(t.call(eva, `select pwt.send_friend_request('nadie')`)).rejects.toThrow('player_not_found')
     expect(await t.call(eva, `select pwt.send_friend_request('fede_x')`)).toBe('outgoing')
-    expect(await t.as(fede, `select * from pwt.list_friends()`)).toEqual([{ nickname: 'Eva_x', relation: 'incoming' }])
+    expect(await t.as(fede, `select nickname, relation from pwt.list_friends()`)).toEqual([{ nickname: 'Eva_x', relation: 'incoming' }])
     expect(await t.call(fede, `select pwt.my_summary() -> 'incomingRequests'`)).toBe(1)
     await t.as(fede, `select pwt.respond_friend_request('eva_x', true)`)
-    expect(await t.as(eva, `select * from pwt.list_friends()`)).toEqual([{ nickname: 'Fede_x', relation: 'friend' }])
+    expect(await t.as(eva, `select nickname, relation from pwt.list_friends()`)).toEqual([{ nickname: 'Fede_x', relation: 'friend' }])
 
     // Si el otro ya había pedido, pedir acepta.
     await t.call(gema, `select pwt.send_friend_request('eva_x')`)
     expect(await t.call(eva, `select pwt.send_friend_request('gema_x')`)).toBe('friend')
     await t.as(eva, `select pwt.remove_friend('gema_x')`)
-    expect(await t.as(gema, `select * from pwt.list_friends()`)).toEqual([])
+    expect(await t.as(gema, `select nickname, relation from pwt.list_friends()`)).toEqual([])
 
     await t.call(gema, `select pwt.send_friend_request('fede_x')`)
     await t.as(gema, `select pwt.cancel_friend_request('fede_x')`)
     await t.call(gema, `select pwt.send_friend_request('fede_x')`)
     await t.as(fede, `select pwt.respond_friend_request('gema_x', false)`)
-    expect(await t.as(fede, `select * from pwt.list_friends()`)).toEqual([{ nickname: 'Eva_x', relation: 'friend' }])
+    expect(await t.as(fede, `select nickname, relation from pwt.list_friends()`)).toEqual([{ nickname: 'Eva_x', relation: 'friend' }])
   })
 
   it('sin cuenta no hay amigos: ni buscar, ni pedir, ni salir en la búsqueda, ni recibir solicitudes (RF-110)', async () => {
@@ -455,8 +455,9 @@ describe('vista de un amigo (UT-118)', () => {
     return { eva, fede, gema }
   }
 
-  // Cambio de requisito del 31/10/2026 (Jose, UT-130): el combate de hoy sale en el historial, pero su repetición no hasta mañana.
-  it('un amigo ve sus días cerrados, sus puntos y su historial con el combate de hoy; la repetición de hoy, no', async () => {
+  // Cambio de requisito del 31/10/2026 (Jose, UT-130): el combate de hoy sale en el historial, pero su repetición no hasta mañana. Y del
+  // 04/11/2026 (UT-147): sus días, también hasta hoy, como los propios.
+  it('un amigo ve sus días hasta hoy, sus puntos y su historial con el combate de hoy; la repetición de hoy, no', async () => {
     const { eva, fede } = await friends('v')
     // Un día pasado que no usa ningún otro test (la base y sus días cerrados son los mismos en todo el fichero).
     const closed = addDays(t.today, -200)
@@ -467,8 +468,9 @@ describe('vista de un amigo (UT-118)', () => {
     await t.admin(`insert into pwt.day_difficulty (date, players, average, multiplier) values ($1::date, 1, 4, 1.3333)`, [closed])
     const profile = await t.call<{ nickname: string; days: Array<{ date: string; battle?: unknown }>; points: Array<{ date: string; points: number }>; history: Array<{ date: string; sharedId: unknown }> }>(eva, `select pwt.friend_profile('FEDE_V')`)
     expect(profile.nickname).toBe('Fede_v')
-    expect(profile.days.map((day) => day.date)).toEqual([closed])
+    expect(profile.days.map((day) => day.date)).toEqual([closed, t.today])
     expect(profile.days[0]).not.toHaveProperty('battle')
+    // Los puntos de hoy, como los propios, no existen hasta el cierre.
     expect(profile.points).toEqual([expect.objectContaining({ date: closed, points: 5.33 })])
     expect(profile.history).toEqual([expect.objectContaining({ date: t.today, sharedId: null }), expect.objectContaining({ date: closed, sharedId: null })])
     expect(await t.call(eva, `select pwt.get_friend_replay('fede_v', $1::date)`, [closed])).toBe('datos')

@@ -92,6 +92,10 @@ function supabaseApi(client: SupabaseClient, functionsUrl: string): CloudApi {
     discordLinkUrl: async (timeZone) => discordStartUrl(functionsUrl, await rpc<string>('discord_link_start', { p_time_zone: timeZone })),
     setDiscordReminder: (enabled, minute, timeZone) => rpc('set_discord_reminder', { p_enabled: enabled, p_minute: minute, p_time_zone: timeZone }),
     discordUnlink: () => rpc('discord_unlink'),
+    requestLive: (nickname) => rpc('request_live', { p_nickname: nickname }),
+    liveInbox: () => rpc('live_inbox'),
+    answerLiveRequest: (nickname, accept) => rpc('answer_live_request', { p_nickname: nickname, p_accept: accept }),
+    liveBattle: (nickname) => rpc('live_battle', { p_nickname: nickname }),
   }
 }
 

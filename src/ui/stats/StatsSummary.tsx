@@ -29,8 +29,9 @@ export function StatsSummary({ days, today, points, own, note }: StatsSummaryPro
   const stats = computeStats(days, today)
   const text = own ? shareTextFor(days, today) : null
   const monthPoints = pointsOfMonth(points ?? [], today)
-  // Los puntos de hoy no existen hasta el cierre del día (medianoche de Madrid): se enseña con cuántos Pokémon acabó el oficial.
-  const todayRecord = own ? days.find(finishedOn(today)) : undefined
+  // Los puntos de hoy no existen hasta el cierre del día (medianoche de Madrid): se enseña con cuántos Pokémon acabó el oficial. También en
+  // la vista de un amigo, que desde el 04/11/2026 está al día como la propia (RF-111b).
+  const todayRecord = days.find(finishedOn(today))
 
   return (
     <>

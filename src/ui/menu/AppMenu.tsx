@@ -78,6 +78,8 @@ export type AppMenuProps = {
   historyArt?: (item: HistoryItem) => HistoryArt | null
   /** Abrir una repetición del historial de un amigo (desde Estadísticas › Amigos). */
   onWatchFriendReplay?: (nickname: string, date: string) => void
+  /** Directo (RF-111c): ver el oficial en curso de un amigo. */
+  onWatchLive?: (nickname: string) => void
   /** Solo en Hoy: aviso para elegir nombre e iniciar sesión (RF-94b), como mucho una vez al día. */
   welcome?: boolean
 }
@@ -91,7 +93,7 @@ type Open = 'account' | 'history' | 'stats' | 'help' | 'settings' | 'welcome' | 
  * Accesos de la cabecera de Hoy y de Resultado: Cuenta (con Supabase configurado; RF-93, decisión de Jose del 28/10/2026), Estadísticas,
  * Ayuda y Ajustes, con sus ventanas.
  */
-export function AppMenu({ store, today, settings, onSettingsChange, onClearData, account, accountState, trainerName, onWatchReplay, historyArt, onWatchFriendReplay, welcome = false }: AppMenuProps) {
+export function AppMenu({ store, today, settings, onSettingsChange, onClearData, account, accountState, trainerName, onWatchReplay, historyArt, onWatchFriendReplay, onWatchLive, welcome = false }: AppMenuProps) {
   // RF-115: al volver de conectar Discord (`?discord=`), Cuenta se abre con el resultado y el parámetro se quita de la dirección.
   const [discordResult] = useState(() => discordResultFrom(window.location.search))
   const [open, setOpen] = useState((discordResult ? 'account' : null) as Open)
@@ -187,6 +189,13 @@ export function AppMenu({ store, today, settings, onSettingsChange, onClearData,
           accountState={accountState}
           trainerName={trainerName}
           historyArt={historyArt}
+          onWatchLive={
+            onWatchLive &&
+            ((nickname) => {
+              close()
+              onWatchLive(nickname)
+            })
+          }
           onWatchFriendReplay={
             onWatchFriendReplay &&
             ((nickname, date) => {

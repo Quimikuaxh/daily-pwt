@@ -26,12 +26,14 @@ type StatsDialogProps = {
   trainerName?: (trainerId: string) => string
   historyArt?: (item: HistoryItem) => HistoryArt | null
   onWatchFriendReplay?: (nickname: string, date: string) => void
+  /** Directo (RF-111c): abrir el oficial en curso de un amigo que ha aceptado. */
+  onWatchLive?: (nickname: string) => void
 }
 
 type Tab = 'mine' | 'rankings' | 'friends'
 
 /** Estadísticas sobre el historial de oficiales y, si el de hoy ya terminó, su botón de compartir; con cuenta, también rankings y amigos. */
-export function StatsDialog({ store, today, onClose, account, accountState, trainerName, historyArt, onWatchFriendReplay }: StatsDialogProps) {
+export function StatsDialog({ store, today, onClose, account, accountState, trainerName, historyArt, onWatchFriendReplay, onWatchLive }: StatsDialogProps) {
   const [tab, setTab] = useState('mine' as Tab)
   // Amigo abierto en la pestaña Amigos; al cambiar de pestaña se vuelve a la lista.
   const [friend, setFriend] = useState(null as string | null)
@@ -79,7 +81,7 @@ export function StatsDialog({ store, today, onClose, account, accountState, trai
             friend ? (
               <FriendView api={account.api} nickname={friend} today={today} onBack={() => setFriend(null)} trainerName={trainerName} art={historyArt} onWatch={onWatchFriendReplay} />
             ) : (
-              <FriendsPanel api={account.api} onChange={() => void account.refreshSummary()} onOpen={setFriend} />
+              <FriendsPanel api={account.api} onChange={() => void account.refreshSummary()} onOpen={setFriend} onWatchLive={onWatchLive} />
             )
           ) : (
             <p className="settings-hint">{es.friends.signIn}</p>

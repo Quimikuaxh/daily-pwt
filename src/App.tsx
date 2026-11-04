@@ -29,6 +29,7 @@ import { REPLAY_PARAM, replayIdFrom, replayLink } from './ui/replay/replayLink'
 
 // F5: el visor de repeticiones solo hace falta al abrir una (fuera de la ruta crítica, E2E-21).
 const ReplayScreen = lazy(() => import('./ui/replay/replayModule').then((module) => ({ default: module.ReplayScreen })))
+const LiveScreen = lazy(() => import('./ui/replay/replayModule').then((module) => ({ default: module.LiveScreen })))
 
 type AppProps = {
   data: GameData | null
@@ -50,6 +51,8 @@ type Screen =
   | { name: 'result'; challenge: Challenge; leadIndex: number; ended: EngineEnd; mode: BattleMode; replay?: ReplayData; replaySaved?: Promise<void> }
   // `back`: a qué pantalla se vuelve (Resultado, si se abrió desde ella; si no, Hoy).
   | { name: 'replay'; source: ReplaySource; back?: Screen }
+  // Directo (RF-111c): el oficial en curso de un amigo que ha aceptado.
+  | { name: 'live'; nickname: string }
 
 const noSubscription = () => () => {}
 
@@ -160,6 +163,7 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
     trainerName: (trainerId) => data?.trainers.find((trainer) => trainer.id === trainerId)?.nameEs ?? trainerId,
     onWatchReplay: (date) => setScreen({ name: 'replay', source: { kind: 'mine', date } }),
     onWatchFriendReplay: (nickname, date) => setScreen({ name: 'replay', source: { kind: 'friend', nickname, date } }),
+    onWatchLive: (nickname) => setScreen({ name: 'live', nickname }),
     historyArt: (item) => historyArtFor(item, data),
     store,
     account: account ?? undefined,
@@ -235,6 +239,14 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
     })
   }
 
+  if (screen.name === 'live' && data && account?.api) {
+    return (
+      <Suspense fallback={null}>
+        <LiveScreen nickname={screen.nickname} api={account.api} data={data} settings={settings} createClient={createClient} onExit={() => setScreen({ name: 'today' })} />
+      </Suspense>
+    )
+  }
+
   if (screen.name === 'replay' && data) {
     const leaveReplay = () => {
       // Al salir de un enlace compartido se quita `?replay=` de la dirección (recargar lleva a Hoy).
@@ -273,6 +285,7 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
         ai={battle.ai}
         mode={battle.mode}
         replay={battle.replay}
+        liveApi={official && accountState.status === 'signedIn' ? (account?.api ?? undefined) : undefined}
         onDecision={official ? (decision) => store.recordDecision(date, decision) : undefined}
         onSettled={
           official

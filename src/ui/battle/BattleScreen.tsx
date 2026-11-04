@@ -21,6 +21,8 @@ import { PARTY_SCREEN_IMAGES, useImagesReady } from './preloadAssets'
 import { partyMembers, requestFromView, rivalMembers } from './party/partyModel'
 import { TouchBackground, TouchScreen, type TouchMode } from './TouchScreen'
 import { FieldPanel, FieldPill } from './FieldStatus'
+import { LiveRequestRow, LiveWatching, useLiveInbox } from './LiveInbox'
+import type { CloudApi } from '../../cloud/api'
 import { canChoose, hasOnlyForcedMove, isForcedSwitch, moveOptions, playerInPinch, lastPokemonThemeOn, switchBlockedReason, switchOptions } from './battleModel'
 import { avatarForSeed } from './introAssets'
 import { menuSoundFor } from './menuSounds'
@@ -40,6 +42,10 @@ type BattleScreenProps = {
    * un bando en solo lectura, con Datos (decisión de Jose, 29/10/2026).
    */
   mode?: BattleMode | 'replay'
+  /** En el visor, otra etiqueta en vez de REPETICIÓN (el directo, RF-111c: EN DIRECTO). */
+  /** Directo (RF-111c): en el oficial con cuenta, quien pida ver el combate (se contesta en la fila de los contadores). */
+  liveApi?: CloudApi
+  replayBadge?: { text: string; label: string }
   controls?: (openTeam: (side: ReplayTeam) => void) => ReactNode
   /** Reanudación de un oficial guardado: sin intro y con las decisiones ya tomadas reproducidas. */
   replay?: BattleParams['replay']
@@ -71,7 +77,7 @@ type TouchChoice = { request: BattleRequest | null; mode: TouchMode }
 
 const isInteractive = (target: EventTarget | null): boolean => target instanceof HTMLElement && target.closest('button, a, input, select, textarea, [role="dialog"]') !== null
 
-export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', controls, replay, onDecision, onSettled, onReplayFailed, paused, initialSpeed, onSpeedChange, animations = 'always', sound, onSoundChange, musicMuted = false, onFinish, onExit }: BattleScreenProps) {
+export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', replayBadge, liveApi, controls, replay, onDecision, onSettled, onReplayFailed, paused, initialSpeed, onSpeedChange, animations = 'always', sound, onSoundChange, musicMuted = false, onFinish, onExit }: BattleScreenProps) {
   const { trainer, rivalTeam, playerTeam } = challenge
   const speciesName = (speciesId: string, fallback: string): string => data.names.species[speciesId] ?? fallback
   // Grito de una especie: va por su `spriteId` (las formas tienen el suyo o el de la especie base; `gen:cries`).
@@ -218,6 +224,10 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
     if (confirmed === 'exit') onExit()
   }
 
+  // RF-111c: mientras dura el oficial, quien pida verlo; la primera solicitud sustituye a los contadores hasta contestarla.
+  const { inbox: liveInbox, answer: answerLive } = useLiveInbox(liveApi, mode === 'official' && !ended)
+  const liveAsk = liveInbox.pending[0] ?? null
+
   const rootStyle = { '--speed': battle.speed, '--k': scale } as CSSProperties
   const stageStyle = { width: SCREEN_WIDTH * scale, height: STAGE_HEIGHT * scale } as CSSProperties
 
@@ -235,7 +245,8 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                 <button type="button" className="btn btn-secondary btn-small" onClick={() => setDialog('sound')}>{es.battle.sound}</button>
               )}
             </div>
-            {battle.view && (
+            {battle.view && liveAsk && <LiveRequestRow nickname={liveAsk} onAnswer={(accept) => answerLive(liveAsk, accept)} />}
+            {battle.view && !liveAsk && (
               <div className="bt-counters">
                 <RemainingIndicator side={battle.view.player} label={es.battle.you} testId="remaining-player" />
                 <RemainingIndicator side={battle.view.rival} label={es.battle.rival} testId="remaining-rival" />
@@ -254,9 +265,10 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                 if (sound) getAudio().playSfx(sound)
               }}
             >
-              <span data-testid="battle-mode" data-mode={mode} className={`bt-mode bt-mode-${mode}`} role="img" aria-label={mode === 'replay' ? es.battle.modeReplayLabel : es.battle.modeLabel(mode === 'official')}>
-                {mode === 'replay' ? es.battle.modeReplay : mode === 'official' ? es.battle.modeOfficial : es.battle.modePractice}
+              <span data-testid="battle-mode" data-mode={replayBadge ? 'live' : mode} className={`bt-mode bt-mode-${replayBadge ? 'live' : mode}`} role="img" aria-label={replayBadge ? replayBadge.label : mode === 'replay' ? es.battle.modeReplayLabel : es.battle.modeLabel(mode === 'official')}>
+                {replayBadge ? replayBadge.text : mode === 'replay' ? es.battle.modeReplay : mode === 'official' ? es.battle.modeOfficial : es.battle.modePractice}
               </span>
+              {liveInbox.watching > 0 && <LiveWatching count={liveInbox.watching} />}
               {partyOpen && (
                 <PartyScreen
                   members={members}

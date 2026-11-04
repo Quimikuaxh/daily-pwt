@@ -22,6 +22,15 @@ export const esReplay = {
     actionFailed: 'No se ha podido completar. Inténtalo de nuevo.',
   },
   viewer: {
+    // Directo (RF-111c).
+    liveBadge: 'EN DIRECTO',
+    liveBadgeLabel: (nickname: string) => `Combate de ${nickname} en directo`,
+    liveWaiting: (nickname: string) => `Esperando el turno de ${nickname}…`,
+    liveTurn: (turn: number) => `Turno ${turn}`,
+    liveLoading: 'Conectando con el combate…',
+    liveNotAllowed: 'No tienes permiso para ver este combate.',
+    liveVoid: (nickname: string) => `${nickname} no ha terminado su combate: se ha anulado.`,
+    liveFailed: 'No se ha podido seguir el combate.',
     controls: 'Controles de la repetición',
     tapForSound: 'Toca para activar el sonido',
     ownTeam: 'Tu equipo',

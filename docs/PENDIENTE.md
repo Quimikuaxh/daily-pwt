@@ -4,6 +4,10 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 **Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). El sonido va en `feature/f3-sonido` (desde `main`): los audios ya están descargados y versionados (se descargaron en local, desde la nube las fuentes están bloqueadas); falta implementarlo según «Sonido: plan de implementación».
 
+## Rama `feature/amigos-en-directo` (04/11/2026)
+- **Hecho:** estadísticas de un amigo al día (RF-111b, cambio; UT-147) y ver en directo su oficial (RF-111c, DEC-80, UT-148 a UT-150).
+- **Antes de fusionar:** aplicar en producción `20261104000000_pwt_amigo_al_dia.sql` y `20261104010000_pwt_directo.sql` **antes** de publicar la web (sin la segunda, la lista de amigos de la web nueva no dice quién juega y pedir el directo da error). Probarlo con dos cuentas.
+
 ## Sets del PWT con sinergia (04/11/2026, directo a `main`)
 - **Hecho:** 169 sets del PWT fuera del equipo del jugador desde el 05/11/2026 (DEC-79, UT-145, UT-146). Solo web, sin migración. Al cambiar la regla, `npm run gen:player-sets` y mover `POOL_RULES_FROM` al día siguiente del despliegue.
 

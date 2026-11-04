@@ -146,6 +146,52 @@
   gap: 0 1rem;
 }
 
+/* Directo (RF-111c): la solicitud para ver el combate ocupa la fila de los contadores mientras se contesta; nada del combate queda tapado. */
+.bt-live-request {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-game);
+  font-size: 1rem;
+  color: #f8f8f8;
+}
+
+.bt-layout[data-layout="stacked"] .bt-live-request {
+  order: 2;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 8px;
+}
+
+.bt-live-request-text {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+
+/* Cuántos le ven: una insignia como la de OFICIAL, a su izquierda (en la fila de los contadores no cabe a 360 px). */
+.bt-live-watching {
+  position: absolute;
+  top: 3px;
+  right: 56px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px 3px;
+  font-size: 10px;
+  line-height: 12px;
+  color: #f8f8f8;
+  background: rgb(216 32 32 / 0.85);
+  border: 1px solid #f8f8f8;
+  pointer-events: none;
+}
+
+.bt-live-eye {
+  width: 11px;
+  height: 7px;
+}
+
 .bt-remaining {
   display: flex;
   align-items: center;

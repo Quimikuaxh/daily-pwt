@@ -341,3 +341,19 @@
 .discord-section .account-actions {
   margin-top: 12px;
 }
+
+/* Directo (RF-111c): «Jugando ahora» y su botón, en la fila del amigo. */
+.friend-live {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.friend-playing {
+  padding: 0 6px;
+  font-size: 13px;
+  color: #f8f8f8;
+  background: rgb(216 32 32 / 0.9);
+  border: 1px solid #f8f8f8;
+}

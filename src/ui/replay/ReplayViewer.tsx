@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { getAudio } from '../../audio/audio'
 import type { GameData } from '../../core/types'
 import { es } from '../../i18n/es'
@@ -22,6 +22,11 @@ type ReplayViewerProps = {
   onDelete?: () => void
   /** La repetición es de quien la ve: su botón dice «Tu equipo»; si no, «Equipo». */
   own?: boolean
+  /**
+   * Directo (RF-111c): el oficial de un amigo mientras lo juega. Los pasos van llegando (`replay.steps` crece y `replay.ended` es `null`
+   * hasta el final); al ponerse al día, espera el turno siguiente.
+   */
+  live?: { nickname: string }
 }
 
 /**
@@ -52,7 +57,7 @@ const turnShownAt = (replay: ReplayData, index: number) => (index === 0 ? 0 : re
  * Avanzar emite los pasos del turno siguiente, con sus mensajes y animaciones. Ir atrás o saltar vuelve a montar la pantalla en ese paso
  * con el avance rápido de la reanudación (sin animación ni intro). «Reproducir» avanza solo al terminar cada turno.
  */
-export function ReplayViewer({ replay, data, settings, onExit, onDelete, own = true }: ReplayViewerProps) {
+export function ReplayViewer({ replay, data, settings, onExit, onDelete, own = true, live }: ReplayViewerProps) {
   const last = replay.steps.length - 1
   // `start`: paso en el que se monta la pantalla; `mount` la vuelve a montar aunque el paso sea el mismo.
   const [position, setPosition] = useState({ start: 0, mount: 0 })
@@ -68,7 +73,9 @@ export function ReplayViewer({ replay, data, settings, onExit, onDelete, own = t
   // No vale `client.emitted`: «Reproducir» emite de golpe todos los pasos del turno (con un cambio forzado son dos) y la pantalla los va
   // presentando después; contar por lo emitido daba el turno por terminado al presentar el primero.
   const presentedRef = useRef(0)
-  const [rests] = useState(() => restSteps(replay))
+  // En directo los pasos crecen: los puntos de parada y los pasos del cliente se ponen al día con ellos.
+  const rests = useMemo(() => restSteps(replay), [replay])
+  useEffect(() => client.extend(replay.steps), [client, replay.steps])
   const nextRest = (index: number) => nextRestOf(rests, index, last)
   const previousRest = (index: number) => previousRestOf(rests, index)
 
@@ -168,9 +175,21 @@ export function ReplayViewer({ replay, data, settings, onExit, onDelete, own = t
       battleSeed={replay.battleSeed}
       ai={replay.ai}
       mode="replay"
+      // EN DIRECTO hasta enseñar el final; después es una repetición más.
+      replayBadge={live && !(ended && atEnd) ? { text: text.liveBadge, label: text.liveBadgeLabel(live.nickname) } : undefined}
       controls={(openTeam) => (
         <ReplayControls
-          label={atEnd ? (resultText(replay) ?? text.turnOf(totalTurns, totalTurns)) : turn === 0 ? text.intro : text.turnOf(turn, totalTurns)}
+          label={
+            live && atEnd && !ended
+              ? text.liveWaiting(live.nickname)
+              : atEnd
+                ? (resultText(replay) ?? text.turnOf(totalTurns, totalTurns))
+                : turn === 0
+                  ? text.intro
+                  : live && !ended
+                    ? text.liveTurn(turn)
+                    : text.turnOf(turn, totalTurns)
+          }
           atStart={shown === 0}
           skippable={busy && playingFrom !== null}
           atEnd={atEnd}

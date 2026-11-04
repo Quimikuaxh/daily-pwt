@@ -119,7 +119,24 @@ export const esCloud = {
     history: 'Historial',
     noHistory: 'Aún no tiene combates con repetición.',
     profileFailed: 'No se han podido cargar sus datos.',
-    todayHidden: 'Sus estadísticas cuentan los días ya cerrados: su combate de hoy entra a medianoche (hora de Madrid), y su repetición se puede ver desde entonces.',
+    todayHidden: 'Su repetición de hoy se puede ver desde medianoche (hora de Madrid).',
     failed: 'No se ha podido completar. Inténtalo de nuevo.',
+    // Directo (RF-111c).
+    playing: 'Jugando ahora',
+    requestLive: 'Pedir verlo en directo',
+    liveRequestAria: (nickname: string) => `Pedir a ${nickname} ver su combate en directo`,
+    livePending: 'Esperando a que acepte…',
+    liveRejected: 'Ha rechazado la solicitud',
+    liveAgain: 'Pedir otra vez',
+    watchLive: 'Ver en directo',
+    watchLiveAria: (nickname: string) => `Ver en directo el combate de ${nickname}`,
+  },
+
+  // Para quien juega (RF-111c): solicitudes para ver su combate en directo, en la fila de los Pokémon en pie.
+  live: {
+    asks: (nickname: string) => `${nickname} quiere ver tu combate`,
+    accept: 'Aceptar',
+    reject: 'Rechazar',
+    watching: (count: number) => (count === 1 ? '1 amigo viendo tu combate' : `${count} amigos viendo tu combate`),
   },
 } as const

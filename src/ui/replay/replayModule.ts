@@ -2,3 +2,4 @@
 // compartidos parte del código de la carga inicial, que así se comprimía peor (unos 3 KB más).
 export { MatchHistoryDialog } from './MatchHistoryDialog'
 export { ReplayScreen } from './ReplayScreen'
+export { LiveScreen } from './LiveScreen'

@@ -253,6 +253,28 @@ describe('cuenta en la interfaz (UT-100)', () => {
     expect(onWatchFriendReplay).toHaveBeenCalledWith('Eva', '2026-10-26')
   })
 
+  // UT-147 (Jose, 04/11/2026): sus estadísticas, al día como las propias: su oficial de hoy cuenta y sale «Hoy» con sus Pokémon en pie.
+  it('las estadísticas de un amigo cuentan su oficial de hoy y enseñan sus Pokémon en pie de hoy (UT-147)', async () => {
+    const api = fakeApi({
+      mySummary: async () => ({ nickname: 'Jose', registered: true, points: [], incomingRequests: 0 }),
+      listFriends: async () => [{ nickname: 'Eva', relation: 'friend' }],
+      friendProfile: async (nickname) => ({
+        nickname,
+        days: [cloudDay({ date: '2026-10-26', status: 'won', survivors: 2 }), cloudDay({ date: TODAY, status: 'won', survivors: 5 })],
+        points: [{ date: '2026-10-26', points: 4.5, provisional: false }],
+        history: [],
+      }),
+    })
+    const { user } = await mount(GOOGLE, api)
+    await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
+    await user.click(await screen.findByRole('tab', { name: 'Amigos' }))
+    await user.click(await screen.findByRole('button', { name: 'Ver las estadísticas de Eva' }))
+    expect(await screen.findByTestId('stats-played')).toHaveTextContent('2')
+    expect(screen.getByTestId('stats-today-survivors')).toHaveTextContent('5/6')
+    expect(screen.getByText(/Los puntos de hoy se calculan a medianoche/)).toBeInTheDocument()
+    expect(screen.getByText('Su repetición de hoy se puede ver desde medianoche (hora de Madrid).')).toBeInTheDocument()
+  })
+
   it('«‹ Amigos» vuelve a la lista; si el servidor no da sus datos (ya no es amigo), avisa (UT-119)', async () => {
     const api = fakeApi({
       mySummary: async () => ({ nickname: 'Jose', registered: true, points: [], incomingRequests: 0 }),

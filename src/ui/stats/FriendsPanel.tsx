@@ -12,7 +12,10 @@ type Action = { (): Promise<unknown> }
  * Amigos (RF-110, RF-111): buscar por nickname y enviar solicitud; aceptar o rechazar las recibidas, cancelar las enviadas y quitar amigos.
  * `onChange` avisa de que han cambiado las solicitudes (para el aviso de la cabecera).
  */
-export function FriendsPanel({ api, onChange, onOpen }: { api: CloudApi; onChange?: () => void; onOpen?: (nickname: string) => void }) {
+/** Mientras haya amigos jugando, la lista se vuelve a pedir cada tanto: así se ve si aceptan la solicitud de verlos en directo. */
+export const FRIENDS_POLL_MS = 5000
+
+export function FriendsPanel({ api, onChange, onOpen, onWatchLive }: { api: CloudApi; onChange?: () => void; onOpen?: (nickname: string) => void; onWatchLive?: (nickname: string) => void }) {
   const [list, setList] = useState(null as PlayerRow[] | null)
   const [query, setQuery] = useState('')
   const [results, setResults] = useState(null as PlayerRow[] | null)
@@ -22,6 +25,12 @@ export function FriendsPanel({ api, onChange, onOpen }: { api: CloudApi; onChang
   useEffect(() => {
     void reload()
   }, [reload])
+  const anyPlaying = (list ?? []).some((row) => row.relation === 'friend' && row.playing)
+  useEffect(() => {
+    if (!anyPlaying || !onWatchLive) return
+    const timer = setInterval(() => void reload(), FRIENDS_POLL_MS)
+    return () => clearInterval(timer)
+  }, [anyPlaying, onWatchLive, reload])
 
   async function run(action: Action) {
     setError(false)
@@ -104,6 +113,7 @@ export function FriendsPanel({ api, onChange, onOpen }: { api: CloudApi; onChang
             ) : (
               <span>{row.nickname}</span>
             )}
+            {row.playing && onWatchLive && <LiveControl row={row} onRequest={() => run(() => api.requestLive(row.nickname))} onWatch={() => onWatchLive(row.nickname)} />}
             <button type="button" className="btn btn-small" onClick={() => run(() => api.removeFriend(row.nickname))}>{text.remove}</button>
           </li>
         ))}
@@ -118,5 +128,20 @@ function FriendSection({ title, children }: { title: string; children: React.Rea
       <h3 className="help-title">{title}</h3>
       <ul className="friends-list">{children}</ul>
     </section>
+  )
+}
+
+/** RF-111c: un amigo jugando su oficial; según la solicitud de hoy, pedirla, esperar, volver a pedirla o verlo. */
+function LiveControl({ row, onRequest, onWatch }: { row: PlayerRow; onRequest: () => void; onWatch: () => void }) {
+  return (
+    <span className="friend-live">
+      <span className="friend-playing">{text.playing}</span>
+      {row.live === 'accepted' && <button type="button" className="btn btn-small" aria-label={text.watchLiveAria(row.nickname)} onClick={onWatch}>{text.watchLive}</button>}
+      {row.live === 'pending' && <span className="settings-hint">{text.livePending}</span>}
+      {row.live === 'rejected' && <span className="settings-hint">{text.liveRejected}</span>}
+      {(!row.live || row.live === 'rejected') && (
+        <button type="button" className="btn btn-small" aria-label={text.liveRequestAria(row.nickname)} onClick={onRequest}>{row.live === 'rejected' ? text.liveAgain : text.requestLive}</button>
+      )}
+    </span>
   )
 }

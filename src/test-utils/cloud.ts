@@ -42,6 +42,10 @@ export function fakeApi(over: Partial<CloudApi> = {}): CloudApi & { [K in keyof 
     discordLinkUrl: async () => 'https://proyecto.supabase.co/functions/v1/pwt-discord?start=estado',
     setDiscordReminder: async () => undefined,
     discordUnlink: async () => undefined,
+    requestLive: async () => 'pending',
+    liveInbox: async () => ({ pending: [], watching: 0 }),
+    answerLiveRequest: async () => undefined,
+    liveBattle: async () => ({ state: 'void', date: '2026-11-04' }),
     ...over,
   }
   return Object.fromEntries(Object.entries(api).map(([name, method]) => [name, vi.fn(method)])) as never

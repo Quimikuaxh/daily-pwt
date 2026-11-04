@@ -1,4 +1,4 @@
-import type { EngineEnd } from '../battle/protocol'
+import type { AiKind, EndReason, EngineEnd } from '../battle/protocol'
 import type { DayRecord, Decision, NewOfficial, VoidReason } from '../storage/gameStore'
 
 /**
@@ -45,7 +45,22 @@ export type FriendProfile = { nickname: string; days: CloudDay[]; points: DayPoi
 
 /** Relación con otro jugador: amigo, solicitud recibida, solicitud enviada o ninguna. */
 export type Relation = 'friend' | 'incoming' | 'outgoing' | 'none'
-export type PlayerRow = { nickname: string; relation: Relation }
+/** `playing` y `live` solo en los amigos (RF-111c): si juega ahora su oficial y cómo va la solicitud de verlo en directo de hoy. */
+export type PlayerRow = { nickname: string; relation: Relation; playing?: boolean; live?: LiveStatus | null }
+
+export type LiveStatus = 'pending' | 'accepted' | 'rejected'
+
+/** Para quien juega: quién pide verle (por contestar) y cuántos le ven. */
+export type LiveInbox = { pending: string[]; watching: number }
+
+/**
+ * El oficial de un amigo que ha aceptado (RF-111c): en curso, con lo guardado hasta el último turno; terminado, con las decisiones finales
+ * y el motivo; o anulado.
+ */
+export type LiveBattle =
+  | { state: 'live'; date: string; seed: string; ai: AiKind; leadIndex: number; decisions: Decision[]; turn: number }
+  | { state: 'ended'; date: string; seed: string; ai: AiKind; leadIndex: number; decisions: Decision[]; reason: EndReason }
+  | { state: 'void'; date: string }
 
 export interface CloudApi {
   ensureProfile(): Promise<{ nickname: string; created: boolean; registered: boolean }>
@@ -89,6 +104,11 @@ export interface CloudApi {
   discordLinkUrl(timeZone: string): Promise<string>
   setDiscordReminder(enabled: boolean, minute: number, timeZone: string): Promise<void>
   discordUnlink(): Promise<void>
+  /** Ver en directo (RF-111c). */
+  requestLive(nickname: string): Promise<LiveStatus>
+  liveInbox(): Promise<LiveInbox>
+  answerLiveRequest(nickname: string, accept: boolean): Promise<void>
+  liveBattle(nickname: string): Promise<LiveBattle>
 }
 
 /** Aviso por Discord: hora en minutos desde medianoche de `timeZone`; `failed`, el último mensaje no llegó. */

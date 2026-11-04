@@ -10,7 +10,12 @@ export class ReplayClient implements BattleClient {
   private cursor = 0
   private readonly listeners = new Set<(message: ClientMessage) => void>()
 
-  constructor(private readonly steps: readonly ReplayStep[]) {}
+  constructor(private steps: readonly ReplayStep[]) {}
+
+  /** Directo (RF-111c): más pasos al final, sin tocar los ya emitidos. */
+  extend(steps: readonly ReplayStep[]): void {
+    if (steps.length > this.steps.length) this.steps = steps
+  }
 
   /** Pasos ya emitidos. */
   get emitted(): number {

@@ -138,6 +138,34 @@
   background: rgb(56 136 248 / 0.85);
 }
 
+/* Directo (RF-111c): rojo vivo, con un punto que parpadea como en las retransmisiones. */
+.bt-mode-live {
+  background: rgb(216 32 32 / 0.9);
+}
+
+.bt-mode-live::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  margin: 0 3px 1px 0;
+  vertical-align: middle;
+  background: #f8f8f8;
+  animation: bt-live-blink 1.2s steps(2, jump-none) infinite;
+}
+
+@keyframes bt-live-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bt-mode-live::before {
+    animation: none;
+  }
+}
+
 /* Ventana Historial. */
 .history-items {
   margin: 12px 0 0;
