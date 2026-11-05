@@ -25,12 +25,20 @@
 }
 
 /*
- * Estilo de los menús de N2/B2 y del PWT (PRD §0): fondo granate con franjas, placas oscuras con puntos y borde,
+ * Estilo de los menús de N2/B2 y del PWT (PRD §0): fondo de la cuadrícula de la pantalla de equipo (Jose, 05/11/2026; antes, granate con
+ * franjas), placas oscuras con puntos y borde,
  * cajas blancas con borde negro, botones biselados como los de la pantalla táctil. Colores muestreados de las capturas de
  * referencia (e2e-artifacts/ref/shots): granate #700018 / #b81840, placa #383838 con puntos #484848, borde amarillo #f8c830.
  */
+/*
+ * Fondo: cuadrícula de la pantalla de equipo de N2/B2 (Jose, 05/11/2026; antes, granate con franjas), al doble y fija. Va en `html`, no en
+ * una capa de `body`: una capa con la fuente del juego adelantaba su descarga a la ruta crítica de E2E-21. `image-rendering` se devuelve
+ * a lo normal en `body` para no cambiar el resto de imágenes.
+ */
 html {
   color-scheme: dark;
+  background: url("/ui/battle/party/bg-tile.png") 0 0 / 64px 64px fixed, #101820;
+  image-rendering: pixelated;
 }
 
 body {
@@ -41,10 +49,7 @@ body {
   font-family: var(--font-game);
   font-size: 16px;
   line-height: 20px;
-  background:
-    repeating-linear-gradient(135deg, transparent 0 40px, rgb(0 0 0 / 0.18) 40px 80px),
-    #700018;
-  background-attachment: fixed;
+  image-rendering: auto;
   overflow-x: hidden;
 }
 
@@ -292,7 +297,7 @@ img.sprite,
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background: rgb(5 0 8 / 0.8);
+  background: rgb(4 8 14 / 0.8);
 }
 
 .dialog-panel {
@@ -1264,7 +1269,7 @@ img.sprite,
   gap: 6px;
   padding: 14px 0 12px;
   /* Fondo casi opaco tras los botones: el contenido que pasa por debajo no se transparenta en los desactivados. */
-  background: linear-gradient(transparent, rgb(40 0 8 / 0.97) 14px);
+  background: linear-gradient(transparent, rgb(10 16 24 / 0.97) 14px);
 }
 
 .btn-fight {

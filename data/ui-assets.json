@@ -2000,6 +2000,16 @@
       ]
     },
     {
+      "path": "battle/party/bg-tile.png",
+      "source": "tsr-party-screen-bw",
+      "crop": [
+        262,
+        130,
+        32,
+        32
+      ]
+    },
+    {
       "path": "battle/party/panel-blue-left.png",
       "source": "tsr-party-screen-bw",
       "crop": [
