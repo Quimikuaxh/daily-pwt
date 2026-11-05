@@ -353,3 +353,39 @@ test.describe('Pantalla «Estado»', () => {
     await expect(battle.fightButton).toBeEnabled()
   })
 })
+
+// E2E-77 · Paneles laterales (RF-44c, DEC-81): a 1440x900 salen tu equipo a la izquierda y el del rival a la derecha, la barra encima de
+// la consola y sin contadores; al pulsar un movimiento del panel, su ficha (sin la franja de eficacia, desactivada); nada desborda. A
+// 1280x720 (escala menor que x2 con ellos) no salen y quedan los contadores.
+test.describe('Paneles laterales', () => {
+  test('E2E-77 a 1440x900 salen los dos paneles con la ficha de un movimiento; a 1280x720, no', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
+    const { battle } = await startBattle(page)
+    await battle.maxSpeed()
+    await battle.waitForActionOrResult()
+    const player = page.getByRole('region', { name: 'Datos: Tu equipo' })
+    const rival = page.getByRole('region', { name: /^Datos: (?!Tu equipo)/ })
+    await expect(player).toBeVisible()
+    await expect(rival).toBeVisible()
+    await expect(page.getByTestId('remaining-player')).toHaveCount(0)
+    const [left, right, stage] = await Promise.all([player.boundingBox(), rival.boundingBox(), page.locator('.bt-stage').boundingBox()])
+    expect(left!.x + left!.width, 'el panel propio, a la izquierda de la consola').toBeLessThan(stage!.x)
+    expect(right!.x, 'el del rival, a la derecha').toBeGreaterThan(stage!.x + stage!.width)
+    // La barra va encima de la consola.
+    const exit = await page.getByRole('button', { name: 'Salir' }).boundingBox()
+    expect(exit!.y + exit!.height).toBeLessThanOrEqual(stage!.y)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'sin desbordar a lo ancho').toBe(true)
+
+    const firstMove = player.getByRole('button', { name: /^Ficha del movimiento / }).first()
+    const moveName = ((await firstMove.getAttribute('aria-label')) ?? '').replace('Ficha del movimiento ', '')
+    await firstMove.click()
+    await expect(firstMove).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.getByRole('heading', { name: moveName })).toBeVisible()
+    // La franja de eficacia está desactivada (Jose, 05/11/2026).
+    await expect(page.locator('.bt-side-eff')).toHaveCount(0)
+
+    await page.setViewportSize({ width: 1280, height: 720 })
+    await expect(player).toHaveCount(0)
+    await expect(page.getByTestId('remaining-player')).toBeVisible()
+  })
+})

@@ -1,0 +1,519 @@
+/*
+ * Paneles laterales del combate (RF-44c, DEC-81; maquetas aprobadas por Jose el 05/11/2026). Placa de los menús (gris con puntos) con el
+ * borde de color también en las esquinas cortadas: capa exterior del color del borde y capa interior con la placa, recortadas igual.
+ */
+.bt-side {
+  --side-cut: 14px;
+  --side-edge: #f8c830;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: var(--side-width, 340px);
+  flex: none;
+  font-family: var(--font-game);
+  color: #f8f8f8;
+}
+
+.bt-side[data-side="player"] {
+  --side-edge: #48b8f8;
+}
+
+.bt-side-panel {
+  padding: 3px;
+  background: var(--side-edge);
+  clip-path: polygon(var(--side-cut) 0, calc(100% - var(--side-cut)) 0, 100% var(--side-cut), 100% calc(100% - var(--side-cut)), calc(100% - var(--side-cut)) 100%, var(--side-cut) 100%, 0 calc(100% - var(--side-cut)), 0 var(--side-cut));
+}
+
+.bt-side-in {
+  --inner-cut: calc(var(--side-cut) - 1px);
+  padding: 12px 12px 10px;
+  background: radial-gradient(#484848 1px, transparent 1.5px) 0 0 / 6px 6px, #383838;
+  clip-path: polygon(var(--inner-cut) 0, calc(100% - var(--inner-cut)) 0, 100% var(--inner-cut), 100% calc(100% - var(--inner-cut)), calc(100% - var(--inner-cut)) 100%, var(--inner-cut) 100%, 0 calc(100% - var(--inner-cut)), 0 var(--inner-cut));
+}
+
+.bt-side-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+/* Rótulo como los de Hoy: rojo el del rival, azul el tuyo, que se desvanece hacia la derecha. */
+.bt-side-title {
+  min-width: 0;
+  margin: 0;
+  padding: 1px 40px 1px 10px;
+  font-size: 20px;
+  line-height: 24px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 1px 1px 0 #181818;
+  background: linear-gradient(90deg, #b81840 55%, rgb(184 24 64 / 0));
+}
+
+.bt-side[data-side="player"] .bt-side-title {
+  background: linear-gradient(90deg, #2060b8 55%, rgb(32 96 184 / 0));
+}
+
+.bt-side-balls {
+  display: inline-flex;
+  flex: none;
+  gap: 3px;
+}
+
+.bt-side-balls .bt-ball-dot[data-fainted] {
+  background: #3a4260;
+  border-color: #6b7599;
+}
+
+.bt-side-card {
+  padding: 10px;
+  background: rgb(0 0 0 / 0.28);
+  border: 2px solid #585858;
+}
+
+.bt-side-card p {
+  margin: 0;
+}
+
+.bt-side-id {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Icono de menú al doble (40x30 -> 80x60), como en la maqueta. */
+.bt-side-icon {
+  display: block;
+  width: 80px;
+  height: 60px;
+  flex: none;
+}
+
+/* `display: block` aquí también: el panel no depende de la hoja de la pantalla de equipo. */
+.bt-side .bt-member-icon {
+  display: block;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+
+.bt-side-icon .bt-member-icon {
+  transform: scale(2);
+  transform-origin: 0 0;
+}
+
+.bt-side-names {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.bt-side-name {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 18px;
+}
+
+.bt-side-gender {
+  width: 7px;
+  height: 11px;
+  image-rendering: pixelated;
+  transform: scale(1.5);
+}
+
+.bt-side-level {
+  margin-left: 6px;
+  font-size: 13px;
+  color: #f8c830;
+}
+
+.bt-side-types {
+  display: flex;
+  gap: 4px;
+}
+
+.bt-side .type-chip {
+  --s: 1.5;
+}
+
+.bt-side-hp-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px !important;
+}
+
+.bt-side-hp {
+  position: relative;
+  display: block;
+  flex: 1;
+  height: 6px;
+  background: #505050;
+  border: 2px solid #181818;
+  border-radius: 3px;
+}
+
+.bt-side-hp-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+}
+
+.bt-side-hp-fill[data-fill="green"] {
+  background: linear-gradient(#63ff63 50%, #18c621 50%);
+}
+
+.bt-side-hp-fill[data-fill="yellow"] {
+  background: linear-gradient(#ffe739 50%, #c6a500 50%);
+}
+
+.bt-side-hp-fill[data-fill="red"] {
+  background: linear-gradient(#ff5a39 50%, #c62110 50%);
+}
+
+.bt-side-status {
+  width: 38px;
+  height: 12px;
+  image-rendering: pixelated;
+}
+
+.bt-side-hp-text {
+  min-width: 4.5em;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.bt-side-stats {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 3px;
+  margin: 8px 0 0;
+  text-align: center;
+}
+
+.bt-side-stats div {
+  padding: 3px 0 2px;
+  background: rgb(255 255 255 / 0.06);
+}
+
+.bt-side-stats dt {
+  font-size: 12px;
+  line-height: 14px;
+  color: #f8c830;
+}
+
+.bt-side-stats dd {
+  margin: 0;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Subidas y bajadas (Jose, 05/11/2026): el valor es el original; bajo la estadística, un «^» fino verde al subir o una «v» roja al bajar, sin recuadro, y el
+   número si es más de un nivel. Precisión y Evasión, en una línea aparte con lo mismo. */
+.bt-side-stats .bt-side-stage-slot {
+  display: flex;
+  justify-content: center;
+  min-height: 16px;
+  margin-top: 2px;
+}
+
+.bt-side-stage {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 28px;
+  height: 16px;
+  padding: 0 4px;
+  box-sizing: border-box;
+  font-size: 12px;
+  line-height: 12px;
+  color: #f8f8f8;
+  text-shadow: 1px 1px 0 #181818;
+}
+
+/* Solo el «^» va en color (verde al subir, rojo al bajar), fino y sin borde (Jose, 05/11/2026). */
+.bt-side-caret {
+  flex: none;
+}
+
+.bt-side-stage[data-dir="up"] .bt-side-caret {
+  color: #48d848;
+}
+
+.bt-side-stage[data-dir="down"] .bt-side-caret {
+  color: #f05050;
+}
+
+.bt-side-boosts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 8px 0 0;
+  padding: 4px 6px;
+  list-style: none;
+  font-size: 14px;
+  background: rgb(255 255 255 / 0.06);
+}
+
+.bt-side-boosts li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bt-side-facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 2px 10px;
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.bt-side-facts dt {
+  color: #f8c830;
+}
+
+.bt-side-facts dd {
+  min-width: 0;
+  margin: 0;
+}
+
+/* Lo pulsado: sombreado y texto amarillo, sin recuadro (Jose, 05/11/2026). */
+.bt-side-link,
+.bt-side-move {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.bt-side-link {
+  padding: 0 3px;
+  margin-left: -3px;
+  text-align: left;
+  border-bottom: 2px dotted #909090;
+}
+
+.bt-side-link:disabled {
+  cursor: default;
+  border-bottom-color: transparent;
+}
+
+.bt-side-link[aria-pressed="true"],
+.bt-side-move[aria-pressed="true"] {
+  color: #f8c830;
+  background: rgb(248 200 48 / 0.18);
+  border-bottom-color: #f8c830;
+}
+
+.bt-side-link:focus-visible,
+.bt-side-move:focus-visible,
+.bt-side-bench-mon:focus-visible {
+  outline: 2px solid #f8f8f8;
+  outline-offset: 1px;
+}
+
+.bt-side-moves {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bt-side-move {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 26px;
+  padding: 2px 6px;
+  font-size: 14px;
+  text-align: left;
+  background: rgb(255 255 255 / 0.06);
+}
+
+.bt-side-move:hover {
+  background: rgb(255 255 255 / 0.12);
+}
+
+.bt-side-move .type-chip {
+  --s: 1.5;
+  flex: none;
+}
+
+.bt-side-move .category-icon {
+  margin: 0;
+}
+
+.bt-side-move-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.bt-side-pp {
+  font-size: 13px;
+  color: #d0d0d0;
+  font-variant-numeric: tabular-nums;
+}
+
+.bt-side-bench {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bt-side-bench-mon {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  width: 100%;
+  padding: 4px 4px 5px;
+  background: rgb(0 0 0 / 0.2);
+  border: 0;
+  cursor: pointer;
+}
+
+.bt-side-bench-mon:hover {
+  background: rgb(255 255 255 / 0.1);
+}
+
+.bt-side-bench-mon .bt-side-hp {
+  flex: none;
+  width: 100%;
+  height: 4px;
+  border-width: 1px;
+  box-sizing: border-box;
+}
+
+.bt-side-bench-mon[data-fainted] {
+  opacity: 0.45;
+}
+
+/* Ficha de lo pulsado: placa clara con borde negro, como los avisos. */
+.bt-side-info {
+  padding: 10px 12px;
+  color: #282828;
+  background: #f8f8f8;
+  border: 3px solid #181818;
+  border-radius: 4px;
+  box-shadow: 0 0 0 2px #f8f8f8;
+  overflow: hidden;
+}
+
+.bt-side-info-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.bt-side-info h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.bt-side-kind {
+  padding: 0 6px;
+  font-size: 12px;
+  color: #f8f8f8;
+  background: #b81840;
+}
+
+.bt-side-info p {
+  margin: 6px 0 0;
+  font-size: 14px;
+  line-height: 18px;
+}
+
+.bt-side-move-facts {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: 4px 12px;
+  margin: 0;
+  font-size: 14px;
+}
+
+.bt-side-move-facts dt {
+  font-size: 12px;
+  color: #707070;
+}
+
+.bt-side-move-facts dd {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+}
+
+.bt-side-move-facts .category-icon {
+  margin: 0;
+}
+
+/* Franja de eficacia al pie de la ficha (opción 3): color por eficacia, icono del de enfrente y el multiplicador. */
+.bt-side-info .bt-side-eff {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px -12px -10px;
+  padding: 6px 12px;
+  color: #f8f8f8;
+  text-shadow: 1px 1px 0 rgb(0 0 0 / 0.4);
+}
+
+.bt-side-eff[data-tone="x4"],
+.bt-side-eff[data-tone="x2"] {
+  background: linear-gradient(90deg, #c82818, #e86030);
+}
+
+.bt-side-eff[data-tone="x1"] {
+  background: linear-gradient(90deg, #585858, #888888);
+}
+
+.bt-side-eff[data-tone="xh"],
+.bt-side-eff[data-tone="xq"] {
+  background: linear-gradient(90deg, #2858a8, #5888d0);
+}
+
+.bt-side-eff[data-tone="x0"] {
+  background: linear-gradient(90deg, #181818, #484848);
+}
+
+.bt-side-eff-icon {
+  flex: none;
+  background: rgb(255 255 255 / 0.25);
+  border-radius: 50%;
+}
+
+.bt-side-eff-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.bt-side-eff-mult {
+  font-size: 18px;
+}
+
+.bt-side-hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 16px;
+  color: #e0b8c0;
+}
+
+/* En la línea de Precisión y Evasión, la flecha pegada a su nombre y a la altura del texto (Jose, 05/11/2026). */
+.bt-side-boosts .bt-side-stage {
+  min-width: 0;
+  height: auto;
+  padding: 0;
+  margin-top: 2px;
+}

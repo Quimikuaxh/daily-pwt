@@ -28,6 +28,8 @@ export type PartyMember = {
   /** Se puede mandar al combate: ni debilitado ni ya en el campo. */
   canSendOut: boolean
   types: { id: string; label: string }[]
+  /** Id del objeto que lleva ahora (clave de su descripción; '' sin objeto). */
+  itemId: string
   itemName: string
   abilityName: string
   /** Id de la habilidad (clave de las descripciones). */
@@ -119,6 +121,7 @@ export function partyMembers(request: BattleRequest | null, view: BattleView | n
         active: member.active,
         canSendOut: !condition.fainted && !member.active,
         types: species.types.map((typeName) => ({ id: typeName, label: data.names.types[typeName] ?? typeName })),
+        itemId,
         itemName: itemNameOf(itemId, data),
         abilityName: data.names.abilities[abilityId] ?? es.log.unknownAbility,
         abilityId,
@@ -180,6 +183,7 @@ export function rivalMembers(view: BattleView | null, data: GameData, team: read
         active: view?.rival.active === index,
         canSendOut: false,
         types: species.types.map((typeName) => ({ id: typeName, label: data.names.types[typeName] ?? typeName })),
+        itemId: mon?.item ?? set.item,
         itemName: itemNameOf(mon?.item ?? set.item, data),
         abilityName: data.names.abilities[set.ability] ?? es.log.unknownAbility,
         abilityId: set.ability,

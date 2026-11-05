@@ -178,6 +178,8 @@ function generatedProblems(allSets, speciesIds) {
   for (const set of allSets) {
     for (const moveId of set.moves) if (!descriptions.moves[moveId]) problems.push(`descriptions-es.json: falta el movimiento «${moveId}»`)
     for (const abilityId of set.abilities) if (!descriptions.abilities[abilityId]) problems.push(`descriptions-es.json: falta la habilidad «${abilityId}»`)
+    // Ficha de los paneles laterales (RF-44c): el objeto también tiene su descripción.
+    if (set.item && !descriptions.items?.[set.item]) problems.push(`descriptions-es.json: falta el objeto «${set.item}»`)
   }
   return [...new Set(problems)]
 }

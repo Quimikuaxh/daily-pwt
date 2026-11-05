@@ -4,6 +4,10 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 **Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). El sonido va en `feature/f3-sonido` (desde `main`): los audios ya están descargados y versionados (se descargaron en local, desde la nube las fuentes están bloqueadas); falta implementarlo según «Sonido: plan de implementación».
 
+## Rama `feature/paneles-laterales` (05/11/2026, fusionada)
+- **Hecho:** paneles laterales del combate con ficha de movimientos, objetos y habilidades, subidas y bajadas con «^» y «v», la barra de botones encima de la consola con estilo nuevo (también en móvil) y la solicitud de directo rediseñada (RF-44c, DEC-81, UT-152, UT-153, E2E-77; maquetas aprobadas por Jose el 05/11/2026). Descripciones de objetos de PokeAPI (de Sol / Luna; las de X/Y están desplazadas). La franja de eficacia está hecha pero desactivada (`SHOW_EFFECTIVENESS`). Solo web, sin migración.
+- **Fusionada en `main` el 05/11/2026** (Jose).
+
 ## Rama `feature/amigos-en-directo` (04/11/2026, fusionada)
 - **Hecho:** estadísticas de un amigo al día (RF-111b, cambio; UT-147) y ver en directo su oficial (RF-111c, DEC-80, UT-148 a UT-150).
 - **Hecho también:** la repetición de hoy de un amigo, para quien ya terminó su oficial de hoy (UT-151, migración `20261104020000_pwt_repeticion_hoy.sql`). Arreglos de la prueba de Jose: «Ver en directo» no salía solo (el temporizador de la lista se reiniciaba cada segundo) y a 360 px el nombre se partía letra a letra. Después (Jose, 04/11/2026), «Jugando ahora» pasa a un punto rojo delante del nombre y el botón a uno cuadrado con «▶».

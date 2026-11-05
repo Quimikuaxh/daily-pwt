@@ -30,13 +30,24 @@ export function useLiveInbox(api: CloudApi | undefined, active: boolean) {
   return { inbox, answer }
 }
 
-/** El aviso en la fila de los Pokémon en pie, que se sustituye mientras dura (no tapa ni el combate ni sus botones). */
+/**
+ * El aviso de que alguien quiere ver el combate (RF-111c): en móvil, en la fila de los Pokémon en pie, que sustituye mientras dura; en
+ * escritorio con paneles, al pie de la columna de tu panel. No tapa ni el combate ni sus botones. Con el estilo de la interfaz (Jose,
+ * 05/11/2026): placa con puntos y esquinas cortadas, borde rojo de directo, el ojo y los botones de control.
+ */
 export function LiveRequestRow({ nickname, onAnswer }: { nickname: string; onAnswer: (accept: boolean) => void }) {
   return (
     <div className="bt-live-request" role="alert">
-      <span className="bt-live-request-text">{text.asks(nickname)}</span>
-      <button type="button" className="btn btn-small" onClick={() => onAnswer(true)}>{text.accept}</button>
-      <button type="button" className="btn btn-small btn-secondary" onClick={() => onAnswer(false)}>{text.reject}</button>
+      <div className="bt-live-request-in">
+        <p className="bt-live-request-text">
+          <EyeIcon />
+          <span>{text.asks(nickname)}</span>
+        </p>
+        <div className="bt-live-request-actions">
+          <button type="button" className="bt-chrome-btn" onClick={() => onAnswer(true)}>{text.accept}</button>
+          <button type="button" className="bt-chrome-btn" onClick={() => onAnswer(false)}>{text.reject}</button>
+        </div>
+      </div>
     </div>
   )
 }

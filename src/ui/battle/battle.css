@@ -89,7 +89,7 @@
   gap: 6px;
 }
 
-.bt-layout[data-layout="wide"] .bt-chrome-buttons .btn {
+.bt-layout[data-layout="wide"] .bt-chrome-btn {
   flex: 1 1 auto;
   padding-inline: 0.5rem;
   white-space: nowrap;
@@ -109,11 +109,16 @@
 }
 
 /* Cuatro botones (Salir, Registro, Velocidad, Sonido): cada uno crece desde su texto, así «Velocidad: x1» cabe en una línea a 360 px. */
-.bt-layout[data-layout="stacked"] .bt-chrome-buttons .btn {
+.bt-layout[data-layout="stacked"] .bt-chrome-btn {
   flex: 1 1 auto;
   min-width: 0;
-  padding-inline: 0.25rem;
+  padding-inline: 0.5rem;
   white-space: nowrap;
+}
+
+/* En móvil no caben con aire junto al texto (Jose, 05/11/2026): los iconos, solo con sitio. */
+.bt-layout[data-layout="stacked"] .bt-chrome-buttons .bt-chrome-icon {
+  display: none;
 }
 
 .bt-layout[data-layout="stacked"] .bt-stage {
@@ -134,10 +139,120 @@
   gap: 8px;
 }
 
-.bt-chrome-buttons .btn {
+/*
+ * Botones de control (Jose, 05/11/2026): oscuros como la cabecera, con esquinas cortadas y el borde claro también en las esquinas
+ * (capa del borde y capa de la placa, cada una recortada). El botón en sí es transparente: así la zona que se toca mide sus 44 px de
+ * alto aunque, en móvil, lo que se ve sea más bajo y con el borde más fino.
+ */
+.bt-chrome-btn {
+  --cut: 8px;
+  --edge: 3px;
+  --inset-y: 0px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   min-height: 44px;
   padding: 0.25rem 0.75rem;
+  font-family: var(--font-game);
   font-size: 0.9rem;
+  color: #f8f8f8;
+  text-shadow: 1px 1px 0 #181818;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  isolation: isolate;
+}
+
+.bt-chrome-btn::before,
+.bt-chrome-btn::after {
+  content: "";
+  position: absolute;
+  clip-path: polygon(var(--c) 0, calc(100% - var(--c)) 0, 100% var(--c), 100% calc(100% - var(--c)), calc(100% - var(--c)) 100%, var(--c) 100%, 0 calc(100% - var(--c)), 0 var(--c));
+}
+
+.bt-chrome-btn::before {
+  --c: var(--cut);
+  inset: var(--inset-y) 0;
+  z-index: -2;
+  background: #f0f0f0;
+}
+
+.bt-chrome-btn::after {
+  --c: calc(var(--cut) - 1px);
+  inset: calc(var(--inset-y) + var(--edge)) var(--edge);
+  z-index: -1;
+  background: radial-gradient(#484848 1px, transparent 1.5px) 0 0 / 4px 4px, #383838;
+}
+
+.bt-chrome-btn:hover::after {
+  background: radial-gradient(#585858 1px, transparent 1.5px) 0 0 / 4px 4px, #484848;
+}
+
+.bt-chrome-btn:focus-visible::before {
+  background: #f8c830;
+}
+
+.bt-chrome-btn:focus-visible {
+  outline: none;
+}
+
+/* En móvil, más bajos (36 px a la vista) y con el borde de 2 px (Jose, 05/11/2026). */
+.bt-layout[data-layout="stacked"] .bt-chrome-btn {
+  --cut: 6px;
+  --edge: 2px;
+  --inset-y: 4px;
+}
+
+.bt-chrome-icon {
+  flex: none;
+  color: #f8c830;
+}
+
+/* Paneles laterales (RF-44c): tu equipo | barra y consola | el rival. */
+.bt-layout[data-layout="panels"] {
+  display: grid;
+  grid-template-columns: var(--side-width, 340px) auto var(--side-width, 340px);
+  grid-template-rows: auto 1fr;
+  grid-template-areas: "left bar right" "left console right";
+  justify-content: center;
+  align-items: start;
+  column-gap: 20px;
+  row-gap: 8px;
+  padding: 4px 8px;
+  box-sizing: border-box;
+}
+
+.bt-layout[data-layout="panels"] .bt-side-col[data-side="player"] {
+  grid-area: left;
+}
+
+.bt-layout[data-layout="panels"] .bt-side-col[data-side="rival"] {
+  grid-area: right;
+}
+
+.bt-layout[data-layout="panels"] .bt-chrome {
+  grid-area: bar;
+  padding: 0;
+}
+
+.bt-layout[data-layout="panels"] .bt-console {
+  grid-area: console;
+  justify-self: center;
+}
+
+.bt-layout[data-layout="panels"] .bt-chrome-buttons {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 6px;
+}
+
+.bt-side-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .bt-counters {
@@ -146,27 +261,69 @@
   gap: 0 1rem;
 }
 
-/* Directo (RF-111c): la solicitud para ver el combate ocupa la fila de los contadores mientras se contesta; nada del combate queda tapado. */
+/*
+ * Directo (RF-111c): la solicitud para ver el combate ocupa la fila de los contadores mientras se contesta (en escritorio con paneles, al pie
+ * de tu columna); nada del combate queda tapado. Placa como la de los paneles, con el borde rojo de «EN DIRECTO» (Jose, 05/11/2026).
+ */
 .bt-live-request {
+  --cut: 10px;
+  padding: 3px;
+  box-sizing: border-box;
+  background: #d82020;
+  clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut));
+}
+
+.bt-live-request-in {
+  --inner: calc(var(--cut) - 1px);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 8px 12px;
+  padding: 8px 10px;
   font-family: var(--font-game);
   font-size: 1rem;
   color: #f8f8f8;
+  text-shadow: 1px 1px 0 #181818;
+  background: radial-gradient(#484848 1px, transparent 1.5px) 0 0 / 6px 6px, #383838;
+  clip-path: polygon(var(--inner) 0, calc(100% - var(--inner)) 0, 100% var(--inner), 100% calc(100% - var(--inner)), calc(100% - var(--inner)) 100%, var(--inner) 100%, 0 calc(100% - var(--inner)), 0 var(--inner));
+}
+
+.bt-live-request-text {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+}
+
+.bt-live-request-text .bt-live-eye {
+  flex: none;
+  width: 22px;
+  height: 14px;
+  color: #f8c830;
+}
+
+.bt-live-request-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.bt-live-request .bt-chrome-btn {
+  flex: none;
+  padding-inline: 0.75rem;
+}
+
+/* En móvil, centrada en el hueco entre el juego y el borde inferior (Jose, 05/11/2026). */
+.bt-layout[data-layout="stacked"] {
+  min-height: calc(100dvh - 12px);
 }
 
 .bt-layout[data-layout="stacked"] .bt-live-request {
   order: 2;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0 8px;
-}
-
-.bt-live-request-text {
-  flex: 1 1 100%;
-  min-width: 0;
+  width: calc(100% - 16px);
+  margin: auto 8px;
 }
 
 /* Cuántos le ven: una insignia como la de OFICIAL, a su izquierda (en la fila de los contadores no cabe a 360 px). */

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { battleMusicFor, CRITICAL_HEALTH_MUSIC, getAudio, LAST_POKEMON_MUSIC, SFX_IDS } from '../../audio/audio'
 import { MUSIC_CHANGE_FADE_MS } from '../../audio/audioEngine'
 import type { BattleClient } from '../../battle/client'
@@ -15,6 +15,7 @@ import { SoundSettings } from '../menu/SoundSettings'
 import type { AnimationMode, SoundPrefs } from '../../storage/settings'
 import { HistoryDialog } from './HistoryDialog'
 import { RemainingIndicator } from './RemainingIndicator'
+import { ChromeIcon } from './ChromeIcon'
 import { TopScreen } from './TopScreen'
 import { PartyScreen } from './party/PartyScreen'
 import { PARTY_SCREEN_IMAGES, useImagesReady } from './preloadAssets'
@@ -28,6 +29,9 @@ import { avatarForSeed } from './introAssets'
 import { menuSoundFor } from './menuSounds'
 import { SCREEN_HEIGHT, SCREEN_WIDTH, STAGE_HEIGHT, useStageScale } from './useStageScale'
 import './battle.css'
+
+// Paneles laterales (RF-44c): solo se descargan con la ventana ancha (llevan las descripciones de movimientos, objetos y habilidades).
+const SidePanel = lazy(() => import('./side/SidePanel').then((module) => ({ default: module.SidePanel })))
 
 type BattleScreenProps = {
   client: BattleClient
@@ -106,7 +110,8 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
 
   const reducedMotion = useReducedMotion(animations)
   const layoutRef = useRef(null as HTMLDivElement | null)
-  const { scale, wide, frame } = useStageScale(layoutRef)
+  const { scale, layout, frame } = useStageScale(layoutRef)
+  const panels = layout === 'panels'
   const avatar = useMemo(() => avatarForSeed(battleSeed), [battleSeed])
   const [touchChoice, setTouchChoice] = useState({ request: null, mode: 'main' } as TouchChoice)
   const [dialog, setDialog] = useState(null as PendingDialog)
@@ -131,6 +136,9 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   const partyRequest = mode === 'replay' ? requestFromView(battle.view, playerTeam) : menuRequest
   const members = useMemo(() => partyMembers(partyRequest, battle.view, data, playerTeam), [partyRequest, battle.view, data, playerTeam])
   const rivals = useMemo(() => rivalMembers(battle.view, data, rivalTeam), [battle.view, data, rivalTeam])
+  // Paneles laterales (RF-44c): los PS y el estado, de la vista que se está enseñando (la petición llega antes de que acabe de animarse el
+  // turno y adelantaría el resultado).
+  const sideMembers = useMemo(() => partyMembers(requestFromView(battle.view, playerTeam), battle.view, data, playerTeam), [battle.view, data, playerTeam])
   const touchMode: TouchMode = forcedSwitchPending ? (rivalPeek === menuRequest ? 'rival' : 'switch') : touchChoice.request === menuRequest ? touchChoice.mode : 'main'
   const ended = battle.ended !== null
 
@@ -237,18 +245,39 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
     <div data-testid="battle-screen" data-reduced-motion={reducedMotion ? 'true' : undefined} className="bt-root" style={rootStyle}>
       <main className="bt" inert={dialog !== null} aria-hidden={dialog !== null ? true : undefined}>
         <h1 className="sr-only">{es.battle.heading}</h1>
-        <div ref={layoutRef} className="bt-layout" data-layout={wide ? 'wide' : 'stacked'}>
+        <div ref={layoutRef} className="bt-layout" data-layout={layout}>
+          {panels && (
+            <div className="bt-side-col" data-side="player">
+              <Suspense fallback={null}>
+                {sideMembers.length > 0 && <SidePanel side="player" title={playerLabel === es.battle.you ? es.battle.side.playerTitle : playerLabel} members={sideMembers} boosts={battle.view?.field?.playerActive.boosts ?? null} opponent={rivals.find((member) => member.active) ?? null} chart={data.dex.typeChart} />}
+              </Suspense>
+              {/* La solicitud de directo, al pie: así no mueve el panel ni su ficha (Jose, 05/11/2026). */}
+              {battle.view && liveAsk && <LiveRequestRow nickname={liveAsk} onAnswer={(accept) => answerLive(liveAsk, accept)} />}
+            </div>
+          )}
           <div className="bt-chrome">
             <div className="bt-chrome-buttons">
-              <button type="button" className="btn btn-secondary btn-small" onClick={() => (mode === 'replay' ? onExit() : setDialog('exit'))}>{mode === 'replay' ? es.battle.back : es.battle.exit}</button>
-              <button type="button" className="btn btn-secondary btn-small" onClick={() => setDialog('history')}>{es.battle.history}</button>
-              <button type="button" className="btn btn-secondary btn-small" onClick={battle.cycleSpeed}>{es.battle.speed(battle.speed)}</button>
+              <button type="button" className="bt-chrome-btn" onClick={() => (mode === 'replay' ? onExit() : setDialog('exit'))}>
+                <ChromeIcon name="exit" />
+                {mode === 'replay' ? es.battle.back : es.battle.exit}
+              </button>
+              <button type="button" className="bt-chrome-btn" onClick={() => setDialog('history')}>
+                <ChromeIcon name="history" />
+                {es.battle.history}
+              </button>
+              <button type="button" className="bt-chrome-btn" onClick={battle.cycleSpeed}>
+                <ChromeIcon name="speed" />
+                {es.battle.speed(battle.speed)}
+              </button>
               {sound && onSoundChange && (
-                <button type="button" className="btn btn-secondary btn-small" onClick={() => setDialog('sound')}>{es.battle.sound}</button>
+                <button type="button" className="bt-chrome-btn" onClick={() => setDialog('sound')}>
+                  <ChromeIcon name="sound" />
+                  {es.battle.sound}
+                </button>
               )}
             </div>
-            {battle.view && liveAsk && <LiveRequestRow nickname={liveAsk} onAnswer={(accept) => answerLive(liveAsk, accept)} />}
-            {battle.view && !liveAsk && (
+            {!panels && battle.view && liveAsk && <LiveRequestRow nickname={liveAsk} onAnswer={(accept) => answerLive(liveAsk, accept)} />}
+            {!panels && battle.view && !liveAsk && (
               <div className="bt-counters">
                 <RemainingIndicator side={battle.view.player} label={playerLabel} testId="remaining-player" />
                 <RemainingIndicator side={battle.view.rival} label={es.battle.rival} testId="remaining-rival" />
@@ -355,6 +384,13 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
             </div>
           </div>
           </div>
+          {panels && (
+            <div className="bt-side-col" data-side="rival">
+              <Suspense fallback={null}>
+                {rivals.length > 0 && <SidePanel side="rival" title={trainer.nameEs} members={rivals} boosts={battle.view?.field?.rivalActive.boosts ?? null} opponent={sideMembers.find((member) => member.active) ?? null} chart={data.dex.typeChart} />}
+              </Suspense>
+            </div>
+          )}
         </div>
       </main>
 
