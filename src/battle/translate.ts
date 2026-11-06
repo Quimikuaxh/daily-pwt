@@ -142,6 +142,8 @@ function translateStart(f: Fields, ctx: TranslateContext): string | null {
 }
 
 function translateEnd(f: Fields, ctx: TranslateContext): string | null {
+  // `[silent]`: el motor no lo anuncia (Bostezo acaba así justo antes de dormir al Pokémon; Jose, 06/11/2026: «ya no se ve afectado» sobraba).
+  if (f.tags.has('silent')) return null
   const mon = monText(ctx, f.args[0])
   const effect = f.args[1] ?? ''
   const id = toId(effect.replace(/^(move|ability|item):\s*/, ''))

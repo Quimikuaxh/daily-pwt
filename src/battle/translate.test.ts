@@ -119,6 +119,11 @@ describe('translateLine: líneas con texto (UT-45)', () => {
     expect(tr('|-item|p1a: Garchomp|Life Orb')).not.toMatch(/Life Orb/)
   })
 
+  // UT-156 (Jose, 06/11/2026): Bostezo acaba en silencio y solo se cuenta que se duerme.
+  it('un fin de efecto silencioso no se cuenta (Bostezo, antes de dormirse)', () => {
+    expect(tr('|-end|p2a: Starmie|move: Yawn|[silent]')).toBeNull()
+  })
+
   // UT-155 (Jose, 06/11/2026): «ha obtenido» solo cuando lo recibe (Truco…); el resto, con su texto.
   it('objeto que se ve o cambia de manos: Globo Helio al salir, Cacheo, robo, recuperado y recibido', () => {
     expect(tr('|-item|p2a: Starmie|Air Balloon')).toBe('¡El Starmie de Camila flota gracias a su Globo Helio!')

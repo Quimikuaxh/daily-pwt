@@ -110,7 +110,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
 
   const reducedMotion = useReducedMotion(animations)
   const layoutRef = useRef(null as HTMLDivElement | null)
-  const { scale, layout, frame } = useStageScale(layoutRef)
+  const { scale, layout, frame, sideZoom } = useStageScale(layoutRef)
   const panels = layout === 'panels'
   const avatar = useMemo(() => avatarForSeed(battleSeed), [battleSeed])
   const [touchChoice, setTouchChoice] = useState({ request: null, mode: 'main' } as TouchChoice)
@@ -238,7 +238,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   const { inbox: liveInbox, answer: answerLive } = useLiveInbox(liveApi, mode === 'official' && !ended)
   const liveAsk = liveInbox.pending[0] ?? null
 
-  const rootStyle = { '--speed': battle.speed, '--k': scale } as CSSProperties
+  const rootStyle = { '--speed': battle.speed, '--k': scale, '--side-zoom': sideZoom } as CSSProperties
   const stageStyle = { width: SCREEN_WIDTH * scale, height: STAGE_HEIGHT * scale } as CSSProperties
 
   return (

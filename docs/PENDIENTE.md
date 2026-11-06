@@ -4,6 +4,9 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 **Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). El sonido va en `feature/f3-sonido` (desde `main`): los audios ya están descargados y versionados (se descargaron en local, desde la nube las fuentes están bloqueadas); falta implementarlo según «Sonido: plan de implementación».
 
+## Bostezo y paneles más grandes (06/11/2026)
+- **Hecho:** los `-end` silenciosos del motor no se traducen (UT-156); los paneles laterales crecen hasta ×1,3 con sitio (RF-44c, DEC-81, UT-157).
+
 ## Icono del objeto en su ficha y texto centrado en los recuadros (06/11/2026, directo a `main`)
 - **Hecho:** icono de la bolsa en la ficha del objeto (RF-44c, UT-153); texto centrado (o 1 px más abajo) en OFICIAL/PRÁCTICA/EN DIRECTO, «Objeto» y los tipos (PRD §0); `npm run gen:item-icons` baja los 80 de los sets a `public/sprites/items/` y `validate:data` exige que estén.
 

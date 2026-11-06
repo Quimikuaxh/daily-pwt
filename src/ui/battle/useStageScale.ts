@@ -18,6 +18,13 @@ const OUTER_MARGIN = 16
 export const SIDE_PANEL_WIDTH = 340
 const SIDE_PANEL_GAP = 20
 const PANELS_BAR_HEIGHT = 52
+/**
+ * Con sitio de sobra los paneles crecen (Jose, 06/11/2026: a 1920 x 1080 se leían pequeños), hasta x1,3 y sin pisar la consola ni salirse
+ * de alto: a x1 la columna más alta (panel y ficha con una descripción larga) mide unos 700 px. Va en pasos de 0,05.
+ */
+export const MAX_SIDE_ZOOM = 1.3
+const SIDE_COLUMN_BASE_HEIGHT = 700
+const PANELS_PADDING_X = 16
 /** Marco de consola (DS sencilla) en escritorio: carcasa más bisel a cada lado, en píxeles de pantalla. */
 export const CONSOLE_FRAME_X = 36
 export const CONSOLE_FRAME_Y = 32
@@ -28,11 +35,19 @@ export const CONSOLE_FRAME_Y = 32
  * barra encima de la consola). `wide` es cierto en los dos últimos.
  */
 export type StageLayout = 'stacked' | 'wide' | 'panels'
-export type StageScale = { scale: number; wide: boolean; frame: boolean; layout: StageLayout }
+export type StageScale = { scale: number; wide: boolean; frame: boolean; layout: StageLayout; sideZoom: number }
 
 const fitScale = (availableWidth: number, availableHeight: number): number => {
   const fits = Math.min(availableWidth / SCREEN_WIDTH, availableHeight / STAGE_HEIGHT)
   return fits >= INTEGER_FROM_SCALE ? Math.min(MAX_SCALE, Math.floor(fits)) : Math.max(1, Math.floor(fits * SCALE_PRECISION) / SCALE_PRECISION)
+}
+
+/** Cuánto crecen los paneles con la consola a `scale` (con su marco si lo lleva): lo que quepa a lo ancho y a lo alto, entre 1 y x1,3. */
+export function sideZoomFor(containerWidth: number, viewportHeight: number, scale: number, frame: boolean): number {
+  const consoleWidth = SCREEN_WIDTH * scale + (frame ? 2 * CONSOLE_FRAME_X : 0)
+  const byWidth = (containerWidth - PANELS_PADDING_X - consoleWidth - 2 * SIDE_PANEL_GAP) / (2 * SIDE_PANEL_WIDTH)
+  const byHeight = (viewportHeight - OUTER_MARGIN) / SIDE_COLUMN_BASE_HEIGHT
+  return Math.max(1, Math.min(MAX_SIDE_ZOOM, Math.floor(Math.min(byWidth, byHeight) * 20) / 20))
 }
 
 const frameFits = (availableWidth: number, availableHeight: number, scale: number): boolean =>
@@ -55,21 +70,22 @@ export function stageScaleFor(containerWidth: number, viewportHeight: number): S
     const panelsHeight = viewportHeight - OUTER_MARGIN - PANELS_BAR_HEIGHT
     const panelsScale = fitScale(panelsWidth, panelsHeight)
     if (panelsScale >= INTEGER_FROM_SCALE && panelsScale >= scale) {
-      return { scale: panelsScale, wide, frame: frameFits(panelsWidth, panelsHeight, panelsScale), layout: 'panels' }
+      const frame = frameFits(panelsWidth, panelsHeight, panelsScale)
+      return { scale: panelsScale, wide, frame, layout: 'panels', sideZoom: sideZoomFor(containerWidth, viewportHeight, panelsScale, frame) }
     }
   }
-  return { scale, wide, frame: wide && frameFits(availableWidth, availableHeight, scale), layout: wide ? 'wide' : 'stacked' }
+  return { scale, wide, frame: wide && frameFits(availableWidth, availableHeight, scale), layout: wide ? 'wide' : 'stacked', sideZoom: 1 }
 }
 
 export function useStageScale(containerRef: RefObject<HTMLElement | null>): StageScale {
-  const [stage, setStage] = useState({ scale: 1, wide: false, frame: false, layout: 'stacked' } as StageScale)
+  const [stage, setStage] = useState({ scale: 1, wide: false, frame: false, layout: 'stacked', sideZoom: 1 } as StageScale)
 
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
     const update = () => {
       const next = stageScaleFor(container.clientWidth, window.innerHeight)
-      setStage((previous) => (previous.scale === next.scale && previous.layout === next.layout && previous.frame === next.frame ? previous : next))
+      setStage((previous) => (previous.scale === next.scale && previous.layout === next.layout && previous.frame === next.frame && previous.sideZoom === next.sideZoom ? previous : next))
     }
     update()
     window.addEventListener('resize', update)
