@@ -54,13 +54,16 @@ describe('panel lateral (UT-153)', () => {
     expect(screen.queryByRole('heading', { name: 'Bola Sombra' })).toBeNull()
   })
 
-  it('objeto y habilidad, con su descripción', async () => {
+  // El icono del objeto (Jose, 06/11/2026): en la ficha del objeto, a la izquierda; en la de la habilidad, no.
+  it('objeto (con su icono) y habilidad, con su descripción', async () => {
     const user = userEvent.setup()
     renderPlayer()
     await user.click(screen.getByRole('button', { name: 'Ficha del objeto Baya Yapati' }))
     expect(screen.getByText('Si la lleva un Pokémon, le sube el Ataque Especial en un momento de apuro.')).toBeInTheDocument()
+    expect(document.querySelector('.bt-side-item-icon img')?.getAttribute('src')).toMatch(/sprites\/items\/petayaberry\.png$/)
     await user.click(screen.getByRole('button', { name: 'Ficha de la habilidad Levitación' }))
     expect(screen.getByRole('heading', { name: 'Levitación' })).toBeInTheDocument()
+    expect(document.querySelector('.bt-side-item-icon')).toBeNull()
   })
 
   it('el rival: PS en %, sus PP y la ficha de sus movimientos', async () => {

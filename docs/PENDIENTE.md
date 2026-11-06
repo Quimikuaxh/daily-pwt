@@ -4,6 +4,9 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 **Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). El sonido va en `feature/f3-sonido` (desde `main`): los audios ya están descargados y versionados (se descargaron en local, desde la nube las fuentes están bloqueadas); falta implementarlo según «Sonido: plan de implementación».
 
+## Icono del objeto en su ficha y texto centrado en los recuadros (06/11/2026, directo a `main`)
+- **Hecho:** icono de la bolsa en la ficha del objeto (RF-44c, UT-153); texto centrado (o 1 px más abajo) en OFICIAL/PRÁCTICA/EN DIRECTO, «Objeto» y los tipos (PRD §0); `npm run gen:item-icons` baja los 80 de los sets a `public/sprites/items/` y `validate:data` exige que estén.
+
 ## Volumen en el visor, hueco fijo de las subidas, contadores y mensajes de objetos (06/11/2026, directo a `main`)
 - **Hecho:** el visor de repeticiones y el directo llevan el botón «Sonido» del combate, con el volumen (RF-128, UT-154); en los paneles laterales el hueco de la «^» está siempre (RF-44c, UT-153); contadores sin «4/6», con el nombre del entrenador y sus Poké Balls a la izquierda (RF-45, CMP-17); `-item` con su texto según el origen (UT-155).
 

@@ -58,6 +58,7 @@ npm install
 | `npm run gen:ui` | Descarga y recorta a `public/ui/` los gráficos de interfaz de N2/B2 (`--force` los rehace todos). Requiere red. |
 | `npm run gen:audio` | Codifica a `public/audio/` la música (OST de N2/B2, se descarga) y los efectos de sonido (ZIP descargado a mano) y escribe `src/generated/audio-index.json` (`--force` los rehace todos). Requiere `ffmpeg`, `ffprobe` y `unzip`. Ver «Sonido». |
 | `npm run gen:cries` | Baja de Pokémon Showdown los gritos de las especies del juego (rivales y pool del jugador), los codifica a `public/audio/cries/<spriteId>.m4a` y escribe `src/generated/cries-index.json`. Requiere `ffmpeg` y `ffprobe`. Desde la nube Showdown está bloqueado: se lanza en local. Lo ya convertido no se vuelve a bajar. Ver «Sonido». |
+| `npm run gen:item-icons` | Baja del repositorio de sprites de PokeAPI (`sprites/items/<slug>.png`) los iconos de la bolsa de los objetos que llevan los sets del juego, a `public/sprites/items/<id>.png` (ficha del objeto de los paneles laterales). Necesita red; lo ya bajado no se vuelve a bajar. `validate:data` comprueba que no falte ninguno. |
 
 `gen:sprites`, `gen:ui`, `gen:audio`, `gen:pwt-raw` y `gen:pwt` no forman parte de `npm run gen`. Tras cargar o cambiar entrenadores: `npm run gen:pwt -- --write`, `npm run gen`, `npm run gen:sprites` (si faltan sprites), `npm run gen:sprite-boxes`, `gen:icon-index`, `gen:descriptions`, `gen:ui-index` (si cambian sprites o especies) y `npm run validate:data`.
 
@@ -345,7 +346,7 @@ npm run vis
 - **Smogon University**: sets de Gen 5 en individuales del pool del jugador (`data/smogon/`).
 - **Pokémon Showdown**: sprites Gen 5 animados (`gen5ani`, `gen5ani-back`). Las dependencias `@pkmn/sim`, `@pkmn/dex` y `@pkmn/data` (paquetes de Pokémon Showdown) implementan el motor de combate y los datos.
 - **Smogon**: `@smogon/calc`, cálculo de daño.
-- **PokeAPI**: nombres en español (CSV de `pokemon_species_names`, `move_names`, `ability_names`, `item_names`, `type_names`).
+- **PokeAPI**: nombres en español (CSV de `pokemon_species_names`, `move_names`, `ability_names`, `item_names`, `type_names`) e iconos de los objetos (repositorio `PokeAPI/sprites`, `sprites/items`).
 - **Bulbapedia**: fuente de los equipos de cada torneo (`sourceUrl` de cada variante).
 - **Serebii**: contraste de equipos del PWT.
 - **WikiDex**: sprites de entrenadores de Negro 2 / Blanco 2 y nombres de referencia.

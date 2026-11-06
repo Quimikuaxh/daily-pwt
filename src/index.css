@@ -258,8 +258,9 @@ img.sprite,
   box-sizing: border-box;
   height: calc(12px * var(--s));
   width: calc(var(--chip-width, 44) * 1px * var(--s));
-  /* La fuente del juego apoya los glifos bajos en su caja: se sube el texto 1,5 px lógicos para centrarlo (medido con las 17 etiquetas). */
-  padding: 0 0 calc(3px * var(--s));
+  /* La fuente del juego apoya los glifos bajos en su caja: se sube el texto para centrarlo o, si no se puede, dejarlo 1 px más abajo (Jose,
+     06/11/2026; medido sobre las mayúsculas a escala 1,5 y 2). */
+  padding: 0 0 calc(3px * var(--s) - 2px);
   border: calc(1px * var(--s)) solid transparent;
   border-image-slice: 1 fill;
   border-image-width: calc(1px * var(--s));
@@ -278,6 +279,8 @@ img.sprite,
 .type-chip[data-compact="true"] {
   --s: 1;
   --chip-width: 36;
+  /* Dentro de la DS ya queda 1 px más abajo del centro con la escala del combate (medido a ×2). */
+  padding-bottom: 3px;
 }
 
 /* ---------- Diálogo ---------- */

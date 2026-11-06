@@ -410,6 +410,35 @@
   overflow: hidden;
 }
 
+/* Ficha del objeto (Jose, 06/11/2026): su icono de la bolsa en un círculo a la izquierda y, a su lado, la cabecera y la descripción. */
+.bt-side-info[data-icon] {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.bt-side-info-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.bt-side-item-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  box-sizing: border-box;
+  background: #e8e0c8;
+  border: 2px solid #c8b888;
+  border-radius: 50%;
+}
+
+.bt-side-item-icon img {
+  display: block;
+  image-rendering: pixelated;
+}
+
 .bt-side-info-head {
   display: flex;
   align-items: center;
@@ -422,9 +451,13 @@
   font-size: 18px;
 }
 
+/* «Objeto» / «Habilidad»: la caja, con su centro a la altura del del nombre (baja 3 px), y su texto centrado o, si no se puede, 1 px más
+   abajo (Jose, 06/11/2026; medido sobre las mayúsculas en la captura). */
 .bt-side-kind {
-  padding: 0 6px;
+  padding: 3px 6px 5px;
   font-size: 12px;
+  line-height: 8px;
+  transform: translateY(3px);
   color: #f8f8f8;
   background: #b81840;
 }

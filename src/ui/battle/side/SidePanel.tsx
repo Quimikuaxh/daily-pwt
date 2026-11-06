@@ -4,6 +4,7 @@ import descriptions from '../../../generated/descriptions-es.json'
 import { es } from '../../../i18n/es'
 import { CategoryIcon } from '../../common/CategoryIcon'
 import { TypeBadge } from '../../common/TypeBadge'
+import { itemIconUrl } from '../../common/spriteUrls'
 import { uiAsset } from '../../common/uiAssets'
 import { boostEntries } from '../fieldText'
 import { hpFillColor } from '../party/hpBar'
@@ -239,13 +240,22 @@ function DetailCard({ member, detail, opponent, chart }: DetailCardProps) {
   if (detail.kind !== 'move') {
     const name = detail.kind === 'item' ? member.itemName : member.abilityName
     const body = detail.kind === 'item' ? descriptionTable.items[member.itemId] : descriptionTable.abilities[member.abilityId]
+    // El objeto, con su icono en un círculo a la izquierda, como el sprite de la franja de eficacia (Jose, 06/11/2026).
+    const icon = detail.kind === 'item' && member.itemId ? itemIconUrl(member.itemId) : null
     return (
-      <section className="bt-side-info" aria-live="polite">
-        <header className="bt-side-info-head">
-          <span className="bt-side-kind">{text.kinds[detail.kind]}</span>
-          <h3>{name}</h3>
-        </header>
-        <p>{body ?? text.noDescription}</p>
+      <section className="bt-side-info" data-icon={icon ? 'true' : undefined} aria-live="polite">
+        {icon && (
+          <span className="bt-side-item-icon">
+            <img src={icon} alt="" width={30} height={30} />
+          </span>
+        )}
+        <div className="bt-side-info-body">
+          <header className="bt-side-info-head">
+            <span className="bt-side-kind">{text.kinds[detail.kind]}</span>
+            <h3>{name}</h3>
+          </header>
+          <p>{body ?? text.noDescription}</p>
+        </div>
       </section>
     )
   }

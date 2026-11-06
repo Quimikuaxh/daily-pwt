@@ -17,3 +17,6 @@ export const trainerSprite = (sprite: string): string => trainerSpriteUrl(sprite
 export const trainerMiniSprite = (sprite: string): string => trainerMiniSpriteUrl(sprite, baseUrl)
 
 export const substituteSprite = (side: PokemonSide): string => substituteSpriteUrl(side, baseUrl)
+
+/** Icono de la bolsa de un objeto (ficha de los paneles laterales, Jose 06/11/2026; `npm run gen:item-icons`). */
+export const itemIconUrl = (itemId: string): string => `${baseUrl}sprites/items/${itemId}.png`

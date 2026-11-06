@@ -34,7 +34,8 @@
     "validate:data": "node scripts/validate-data.mjs",
     "gen": "npm run gen:names && npm run gen:dex && npm run gen:player-sets",
     "gen:audio": "node scripts/build-audio.mjs",
-    "gen:cries": "node scripts/fetch-cries.mjs"
+    "gen:cries": "node scripts/fetch-cries.mjs",
+    "gen:item-icons": "node scripts/fetch-item-icons.mjs"
   },
   "dependencies": {
     "@pkmn/sim": "0.10.11",

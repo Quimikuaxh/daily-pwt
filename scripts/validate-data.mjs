@@ -180,6 +180,9 @@ function generatedProblems(allSets, speciesIds) {
     for (const abilityId of set.abilities) if (!descriptions.abilities[abilityId]) problems.push(`descriptions-es.json: falta la habilidad «${abilityId}»`)
     // Ficha de los paneles laterales (RF-44c): el objeto también tiene su descripción.
     if (set.item && !descriptions.items?.[set.item]) problems.push(`descriptions-es.json: falta el objeto «${set.item}»`)
+    // Y su icono (Jose, 06/11/2026; `npm run gen:item-icons`).
+    const itemIcon = set.item ? imageProblem(`public/sprites/items/${set.item}.png`, 'png') : null
+    if (itemIcon) problems.push(itemIcon)
   }
   return [...new Set(problems)]
 }

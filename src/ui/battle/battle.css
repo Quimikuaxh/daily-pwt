@@ -668,7 +668,9 @@
   top: 3px;
   right: 3px;
   z-index: 30;
-  padding: 1px 4px;
+  /* Texto centrado en su recuadro (Jose, 06/11/2026: centrado o, si no se puede, 1 px más abajo; medido sobre las mayúsculas): la fuente lo
+     deja bajo, así que hay más hueco abajo que arriba. */
+  padding: 0 4px 2px;
   font-size: 10px;
   line-height: 12px;
   letter-spacing: 1px;
