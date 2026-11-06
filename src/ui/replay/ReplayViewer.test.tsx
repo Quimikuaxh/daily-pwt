@@ -1,5 +1,5 @@
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-import { act, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { getAudio } from '../../audio/audio'
 import { getDailyChallenge } from '../../core/challenge'
@@ -54,7 +54,7 @@ afterEach(() => {
 async function mount(onDelete?: () => void, shown: ReplayData = replay, { playing = false } = {}) {
   const onExit = vi.fn()
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-  const { unmount } = render(<ReplayViewer replay={shown} data={data} settings={DEFAULT_SETTINGS} onExit={onExit} onDelete={onDelete} />)
+  const { unmount } = render(<ReplayViewer replay={shown} data={data} settings={DEFAULT_SETTINGS} onSoundChange={vi.fn()} onExit={onExit} onDelete={onDelete} />)
   const controls = () => screen.getByRole('group', { name: 'Controles de la repetición' })
   if (!playing) await user.click(within(controls()).getByRole('button', { name: 'Pausa' }))
   await settle()
@@ -256,7 +256,7 @@ describe('visor de repeticiones (UT-107)', () => {
   })
 
   it('el botón del equipo dice «Equipo» si la repetición es de otro jugador', async () => {
-    render(<ReplayViewer replay={replay} data={data} settings={DEFAULT_SETTINGS} onExit={vi.fn()} own={false} />)
+    render(<ReplayViewer replay={replay} data={data} settings={DEFAULT_SETTINGS} onSoundChange={vi.fn()} onExit={vi.fn()} own={false} />)
     await settle()
     expect(screen.getByRole('button', { name: 'Equipo' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Tu equipo' })).toBeNull()
@@ -270,13 +270,13 @@ describe('visor de repeticiones (UT-107)', () => {
       unlock = listener
       return () => undefined
     })
-    const { unmount } = render(<ReplayViewer replay={replay} data={data} settings={DEFAULT_SETTINGS} onExit={vi.fn()} />)
+    const { unmount } = render(<ReplayViewer replay={replay} data={data} settings={DEFAULT_SETTINGS} onSoundChange={vi.fn()} onExit={vi.fn()} />)
     await settle()
     expect(screen.getByRole('button', { name: 'Toca para activar el sonido' })).toBeInTheDocument()
     act(() => unlock())
     expect(screen.queryByRole('button', { name: 'Toca para activar el sonido' })).toBeNull()
     unmount()
-    render(<ReplayViewer replay={replay} data={data} settings={{ ...DEFAULT_SETTINGS, sound: false }} onExit={vi.fn()} />)
+    render(<ReplayViewer replay={replay} data={data} settings={{ ...DEFAULT_SETTINGS, sound: false }} onSoundChange={vi.fn()} onExit={vi.fn()} />)
     await settle()
     expect(screen.queryByRole('button', { name: 'Toca para activar el sonido' })).toBeNull()
     locked.mockRestore()
@@ -288,6 +288,18 @@ describe('visor de repeticiones (UT-107)', () => {
     const { user } = await mount(onDelete)
     await user.click(screen.getByRole('button', { name: 'Borrar enlace' }))
     expect(onDelete).toHaveBeenCalled()
+  })
+
+  // UT-154 (Jose, 06/11/2026): el visor (repeticiones y directo) lleva el botón «Sonido» del combate, con el volumen, guardado en Ajustes.
+  it('«Sonido» abre la ventana de sonido del combate: el volumen se cambia y se guarda en Ajustes', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    const onSoundChange = vi.fn()
+    render(<ReplayViewer replay={replay} data={data} settings={DEFAULT_SETTINGS} onSoundChange={onSoundChange} onExit={vi.fn()} />)
+    await settle()
+    await user.click(screen.getByRole('button', { name: es.battle.sound }))
+    const dialog = screen.getByRole('dialog', { name: es.settings.soundTitle })
+    fireEvent.change(within(dialog).getByRole('slider', { name: es.settings.volumeLabel }), { target: { value: '40' } })
+    expect(onSoundChange).toHaveBeenCalledWith(expect.objectContaining({ volume: 40 }))
   })
 
   // UT-138 (Jose, 03/11/2026): «Música» silencia la de esta repetición; pausar deja el sonido congelado y reanudar lo sigue.

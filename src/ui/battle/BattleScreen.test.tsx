@@ -431,6 +431,16 @@ describe('restantes (CMP-17, RF-45)', () => {
     await ready({ view: sixView() })
     expect(screen.getByTestId('remaining-player').textContent).toMatch(/\d\s*\/\s*6/)
   })
+
+  // Cambio de requisito (Jose, 06/11/2026): el «6/6» solo para el lector de pantalla; las Poké Balls del rival, antes de su nombre (el del
+  // entrenador, no «Rival»).
+  it('el recuento no se ve; las Poké Balls del rival van antes del nombre del entrenador y las del jugador después', async () => {
+    await ready({ view: sixView() })
+    expect(screen.getByTestId('remaining-rival')).toHaveTextContent(challenge.trainer.nameEs)
+    expect(within(screen.getByTestId('remaining-player')).getByText('6/6')).toHaveClass('sr-only')
+    expect(screen.getByTestId('remaining-rival').firstElementChild).toHaveClass('bt-balls')
+    expect(screen.getByTestId('remaining-player').firstElementChild).toHaveClass('bt-remaining-label')
+  })
 })
 
 describe('campo de batalla (CMP-18, RF-44)', () => {

@@ -18,7 +18,7 @@ const replay: ReplayData = { version: 1, challenge, playerLead: 0, battleSeed: '
 describe('repetición de un amigo (UT-119)', () => {
   it('se pide al servidor con su nickname y su fecha, y el botón de su equipo dice «Equipo»', async () => {
     const api = fakeApi({ getFriendReplay: async () => encodeReplay(replay) })
-    render(<ReplayScreen source={{ kind: 'friend', nickname: 'Eva', date: '2026-10-26' }} api={api} ready data={data} settings={DEFAULT_SETTINGS} onExit={vi.fn()} />)
+    render(<ReplayScreen source={{ kind: 'friend', nickname: 'Eva', date: '2026-10-26' }} api={api} ready data={data} settings={DEFAULT_SETTINGS} onSoundChange={vi.fn()} onExit={vi.fn()} />)
     expect(await screen.findByTestId('battle-mode')).toHaveAttribute('data-mode', 'replay')
     expect(api.getFriendReplay).toHaveBeenCalledWith('Eva', '2026-10-26')
     expect(screen.getByRole('button', { name: 'Equipo' })).toBeInTheDocument()
@@ -27,7 +27,7 @@ describe('repetición de un amigo (UT-119)', () => {
 
   it('si ya no es amigo, el aviso de que no se ha podido cargar', async () => {
     const api = fakeApi({ getFriendReplay: async () => Promise.reject(serverError('not_friends')) })
-    render(<ReplayScreen source={{ kind: 'friend', nickname: 'Eva', date: '2026-10-26' }} api={api} ready data={data} settings={DEFAULT_SETTINGS} onExit={vi.fn()} />)
+    render(<ReplayScreen source={{ kind: 'friend', nickname: 'Eva', date: '2026-10-26' }} api={api} ready data={data} settings={DEFAULT_SETTINGS} onSoundChange={vi.fn()} onExit={vi.fn()} />)
     expect(await screen.findByRole('alert')).toBeInTheDocument()
   })
 })

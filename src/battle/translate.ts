@@ -193,6 +193,27 @@ const SELF_USE_MESSAGES: Record<string, (mon: string, item: string) => string> =
  * otra línea que lo cuente. Se descartan `[eat]` (el efecto de la baya llega en la línea siguiente), `[silent]`
  * (lo cuenta el `-item`/`-activate` de Ladrón, Truco, Antihurto...) y los objetos con `-boost [from] item:`.
  */
+/**
+ * Objeto que se ve o cambia de manos (`-item`). Sin origen es el Globo Helio al salir (Jose, 06/11/2026: «ha obtenido» no tenía sentido);
+ * con Cacheo, el objeto detectado; con un robo (Ladrón, Antojo, Prestidigitador, Hurto), el robado; con Reciclaje, Cosecha o Recogida, el
+ * recuperado; con Truco, Trapicheo o Ofrenda, el que se recibe.
+ */
+function translateItem(f: Fields, ctx: TranslateContext): string {
+  const item = itemName(ctx, f.args[1])
+  const from = /^(move|ability):\s*(.*)$/.exec(f.tags.get('from') ?? '')
+  const of = f.tags.get('of')
+  const fromId = toId(from?.[2] ?? '')
+  if (fromId === 'frisk') return log.itemFrisked(monText(ctx, of), abilityName(ctx, from?.[2]), item)
+  const mon = monText(ctx, f.args[0])
+  if (!from) return toId(f.args[1] ?? '') === 'airballoon' ? log.airBalloonFloats(mon, item) : log.itemObtained(mon, item)
+  if (ITEM_RECOVERED_BY.has(fromId)) return log.itemRecovered(mon, item)
+  if (ITEM_STOLEN_BY.has(fromId) && of) return log.itemStolen(mon, item, monText(ctx, of))
+  return log.itemObtained(mon, item)
+}
+
+const ITEM_RECOVERED_BY = new Set(['recycle', 'harvest', 'pickup'])
+const ITEM_STOLEN_BY = new Set(['thief', 'covet', 'magician', 'pickpocket'])
+
 function translateEndItem(f: Fields, ctx: TranslateContext): string | null {
   if (f.tags.has('eat') || f.tags.has('silent')) return null
   const mon = monText(ctx, f.args[0])
@@ -283,7 +304,7 @@ function translateKnownLine(f: Fields, ctx: TranslateContext): string | null | u
     case '-block':
       return log.abilityBlocks(monText(ctx, first), effectName(ctx, f.args[1]) ?? log.unknownAbility)
     case '-item':
-      return log.itemObtained(monText(ctx, first), itemName(ctx, f.args[1]))
+      return translateItem(f, ctx)
     case '-enditem':
       return translateEndItem(f, ctx)
     case 'cant':

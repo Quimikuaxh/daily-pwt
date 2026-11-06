@@ -4,7 +4,7 @@ import type { GameData } from '../../core/types'
 import { esReplay } from '../../i18n/esReplay'
 import { decodeReplay } from '../../replay/replayCodec'
 import type { ReplayData } from '../../replay/replayData'
-import type { Settings } from '../../storage/settings'
+import type { Settings, SoundPrefs } from '../../storage/settings'
 import { Dialog } from '../common/Dialog'
 import { ReplayViewer } from './ReplayViewer'
 import './replay.css'
@@ -27,11 +27,13 @@ type ReplayScreenProps = {
   ready: boolean
   data: GameData
   settings: Settings
+  /** Botón «Sonido» del visor (Jose, 06/11/2026): volumen y silencio, guardados en Ajustes. */
+  onSoundChange: (sound: SoundPrefs) => void
   onExit: () => void
 }
 
 /** Carga y abre una repetición (RF-127, RF-132). Un enlace que no existe muestra un aviso y el camino a Hoy (RF-134). */
-export function ReplayScreen({ source, api, ready, data, settings, onExit }: ReplayScreenProps) {
+export function ReplayScreen({ source, api, ready, data, settings, onSoundChange, onExit }: ReplayScreenProps) {
   const [loaded, setLoaded] = useState((source.kind === 'local' ? { status: 'ready', replay: source.replay, mine: false } : { status: 'loading' }) as Loaded)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const key = source.kind === 'mine' ? source.date : source.kind === 'friend' ? `${source.nickname}/${source.date}` : source.kind === 'shared' ? source.id : 'local'
@@ -74,7 +76,7 @@ export function ReplayScreen({ source, api, ready, data, settings, onExit }: Rep
   const canDelete = source.kind === 'shared' && loaded.mine && api !== null
   return (
     <>
-      <ReplayViewer replay={loaded.replay} data={data} settings={settings} onExit={onExit} onDelete={canDelete ? () => setConfirmDelete(true) : undefined} own={source.kind === 'shared' ? loaded.mine : source.kind !== 'friend'} playerName={source.kind === 'friend' ? source.nickname : source.kind === 'shared' && !loaded.mine ? (loaded.nickname ?? text.someone) : undefined} />
+      <ReplayViewer replay={loaded.replay} data={data} settings={settings} onSoundChange={onSoundChange} onExit={onExit} onDelete={canDelete ? () => setConfirmDelete(true) : undefined} own={source.kind === 'shared' ? loaded.mine : source.kind !== 'friend'} playerName={source.kind === 'friend' ? source.nickname : source.kind === 'shared' && !loaded.mine ? (loaded.nickname ?? text.someone) : undefined} />
       {confirmDelete && source.kind === 'shared' && api && (
         <Dialog
           title={text.deleteTitle}

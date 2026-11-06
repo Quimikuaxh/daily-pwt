@@ -280,7 +280,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
             {!panels && battle.view && !liveAsk && (
               <div className="bt-counters">
                 <RemainingIndicator side={battle.view.player} label={playerLabel} testId="remaining-player" />
-                <RemainingIndicator side={battle.view.rival} label={es.battle.rival} testId="remaining-rival" />
+                <RemainingIndicator side={battle.view.rival} label={trainer.nameEs} testId="remaining-rival" ballsFirst />
               </div>
             )}
           </div>

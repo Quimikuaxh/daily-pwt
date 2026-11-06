@@ -31,13 +31,13 @@ afterEach(() => { vi.useRealTimers() })
 
 describe('directo (UT-150)', () => {
   it('el visor en directo: EN DIRECTO; al ponerse al día espera el turno del amigo; con los pasos nuevos sigue hasta el final', async () => {
-    const { rerender } = render(<ReplayViewer replay={live(first)} data={data} settings={DEFAULT_SETTINGS} onExit={vi.fn()} own={false} live={{ nickname: 'Eva' }} playerName="Eva" />)
+    const { rerender } = render(<ReplayViewer replay={live(first)} data={data} settings={DEFAULT_SETTINGS} onSoundChange={vi.fn()} onExit={vi.fn()} own={false} live={{ nickname: 'Eva' }} playerName="Eva" />)
     for (let second = 0; second < 20 && !screen.queryByText('Esperando el turno de Eva…'); second++) await settle(1_000)
     expect(screen.getByTestId('battle-mode')).toHaveTextContent('EN DIRECTO')
     expect(screen.getByText('Esperando el turno de Eva…')).toBeInTheDocument()
     // El contador del equipo que se ve es el de Eva, no «Tú» (prueba de Jose, 04/11/2026).
     expect(screen.getByTestId('remaining-player')).toHaveTextContent(/^Eva/)
-    rerender(<ReplayViewer replay={live([...first, { lines: ['|win|Jugador'], view: view(2, 0), ended: ENDED }], ENDED)} data={data} settings={DEFAULT_SETTINGS} onExit={vi.fn()} own={false} live={{ nickname: 'Eva' }} />)
+    rerender(<ReplayViewer replay={live([...first, { lines: ['|win|Jugador'], view: view(2, 0), ended: ENDED }], ENDED)} data={data} settings={DEFAULT_SETTINGS} onSoundChange={vi.fn()} onExit={vi.fn()} own={false} live={{ nickname: 'Eva' }} />)
     for (let second = 0; second < 20 && !screen.queryByText(/^Victoria/); second++) await settle(1_000)
     expect(screen.getByText(/^Victoria/)).toBeInTheDocument()
     expect(screen.getByTestId('battle-mode')).toHaveTextContent('REPETICIÓN')
@@ -46,11 +46,11 @@ describe('directo (UT-150)', () => {
   it('sin permiso o con el combate anulado, lo dice y vuelve a Hoy', async () => {
     const onExit = vi.fn()
     const notAllowed = fakeApi({ liveBattle: async () => Promise.reject(new CloudError('live_not_allowed', true)) })
-    const { unmount } = render(<LiveScreen nickname="Eva" api={notAllowed} data={data} settings={DEFAULT_SETTINGS} createClient={() => mockClient() as never} onExit={onExit} />)
+    const { unmount } = render(<LiveScreen nickname="Eva" api={notAllowed} data={data} settings={DEFAULT_SETTINGS} createClient={() => mockClient() as never} onSoundChange={vi.fn()} onExit={onExit} />)
     await settle(100)
     expect(screen.getByRole('alert')).toHaveTextContent('No tienes permiso para ver este combate.')
     unmount()
-    render(<LiveScreen nickname="Eva" api={fakeApi()} data={data} settings={DEFAULT_SETTINGS} createClient={() => mockClient() as never} onExit={onExit} />)
+    render(<LiveScreen nickname="Eva" api={fakeApi()} data={data} settings={DEFAULT_SETTINGS} createClient={() => mockClient() as never} onSoundChange={vi.fn()} onExit={onExit} />)
     await settle(100)
     expect(screen.getByRole('alert')).toHaveTextContent('Eva no ha terminado su combate: se ha anulado.')
   })
@@ -58,7 +58,7 @@ describe('directo (UT-150)', () => {
   it('en curso: arranca su motor con su semilla e inicial y vuelve a pedir el combate cada pocos segundos', async () => {
     const client = mockClient()
     const api = fakeApi({ liveBattle: async () => ({ state: 'live', date: '2026-11-04', seed: 'semilla', ai: 'heuristic', leadIndex: 2, decisions: [], turn: 0 }) })
-    render(<LiveScreen nickname="Eva" api={api} data={data} settings={DEFAULT_SETTINGS} createClient={() => client as never} onExit={vi.fn()} />)
+    render(<LiveScreen nickname="Eva" api={api} data={data} settings={DEFAULT_SETTINGS} createClient={() => client as never} onSoundChange={vi.fn()} onExit={vi.fn()} />)
     await settle(100)
     expect(client.init).toHaveBeenCalledWith(expect.objectContaining({ battleSeed: 'semilla', playerLead: 2, ai: 'heuristic' }))
     await act(async () => {

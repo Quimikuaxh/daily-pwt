@@ -5,7 +5,7 @@ import { es } from '../../i18n/es'
 import { esReplay } from '../../i18n/esReplay'
 import { ReplayClient } from '../../replay/replayClient'
 import type { ReplayData } from '../../replay/replayData'
-import type { Settings } from '../../storage/settings'
+import type { Settings, SoundPrefs } from '../../storage/settings'
 import { BattleScreen, type ReplayTeam } from '../battle/BattleScreen'
 import './replay.css'
 
@@ -17,6 +17,11 @@ type ReplayViewerProps = {
   replay: ReplayData
   data: GameData
   settings: Settings
+  /**
+   * Botón «Sonido» arriba, como en el combate (Jose, 06/11/2026: no solo silenciar la música, también el volumen): la misma ventana de
+   * Ajustes (DEC-57) y se guarda en ellos.
+   */
+  onSoundChange: (sound: SoundPrefs) => void
   onExit: () => void
   /** Solo si la ve quien la compartió (RF-133): «Borrar enlace». */
   onDelete?: () => void
@@ -59,7 +64,7 @@ const turnShownAt = (replay: ReplayData, index: number) => (index === 0 ? 0 : re
  * Avanzar emite los pasos del turno siguiente, con sus mensajes y animaciones. Ir atrás o saltar vuelve a montar la pantalla en ese paso
  * con el avance rápido de la reanudación (sin animación ni intro). «Reproducir» avanza solo al terminar cada turno.
  */
-export function ReplayViewer({ replay, data, settings, onExit, onDelete, own = true, live, playerName }: ReplayViewerProps) {
+export function ReplayViewer({ replay, data, settings, onSoundChange, onExit, onDelete, own = true, live, playerName }: ReplayViewerProps) {
   const last = replay.steps.length - 1
   // `start`: paso en el que se monta la pantalla; `mount` la vuelve a montar aunque el paso sea el mismo.
   const [position, setPosition] = useState({ start: 0, mount: 0 })
@@ -227,6 +232,7 @@ export function ReplayViewer({ replay, data, settings, onExit, onDelete, own = t
       initialSpeed={settings.speed}
       animations={settings.animations}
       sound={settings}
+      onSoundChange={onSoundChange}
       musicMuted={musicMuted}
       onExit={onExit}
     />

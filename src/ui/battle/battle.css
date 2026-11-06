@@ -127,6 +127,7 @@
 
 .bt-layout[data-layout="stacked"] .bt-counters {
   order: 2;
+  flex-wrap: nowrap;
   width: 100%;
   box-sizing: border-box;
   padding: 0 8px;
@@ -353,19 +354,32 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
+  min-width: 0;
   margin: 0;
   font-family: var(--font-game);
   font-size: 1rem;
 }
 
+/* El nombre del rival en vez de «Rival» (Jose, 06/11/2026): con nicknames de 16 letras y «Teniente Surge» no caben los dos en 360 px; el
+   nombre se corta con «…» y las Poké Balls no se mueven. El padding evita que se corten las «g p j y» (trampa de la fuente, CLAUDE.md). */
 .bt-remaining-label {
-  min-width: 2.5rem;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding-bottom: 0.25em;
+  margin-bottom: -0.25em;
   color: #d0d0d0;
 }
 
+
 .bt-balls {
   display: inline-flex;
+  flex: none;
   gap: 3px;
+  /* La fuente no reserva hueco bajo la línea (descent-override: 0%) y su texto queda bajo en la caja: las Poké Balls bajan 0,16 em para que su centro quede a
+     la altura del centro del nombre (medido en la captura, Jose 06/11/2026). */
+  transform: translateY(0.16em);
 }
 
 .bt-ball-dot {

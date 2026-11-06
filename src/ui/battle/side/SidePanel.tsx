@@ -120,7 +120,6 @@ function MonCard({ member, boosts, isPressed, onDetail }: MonCardProps) {
   const summary = es.battle.summary
   const statNames = es.battle.fieldStatus.statsShort as Texts
   const stats = statsWithBoosts(member.stats, boosts)
-  const hasStages = stats.some(hasStage)
   return (
     <article className="bt-side-card" aria-label={member.name}>
       <div className="bt-side-id">
@@ -151,7 +150,8 @@ function MonCard({ member, boosts, isPressed, onDetail }: MonCardProps) {
           <div key={stat.key}>
             <dt>{stat.key === 'hp' ? summary.hp : statNames[stat.key]}</dt>
             <dd>{stat.value}</dd>
-            {hasStages && <dd className="bt-side-stage-slot">{stat.stage !== 0 && <StageBadge stage={stat.stage} />}</dd>}
+            {/* Hueco reservado siempre (Jose, 06/11/2026): la caja no crece al subir o bajar una estadística. */}
+            <dd className="bt-side-stage-slot" aria-hidden={stat.stage === 0 ? true : undefined}>{stat.stage !== 0 && <StageBadge stage={stat.stage} />}</dd>
           </div>
         ))}
       </dl>
@@ -221,10 +221,6 @@ function OtherStages({ boosts }: { boosts: Boosts }) {
       ))}
     </ul>
   )
-}
-
-function hasStage(stat: { stage: number }): boolean {
-  return stat.stage !== 0
 }
 
 function isOtherStage(entry: { id: string }): boolean {

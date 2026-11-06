@@ -141,12 +141,13 @@ describe('motor real + traducción: un solo mensaje por objeto consumido (DEC-36
     expect(text.filter((l) => /explotado/.test(l))).toHaveLength(1)
   })
 
-  it('Ladrón: solo se cuenta que el ladrón obtiene el objeto', () => {
+  it('Ladrón: solo se cuenta que el ladrón roba el objeto', () => {
     const { raw, text } = play(tank('sitrusberry'), attacker(['thief', 'tackle', 'recover', 'protect']), 1)
     expect(raw.some((l) => l.includes('[silent]|[from] move: Thief'))).toBe(true)
     const about = mentions(text, 'sitrusberry')
     expect(about).toHaveLength(1)
-    expect(about[0]).toMatch(/obtenido/)
+    // Cambio de requisito (Jose, 06/11/2026, UT-155): el robo se cuenta como robo, no como «ha obtenido».
+    expect(about[0]).toMatch(/le ha robado/)
   })
 
   it('Truco: se cuentan los dos objetos recibidos, sin avisos de pérdida', () => {

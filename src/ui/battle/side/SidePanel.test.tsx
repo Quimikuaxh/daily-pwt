@@ -104,5 +104,7 @@ describe('subidas y bajadas en el panel (UT-153)', () => {
     expect(document.querySelector('.bt-side-stage')).toBeNull()
     rerender(<SidePanel side="player" title="Tu equipo" members={players(view(1))} boosts={{}} opponent={null} chart={data.dex.typeChart} />)
     expect(screen.queryByRole('list', { name: 'Subidas y bajadas' })).toBeNull()
+    // Cambio de requisito (Jose, 06/11/2026): el hueco de la «^» está siempre, para que la caja no crezca al subir o bajar algo.
+    expect(document.querySelectorAll('.bt-side-stage-slot')).toHaveLength(6)
   })
 })

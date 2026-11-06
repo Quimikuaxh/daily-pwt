@@ -6,7 +6,7 @@ import type { Challenge, GameData } from '../../core/types'
 import { esReplay } from '../../i18n/esReplay'
 import { LiveRecorder, type LiveSnapshot } from '../../replay/liveRecorder'
 import type { ReplayData } from '../../replay/replayData'
-import type { Settings } from '../../storage/settings'
+import type { Settings, SoundPrefs } from '../../storage/settings'
 import { Loading } from '../common/Loading'
 import { ReplayViewer } from './ReplayViewer'
 import './replay.css'
@@ -20,6 +20,8 @@ type LiveScreenProps = {
   api: CloudApi
   data: GameData
   settings: Settings
+  /** Botón «Sonido» del visor (Jose, 06/11/2026). */
+  onSoundChange: (sound: SoundPrefs) => void
   createClient: () => BattleClient
   onExit: () => void
 }
@@ -30,7 +32,7 @@ type Status = 'loading' | 'notAllowed' | 'void' | 'failed'
  * Directo (RF-111c, DEC-80): el oficial de un amigo que ha aceptado, en el visor de repeticiones. Pide su combate cada `LIVE_POLL_MS`,
  * lo juega en el motor de aquí con sus decisiones (`LiveRecorder`) y deja de pedir al terminar.
  */
-export function LiveScreen({ nickname, api, data, settings, createClient, onExit }: LiveScreenProps) {
+export function LiveScreen({ nickname, api, data, settings, onSoundChange, createClient, onExit }: LiveScreenProps) {
   const [status, setStatus] = useState('loading' as Status)
   const [start, setStart] = useState(null as { challenge: Challenge; seed: string; ai: ReplayData['ai']; leadIndex: number } | null)
   const [snapshot, setSnapshot] = useState(null as LiveSnapshot | null)
@@ -95,5 +97,5 @@ export function LiveScreen({ nickname, api, data, settings, createClient, onExit
       </main>
     )
   }
-  return <ReplayViewer replay={replay} data={data} settings={settings} onExit={onExit} own={false} live={{ nickname }} playerName={nickname} />
+  return <ReplayViewer replay={replay} data={data} settings={settings} onSoundChange={onSoundChange} onExit={onExit} own={false} live={{ nickname }} playerName={nickname} />
 }

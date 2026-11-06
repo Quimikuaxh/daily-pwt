@@ -242,7 +242,7 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
   if (screen.name === 'live' && data && account?.api) {
     return (
       <Suspense fallback={null}>
-        <LiveScreen nickname={screen.nickname} api={account.api} data={data} settings={settings} createClient={createClient} onExit={() => setScreen({ name: 'today' })} />
+        <LiveScreen nickname={screen.nickname} api={account.api} data={data} settings={settings} onSoundChange={(sound) => changeSettings({ ...settings, ...sound })} createClient={createClient} onExit={() => setScreen({ name: 'today' })} />
       </Suspense>
     )
   }
@@ -260,7 +260,7 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
     const ready = accountState.status !== 'connecting'
     return (
       <Suspense fallback={null}>
-        <ReplayScreen source={screen.source} api={account?.api ?? null} ready={ready} data={data} settings={settings} onExit={leaveReplay} />
+        <ReplayScreen source={screen.source} api={account?.api ?? null} ready={ready} data={data} settings={settings} onSoundChange={(sound) => changeSettings({ ...settings, ...sound })} onExit={leaveReplay} />
       </Suspense>
     )
   }

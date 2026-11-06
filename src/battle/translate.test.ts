@@ -13,8 +13,8 @@ import type { NamesEs } from '../test-utils/types'
 const names: NamesEs = {
   species: { garchomp: 'Garchomp', starmie: 'Starmie', gengar: 'Gengar' },
   moves: { leechseed: 'Drenadoras', earthquake: 'Terremoto', surf: 'Surf', swordsdance: 'Danza Espada', stealthrock: 'Trampa Rocas', protect: 'Protección', fly: 'Vuelo', thunderbolt: 'Rayo' },
-  abilities: { magicguard: 'Muro Mágico', intimidate: 'Intimidación', drizzle: 'Llovizna', levitate: 'Levitación' },
-  items: { leftovers: 'Restos', lifeorb: 'Vidasfera', sitrusberry: 'Baya Zidra', salacberry: 'Baya Aslac', weaknesspolicy: 'Seguro Debilidad' },
+  abilities: { magicguard: 'Muro Mágico', intimidate: 'Intimidación', drizzle: 'Llovizna', levitate: 'Levitación', frisk: 'Cacheo' },
+  items: { airballoon: 'Globo Helio', leftovers: 'Restos', lifeorb: 'Vidasfera', sitrusberry: 'Baya Zidra', salacberry: 'Baya Aslac', weaknesspolicy: 'Seguro Debilidad' },
   types: { Water: 'Agua', Ground: 'Tierra' },
 }
 const ctx = { names, trainer: { nameEs: 'Camila', category: 'leader' as const, gender: 'F' as const } }
@@ -117,6 +117,15 @@ describe('translateLine: líneas con texto (UT-45)', () => {
 
   it('el objeto no deja su nombre inglés', () => {
     expect(tr('|-item|p1a: Garchomp|Life Orb')).not.toMatch(/Life Orb/)
+  })
+
+  // UT-155 (Jose, 06/11/2026): «ha obtenido» solo cuando lo recibe (Truco…); el resto, con su texto.
+  it('objeto que se ve o cambia de manos: Globo Helio al salir, Cacheo, robo, recuperado y recibido', () => {
+    expect(tr('|-item|p2a: Starmie|Air Balloon')).toBe('¡El Starmie de Camila flota gracias a su Globo Helio!')
+    expect(tr('|-item|p2a: Starmie|Leftovers|[from] ability: Frisk|[of] p1a: Garchomp')).toBe('¡Cacheo de Garchomp ha detectado Restos!')
+    expect(tr('|-item|p1a: Garchomp|Leftovers|[from] move: Thief|[of] p2a: Starmie')).toBe('¡Garchomp le ha robado Restos al Starmie de Camila!')
+    expect(tr('|-item|p1a: Garchomp|Sitrus Berry|[from] ability: Harvest')).toBe('¡Garchomp ha recuperado Baya Zidra!')
+    expect(tr('|-item|p1a: Garchomp|Leftovers|[from] move: Trick')).toBe('¡Garchomp ha obtenido Restos!')
   })
 })
 
