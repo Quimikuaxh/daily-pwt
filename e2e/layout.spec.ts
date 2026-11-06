@@ -27,6 +27,36 @@ async function inkMargins(chip: Locator, scale: number, borderLogical = 2): Prom
   return { left: minX - inset, right: width - inset - 1 - maxX, top: minY - inset, bottom: height - inset - 1 - maxY }
 }
 
+/**
+ * Dónde está de verdad el texto dentro de su caja (sin el borde), en px CSS: una captura normal y otra con el texto transparente; los
+ * píxeles que cambian son las letras. Sin sombra de texto (no es la letra) y a la densidad de la pantalla. Positivo en `lower`: más abajo
+ * del centro. Es el método de la skill armonia-visual (ink.js).
+ */
+async function textInk(element: Locator): Promise<{ left: number; right: number; top: number; bottom: number; lower: number; step: number }> {
+  await element.evaluate((el) => { (el as HTMLElement).style.setProperty('text-shadow', 'none', 'important') })
+  const normal = await decodePng(await element.screenshot())
+  await element.evaluate((el) => { (el as HTMLElement).style.setProperty('color', 'transparent', 'important') })
+  const hidden = await decodePng(await element.screenshot())
+  const box = await element.evaluate((el) => {
+    const style = getComputedStyle(el)
+    return { width: el.getBoundingClientRect().width, borderTop: parseFloat(style.borderTopWidth), borderRight: parseFloat(style.borderRightWidth), borderBottom: parseFloat(style.borderBottomWidth), borderLeft: parseFloat(style.borderLeftWidth) }
+  })
+  await element.evaluate((el) => { (el as HTMLElement).style.removeProperty('color'); (el as HTMLElement).style.removeProperty('text-shadow') })
+  const { width, height } = normal
+  const ratio = width / box.width
+  let [minX, minY, maxX, maxY] = [width, height, -1, -1]
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const offset = (y * width + x) * 4
+      const distance = Math.max(...[0, 1, 2].map((channel) => Math.abs(normal.rgba[offset + channel] - hidden.rgba[offset + channel])))
+      if (distance > 24) [minX, minY, maxX, maxY] = [Math.min(minX, x), Math.min(minY, y), Math.max(maxX, x), Math.max(maxY, y)]
+    }
+  }
+  const css = (pixels: number) => pixels / ratio
+  const margins = { left: css(minX) - box.borderLeft, right: css(width - 1 - maxX) - box.borderRight, top: css(minY) - box.borderTop, bottom: css(height - 1 - maxY) - box.borderBottom }
+  return { ...margins, lower: (margins.top - margins.bottom) / 2, step: 1 / ratio }
+}
+
 const rects = (locator: Locator) => locator.evaluateAll((elements) => elements.map((element) => { const { x, y, width, height, right, bottom } = element.getBoundingClientRect(); return { x, y, width, height, right, bottom } }))
 
 test.describe('Hoy: tarjetas alineadas', () => {
@@ -77,9 +107,12 @@ test.describe('Hoy: tarjetas alineadas', () => {
 })
 
 test.describe('Iconos de tipo: texto centrado', () => {
-  test('E2E-32 el texto queda centrado dentro del icono (Hoy, escala 2): márgenes opuestos dentro de 2 px lógicos', async ({ page }) => {
+  test('E2E-32 el texto queda centrado dentro del icono (Hoy, escala 2): en horizontal dentro de 2 px; en vertical centrado o hasta 1 px más abajo, nunca más arriba', async ({ page }) => {
     const today = new TodayPage(page)
     await today.goto()
+    // Regla del PRD §0, «Texto centrado en los recuadros». Se mide la tinta de las letras (`textInk`), en px CSS a la densidad de la
+    // pantalla: la medida anterior se saltaba un margen fijo que recortaba las letras y contaba la sombra, y a densidad 2 (WebKit de
+    // escritorio) daba el texto por descentrado cuando no lo estaba.
     await page.addStyleTag({ content: '.fight-bar{display:none}' })
     await today.rivalToggle.click()
     const seen = new Set<string>()
@@ -88,14 +121,18 @@ test.describe('Iconos de tipo: texto centrado', () => {
       const label = ((await chips.nth(index).textContent()) ?? '').trim()
       if (seen.has(label)) continue
       seen.add(label)
-      const margins = await inkMargins(chips.nth(index), 2)
+      const margins = await textInk(chips.nth(index))
       expect(Math.abs(margins.left - margins.right) / 2, `${label}: izquierda ${margins.left} derecha ${margins.right}`).toBeLessThanOrEqual(2)
       if (/[ÁÉÍÓÚáéíóú]/.test(label)) {
         // La tilde sube la tinta: solo se exige que no toque el borde de arriba ni de abajo.
         expect(margins.top, `${label}: arriba`).toBeGreaterThanOrEqual(0)
         expect(margins.bottom, `${label}: abajo`).toBeGreaterThanOrEqual(0)
       } else {
-        expect(Math.abs(margins.top - margins.bottom) / 2, `${label}: arriba ${margins.top} abajo ${margins.bottom}`).toBeLessThanOrEqual(1.5)
+        // Un icono en una posición con decimales se pinta redondeado al píxel físico: se admite medio píxel físico por encima (a
+        // densidad 2, 0,25 px CSS), no más. Lo que suba el texto por el CSS (−0,5 px a densidad 1, −0,75 a densidad 2) sigue fallando.
+        const lower = margins.lower
+        expect(lower, `${label}: arriba ${margins.top} abajo ${margins.bottom}, nunca más arriba`).toBeGreaterThanOrEqual(-margins.step / 2)
+        expect(lower, `${label}: arriba ${margins.top} abajo ${margins.bottom}, como mucho 1 px más abajo`).toBeLessThanOrEqual(1)
       }
     }
     expect(seen.size).toBeGreaterThan(4)
@@ -125,20 +162,28 @@ test.describe('Pantalla de datos: ningún texto desborda su caja', () => {
       for (let member = 0; member < 6; member += 1) {
         for (let pageIndex = 0; pageIndex < 3; pageIndex += 1) {
           await expect(summary).toHaveAttribute('data-page', String(pageIndex))
-          const origin = await summary.boundingBox()
-          const scale = (origin?.width ?? 256) / 256
-          const logical = async (locator: Locator) => (await rects(locator)).map((r) => ({ left: (r.x - (origin?.x ?? 0)) / scale, top: (r.y - (origin?.y ?? 0)) / scale, right: (r.right - (origin?.x ?? 0)) / scale, bottom: (r.bottom - (origin?.y ?? 0)) / scale }))
-          const text = await summary.locator('.bt-sum-label, .bt-sum-value, .bt-sum-slot-name, .bt-sum-slot-pp, .bt-sum-slot-pp-value, .bt-sum-description').all()
-          for (const element of text) {
-            const [box] = await logical(element)
-            const label = (await element.textContent())?.trim() ?? ''
+          // Todas las cajas de la página en una sola llamada al navegador (medir texto a texto tardaba más de 2 min en WebKit con la tanda).
+          const measured = await summary.evaluate((root, selectors) => {
+            const origin = root.getBoundingClientRect()
+            const scale = origin.width / 256
+            const logical = (element: Element) => {
+              const r = element.getBoundingClientRect()
+              return { left: (r.left - origin.left) / scale, top: (r.top - origin.top) / scale, right: (r.right - origin.left) / scale, bottom: (r.bottom - origin.top) / scale }
+            }
+            return {
+              text: [...root.querySelectorAll('.bt-sum-label, .bt-sum-value, .bt-sum-slot-name, .bt-sum-slot-pp, .bt-sum-slot-pp-value, .bt-sum-description')].map((element) => ({ label: element.textContent?.trim() ?? '', box: logical(element) })),
+              rules: Object.fromEntries(selectors.map((selector) => [selector, [...root.querySelectorAll(selector)].map(logical)])),
+              values: [...root.querySelectorAll('.bt-sum-value[data-max]')].map(logical),
+            }
+          }, SUMMARY_BOXES.map((rule) => rule.selector))
+          for (const { label, box } of measured.text) {
             expect(box.left, `${label} #${member} p${pageIndex} "${label}" dentro del lienzo (izq.)`).toBeGreaterThanOrEqual(-0.5)
             expect(box.right, `"${label}" dentro del lienzo (der.)`).toBeLessThanOrEqual(256.5)
             expect(box.bottom, `"${label}" dentro del lienzo (abajo)`).toBeLessThanOrEqual(384.5)
           }
           for (const rule of SUMMARY_BOXES) {
             if (rule.page !== null && rule.page !== pageIndex) continue
-            for (const box of await logical(summary.locator(rule.selector))) {
+            for (const box of measured.rules[rule.selector]) {
               expect(box.left, rule.selector).toBeGreaterThanOrEqual(rule.box[0] - 1)
               expect(box.right, `${rule.selector} (der.)`).toBeLessThanOrEqual(rule.box[2] + 1)
               expect(box.top, `${rule.selector} (arriba)`).toBeGreaterThanOrEqual(rule.box[1] - 1)
@@ -147,7 +192,7 @@ test.describe('Pantalla de datos: ningún texto desborda su caja', () => {
           }
           if (pageIndex === 0) {
             // Los valores de las filas de la izquierda terminan antes de la diagonal del fondo y del sprite (x ≈ 196 a esa altura).
-            for (const box of await logical(summary.locator('.bt-sum-value[data-max]'))) {
+            for (const box of measured.values) {
               if (box.top >= 200 && box.top <= 300) expect(box.right, `valor de la fila y=${Math.round(box.top)}`).toBeLessThanOrEqual(197)
             }
           }

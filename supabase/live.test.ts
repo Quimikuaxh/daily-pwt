@@ -28,7 +28,7 @@ async function people() {
 }
 
 const friendRow = async (caller: Caller, nickname: string) =>
-  (await t.as<{ nickname: string; playing: boolean; live: string | null }>(caller, `select * from pwt.list_friends()`)).find((row) => row.nickname === nickname)
+  (await t.as<{ nickname: string; playing: boolean; unfinished: boolean; live: string | null }>(caller, `select * from pwt.list_friends()`)).find((row) => row.nickname === nickname)
 
 describe('ver en directo (UT-148)', () => {
   it('Amigos dice quién juega; se pide, quien juega lo ve y lo acepta, y entonces se lee su combate en curso', async () => {
@@ -79,6 +79,25 @@ describe('ver en directo (UT-148)', () => {
     await t.as(fede, `select pwt.answer_live_request($1, true)`, [n('eva')])
     await t.as(fede, `select pwt.void_official($1::date, 'abandoned')`, [t.today])
     expect(await t.call(eva, `select pwt.live_battle($1)`, [n('fede')])).toEqual({ state: 'void', date: t.today })
+  })
+
+  it('UT-159: a medias y sin turnos guardados en 10 minutos ya no está «jugando»: sale `unfinished` y no se le puede pedir', async () => {
+    const { eva, fede, n } = await people()
+    expect(await friendRow(eva, n('Fede'))).toMatchObject({ playing: false, unfinished: false })
+    await t.call(fede, START, [t.today])
+    expect(await friendRow(eva, n('Fede'))).toMatchObject({ playing: true, unfinished: false })
+    const idle = (minutes: number) => t.admin(`update pwt.battle_states set updated_at = now() - make_interval(mins => $2) where user_id = $1`, [fede.id, minutes])
+    await idle(9)
+    expect(await friendRow(eva, n('Fede'))).toMatchObject({ playing: true, unfinished: false })
+    await idle(11)
+    expect(await friendRow(eva, n('Fede'))).toMatchObject({ playing: false, unfinished: true })
+    await expect(t.call(eva, `select pwt.request_live($1)`, [n('fede')])).rejects.toThrow('not_playing')
+    // Vuelve a jugar: al guardar un turno, otra vez «jugando».
+    await t.as(fede, `select pwt.save_turn($1::date, $2::jsonb, 1, 6, 6)`, [t.today, decisions(1)])
+    expect(await friendRow(eva, n('Fede'))).toMatchObject({ playing: true, unfinished: false })
+    // Terminado: ni una cosa ni otra.
+    await t.call(fede, `select pwt.finish_official($1::date, 'loss', 'forfeit', 2, 0, $2::boolean[], 0, $3::jsonb)`, [t.today, fainted(6), decisions(2)])
+    expect(await friendRow(eva, n('Fede'))).toMatchObject({ playing: false, unfinished: false })
   })
 
   it('sin amistad, sin cuenta o sin sesión no se pide ni se lee; las tablas no se leen desde la API', async () => {

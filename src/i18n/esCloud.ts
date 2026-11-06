@@ -123,6 +123,7 @@ export const esCloud = {
     failed: 'No se ha podido completar. Inténtalo de nuevo.',
     // Directo (RF-111c).
     playing: 'Jugando ahora',
+    unfinished: 'Combate a medias',
     requestLive: 'Pedir verlo en directo',
     liveRequestAria: (nickname: string) => `Pedir a ${nickname} ver su combate en directo`,
     livePending: 'Esperando a que acepte…',

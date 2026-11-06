@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { PartyScreen } from './PartyScreen'
 import { partyMembers } from './partyModel'
@@ -79,6 +79,25 @@ describe('pantalla de equipo', () => {
     await user.click(panel(new RegExp(secondName)))
     expect(within(options()).queryByRole('button', { name: 'Cancelar' })).toBeNull()
     expect(within(options()).getByRole('button', { name: 'Datos' })).toBeEnabled()
+  })
+
+  // UT-160 · E2E-10 en WebKit (06/11/2026): el foco se quedaba en la zona que pasa a `inert` y Tab no avanzaba.
+  it('al mostrarse (cargadas sus imágenes), el foco entra en la primera placa que se puede elegir (ni la activa ni una debilitada)', async () => {
+    mount({ forced: true, members: members({ 1: { condition: '0 fnt' } }) })
+    // En jsdom las imágenes no cargan: la pantalla se da por cargada a los 1,5 s (`useImagesLoadedIn`).
+    await waitFor(() => expect(document.activeElement).toBe(panel(new RegExp(realData.names.species[realTeam[2].species]))), { timeout: 3000 })
+  })
+
+  it('si el foco ya está dentro de la pantalla, no se lo quita', async () => {
+    const { user } = mount({ forced: false })
+    await user.click(panel(new RegExp(secondName)))
+    expect(document.activeElement).toBe(within(options()).getByRole('button', { name: 'Cambiar' }))
+  })
+
+  it('con los controles desactivados no mueve el foco', async () => {
+    mount({ forced: true, enabled: false })
+    await new Promise((resolve) => setTimeout(resolve, 1700))
+    expect(document.activeElement).toBe(document.body)
   })
 
   // UT-86 · RIVAL en el cambio forzado (27/10/2026, Jose).

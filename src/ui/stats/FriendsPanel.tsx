@@ -113,12 +113,12 @@ export function FriendsPanel({ api, onChange, onOpen, onWatchLive }: { api: Clou
             {/* Al pulsarlo, sus estadísticas e historial (decisión de Jose, 29/10/2026). */}
             {onOpen ? (
               <button type="button" className="friend-open" aria-label={text.open(row.nickname)} onClick={() => onOpen(row.nickname)}>
-                {row.playing && onWatchLive && <PlayingDot />}
+                {onWatchLive && <FriendStateDot row={row} />}
                 {row.nickname}
               </button>
             ) : (
               <span>
-                {row.playing && onWatchLive && <PlayingDot />}
+                {onWatchLive && <FriendStateDot row={row} />}
                 {row.nickname}
               </span>
             )}
@@ -140,11 +140,16 @@ function FriendSection({ title, children }: { title: string; children: React.Rea
   )
 }
 
-/** «Jugando ahora» (RF-111c): un punto rojo delante del nombre (Jose, 04/11/2026); el texto, para lectores de pantalla. */
-function PlayingDot() {
+/**
+ * «Jugando ahora» (RF-111c): un punto rojo delante del nombre (Jose, 04/11/2026); el texto, para lectores de pantalla. «Combate a
+ * medias» (DEC-82, Jose 06/11/2026): gris, el oficial empezado sin un turno guardado hace rato; no lleva directo.
+ */
+function FriendStateDot({ row }: { row: PlayerRow }) {
+  const label = row.playing ? text.playing : row.unfinished ? text.unfinished : null
+  if (!label) return null
   return (
-    <span className="friend-playing" title={text.playing}>
-      <span className="sr-only">{text.playing}</span>
+    <span className={row.playing ? 'friend-playing' : 'friend-playing friend-unfinished'} title={label}>
+      <span className="sr-only">{label}</span>
     </span>
   )
 }

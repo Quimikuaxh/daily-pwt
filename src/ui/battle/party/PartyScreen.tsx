@@ -110,6 +110,20 @@ export function PartyScreen({ members, data, forced, enabled, onChoose, onClose,
     if (selected) (switchRef.current ?? summaryRef.current)?.focus()
   }, [selected])
 
+  // Al abrirse (o al activarse los controles), el foco entra en la primera placa que se puede elegir si no estaba ya dentro: el botón que
+  // la abrió queda debajo, en una zona `inert`, y en WebKit Tab no sale de ahí (E2E-10). La activa y las debilitadas no se eligen. Espera a
+  // las imágenes: hasta entonces la pantalla está oculta y no se le puede dar el foco.
+  useEffect(() => {
+    if (!enabled || !imagesLoaded) return
+    const root = rootRef.current
+    const active = document.activeElement
+    if (!root || (active && active !== document.body && root.contains(active) && !active.closest('[inert]'))) return
+    const target = members.find((member) => !member.fainted && !member.active) ?? members[0]
+    if (target) panelRefs.current.get(target.slot)?.focus()
+    // Solo al mostrarse y al activarse los controles, no en cada cambio de PS.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabled, imagesLoaded])
+
   useEffect(() => {
     if (selected || summarySlot !== null) return
     const returned = summaryReturnSlot.current

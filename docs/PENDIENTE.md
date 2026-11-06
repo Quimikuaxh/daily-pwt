@@ -23,6 +23,15 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 - **Hecho:** paneles laterales del combate con ficha de movimientos, objetos y habilidades, subidas y bajadas con «^» y «v», la barra de botones encima de la consola con estilo nuevo (también en móvil) y la solicitud de directo rediseñada (RF-44c, DEC-81, UT-152, UT-153, E2E-77; maquetas aprobadas por Jose el 05/11/2026). Descripciones de objetos de PokeAPI (de Sol / Luna; las de X/Y están desplazadas). La franja de eficacia está hecha pero desactivada (`SHOW_EFFECTIVENESS`). Solo web, sin migración.
 - **Fusionada en `main` el 05/11/2026** (Jose).
 
+## «Jugando ahora» con actividad reciente (06/11/2026, directo a `main`)
+- **Hecho:** RF-111c (cambio), DEC-82, UT-159. Migración `20261106000000_pwt_jugando_reciente.sql`, aplicada en producción el 06/11/2026 antes de publicar la web.
+- **Arreglados también (06/11/2026)** tres E2E que fallaban en WebKit en `main` (`1fa1d73`):
+  - E2E-32: medía mal a densidad 2 (WebKit de escritorio): se saltaba un margen fijo que recortaba las letras y contaba la sombra del texto. El texto cumple la regla del PRD §0 (medido con armonia-visual: +0,25 a +0,5 px más abajo); el test mide ahora la tinta real en px CSS y comprueba la regla, «nunca más arriba» incluido. El CSS no cambia.
+  - E2E-10: al abrirse la pantalla de equipo, el foco se quedaba en el botón de debajo, ya `inert`, y en WebKit Tab no salía de ahí. Ahora el foco entra en la primera placa elegible al mostrarse la pantalla (UT-160).
+  - E2E-33: medía cada texto con una llamada al navegador y con la tanda completa pasaba de los 120 s en WebKit; mide cada página en una sola llamada, con las mismas comprobaciones.
+  - E2E-46 (WebKit, con la tanda): miraba si la animación de la Poké Ball seguía en marcha en un instante; con carga ya había terminado. Ahora registra que empieza (`animationstart`).
+  - E2E-20 (WebKit): juega un combate entero y tarda ~90 s solo (igual en `main`), con 120 s de límite; con la tanda se pasaba. `test.slow()` en WebKit.
+
 ## Rama `feature/amigos-en-directo` (04/11/2026, fusionada)
 - **Hecho:** estadísticas de un amigo al día (RF-111b, cambio; UT-147) y ver en directo su oficial (RF-111c, DEC-80, UT-148 a UT-150).
 - **Hecho también:** la repetición de hoy de un amigo, para quien ya terminó su oficial de hoy (UT-151, migración `20261104020000_pwt_repeticion_hoy.sql`). Arreglos de la prueba de Jose: «Ver en directo» no salía solo (el temporizador de la lista se reiniciaba cada segundo) y a 360 px el nombre se partía letra a letra. Después (Jose, 04/11/2026), «Jugando ahora» pasa a un punto rojo delante del nombre y el botón a uno cuadrado con «▶».

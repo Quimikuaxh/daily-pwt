@@ -92,6 +92,15 @@ describe('la fila del amigo que juega (UT-150)', () => {
     await user.click(await screen.findByRole('button', { name: 'Ver en directo el combate de Eva' }))
     expect(onWatchLive).toHaveBeenCalledWith('Eva')
   })
+
+  it('UT-159: con el oficial a medias y sin jugar hace rato, «Combate a medias», sin «Jugando ahora» ni botón del directo', async () => {
+    vi.useRealTimers()
+    const api = fakeApi({ listFriends: async () => [{ nickname: 'Eva', relation: 'friend', playing: false, live: null, unfinished: true }] })
+    render(<FriendsPanel api={api} onWatchLive={vi.fn()} />)
+    expect(await screen.findByText('Combate a medias')).toBeInTheDocument()
+    expect(screen.queryByText('Jugando ahora')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /en directo/ })).not.toBeInTheDocument()
+  })
 })
 
 describe('la lista se vuelve a pedir mientras un amigo juega (UT-150)', () => {

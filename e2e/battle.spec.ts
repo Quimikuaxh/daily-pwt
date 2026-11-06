@@ -219,7 +219,10 @@ test.describe('Combate', () => {
     expect(visibleAboveBox, 'al menos el 60 % del sprite sobre la caja').toBeGreaterThan(0.6)
   })
 
-  test('E2E-20 resultado mínimo: el combate jugado pinta su Resultado y la rendición da Derrota', async ({ page }) => {
+  test('E2E-20 resultado mínimo: el combate jugado pinta su Resultado y la rendición da Derrota', async ({ page, browserName }) => {
+    // Juega un combate entero: en WebKit tarda ~90 s solo (medido el 06/11/2026), cerca de los 120 s del límite, y con la tanda en
+    // paralelo se pasaba. No hay espera que falle, solo duración: se triplica el límite en WebKit.
+    test.slow(browserName === 'webkit', 'combate entero en WebKit (~90 s)')
     // Con el primer movimiento siempre el desenlace depende del equipo del jugador, que sale del pool (cambia con el pool y con la fecha
     // literal del escenario): se acepta victoria o derrota y se comprueba que cada una pinta su Resultado. La derrota se fuerza rindiéndose.
     const { battle } = await startBattle(page, { scenario: MISTY, seed: 'a' })
@@ -256,12 +259,20 @@ test.describe('Animaciones de entrada', () => {
       await battle.chooseFirstMove()
       await page.waitForTimeout(50)
     }
+    // Se apunta si la animación de la Poké Ball del jugador llega a empezar (`animationstart`), en vez de mirar si sigue en marcha en un
+    // instante dado: con la máquina cargada (tanda completa en WebKit) a veces ya había terminado al mirarla.
+    await page.evaluate(() => {
+      const flags = window as unknown as { __ballThrown?: boolean }
+      flags.__ballThrown = false
+      document.addEventListener('animationstart', (event) => {
+        if ((event.target as Element | null)?.classList?.contains('bt-ball-player')) flags.__ballThrown = true
+      }, true)
+    })
     await battle.chooseSubstitute()
     const field = page.getByTestId('field')
     await expect(field).toHaveAttribute('data-switch', 'player-send')
     await expect(page.locator('.bt-party'), 'la pantalla de equipo no tapa la animación').toHaveCount(0)
-    const animatedBall = await page.evaluate(() => document.getAnimations().some((animation) => (animation.effect as KeyframeEffect | null)?.target?.classList.contains('bt-ball-player') && animation.playState === 'running'))
-    expect(animatedBall, 'la Poké Ball del jugador se lanza').toBe(true)
+    await expect.poll(() => page.evaluate(() => (window as unknown as { __ballThrown?: boolean }).__ballThrown), { message: 'la Poké Ball del jugador se lanza' }).toBe(true)
     await expect(field).not.toHaveAttribute('data-switch', /./)
     expect(await battle.waitForActionOrResult()).toBe('moves')
   })

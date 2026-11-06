@@ -355,6 +355,11 @@
   box-shadow: 0 0 4px rgb(224 32 32 / 0.8);
 }
 
+.friend-unfinished {
+  background: #8a8a8a;
+  box-shadow: none;
+}
+
 .btn.friend-live {
   display: inline-flex;
   align-items: center;

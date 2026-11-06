@@ -50,8 +50,11 @@ export type FriendProfile = { nickname: string; days: CloudDay[]; points: DayPoi
 
 /** Relación con otro jugador: amigo, solicitud recibida, solicitud enviada o ninguna. */
 export type Relation = 'friend' | 'incoming' | 'outgoing' | 'none'
-/** `playing` y `live` solo en los amigos (RF-111c): si juega ahora su oficial y cómo va la solicitud de verlo en directo de hoy. */
-export type PlayerRow = { nickname: string; relation: Relation; playing?: boolean; live?: LiveStatus | null }
+/**
+ * `playing`, `live` y `unfinished` solo en los amigos (RF-111c): si juega ahora su oficial (ha guardado un turno hace poco), cómo va la
+ * solicitud de verlo en directo de hoy y si lo tiene a medias sin tocarlo hace rato (DEC-82).
+ */
+export type PlayerRow = { nickname: string; relation: Relation; playing?: boolean; live?: LiveStatus | null; unfinished?: boolean }
 
 export type LiveStatus = 'pending' | 'accepted' | 'rejected'
 
