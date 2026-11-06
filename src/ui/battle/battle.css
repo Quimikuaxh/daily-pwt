@@ -670,7 +670,9 @@
   z-index: 30;
   /* Texto centrado en su recuadro (Jose, 06/11/2026: centrado o, si no se puede, 1 px más abajo; medido sobre las mayúsculas): la fuente lo
      deja bajo, así que hay más hueco abajo que arriba. */
-  padding: 0 4px 2px;
+  /* A la derecha 2 px menos: el espaciado entre letras se añade también detrás de la última y la fuente deja 1 px tras cada letra (Jose,
+     06/11/2026; medido: OFICIAL, EN DIRECTO y REPETICIÓN quedan centrados, PRÁCTICA 1 px más a la izquierda por su «A»). */
+  padding: 0 2px 2px 4px;
   font-size: 10px;
   line-height: 12px;
   letter-spacing: 1px;
