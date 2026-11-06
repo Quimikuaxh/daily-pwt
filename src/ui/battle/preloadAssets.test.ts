@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { BATTLE_DATABOX_IMAGES, BATTLE_UI_IMAGES, PARTY_SCREEN_IMAGES, SUMMARY_SCREEN_IMAGES, challengeSpriteUrls, imagesReady, preloadBattleImages } from './preloadAssets'
+import { BATTLE_DATABOX_IMAGES, BATTLE_UI_IMAGES, PARTY_SCREEN_IMAGES, SUMMARY_SCREEN_IMAGES, challengeItemIconUrls, challengeSpriteUrls, imagesReady, preloadBattleImages, preloadChallengeSprites } from './preloadAssets'
 import { challengeFor } from '../../core/challenge'
 import { loadGameData } from '../../data/gameData'
 import { existsSync } from 'node:fs'
@@ -31,6 +31,22 @@ describe('precarga de la interfaz y de los sprites del reto', () => {
       expect([...species].some((id) => url.endsWith(`/${data.dex.species[id].spriteId}.gif`)), url).toBe(true)
     }
     expect(urls.some((url) => url.includes(`trainers/${challenge.trainer.sprite}.gif`))).toBe(true)
+  })
+
+  // UT-158 (Jose, 06/11/2026): los iconos de los objetos del reto también se precargan (ficha del objeto), y existen en public/.
+  it('los iconos de objeto precargados son los de los 12 Pokémon del reto, sin repetir, y existen', async () => {
+    const items = new Set([...challenge.rivalTeam, ...challenge.playerTeam].map((set) => set.item))
+    const urls = challengeItemIconUrls(challenge)
+    expect(urls).toHaveLength(items.size)
+    for (const url of urls) {
+      expect([...items].some((item) => url.endsWith(`sprites/items/${item}.png`)), url).toBe(true)
+      expect(existsSync(resolve('public', url.replace(/^\.?\/?/, ''))), url).toBe(true)
+    }
+    const requested: string[] = []
+    preloadChallengeSprites(challenge, data, () => ({ set src(url: string) { requested.push(url) } }) as { src: string })
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(requested).toEqual(expect.arrayContaining(urls))
   })
 
   it('la lista de interfaz cubre las pantallas de equipo y de datos y no incluye fondos de combate sin usar', () => {

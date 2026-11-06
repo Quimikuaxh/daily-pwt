@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useState, type RefObject } from 'react'
 import type { Challenge, GameData } from '../../core/types'
 import battleUiImages from '../../generated/battle-ui-images.json'
-import { speciesSprite, trainerSprite } from '../common/spriteUrls'
+import { itemIconUrl, speciesSprite, trainerSprite } from '../common/spriteUrls'
 import { uiAsset } from '../common/uiAssets'
 
 const DIGITS = Array.from({ length: 10 }, (_, digit) => digit)
@@ -62,8 +62,25 @@ export function challengeSpriteUrls(challenge: Challenge, data: GameData): strin
   return [...urls.filter((url): url is string => url !== null), trainerSprite(challenge.trainer.sprite)]
 }
 
+/**
+ * Iconos de los objetos de los 12 Pokémon del reto (ficha del objeto de los paneles laterales): sin precarga tardaban un momento en salir
+ * al abrirla (Jose, 06/11/2026). Pesan unos 4 KB cada uno.
+ */
+export function challengeItemIconUrls(challenge: Challenge): string[] {
+  const items = [...challenge.rivalTeam, ...challenge.playerTeam].map((set) => set.item).filter((item): item is string => Boolean(item))
+  return [...new Set(items)].map(itemIconUrl)
+}
+
+/** Precarga los iconos de los objetos de un combate en reposo (también para repeticiones y directos, que no pasan por Hoy). */
+export function preloadItemIcons(challenge: Challenge, createImage: ImageFactory = () => new Image()): void {
+  const urls = challengeItemIconUrls(challenge)
+  runWhenIdle(() => {
+    for (const url of urls) void requestImage(url, createImage)
+  })
+}
+
 export function preloadChallengeSprites(challenge: Challenge, data: GameData, createImage: ImageFactory = () => new Image()): void {
-  const urls = challengeSpriteUrls(challenge, data)
+  const urls = [...challengeSpriteUrls(challenge, data), ...challengeItemIconUrls(challenge)]
   runWhenIdle(() => {
     for (const url of urls) void requestImage(url, createImage)
   })

@@ -18,7 +18,7 @@ import { RemainingIndicator } from './RemainingIndicator'
 import { ChromeIcon } from './ChromeIcon'
 import { TopScreen } from './TopScreen'
 import { PartyScreen } from './party/PartyScreen'
-import { PARTY_SCREEN_IMAGES, useImagesReady } from './preloadAssets'
+import { PARTY_SCREEN_IMAGES, preloadItemIcons, useImagesReady } from './preloadAssets'
 import { partyMembers, requestFromView, rivalMembers } from './party/partyModel'
 import { TouchBackground, TouchScreen, type TouchMode } from './TouchScreen'
 import { FieldPanel, FieldPill } from './FieldStatus'
@@ -153,6 +153,8 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   // Gritos (Jose, 31/10/2026): solo los de los Pokémon de este combate, como la música.
   const cries = useMemo(() => [...playerTeam, ...rivalTeam].map((set) => cryIdOf(set.species)), [playerTeam, rivalTeam, cryIdOf])
   useEffect(() => getAudio().preload([rivalMusic, LAST_POKEMON_MUSIC, CRITICAL_HEALTH_MUSIC], SFX_IDS, cries), [rivalMusic, cries])
+  // Iconos de la ficha del objeto (paneles laterales): ya pedidos desde Hoy para el reto del día; aquí, para repeticiones y directos.
+  useEffect(() => preloadItemIcons(challenge), [challenge])
   // `musicMuted`: la música silenciada en el visor de repeticiones (Jose, 03/11/2026); los efectos y los gritos siguen.
   const musicOn = !musicMuted && battle.introPhase !== 'loading' && (mode === 'replay' || !ended)
   // Parar va aparte de cambiar de tema: al pasar al del último Pokémon no se para la música (ni se pierde la de vida baja).
