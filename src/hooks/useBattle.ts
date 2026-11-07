@@ -4,7 +4,7 @@ import type { BattleRequest, BattleView, Choice, EngineBattleView, EngineEnd, En
 import type { Checkpoint, Decision } from '../storage/gameStore'
 import { introLines, translateLine, type TranslateContext } from '../battle/translate'
 import { deferFaintUntilFaintLine } from '../battle/faintOrder'
-import { deferHitMessages } from '../battle/messageOrder'
+import { orderBattleMessages } from '../battle/messageOrder'
 import { SPEEDS, type BattleSpeed } from '../storage/settings'
 import { viewReducer } from '../battle/viewReducer'
 import { conditionFx, createMultiHitTracker, usedMove, type FxCue } from './moveFxCues'
@@ -136,7 +136,7 @@ function introSteps(params: BattleParams): Step[] {
 function stepsFor(update: Update, isFirstUpdate: boolean, params: BattleParams): Step[] {
   // Las tres frases de apertura (RF-53) sustituyen a los `|switch|` del primer update, que repetirían lo mismo.
   const introPlan: Step[] = isFirstUpdate ? introSteps(params) : []
-  const lines = deferHitMessages(isFirstUpdate ? update.lines.filter((line) => !line.startsWith('|switch|')) : update.lines)
+  const lines = orderBattleMessages(isFirstUpdate ? update.lines.filter((line) => !line.startsWith('|switch|')) : update.lines)
   return [...introPlan, ...lines.map((line) => ({ line, text: translateLine(line, params.translateContext) }))]
 }
 

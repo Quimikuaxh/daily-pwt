@@ -50,3 +50,48 @@ export function deferHitMessages(lines: readonly string[]): string[] {
   flush()
   return out
 }
+
+/**
+ * El simulador decide la Garra Rápida al ordenar el turno y escribe su `-activate` antes de los cambios; en N2/B2 el mensaje
+ * sale justo antes de que actúe quien la lleva. Se retrasa hasta el `move` o `cant` de esa posición; si se debilita antes de
+ * actuar, no sale (no ha llegado a moverse antes); si no actúa por otra causa, sale antes del final del turno.
+ */
+const QUICK_CLAW_FLUSH = new Set(['upkeep', 'turn', 'win', 'tie'])
+
+function position(ident: string): string {
+  return ident.split(':')[0].trim()
+}
+
+export function deferQuickClaw(lines: readonly string[]): string[] {
+  const out: string[] = []
+  const pending = new Map<string, string>()
+  for (const line of lines) {
+    const [, type = '', ident = '', effect = ''] = line.split('|')
+    if (type === '-activate' && effect.startsWith('item:') && toId(effect.slice(5)) === 'quickclaw') {
+      pending.set(position(ident), line)
+      continue
+    }
+    if (pending.size > 0) {
+      if (type === 'move' || type === 'cant') {
+        const held = pending.get(position(ident))
+        if (held !== undefined) {
+          out.push(held)
+          pending.delete(position(ident))
+        }
+      } else if (type === 'faint') {
+        pending.delete(position(ident))
+      } else if (QUICK_CLAW_FLUSH.has(type)) {
+        out.push(...pending.values())
+        pending.clear()
+      }
+    }
+    out.push(line)
+  }
+  out.push(...pending.values())
+  return out
+}
+
+/** Orden de presentación de los mensajes de un update: Garra Rápida (DEC-83) y textos del golpe (DEC-44). */
+export function orderBattleMessages(lines: readonly string[]): string[] {
+  return deferHitMessages(deferQuickClaw(lines))
+}
