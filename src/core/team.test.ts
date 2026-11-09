@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { BST_ABOVE_RIVAL, BST_BELOW_RIVAL, buildPlayerTeam, TEAM_RULES_1 } from './team'
+import { buildPlayerTeam, TEAM_RULES_1 } from './team'
 import { challengeFor, getDailyChallenge } from './challenge'
 import { DataError } from './errors'
 import { Prng, deriveSeed } from './prng'
@@ -367,18 +367,22 @@ describe('getDailyChallenge con los datos reales: RF-13b/RF-13d y RF-13c en 365 
 })
 
 // UT-103 · RF-13d (Jose, 28/10/2026): suma del jugador entre la del rival − 180 y la del rival + 240; si no sale, la más cercana.
+// Desde 2026-11-10 (Jose, 09/11/2026), la ventana va de rival − 90 a rival + 270.
 describe('buildPlayerTeam: suma de estadísticas base relativa al rival (RF-13d)', () => {
   const real = loadGameData()
   const bstOf = (team: ResolvedSet[]) => baseStatTotal(real.dex, team)
 
-  it('con cada rival real, el equipo cae en su ventana sin relajarla', () => {
+  it.each([
+    ['2026-11-09', 180, 240],
+    ['2026-11-10', 90, 270],
+  ])('con cada rival real (%s), el equipo cae en su ventana sin relajarla', (date, below, above) => {
     const bad: string[] = []
     for (const trainer of real.trainers) {
       for (const variant of trainer.variants) {
-        const challenge = challengeFor({ date: '2026-11-01', trainerId: trainer.id, variantId: variant.id }, real)
+        const challenge = challengeFor({ date, trainerId: trainer.id, variantId: variant.id }, real)
         const rivalTotal = bstOf(challenge.rivalTeam)
         const total = bstOf(challenge.playerTeam)
-        if (total < rivalTotal - BST_BELOW_RIVAL || total > rivalTotal + BST_ABOVE_RIVAL || challenge.meta.relaxedRules.includes('RF-13d')) bad.push(`${variant.id}: rival ${rivalTotal}, jugador ${total}`)
+        if (total < rivalTotal - below || total > rivalTotal + above || challenge.meta.relaxedRules.includes('RF-13d')) bad.push(`${variant.id}: rival ${rivalTotal}, jugador ${total}`)
       }
     }
     expect(bad).toEqual([])

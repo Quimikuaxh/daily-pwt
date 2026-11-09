@@ -7,11 +7,15 @@ import type { DexData, PokemonSet, ResolvedSet, StatsTable } from './types'
 
 export const MAX_TEAM_ATTEMPTS = 1000
 const MIN_DISTINCT_TYPES = 4
+const TEAM_REPAIR_ATTEMPT = 100
 /** RF-13b: suma de estadísticas base de los 6 Pokémon (reglas anteriores a `TEAM_RULES_2_FROM`). */
 export const MIN_BASE_STAT_TOTAL = 3060
-/** RF-13d: la suma del jugador va de la del rival − 180 a la del rival + 240 (desde `TEAM_RULES_2_FROM`). */
-export const BST_BELOW_RIVAL = 180
-export const BST_ABOVE_RIVAL = 240
+/** RF-13d: la suma del jugador va de la del rival − `below` a la del rival + `above`. */
+export type BstWindow = { below: number; above: number }
+/** RF-13d desde `TEAM_RULES_2_FROM` hasta `BST_WINDOW_2_FROM`: rival − 180 a rival + 240. */
+export const BST_WINDOW_1: BstWindow = { below: 180, above: 240 }
+/** RF-13d desde `BST_WINDOW_2_FROM` (Jose, 09/11/2026). */
+export const BST_WINDOW_2: BstWindow = { below: 90, above: 270 }
 /** RF-13c: cada tipo de un Pokémon de doble tipo cuenta. */
 export const MAX_POKEMON_PER_TYPE = 2
 
@@ -90,24 +94,48 @@ function resolvePlayerSet(set: PokemonSet, dex: DexData, rng: Prng, ivs: StatsTa
 export type PlayerTeamResult = { team: ResolvedSet[]; attempts: number; relaxed: string[] }
 
 /**
- * Reglas del equipo según la fecha (`TEAM_RULES_2_FROM`): `distinctBaseSpecies`, RF-12b (antes, solo id distinto), y `bstRelativeToRival`,
- * RF-13d (antes, RF-13b: ≥ 3060).
+ * Reglas del equipo según la fecha (`TEAM_RULES_2_FROM`, `BST_WINDOW_2_FROM`): `distinctBaseSpecies`, RF-12b (antes, solo id distinto), y
+ * `bstWindow`, la ventana de RF-13d (`null`: RF-13b, ≥ 3060).
  */
-export type PlayerTeamOptions = { distinctBaseSpecies: boolean; bstRelativeToRival: boolean }
-export const TEAM_RULES_1: PlayerTeamOptions = { distinctBaseSpecies: false, bstRelativeToRival: false }
-export const TEAM_RULES_2: PlayerTeamOptions = { distinctBaseSpecies: true, bstRelativeToRival: true }
+export type PlayerTeamOptions = { distinctBaseSpecies: boolean; bstWindow: BstWindow | null; repairOutOfRange?: boolean }
+export const TEAM_RULES_1: PlayerTeamOptions = { distinctBaseSpecies: false, bstWindow: null }
+export const TEAM_RULES_2: PlayerTeamOptions = { distinctBaseSpecies: true, bstWindow: BST_WINDOW_1 }
+export const TEAM_RULES_3: PlayerTeamOptions = { distinctBaseSpecies: true, bstWindow: BST_WINDOW_2, repairOutOfRange: true }
 
 /** Rango de suma de estadísticas base aceptado y la regla que lo fija. */
 type BstRange = { min: number; max: number; rule: 'RF-13b' | 'RF-13d' }
 
-function bstRange(rivalTeam: readonly ResolvedSet[], dex: DexData, relative: boolean): BstRange {
-  if (!relative) return { min: MIN_BASE_STAT_TOTAL, max: Infinity, rule: 'RF-13b' }
+function bstRange(rivalTeam: readonly ResolvedSet[], dex: DexData, window: BstWindow | null): BstRange {
+  if (!window) return { min: MIN_BASE_STAT_TOTAL, max: Infinity, rule: 'RF-13b' }
   const rival = rivalTeam.reduce((total, set) => total + Object.values(dex.species[set.species]?.baseStats ?? {}).reduce((sum, stat) => sum + stat, 0), 0)
-  return { min: rival - BST_BELOW_RIVAL, max: rival + BST_ABOVE_RIVAL, rule: 'RF-13d' }
+  return { min: rival - window.below, max: rival + window.above, rule: 'RF-13d' }
 }
 
 /** Distancia de una suma al rango (0 si está dentro). */
 const distanceToRange = (total: number, range: BstRange) => Math.max(range.min - total, total - range.max, 0)
+
+/** Busca un equipo dentro del rango cambiando un solo set del mejor sorteo. */
+function repairBst(
+  team: readonly PokemonSet[],
+  candidates: readonly PokemonSet[],
+  range: BstRange,
+  speciesKey: SpeciesKey,
+  dex: DexData,
+): PokemonSet[] | undefined {
+  for (let index = 0; index < team.length; index++) {
+    const rest = team.filter((_, position) => position !== index)
+    const subtotal = baseStatTotalOf(rest, dex)
+    const species = new Set(rest.map((set) => speciesKey(set.species)))
+    const items = new Set(rest.map((set) => set.item))
+    for (const candidate of candidates) {
+      if (species.has(speciesKey(candidate.species)) || items.has(candidate.item)) continue
+      if (distanceToRange(subtotal + baseStatTotalOf([candidate], dex), range) !== 0) continue
+      const repaired = [...team]
+      repaired[index] = candidate
+      if (distinctTypeCount(repaired, dex) >= MIN_DISTINCT_TYPES && maxPokemonSharingAType(repaired, dex) <= MAX_POKEMON_PER_TYPE) return repaired
+    }
+  }
+}
 
 /**
  * Elige 6 sets del pool con el PRNG dado (RF-10..16). Cada intento baraja de nuevo el pool con el mismo flujo.
@@ -122,7 +150,7 @@ export function buildPlayerTeam(
   rivalTeam: readonly ResolvedSet[],
   rng: Prng,
   dex: DexData,
-  options: PlayerTeamOptions = TEAM_RULES_2,
+  options: PlayerTeamOptions = TEAM_RULES_3,
 ): PlayerTeamResult {
   const speciesKey: SpeciesKey = options.distinctBaseSpecies ? (speciesId) => dex.species[speciesId]?.baseSpecies ?? speciesId : (speciesId) => speciesId
   const candidates = pool.filter((set) => {
@@ -141,13 +169,21 @@ export function buildPlayerTeam(
   const playerIvs = rivalTeam[0]?.ivs
   if (!playerIvs) throw new DataError('El rival no tiene equipo: no se pueden fijar los IV del jugador.')
 
-  const range = bstRange(rivalTeam, dex, options.bstRelativeToRival)
+  const range = bstRange(rivalTeam, dex, options.bstWindow)
   // Primer equipo que cumple todo salvo RF-14, y el que cumple solo las reglas no relajables con la suma fuera del rango: el primero con
   // RF-13b (como siempre: los retos publicados no cambian) o el de suma más cercana al rango con RF-13d.
   let withoutRf14: PokemonSet[] | undefined
   let outsideRange: { team: PokemonSet[]; distance: number } | undefined
   for (let attempt = 1; attempt <= MAX_TEAM_ATTEMPTS; attempt++) {
-    const team = pickDistinctSets(rng.shuffle(candidates), speciesKey)
+    const shuffled = rng.shuffle(candidates)
+    const team = pickDistinctSets(shuffled, speciesKey)
+    if (options.repairOutOfRange && attempt === TEAM_REPAIR_ATTEMPT && outsideRange && !withoutRf14) {
+      const repaired = repairBst(outsideRange.team, shuffled, range, speciesKey, dex)
+      if (repaired && hasSuperEffectiveMove(repaired, rivalTeam, dex)) {
+        return { team: repaired.map((set) => resolvePlayerSet(set, dex, rng, playerIvs)), attempts: attempt, relaxed: [] }
+      }
+      withoutRf14 = repaired
+    }
     if (team.length < TEAM_SIZE || distinctTypeCount(team, dex) < MIN_DISTINCT_TYPES) continue
     if (maxPokemonSharingAType(team, dex) > MAX_POKEMON_PER_TYPE) continue
     const distance = distanceToRange(baseStatTotalOf(team, dex), range)

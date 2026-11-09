@@ -1,10 +1,10 @@
 import { NEUTRAL_NATURE } from './constants'
-import { GENDERS_FROM, LAUNCH_DATE, LAUNCH_OPENING, NO_SYNERGY_TAG, POOL_RULES_FROM, TEAM_RULES_2_FROM } from './launch'
+import { BST_WINDOW_2_FROM, GENDERS_FROM, LAUNCH_DATE, LAUNCH_OPENING, NO_SYNERGY_TAG, POOL_RULES_FROM, TEAM_RULES_2_FROM } from './launch'
 import { rivalForDay, type TrainerTraits } from './bag'
 import { challengeNumber, dayIndex } from './date'
 import { DataError } from './errors'
 import { Prng, deriveSeed } from './prng'
-import { buildPlayerTeam, poolWithoutRival, TEAM_RULES_1, TEAM_RULES_2, withGenders } from './team'
+import { buildPlayerTeam, poolWithoutRival, TEAM_RULES_1, TEAM_RULES_2, TEAM_RULES_3, withGenders } from './team'
 import type { Challenge, GameData, PokemonSet, ResolvedSet, TeamVariant, Trainer } from './types'
 
 const SEED_PREFIX = 'daily-pwt:v1:'
@@ -99,7 +99,7 @@ export function challengeFor({ date, trainerId, variantId }: ChallengeSelection,
   // Desde `POOL_RULES_FROM`, sin los sets del PWT sin sinergia (Jose, 04/11/2026).
   const fullPool = poolWithoutRival(data.playerSets, trainer.id)
   const pool = date >= POOL_RULES_FROM ? fullPool.filter((set) => !set.tags?.includes(NO_SYNERGY_TAG)) : fullPool
-  const player = buildPlayerTeam(pool, rivalTeam, new Prng(deriveSeed(daySeed, 'player')), data.dex, date >= TEAM_RULES_2_FROM ? TEAM_RULES_2 : TEAM_RULES_1)
+  const player = buildPlayerTeam(pool, rivalTeam, new Prng(deriveSeed(daySeed, 'player')), data.dex, teamRulesFor(date))
   const namedPlayerTeam = player.team.map((member) => ({ ...member, nameEs: spanishName(data, member.species) }))
   // Géneros (Jose, 03/11/2026): con su propio flujo del PRNG, para no mover nada más del reto; desde `GENDERS_FROM`.
   const genderRng = date >= GENDERS_FROM ? new Prng(deriveSeed(daySeed, 'gender')) : null
@@ -126,4 +126,10 @@ export function challengeFor({ date, trainerId, variantId }: ChallengeSelection,
     playerTeam,
     meta: { teamAttempts: player.attempts, relaxedRules: player.relaxed },
   }
+}
+
+/** Reglas del equipo del jugador de cada fecha (`launch.ts`): los retos ya publicados conservan las suyas. */
+function teamRulesFor(date: string) {
+  if (date >= BST_WINDOW_2_FROM) return TEAM_RULES_3
+  return date >= TEAM_RULES_2_FROM ? TEAM_RULES_2 : TEAM_RULES_1
 }

@@ -4,6 +4,9 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 **Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). El sonido va en `feature/f3-sonido` (desde `main`): los audios ya están descargados y versionados (se descargaron en local, desde la nube las fuentes están bloqueadas); falta implementarlo según «Sonido: plan de implementación».
 
+## Antes de desplegar el ajuste de estadísticas base (RF-13d)
+- Fija `BST_WINDOW_2_FROM` al día siguiente del despliegue para conservar los retos publicados. Si cambia respecto al 10/11/2026, ajusta las fechas de los tests en `src/core/team.test.ts` y `src/test-utils/rules.ts`, y comprueba UT-17 y UT-103.
+
 ## Precarga de los iconos de objeto (06/11/2026)
 - **Hecho:** los iconos de los objetos del reto se precargan desde Hoy y al abrir un combate (UT-158).
 
