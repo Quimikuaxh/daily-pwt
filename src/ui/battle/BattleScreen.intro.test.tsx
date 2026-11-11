@@ -39,7 +39,7 @@ describe('intro del combate (PRD §10.2.1)', () => {
     expect(screen.queryByRole('button', { name: /luchar|cambiar|rendirse|mochila/i })).toBeNull()
   })
 
-  it('recorre las fases en orden: iris, entrada, desafío, lanzamiento rival, lanzamiento propio y fin', async () => {
+  it('recorre las fases en orden: pancarta VS (RF-137, 11/11/2026), iris, entrada, desafío, lanzamiento rival, lanzamiento propio y fin', async () => {
     const { client } = mount()
     client.emit(mkUpdate())
     const seen: (string | null)[] = []
@@ -47,15 +47,15 @@ describe('intro del combate (PRD §10.2.1)', () => {
       if (seen[seen.length - 1] !== phase()) seen.push(phase())
       await step(50)
     }
-    expect(seen).toEqual(['iris', 'enter', 'challenge', 'rivalSend', 'playerSend', 'done'])
+    expect(seen).toEqual(['vs', 'iris', 'enter', 'challenge', 'rivalSend', 'playerSend', 'done'])
   })
 
-  it('dura entre 3 y 5 segundos a velocidad x1', async () => {
+  it('dura entre 3 y 7 segundos a velocidad x1 (con la pancarta VS de 2 s; Jose, 11/11/2026, RF-137)', async () => {
     const { client } = mount()
     client.emit(mkUpdate())
     const duration = await msUntil(() => phase() === 'done')
     expect(duration).toBeGreaterThanOrEqual(3000)
-    expect(duration).toBeLessThanOrEqual(5000)
+    expect(duration).toBeLessThanOrEqual(7000)
   })
 
   it('a x4 dura la cuarta parte', async () => {
@@ -63,7 +63,7 @@ describe('intro del combate (PRD §10.2.1)', () => {
     await user.click(screen.getByRole('button', { name: /velocidad/i }))
     await user.click(screen.getByRole('button', { name: /velocidad/i }))
     client.emit(mkUpdate())
-    expect(await msUntil(() => phase() === 'done')).toBeLessThanOrEqual(1500)
+    expect(await msUntil(() => phase() === 'done')).toBeLessThanOrEqual(2100)
   })
 
   it('cada frase de la intro sale en su fase: desafío, rival saca su Pokémon, yo saco el mío', async () => {
@@ -127,7 +127,7 @@ describe('intro del combate (PRD §10.2.1)', () => {
     mockMatchMedia(true)
     const { client } = mount('system')
     client.emit(mkUpdate())
-    expect(await msUntil(() => phase() === 'done')).toBeLessThanOrEqual(5000)
+    expect(await msUntil(() => phase() === 'done')).toBeLessThanOrEqual(7000)
     expect(screen.getByTestId('battle-screen')).toHaveAttribute('data-reduced-motion', 'true')
   })
 })

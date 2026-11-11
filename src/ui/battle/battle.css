@@ -441,12 +441,173 @@
   height: 192px;
 }
 
+/* Focos del suelo (FieldLights): un anillo centrado en (128,112), para que llegue del horizonte al borde inferior, aplastado en perspectiva (rotateX) para
+   que el anillo se vea como una elipse; dentro, cada foco se coloca por ángulo y radio y el plano gira despacio. Solo
+   se ven desde el horizonte del suelo (y ≈ 56) hacia abajo, en tonos pastel semitransparentes como en el vídeo de N2/B2. */
+.bt-floor-lights {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  clip-path: inset(56px 0 0 0);
+  pointer-events: none;
+  /* Las plataformas tapan los focos, como en el juego: dos elipses sin focos sobre las plataformas de pwt.png
+     (rival ≈ centro (186,94), 68x14; jugador ≈ centro (100,174), 104x30). */
+  mask-image: radial-gradient(68px 14px at 186px 94px, transparent 96%, #000 100%), radial-gradient(104px 30px at 100px 174px, transparent 96%, #000 100%);
+  mask-composite: intersect;
+}
+
+.bt-floor-lights-plane {
+  position: absolute;
+  left: 128px;
+  top: 112px;
+  width: 0;
+  height: 0;
+  transform: scaleY(0.3);
+  /* El giro lo pone FieldLights por JS a 12 fps (ver useLightsMotion: las animaciones CSS frenaban WebKit). */
+}
+
+.bt-floor-lights-plane > i {
+  position: absolute;
+  width: var(--s);
+  height: var(--s);
+  margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--c) 0%, var(--c) 60%, transparent 100%);
+  opacity: 0.55;
+  transform: rotate(var(--a)) translateX(var(--r));
+}
+
+/* Cámara de la intro (como el PWT de N2/B2): los entrenadores entran con el plano general (E2E-47: cada uno debe cruzar
+   el campo a la vista ≥ 400 ms; con el zoom ya puesto el protagonista quedaba fuera de plano), la cámara se acerca al
+   rival (punto fijo en su plataforma, (186,80)) mientras desafía y lanza, y vuelve al plano general al final de su
+   envío. Las duraciones son las de INTRO_DURATIONS_MS divididas por la velocidad; no cambian los tiempos de la intro. */
+.bt-camera {
+  position: absolute;
+  inset: 0;
+  transform-origin: 186px 80px;
+}
+
+[data-intro="challenge"] .bt-camera {
+  animation: bt-camera-focus calc(900ms / var(--speed, 1)) ease-out both;
+}
+
+[data-intro="rivalSend"] .bt-camera {
+  animation: bt-camera-release calc(1300ms / var(--speed, 1)) ease-in-out both;
+}
+
+@keyframes bt-camera-focus {
+  from { transform: none; }
+  45%, to { transform: scale(1.22); }
+}
+
+@keyframes bt-camera-release {
+  0%, 60% { transform: scale(1.22); }
+  100% { transform: none; }
+}
+
+/* Cámara de los ataques (moveCameraProps): punto fijo en el Pokémon rival; el sufijo -0/-1 alterna con cada ataque para
+   reiniciar la animación. Ataca el rival: se acerca a él y vuelve. Atacas tú: avanza hacia el rival y vuelve. */
+[data-move-camera] {
+  transform-origin: var(--cam-x, 186px) var(--cam-y, 80px);
+}
+
+[data-move-camera="rival-0"] { animation: bt-cam-rival-a calc(1100ms / var(--speed, 1)) ease-in-out both; }
+[data-move-camera="rival-1"] { animation: bt-cam-rival-b calc(1100ms / var(--speed, 1)) ease-in-out both; }
+[data-move-camera="player-0"] { animation: bt-cam-player-a calc(1100ms / var(--speed, 1)) ease-in-out both; }
+[data-move-camera="player-1"] { animation: bt-cam-player-b calc(1100ms / var(--speed, 1)) ease-in-out both; }
+
+@keyframes bt-cam-rival-a { 0%, 100% { transform: none; } 22%, 70% { transform: scale(1.25); } }
+@keyframes bt-cam-rival-b { 0%, 100% { transform: none; } 22%, 70% { transform: scale(1.25); } }
+@keyframes bt-cam-player-a { 0%, 100% { transform: none; } 25%, 65% { transform: scale(1.15); } }
+@keyframes bt-cam-player-b { 0%, 100% { transform: none; } 25%, 65% { transform: scale(1.15); } }
+
+[data-reduced-motion="true"] .bt-camera {
+  animation: none !important;
+  transform: none !important;
+}
+
+/* Destello y chispas al abrirse la escena (IntroFlash, fase «enter»). */
+.bt-intro-flash {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: #fff;
+  animation: bt-flash-out calc(260ms / var(--speed, 1)) ease-out both;
+}
+
+.bt-intro-flash > i {
+  position: absolute;
+  left: 128px;
+  top: 80px;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  border-radius: 50%;
+  background: #ff7a20;
+  box-shadow: 0 0 3px 1px #ffd040;
+  animation: bt-spark calc(520ms / var(--speed, 1)) ease-out both;
+}
+
+@keyframes bt-flash-out {
+  from { background-color: rgb(255 255 255 / 1); }
+  to { background-color: rgb(255 255 255 / 0); }
+}
+
+@keyframes bt-spark {
+  from { transform: rotate(var(--a)) translateX(4px); opacity: 1; }
+  to { transform: rotate(var(--a)) translateX(70px); opacity: 0; }
+}
+
+[data-reduced-motion="true"] .bt-intro-flash { display: none; }
+
+/* Haces de los focos del techo: franjas blancas translúcidas que bajan en diagonal desde arriba y oscilan alrededor de
+   su punto alto (8 s ida y vuelta, desfasados), por encima del fondo y por debajo de los Pokémon. */
+.bt-spotlights {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bt-spotlights > i {
+  position: absolute;
+  left: var(--x);
+  top: -20px;
+  width: 26px;
+  height: 150px;
+  background: linear-gradient(rgb(255 255 255 / 0.32), rgb(255 255 255 / 0.12) 55%, transparent);
+  clip-path: polygon(40% 0, 60% 0, 100% 100%, 0 100%);
+  transform-origin: 50% 0;
+  /* Sin mix-blend-mode: screen: sobre el fondo oscuro el blanco translúcido se ve igual y la mezcla obligaba a repintar.
+     La inclinación la pone FieldLights por JS (useLightsMotion). */
+  transform: rotate(38deg);
+}
+
+
+/* Con animaciones desactivadas (data-reduced-motion) las luces se quedan quietas: lo decide useLightsMotion. */
+
 /* Plataforma rival PWT: centro ≈ (186,96); la del jugador ≈ (112,170). Los pies de cada sprite van sobre su plataforma. */
 .bt-mon {
   position: absolute;
   translate: -50% -100%;
   line-height: 0;
   opacity: 0;
+  isolation: isolate;
+}
+
+/* Sombra (MonShadow): la silueta del sprite en negro translúcido, aplastada al 22 % desde los pies y tumbada hacia la
+   izquierda, detrás del sprite. Si el Pokémon cae debilitado, cae con él. */
+.bt-shadow {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: -1;
+  line-height: 0;
+  transform-origin: 50% 100%;
+  transform: skewX(-40deg) scaleY(0.22);
+  filter: brightness(0);
+  opacity: 0.32;
+  pointer-events: none;
 }
 
 .bt-mon-rival {
@@ -489,6 +650,38 @@
 }
 
 .bt-mon[data-fainted="true"] .bt-sprite {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+/* Silueta de la sombra (.bt-shadow-img): las mismas reglas de escala y caída que su sprite, en reglas aparte (los tests
+   de DataBox leen las de .bt-sprite tal cual). */
+.bt-mon.bt-mon-player .bt-shadow-img {
+  transform: scale(2);
+}
+
+.bt-mon.bt-mon-player[data-fainted="true"] .bt-shadow-img {
+  transform: translateY(40px) scale(2);
+}
+
+.bt-mon.bt-mon-player[data-oversize] .bt-shadow-img {
+  transform: scale(var(--player-scale));
+}
+
+.bt-mon.bt-mon-player[data-oversize][data-fainted="true"] .bt-shadow-img {
+  transform: translateY(40px) scale(var(--player-scale));
+}
+
+.bt-mon .bt-shadow-img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: none;
+  transform-origin: 50% 100%;
+  transition: opacity calc(400ms / var(--speed, 1)), transform calc(400ms / var(--speed, 1));
+}
+
+.bt-mon[data-fainted="true"] .bt-shadow-img {
   opacity: 0;
   transform: translateY(24px);
 }
@@ -764,6 +957,9 @@
   top: 182px;
   width: 90px;
   height: 120px;
+  /* El sprite de espaldas acaba en los muslos y la caja de mensajes es translúcida: la parte que queda bajo la caja se
+     difumina para que se pierda en ella en vez de verse cortada en seco (Jose, 11/11/2026). */
+  mask-image: linear-gradient(to bottom, #000 66%, transparent 92%);
 }
 
 .bt-trainer-img {
@@ -826,6 +1022,73 @@
   left: var(--player-land-x, 72px);
   top: var(--player-land-y, 120px);
 }
+
+/* Estallido al abrirse la Poké Ball (IntroLayer, junto al destello): estrella de 12 rayos blanco cálido que crece, gira
+   un poco y se apaga, y seis círculos de luz que salen hacia fuera. Mismo momento que el destello de cada envío. */
+.bt-burst {
+  position: absolute;
+  width: 84px;
+  height: 84px;
+  translate: -50% -50%;
+  opacity: 0;
+  pointer-events: none;
+  background: repeating-conic-gradient(rgb(255 252 225 / 0.9) 0 5deg, transparent 5deg 30deg);
+  mask-image: radial-gradient(closest-side, #000 15%, transparent 100%);
+  border-radius: 50%;
+}
+
+.bt-burst-rival { left: var(--rival-land-x, 186px); top: var(--rival-land-y, 70px); }
+.bt-burst-player { left: var(--player-land-x, 72px); top: var(--player-land-y, 120px); }
+
+.bt-burst > i {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: radial-gradient(#fff 40%, rgb(255 250 200 / 0));
+}
+
+.bt-burst > i:nth-child(1) { --a: 15deg; }
+.bt-burst > i:nth-child(2) { --a: 75deg; }
+.bt-burst > i:nth-child(3) { --a: 135deg; }
+.bt-burst > i:nth-child(4) { --a: 195deg; }
+.bt-burst > i:nth-child(5) { --a: 255deg; }
+.bt-burst > i:nth-child(6) { --a: 315deg; }
+
+@keyframes bt-burst {
+  0% { opacity: 0; transform: scale(0.2) rotate(0deg); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1.25) rotate(15deg); }
+}
+
+@keyframes bt-burst-dot {
+  from { transform: rotate(var(--a)) translateX(6px); }
+  to { transform: rotate(var(--a)) translateX(38px); }
+}
+
+[data-intro="rivalSend"] .bt-burst-rival,
+[data-intro="playerSend"] .bt-burst-player,
+[data-switch^="rival"] .bt-burst-rival,
+[data-switch^="player"] .bt-burst-player {
+  animation: bt-burst calc(420ms / var(--speed, 1)) var(--burst-delay) ease-out both;
+}
+
+[data-intro="rivalSend"] .bt-burst-rival > i,
+[data-intro="playerSend"] .bt-burst-player > i,
+[data-switch^="rival"] .bt-burst-rival > i,
+[data-switch^="player"] .bt-burst-player > i {
+  animation: bt-burst-dot calc(420ms / var(--speed, 1)) var(--burst-delay) ease-out both;
+}
+
+[data-intro="rivalSend"] .bt-burst-rival, [data-intro="rivalSend"] .bt-burst-rival > i { --burst-delay: calc(520ms / var(--speed, 1)); }
+[data-intro="playerSend"] .bt-burst-player, [data-intro="playerSend"] .bt-burst-player > i { --burst-delay: calc(1070ms / var(--speed, 1)); }
+[data-switch^="rival"] .bt-burst-rival, [data-switch^="rival"] .bt-burst-rival > i,
+[data-switch^="player"] .bt-burst-player, [data-switch^="player"] .bt-burst-player > i { --burst-delay: calc((1120ms - var(--switch-skip)) / var(--speed, 1)); }
+
+[data-reduced-motion="true"] .bt-burst { display: none; }
 
 /* Rayo rojo de la retirada: de la mano del entrenador al Pokémon. */
 .bt-beam {
@@ -2104,3 +2367,205 @@
 .bt-replay .bt-touch-svg {
   z-index: 2;
 }
+
+/* ===== Pancarta VS (VsBanner, RF-137): recreación de la del PWT de N2/B2 a partir del vídeo de referencia.
+   Línea de tiempo a x1 (todo dividido por --speed): franjas 0–250 ms, siluetas 250–540 ms, destello y color 585 ms,
+   logo y chispas 665 ms, plano fijo hasta 1585 ms, zoom al logo y fundido a negro 1585–2000 ms (INTRO_DURATIONS_MS.vs:
+   2 s para que la intro quede en 7 s a x1, el límite que aprobó Jose). */
+.bt-vs {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.bt-vs::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  animation: bt-vs-fade calc(417ms / var(--speed, 1)) calc(1583ms / var(--speed, 1)) ease-in both;
+}
+
+/* Rejilla metálica de rombos con el emblema de laurel abajo. Como en el juego, la franja entra sobre el estadio y la
+   rejilla solo aparece con el fogonazo blanco que ilumina a los entrenadores. */
+.bt-vs-fence {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation: bt-vs-show 1ms calc(640ms / var(--speed, 1)) both;
+  background:
+    radial-gradient(ellipse 70px 34px at 128px 160px, transparent 40px, rgb(130 130 140 / 0.55) 41px 47px, transparent 48px),
+    repeating-linear-gradient(60deg, transparent 0 9px, rgb(170 170 180 / 0.55) 9px 10px),
+    repeating-linear-gradient(-60deg, transparent 0 9px, rgb(170 170 180 / 0.55) 9px 10px),
+    linear-gradient(#202026, #121216);
+}
+
+/* Franja fina: dos mitades que entran desde los lados y se encuentran en un borde en zigzag en el centro, con estelas
+   horizontales de movimiento y líneas blancas arriba y abajo. Como en el juego, enseña el medio cuerpo de arriba. */
+.bt-vs-band {
+  position: absolute;
+  top: 52px;
+  height: 62px;
+  overflow: hidden;
+  border-top: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+}
+
+.bt-vs-band-player {
+  left: 0;
+  width: 142px;
+  background:
+    repeating-linear-gradient(transparent 0 7px, rgb(255 210 190 / 0.25) 7px 8px, transparent 8px 13px),
+    linear-gradient(90deg, #8c1010, #e0261c 45%, #ff5a2a 85%, #ff8a50);
+  clip-path: polygon(0 0, 100% 0, 88% 12.5%, 100% 25%, 88% 37.5%, 100% 50%, 88% 62.5%, 100% 75%, 88% 87.5%, 100% 100%, 0 100%);
+  animation: bt-vs-in-left calc(250ms / var(--speed, 1)) ease-out both;
+}
+
+.bt-vs-band-rival {
+  right: 0;
+  width: 142px;
+  background:
+    repeating-linear-gradient(transparent 0 5px, rgb(210 220 240 / 0.3) 5px 6px, transparent 6px 11px),
+    linear-gradient(90deg, #8a96b4, #4c5878 40%, #2a3248);
+  clip-path: polygon(12% 0, 100% 0, 100% 100%, 12% 100%, 0 87.5%, 12% 75%, 0 62.5%, 12% 50%, 0 37.5%, 12% 25%, 0 12.5%);
+  animation: bt-vs-in-right calc(250ms / var(--speed, 1)) ease-out both;
+}
+
+/* Retratos a 2x (`-vs.png`: último fotograma del gif, la pose activa, recortado desde su primera fila con píxeles;
+   `gen:trainer-vs`) con la cabeza a 3 px del borde superior de la franja: se ve el medio cuerpo de arriba, como el
+   retrato del juego. En silueta negra hasta el destello. */
+.bt-vs-trainer {
+  position: absolute;
+  top: 3px;
+  width: auto;
+  height: auto;
+  transform-origin: 50% 0;
+  scale: 2;
+  image-rendering: pixelated;
+  filter: brightness(0);
+  animation:
+    bt-vs-trainer-in calc(290ms / var(--speed, 1)) calc(250ms / var(--speed, 1)) ease-out both,
+    bt-vs-light 1ms calc(600ms / var(--speed, 1)) both;
+}
+
+/* Centros a 52 px del centro de la pantalla (x=76 y x=180; la franja del rival empieza en x=114). Los retratos van
+   recortados a su tinta, así que centrar la caja centra el dibujo (medido: antes 59 y 45 px por los márgenes). */
+.bt-vs-band-player .bt-vs-trainer { left: 76px; translate: -50% 0; --from: -60px; }
+.bt-vs-band-rival .bt-vs-trainer { left: 66px; translate: -50% 0; --from: 60px; }
+
+.bt-vs-name {
+  position: absolute;
+  top: 118px;
+  font-size: 13px;
+  color: #fff;
+  text-shadow: 1px 0 #000, -1px 0 #000, 0 1px #000, 0 -1px #000, 1px 1px #000;
+  opacity: 0;
+  animation: bt-vs-show 1ms calc(600ms / var(--speed, 1)) both;
+}
+
+.bt-vs-name-player { left: 11px; } /* la «N» sobresale 1 px a la izquierda: así el hueco es 10 px como el de la derecha */
+.bt-vs-name-rival { right: 10px; }
+
+.bt-vs-flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  animation: bt-vs-flash calc(250ms / var(--speed, 1)) calc(560ms / var(--speed, 1)) ease-out both;
+}
+
+/* Logo «VS.» en pixel art (vs-logo.png, `gen:vs-logo`): «V» y «S» desalineadas, con filo blanco, contorno negro y
+   la bola naranja, montado sobre el borde inferior de la franja. */
+.bt-vs-logo {
+  position: absolute;
+  /* 132 y no 128: así quedan centradas la «V» y la «S»; la bola cuelga a la derecha como un punto. */
+  left: 132px;
+  top: 112px;
+  width: auto;
+  height: auto;
+  image-rendering: pixelated;
+  transform-origin: 50% 50%;
+  translate: -50% -50%;
+  opacity: 0;
+  animation:
+    bt-vs-logo-in calc(217ms / var(--speed, 1)) calc(667ms / var(--speed, 1)) cubic-bezier(0.2, 1.6, 0.4, 1) both,
+    bt-vs-logo-zoom calc(417ms / var(--speed, 1)) calc(1583ms / var(--speed, 1)) ease-in forwards;
+}
+
+/* Choque de las dos mitades al encontrarse en el centro (a los 250 ms): destello blanco y bolas de fuego que saltan. */
+.bt-vs-clash::before {
+  content: '';
+  position: absolute;
+  left: 128px;
+  top: 83px;
+  width: 90px;
+  height: 90px;
+  margin: -45px 0 0 -45px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 30%, rgb(255 240 210 / 0.8) 45%, transparent 70%);
+  opacity: 0;
+  animation: bt-vs-clash-flash calc(250ms / var(--speed, 1)) calc(240ms / var(--speed, 1)) ease-out both;
+}
+
+.bt-vs-clash > i {
+  position: absolute;
+  left: 128px;
+  top: 83px;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #fff6a0, #ffb020 35%, #f03010 70%, #b01808);
+  box-shadow: 0 0 4px 1px rgb(255 90 20 / 0.8);
+  opacity: 0;
+  animation: bt-vs-fireball calc(450ms / var(--speed, 1)) calc(250ms / var(--speed, 1)) ease-out forwards;
+}
+
+.bt-vs-sparks > i {
+  position: absolute;
+  left: 128px;
+  top: 112px;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  border-radius: 50%;
+  background: #ff8a20;
+  box-shadow: 0 0 3px 1px #ffd040;
+  opacity: 0;
+  animation: bt-vs-spark calc(500ms / var(--speed, 1)) calc(683ms / var(--speed, 1)) ease-out forwards;
+}
+
+@keyframes bt-vs-in-left { from { transform: translateX(-100%); } to { transform: none; } }
+@keyframes bt-vs-in-right { from { transform: translateX(100%); } to { transform: none; } }
+@keyframes bt-vs-trainer-in { from { transform: translateX(var(--from)); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes bt-vs-light { to { filter: none; } }
+@keyframes bt-vs-show { to { opacity: 1; } }
+@keyframes bt-vs-flash { 0% { opacity: 0; } 30% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes bt-vs-logo-in { from { opacity: 0; transform: scale(2.6) rotate(-8deg); } to { opacity: 1; transform: none; } }
+@keyframes bt-vs-logo-zoom { from { opacity: 1; transform: none; } to { opacity: 1; transform: scale(7); } }
+@keyframes bt-vs-spark {
+  from { opacity: 1; transform: rotate(var(--a)) translateX(10px); }
+  to { opacity: 0; transform: rotate(var(--a)) translateX(90px); }
+}
+@keyframes bt-vs-clash-flash { 0% { opacity: 0; transform: scale(0.3); } 30% { opacity: 1; } 100% { opacity: 0; transform: scale(1.6); } }
+@keyframes bt-vs-fireball {
+  0% { opacity: 1; transform: rotate(var(--a)) translateX(4px) scale(1.3); }
+  100% { opacity: 0; transform: rotate(var(--a)) translateX(var(--d, 70px)) scale(0.6); }
+}
+@keyframes bt-vs-fade { to { opacity: 1; } }
+
+/* Sin animaciones: la pancarta se ve ya compuesta, sin movimiento ni destellos. */
+[data-reduced-motion="true"] .bt-vs *,
+[data-reduced-motion="true"] .bt-vs::after {
+  animation: none !important;
+}
+
+[data-reduced-motion="true"] .bt-vs-trainer { filter: none; }
+[data-reduced-motion="true"] .bt-vs-name,
+[data-reduced-motion="true"] .bt-vs-logo { opacity: 1; }
+[data-reduced-motion="true"] .bt-vs-fence { opacity: 1; }
+[data-reduced-motion="true"] .bt-vs-flash,
+[data-reduced-motion="true"] .bt-vs-clash,
+[data-reduced-motion="true"] .bt-vs-sparks { display: none; }

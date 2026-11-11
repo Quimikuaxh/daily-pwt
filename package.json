@@ -28,6 +28,8 @@
     "gen:icon-index": "node scripts/build-icon-index.mjs",
     "gen:move-fx": "node scripts/build-move-fx.mjs",
     "gen:ui-index": "node scripts/build-battle-ui-index.mjs",
+    "gen:trainer-vs": "node scripts/build-trainer-vs.mjs",
+    "gen:vs-logo": "node scripts/build-vs-logo.mjs",
     "gen:ui": "node scripts/fetch-ui-assets.mjs",
     "gen:pwt-raw": "node scripts/import-pwt.mjs",
     "gen:pwt": "node scripts/merge-pwt.mjs",
