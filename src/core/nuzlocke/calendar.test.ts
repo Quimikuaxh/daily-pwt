@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { readJson } from '../../test-utils/paths'
-import { createCampaign, chooseRecruit, evolveRecruit, specialEvolutionOptions, lockLeagueRoster, type CampaignState } from './campaign'
+import { createCampaign, chooseRecruit, evolveRecruit, specialEvolutionOptions, evolveForLeague, lockLeagueRoster, type CampaignState } from './campaign'
 import { campaignEvolutionItems, chooseScannerItem } from './calendar'
 import { advanceLevel, availableCampaignMoves } from './progression'
 import { beginCampaignBattle, type CampaignBattleDefinition } from './battle'
@@ -85,7 +85,7 @@ describe('calendario consumido por el núcleo', () => {
 })
 
 describe('evoluciones decididas por Jose', () => {
-  it('exige tres victorias o plantilla de Liga fijada; no concede la excepción a la caja ni a los caídos', () => {
+  it('exige tres victorias antes de la Liga y evoluciona toda la caja antes de fijar la plantilla', () => {
     const state = ready(3, 'togepi')
     expect(options(state)).toEqual([])
     state.members = [{ ...state.members[0], victories: 1 }]
@@ -97,29 +97,29 @@ describe('evoluciones decididas por Jose', () => {
     const league = ready(8, 'eevee', 'togepi')
     expect(options(league)).not.toContain('espeon')
     expect(options(league, 0, 'night')).not.toContain('umbreon')
-    const locked = lockLeagueRoster(definition, league, ['member-0'])
+    const evolved = evolveForLeague(definition, league, { 'member-0': 'espeon' })
+    expect(evolved.members.map(member => member.species)).toEqual(['espeon', 'togetic'])
+    const locked = lockLeagueRoster(definition, evolved, ['member-0'])
     expect(locked.phase).toBe('prepare')
-    expect(options(locked)).toEqual(expect.arrayContaining(['espeon']))
-    expect(options(locked, 0, 'night')).toContain('umbreon')
+    expect(options(locked)).toEqual([])
     expect(() => options(locked, 1)).toThrow(/liga/i)
     expect(() => lockLeagueRoster(definition, locked, ['member-1'])).toThrow(/cerrada/i)
-    expect(evolveRecruit(definition, locked, 'member-0', 'espeon').leagueRoster).toEqual(['member-0'])
     expect(() => options({ ...state, members: [{ ...state.members[0], fainted: true }] })).toThrow()
   })
 
   it('guarda la plantilla fijada, permite evolucionar antes del primer combate y prepara esa misma identidad', () => {
-    const initial = ready(8, 'togepi', 'eevee')
+    const initial = evolveForLeague(definition, ready(8, 'gloom', 'eevee'), { 'member-1': 'umbreon' })
     for (const invalid of [[], ['missing'], ['member-0', 'member-0']]) {
       expect(() => lockLeagueRoster(definition, initial, invalid)).toThrow()
     }
     expect(() => lockLeagueRoster(definition, ready(7, 'togepi'), ['member-0'])).toThrow()
-    const seven = ready(8, ...Array<string>(7).fill('mew'))
+    const seven = evolveForLeague(definition, ready(8, ...Array<string>(7).fill('mew')))
     expect(() => lockLeagueRoster(definition, seven, seven.members.map(member => member.id))).toThrow()
     const locked = lockLeagueRoster(definition, initial, ['member-0'])
     const storage = new MemoryStorage()
     const store = new LocalCampaignStore(storage)
     store.write(locked, null, 0)
-    const evolved = evolveRecruit(definition, new LocalCampaignStore(storage).read()!.state, 'member-0', 'togetic')
+    const evolved = evolveRecruit(definition, new LocalCampaignStore(storage).read()!.state, 'member-0', 'vileplume')
     store.write(evolved, null, 1)
     const restored = new LocalCampaignStore(storage).read()!.state
     expect(() => lockLeagueRoster(definition, restored, ['member-1'])).toThrow(/cerrada/)
@@ -127,7 +127,7 @@ describe('evoluciones decididas por Jose', () => {
     const battle = beginCampaignBattle(definition, restored,
       { unlockedMoves: new Set(), movesByMember: { 'member-0': ['return'] } })
     expect(battle.state.leagueRoster).toEqual(['member-0'])
-    expect(battle.init.player[0]).toMatchObject({ species: 'togetic', happiness: 255 })
+    expect(battle.init.player[0]).toMatchObject({ species: 'vileplume', happiness: 255 })
     expect(restored.members[0].victories).toBe(0)
   })
 

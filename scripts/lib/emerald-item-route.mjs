@@ -49,6 +49,12 @@ export function itemRoute(map, label, item) {
   if (item === 'ITEM_TM_SLUDGE_BOMB') return { earliestBefore: 'alana', requirements: ['FLAG_BADGE05_GET', 'clearflag FLAG_HIDE_DEWFORD_HALL_SLUDGE_BOMB_MAN'] }
   if (label.includes('CompletedNewMauville')) return { earliestBefore: 'alana', requirements: ['FLAG_BADGE05_GET', 'MO03: Surf', 'apagar el generador de Malvalanova'] }
   if (item === 'ITEM_TM_TAUNT') return { earliestBefore: 'vito-y-leti', requirements: ['FLAG_BADGE06_GET', 'VAR_TRICK_HOUSE_LEVEL: puzzle 5'] }
+  // Premios de la Casa Trampa: el puzle N se abre con la medalla N + 1 (como el 5, la MT de Mofa, con la 6.ª).
+  const trickPuzzle = map?.startsWith('Route110_TrickHouse') && label.match(/Puzzle(\d)/)?.[1]
+  if (trickPuzzle) {
+    const badge = Number(trickPuzzle) + 1
+    return { earliestBefore: ['petra', 'marcial', 'erico', 'candela', 'norman', 'alana', 'vito-y-leti', 'galano', 'sixto'][badge], requirements: [`FLAG_BADGE0${badge}_GET`, `VAR_TRICK_HOUSE_LEVEL: puzzle ${trickPuzzle}`] }
+  }
   if (item === 'ITEM_TM_SANDSTORM') return { earliestBefore: 'norman', requirements: ['gafas aislantes tras Candela'] }
   if ((map?.startsWith('MeteorFalls_') && map !== 'MeteorFalls_1F_1R') || item === 'ITEM_TM_IRON_TAIL') return { earliestBefore: 'sixto', requirements: ['FLAG_BADGE08_GET', 'MO07: Waterfall'] }
   if (map?.startsWith('AbandonedShip_HiddenFloor')) return { earliestBefore: 'galano', requirements: ['FLAG_BADGE07_GET', 'MO08: Dive', 'llaves de los camarotes'] }

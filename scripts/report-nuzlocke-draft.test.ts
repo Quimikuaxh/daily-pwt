@@ -49,7 +49,7 @@ describe('informe reproducible del draft', () => {
       expect(evidence.sha256).toBe(actual)
     }
     expect(() => renderDraftTables(results, 'hash')).not.toThrow()
-    expect(results.rows.reduce((sum: number, row: any) => sum + row.validFourDistinctOffers, 0)).toBe(48_000)
+    expect(results.rows.reduce((sum: number, row: any) => sum + row.validFourDistinctOffers, 0)).toBe(50_400) // Tres elecciones de Liga (UT-164), antes dos.
   })
 
   it('presenta medianas y proporciones con los denominadores del hito, sin promediar porcentajes', () => {

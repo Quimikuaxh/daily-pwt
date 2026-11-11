@@ -73,7 +73,7 @@ Cada candidato, entre la media rival × 0,94 y la media rival × 1,08 (límites 
 Resultado con 100 semillas (tablas abajo): ningún fallo; pool mínimo tras exclusiones **18 en Marcial** (mediana 20) y 35 o más en el resto. **Erico** solo tiene **dos** candidatos de tipo propio supereficaz en su pool (antes de exclusiones), así que la garantía se fuerza en 77 de 100 tramos: casi siempre sale uno de esos dos. No es un fallo, pero sí el tramo más concentrado; si se quiere más variedad ahí, la opción sería ampliar solo la cobertura de tipo de ese hito (no decidido).
 
 <!-- draft-relative:start -->
-JSON fuente: SHA-256 `5a90ab369881d3b52f5d17db820bbf830db8575f88eb4785f9bc2296bcaf1a23`. Muestra: **100 semillas por combinación**; ventanas **−6 %/+8 %**; escenarios **A**.
+JSON fuente: SHA-256 `dd85d8fdf2717490d68563d304d2b898dd156051e4fca4e72d284bd7815a035c`. Muestra: **100 semillas por combinación**; ventanas **−6 %/+8 %**; escenarios **A**.
 
 Lectura común de las tablas por hito: «Otras ofertas» cuenta sorteos con más de un cuarteto legal posible; «Familias ≥2 / 4» cuenta ofertas con al menos dos familias y con cuatro familias distintas. «Rep.» son plazas de especies vistas en ofertas anteriores de la misma semilla / plazas del hito. «BST/rival» es la media ofrecida relativa a la referencia rival. «Tipos» muestra los dos más presentes por plaza, contando ambos tipos propios. Todas estas columnas describen el brazo con garantía.
 
@@ -162,7 +162,7 @@ La estabilidad se comprueba con 100 semillas en los nueve tramos: cuatro candida
 Fuente persistente de las tablas absolutas: [draft-results-absolute-100.json](draft-results-absolute-100.json). Las tablas de porcentajes se conservan en la sección de comparación histórica.
 
 <!-- draft-absolute:start -->
-JSON fuente: SHA-256 `c728368096fe886b4190d8a81629c65e76eb070ddba198ca5fd7941de797591b`. Muestra: **100 semillas por combinación**; ventanas **−30/+40**; escenarios **A**.
+JSON fuente: SHA-256 `674261f4c308f02f63e14a32c8db0af1e325f336d526d7c47739213cb5008325`. Muestra: **100 semillas por combinación**; ventanas **−30/+40**; escenarios **A**.
 
 Lectura común de las tablas por hito: «Otras ofertas» cuenta sorteos con más de un cuarteto legal posible; «Familias ≥2 / 4» cuenta ofertas con al menos dos familias y con cuatro familias distintas. «Rep.» son plazas de especies vistas en ofertas anteriores de la misma semilla / plazas del hito. «BST/rival» es la media ofrecida relativa a la referencia rival. «Tipos» muestra los dos más presentes por plaza, contando ambos tipos propios. Todas estas columnas describen el brazo con garantía.
 
@@ -174,7 +174,7 @@ Pool mínimo tras exclusiones; alternativas y repeticiones agregadas sobre todas
 
 | Escenario | Margen | Pool mín. | Ofertas válidas / intentos | Con otros cuartetos | Familias ≥2 / 4 | Reapariciones / plazas | Fallos |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| A | −30/+40 | 50 | 2000 / 2000 | 2000 | 2000 / 1993 | 8.7 % | 0 |
+| A | −30/+40 | 50 | 2100 / 2100 | 2100 | 2100 / 2093 | 9.5 % | 0 |
 
 ### Escenario A: pool por hito
 
@@ -204,7 +204,7 @@ Cada celda es **mínimo / mediana** de especies tras excluir la oferta anterior,
 | Alana | 200 | 200 | 200 / 200 | 10.6 % | 101.3 % | Normal 22.5 %; Agua 15.9 % |
 | Vito y Leti | 200 | 200 | 200 / 199 | 10.3 % | 102.4 % | Agua 19.9 %; Normal 17.9 % |
 | Galano | 200 | 200 | 200 / 199 | 17.6 % | 102.0 % | Normal 21.8 %; Volador 19.0 % |
-| Liga (Sixto) | 200 | 200 | 200 / 197 | 23.1 % | 100.5 % | Agua 20.1 %; Normal 14.6 % |
+| Liga (Sixto) | 300 | 300 | 300 / 297 | 24.0 % | 100.4 % | Agua 21.0 %; Normal 14.5 % |
 
 #### A · −30/+40: efecto de la garantía por tramo
 
@@ -249,7 +249,7 @@ La garantía reduce **cero especies** del pool general del mismo estado: restrin
 Fuente persistente: [JSON de resultados, 100 semillas](draft-results-100.json). Incluye ambos brazos, frecuencias completas de especies y tipos, mínimos/medianas/medias/máximos, parámetros y hashes de catálogos. Las tablas siguientes resumen el brazo con garantía y comparan la cobertura con el control. Los nombres de tipos son etiquetas de lectura, sin cambiar el catálogo ni el trabajo de localización D6.
 
 <!-- draft-tables:start -->
-JSON fuente: SHA-256 `48fc2480da2c407f54b3bfe9f53146164ee394603b1e1991b9a5041612fcd5a0`. Muestra: **100 semillas por combinación**; ventanas **±10 %, ±15 %, ±20 %, ±25 %**; escenarios **A/B/C**.
+JSON fuente: SHA-256 `8c751e11c8026d71f2a600ea9eb7549aa9091928ea0687012093cbbe187a47d1`. Muestra: **100 semillas por combinación**; ventanas **±10 %, ±15 %, ±20 %, ±25 %**; escenarios **A/B/C**.
 
 Lectura común de las tablas por hito: «Otras ofertas» cuenta sorteos con más de un cuarteto legal posible; «Familias ≥2 / 4» cuenta ofertas con al menos dos familias y con cuatro familias distintas. «Rep.» son plazas de especies vistas en ofertas anteriores de la misma semilla / plazas del hito. «BST/rival» es la media ofrecida relativa a la referencia rival. «Tipos» muestra los dos más presentes por plaza, contando ambos tipos propios. Todas estas columnas describen el brazo con garantía.
 
@@ -261,18 +261,18 @@ Pool mínimo tras exclusiones; alternativas y repeticiones agregadas sobre todas
 
 | Escenario | Margen | Pool mín. | Ofertas válidas / intentos | Con otros cuartetos | Familias ≥2 / 4 | Reapariciones / plazas | Fallos |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| A | ±10 % | 36 | 2000 / 2000 | 2000 | 2000 / 1991 | 9.4 % | 0 |
-| A | ±15 % | 54 | 2000 / 2000 | 2000 | 2000 / 1989 | 8.8 % | 0 |
-| A | ±20 % | 66 | 2000 / 2000 | 2000 | 2000 / 1990 | 9.6 % | 0 |
-| A | ±25 % | 87 | 2000 / 2000 | 2000 | 2000 / 1990 | 10.1 % | 0 |
-| B | ±10 % | 44 | 2000 / 2000 | 2000 | 2000 / 1996 | 9.8 % | 0 |
-| B | ±15 % | 70 | 2000 / 2000 | 2000 | 2000 / 1992 | 9.8 % | 0 |
-| B | ±20 % | 87 | 2000 / 2000 | 2000 | 2000 / 1996 | 10.3 % | 0 |
-| B | ±25 % | 109 | 2000 / 2000 | 2000 | 2000 / 1980 | 10.3 % | 0 |
-| C | ±10 % | 48 | 2000 / 2000 | 2000 | 2000 / 1996 | 8.0 % | 0 |
-| C | ±15 % | 75 | 2000 / 2000 | 2000 | 2000 / 1999 | 9.0 % | 0 |
-| C | ±20 % | 93 | 2000 / 2000 | 2000 | 2000 / 1984 | 9.2 % | 0 |
-| C | ±25 % | 116 | 2000 / 2000 | 2000 | 2000 / 1975 | 9.2 % | 0 |
+| A | ±10 % | 36 | 2100 / 2100 | 2100 | 2100 / 2091 | 10.2 % | 0 |
+| A | ±15 % | 54 | 2100 / 2100 | 2100 | 2100 / 2088 | 9.2 % | 0 |
+| A | ±20 % | 66 | 2100 / 2100 | 2100 | 2100 / 2090 | 10.0 % | 0 |
+| A | ±25 % | 87 | 2100 / 2100 | 2100 | 2100 / 2088 | 10.5 % | 0 |
+| B | ±10 % | 44 | 2100 / 2100 | 2100 | 2100 / 2096 | 10.8 % | 0 |
+| B | ±15 % | 70 | 2100 / 2100 | 2100 | 2100 / 2091 | 10.4 % | 0 |
+| B | ±20 % | 87 | 2100 / 2100 | 2100 | 2100 / 2095 | 11.1 % | 0 |
+| B | ±25 % | 109 | 2100 / 2100 | 2100 | 2100 / 2080 | 10.9 % | 0 |
+| C | ±10 % | 48 | 2100 / 2100 | 2100 | 2100 / 2096 | 8.7 % | 0 |
+| C | ±15 % | 75 | 2100 / 2100 | 2100 | 2100 / 2097 | 9.5 % | 0 |
+| C | ±20 % | 93 | 2100 / 2100 | 2100 | 2100 / 2084 | 9.8 % | 0 |
+| C | ±25 % | 116 | 2100 / 2100 | 2100 | 2100 / 2072 | 9.7 % | 0 |
 
 ### Escenario A: pool por hito
 
@@ -302,7 +302,7 @@ Cada celda es **mínimo / mediana** de especies tras excluir la oferta anterior,
 | Alana | 200 | 200 | 200 / 198 | 9.1 % | 100.5 % | Normal 23.3 %; Volador 18.0 % |
 | Vito y Leti | 200 | 200 | 200 / 200 | 12.1 % | 100.9 % | Agua 19.0 %; Normal 17.9 % |
 | Galano | 200 | 200 | 200 / 198 | 17.1 % | 100.7 % | Normal 17.9 %; Agua 15.5 % |
-| Liga (Sixto) | 200 | 200 | 200 / 199 | 22.9 % | 99.1 % | Agua 24.8 %; Normal 15.4 % |
+| Liga (Sixto) | 300 | 300 | 300 / 299 | 24.1 % | 99.0 % | Agua 24.1 %; Normal 14.9 % |
 
 #### A · ±10 %: efecto de la garantía por tramo
 
@@ -329,7 +329,7 @@ Cada celda es **mínimo / mediana** de especies tras excluir la oferta anterior,
 | Alana | 200 | 200 | 200 / 199 | 11.4 % | 100.8 % | Normal 17.8 %; Volador 15.4 % |
 | Vito y Leti | 200 | 200 | 200 / 199 | 12.1 % | 100.2 % | Normal 17.8 %; Agua 16.3 % |
 | Galano | 200 | 200 | 200 / 195 | 14.8 % | 101.2 % | Agua 18.4 %; Normal 15.1 % |
-| Liga (Sixto) | 200 | 200 | 200 / 198 | 14.4 % | 100.0 % | Agua 25.8 %; Normal 15.6 % |
+| Liga (Sixto) | 300 | 300 | 300 / 297 | 15.4 % | 99.8 % | Agua 24.9 %; Normal 14.9 % |
 
 #### A · ±15 %: efecto de la garantía por tramo
 
@@ -356,7 +356,7 @@ Cada celda es **mínimo / mediana** de especies tras excluir la oferta anterior,
 | Alana | 200 | 200 | 200 / 200 | 12.9 % | 100.6 % | Normal 19.4 %; Agua 17.4 % |
 | Vito y Leti | 200 | 200 | 200 / 196 | 11.1 % | 99.1 % | Normal 15.6 %; Volador 15.5 % |
 | Galano | 200 | 200 | 200 / 198 | 15.8 % | 103.1 % | Agua 18.9 %; Planta 15.3 % |
-| Liga (Sixto) | 200 | 200 | 200 / 199 | 16.4 % | 97.6 % | Agua 20.4 %; Normal 15.8 % |
+| Liga (Sixto) | 300 | 300 | 300 / 299 | 17.3 % | 97.5 % | Agua 19.9 %; Normal 17.1 % |
 
 #### A · ±20 %: efecto de la garantía por tramo
 
@@ -383,7 +383,7 @@ Cada celda es **mínimo / mediana** de especies tras excluir la oferta anterior,
 | Alana | 200 | 200 | 200 / 198 | 14.0 % | 100.2 % | Normal 17.6 %; Agua 15.8 % |
 | Vito y Leti | 200 | 200 | 200 / 197 | 11.5 % | 98.5 % | Normal 19.1 %; Agua 16.3 % |
 | Galano | 200 | 200 | 200 / 196 | 15.0 % | 103.1 % | Agua 20.4 %; Normal 14.8 % |
-| Liga (Sixto) | 200 | 200 | 200 / 199 | 16.9 % | 96.9 % | Agua 19.1 %; Normal 15.4 % |
+| Liga (Sixto) | 300 | 300 | 300 / 297 | 17.0 % | 97.3 % | Agua 19.5 %; Normal 15.9 % |
 
 #### A · ±25 %: efecto de la garantía por tramo
 
@@ -426,7 +426,7 @@ Cada celda es **mínimo / mediana** de especies tras excluir la oferta anterior,
 | Alana | 200 | 200 | 200 / 199 | 11.0 % | 100.0 % | Agua 16.0 %; Normal 15.5 % |
 | Vito y Leti | 200 | 200 | 200 / 200 | 13.3 % | 100.2 % | Normal 17.6 %; Agua 15.9 % |
 | Galano | 200 | 200 | 200 / 200 | 21.3 % | 99.2 % | Agua 18.8 %; Normal 18.0 % |
-| Liga (Sixto) | 200 | 200 | 200 / 200 | 19.8 % | 98.6 % | Agua 18.9 %; Volador 18.8 % |
+| Liga (Sixto) | 300 | 300 | 300 / 300 | 23.2 % | 98.5 % | Agua 20.1 %; Volador 18.2 % |
 
 #### B · ±10 %: efecto de la garantía por tramo
 
@@ -453,7 +453,7 @@ Cada celda es **mínimo / mediana** de especies tras excluir la oferta anterior,
 | Alana | 200 | 200 | 200 / 199 | 11.8 % | 100.4 % | Normal 16.5 %; Agua 16.4 % |
 | Vito y Leti | 200 | 200 | 200 / 197 | 13.6 % | 98.3 % | Agua 16.3 %; Normal 15.6 % |
 | Galano | 200 | 200 | 200 / 199 | 18.9 % | 99.7 % | Agua 16.9 %; Normal 14.0 % |
-| Liga (Sixto) | 200 | 200 | 200 / 198 | 20.6 % | 98.3 % | Agua 21.3 %; Normal 18.5 % |
+| Liga (Sixto) | 300 | 300 | 300 / 297 | 21.4 % | 98.2 % | Agua 21.2 %; Normal 18.4 % |
 
 #### B · ±15 %: efecto de la garantía por tramo
 
@@ -480,7 +480,7 @@ Cada celda es **mínimo / mediana** de especies tras excluir la oferta anterior,
 | Alana | 200 | 200 | 200 / 200 | 11.0 % | 99.2 % | Agua 16.8 %; Normal 16.5 % |
 | Vito y Leti | 200 | 200 | 200 / 199 | 11.6 % | 98.0 % | Agua 20.0 %; Normal 15.1 % |
 | Galano | 200 | 200 | 200 / 199 | 15.6 % | 99.6 % | Agua 20.0 %; Normal 12.8 % |
-| Liga (Sixto) | 200 | 200 | 200 / 200 | 19.4 % | 95.4 % | Agua 20.6 %; Normal 15.9 % |
+| Liga (Sixto) | 300 | 300 | 300 / 299 | 21.8 % | 95.4 % | Agua 20.4 %; Normal 15.9 % |
 
 #### B · ±20 %: efecto de la garantía por tramo
 
@@ -507,7 +507,7 @@ Cada celda es **mínimo / mediana** de especies tras excluir la oferta anterior,
 | Alana | 200 | 200 | 200 / 199 | 14.0 % | 96.8 % | Agua 18.8 %; Normal 17.3 % |
 | Vito y Leti | 200 | 200 | 200 / 199 | 13.3 % | 95.9 % | Normal 17.5 %; Agua 17.3 % |
 | Galano | 200 | 200 | 200 / 196 | 16.4 % | 98.7 % | Agua 18.8 %; Normal 14.6 % |
-| Liga (Sixto) | 200 | 200 | 200 / 199 | 18.4 % | 95.3 % | Agua 17.4 %; Normal 16.6 % |
+| Liga (Sixto) | 300 | 300 | 300 / 299 | 19.8 % | 95.1 % | Agua 17.2 %; Normal 17.1 % |
 
 #### B · ±25 %: efecto de la garantía por tramo
 
@@ -550,7 +550,7 @@ Cada celda es **mínimo / mediana** de especies tras excluir la oferta anterior,
 | Alana | 200 | 200 | 200 / 200 | 11.0 % | 99.9 % | Normal 19.4 %; Volador 16.5 % |
 | Vito y Leti | 200 | 200 | 200 / 198 | 9.4 % | 101.2 % | Agua 19.0 %; Normal 18.0 % |
 | Galano | 200 | 200 | 200 / 200 | 17.4 % | 99.6 % | Agua 18.0 %; Planta 16.8 % |
-| Liga (Sixto) | 200 | 200 | 200 / 200 | 20.0 % | 99.3 % | Agua 21.6 %; Normal 18.4 % |
+| Liga (Sixto) | 300 | 300 | 300 / 300 | 20.8 % | 99.5 % | Agua 20.9 %; Normal 17.2 % |
 
 #### C · ±10 %: efecto de la garantía por tramo
 
@@ -577,7 +577,7 @@ Cada celda es **mínimo / mediana** de especies tras excluir la oferta anterior,
 | Alana | 200 | 200 | 200 / 200 | 9.4 % | 102.2 % | Agua 18.9 %; Normal 16.6 % |
 | Vito y Leti | 200 | 200 | 200 / 200 | 11.0 % | 99.9 % | Agua 18.1 %; Normal 15.0 % |
 | Galano | 200 | 200 | 200 / 200 | 15.6 % | 101.0 % | Agua 19.8 %; Normal 17.0 % |
-| Liga (Sixto) | 200 | 200 | 200 / 200 | 19.0 % | 99.6 % | Agua 24.0 %; Normal 15.0 % |
+| Liga (Sixto) | 300 | 300 | 300 / 298 | 19.1 % | 99.7 % | Agua 25.4 %; Normal 14.9 % |
 
 #### C · ±15 %: efecto de la garantía por tramo
 
@@ -604,7 +604,7 @@ Cada celda es **mínimo / mediana** de especies tras excluir la oferta anterior,
 | Alana | 200 | 200 | 200 / 198 | 9.8 % | 101.4 % | Agua 19.6 %; Normal 16.6 % |
 | Vito y Leti | 200 | 200 | 200 / 197 | 11.9 % | 99.6 % | Agua 21.5 %; Normal 14.9 % |
 | Galano | 200 | 200 | 200 / 198 | 13.6 % | 101.4 % | Agua 18.3 %; Normal 14.4 % |
-| Liga (Sixto) | 200 | 200 | 200 / 199 | 17.9 % | 96.9 % | Agua 23.3 %; Normal 14.8 % |
+| Liga (Sixto) | 300 | 300 | 300 / 299 | 19.3 % | 96.4 % | Agua 22.2 %; Normal 15.2 % |
 
 #### C · ±20 %: efecto de la garantía por tramo
 
@@ -631,7 +631,7 @@ Cada celda es **mínimo / mediana** de especies tras excluir la oferta anterior,
 | Alana | 200 | 200 | 200 / 197 | 11.3 % | 101.5 % | Agua 20.6 %; Normal 15.4 % |
 | Vito y Leti | 200 | 200 | 200 / 197 | 12.8 % | 97.6 % | Agua 22.4 %; Normal 15.1 % |
 | Galano | 200 | 200 | 200 / 198 | 14.5 % | 101.0 % | Agua 23.8 %; Planta 14.3 % |
-| Liga (Sixto) | 200 | 200 | 200 / 197 | 16.9 % | 96.6 % | Agua 19.9 %; Normal 15.0 % |
+| Liga (Sixto) | 300 | 300 | 300 / 294 | 17.8 % | 96.8 % | Agua 19.8 %; Normal 16.4 % |
 
 #### C · ±25 %: efecto de la garantía por tramo
 

@@ -22880,15 +22880,16 @@
       "id": "smokeball",
       "held": "held",
       "token": "ITEM_SMOKE_BALL",
-      "earliestBefore": "marcial",
+      "earliestBefore": "alana",
       "sources": [
         {
           "item": "smokeball",
           "token": "ITEM_SMOKE_BALL",
           "type": "regalo",
-          "earliestBefore": "marcial",
+          "earliestBefore": "alana",
           "requirements": [
-            "rescate de Peeko; carta de Devon; barco de Mr. Briney"
+            "FLAG_BADGE05_GET",
+            "VAR_TRICK_HOUSE_LEVEL: puzzle 4"
           ],
           "map": "Route110_TrickHouseEnd",
           "event": "Route110_TrickHouseEnd_EventScript_CompletedPuzzle4",
@@ -22940,9 +22941,10 @@
           "item": "smokeball",
           "token": "ITEM_SMOKE_BALL",
           "type": "regalo",
-          "earliestBefore": "marcial",
+          "earliestBefore": "alana",
           "requirements": [
-            "rescate de Peeko; carta de Devon; barco de Mr. Briney"
+            "FLAG_BADGE05_GET",
+            "VAR_TRICK_HOUSE_LEVEL: puzzle 4"
           ],
           "map": "Route110_TrickHouseEntrance",
           "event": "Route110_TrickHouseEntrance_EventScript_GivePuzzle4Reward",
@@ -27541,15 +27543,16 @@
       "id": "hardstone",
       "held": "held",
       "token": "ITEM_HARD_STONE",
-      "earliestBefore": "marcial",
+      "earliestBefore": "norman",
       "sources": [
         {
           "item": "hardstone",
           "token": "ITEM_HARD_STONE",
           "type": "regalo",
-          "earliestBefore": "marcial",
+          "earliestBefore": "norman",
           "requirements": [
-            "rescate de Peeko; carta de Devon; barco de Mr. Briney"
+            "FLAG_BADGE04_GET",
+            "VAR_TRICK_HOUSE_LEVEL: puzzle 3"
           ],
           "map": "Route110_TrickHouseEnd",
           "event": "Route110_TrickHouseEnd_EventScript_CompletedPuzzle3",
@@ -27601,9 +27604,10 @@
           "item": "hardstone",
           "token": "ITEM_HARD_STONE",
           "type": "regalo",
-          "earliestBefore": "marcial",
+          "earliestBefore": "norman",
           "requirements": [
-            "rescate de Peeko; carta de Devon; barco de Mr. Briney"
+            "FLAG_BADGE04_GET",
+            "VAR_TRICK_HOUSE_LEVEL: puzzle 3"
           ],
           "map": "Route110_TrickHouseEntrance",
           "event": "Route110_TrickHouseEntrance_EventScript_GivePuzzle3Reward",
@@ -28122,15 +28126,16 @@
       "id": "magnet",
       "held": "held",
       "token": "ITEM_MAGNET",
-      "earliestBefore": "marcial",
+      "earliestBefore": "galano",
       "sources": [
         {
           "item": "magnet",
           "token": "ITEM_MAGNET",
           "type": "regalo",
-          "earliestBefore": "marcial",
+          "earliestBefore": "galano",
           "requirements": [
-            "rescate de Peeko; carta de Devon; barco de Mr. Briney"
+            "FLAG_BADGE07_GET",
+            "VAR_TRICK_HOUSE_LEVEL: puzzle 6"
           ],
           "map": "Route110_TrickHouseEnd",
           "event": "Route110_TrickHouseEnd_EventScript_CompletedPuzzle6",
@@ -28182,9 +28187,10 @@
           "item": "magnet",
           "token": "ITEM_MAGNET",
           "type": "regalo",
-          "earliestBefore": "marcial",
+          "earliestBefore": "galano",
           "requirements": [
-            "rescate de Peeko; carta de Devon; barco de Mr. Briney"
+            "FLAG_BADGE07_GET",
+            "VAR_TRICK_HOUSE_LEVEL: puzzle 6"
           ],
           "map": "Route110_TrickHouseEntrance",
           "event": "Route110_TrickHouseEntrance_EventScript_GivePuzzle6Reward",
