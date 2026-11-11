@@ -22,7 +22,7 @@ describe('Campaña de Hoenn', () => {
     const { store, user, onExit } = mount()
     expect(screen.queryByRole('button', { name: /^Continuar/ })).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Empezar campaña' }))
-    expect(store.read()?.state).toEqual(createCampaign('t3-petra'))
+    expect(store.read()?.state).toEqual({ ...createCampaign('t3-petra'), startedAt: expect.any(Number) })
     expect(screen.getByRole('button', { name: 'Continuar: preparar el gimnasio 1' })).toBeEnabled()
     await user.click(screen.getByRole('button', { name: 'Volver a Hoy' }))
     expect(onExit).toHaveBeenCalledOnce()
@@ -38,7 +38,7 @@ describe('Campaña de Hoenn', () => {
     expect(store.read()?.state.seed).toBe('anterior')
     confirm.mockReturnValue(true)
     await user.click(screen.getByRole('button', { name: 'Empezar campaña' }))
-    expect(store.read()?.state).toEqual(createCampaign('t3-petra'))
+    expect(store.read()?.state).toEqual({ ...createCampaign('t3-petra'), startedAt: expect.any(Number) })
   })
 
   it('las ocho medallas tienen nombre accesible y estado de obtención', () => {

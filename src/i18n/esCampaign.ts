@@ -21,6 +21,33 @@ export const esCampaign = {
   newCampaign: 'Empezar campaña',
   newCampaignConfirm: 'Ya tienes una campaña en curso. ¿Empezar otra? Se perderá la actual.',
   notSaved: 'Sin almacenamiento disponible: la campaña no se guardará al cerrar la página.',
+  // Resultado (scripts de medalla de cada gimnasio, sText_PlayerWhiteout, Ficha de Entrenador y gText_WelcomeToHOF).
+  result: {
+    screen: 'Resultado',
+    medal: (player: string, badge: string, leader: string) => `¡${player} recibió la MEDALLA ${badge} de ${leader.toUpperCase()}!`,
+    beaten: (rival: string) => `¡Has vencido a ${rival.toUpperCase()}!`,
+    whiteout: (player: string) => `¡${player} se ha quedado sin POKéMON que puedan combatir!`,
+    hallOfFame: '¡Bienvenido al SALÓN DE LA FAMA!',
+    name: (player: string) => `NOMBRE: ${player}`,
+    id: (id: string) => `ID{NO}${id}`,
+    money: 'DINERO',
+    pokedex: 'POKéDEX',
+    time: 'TIEMPO',
+    points: (bp: number) => `${bp} PB`,
+    clock: (minutes: number) => `${Math.floor(minutes / 60)}:${String(minutes % 60).padStart(2, '0')}`,
+    choose: 'Elige un POKéMON.',
+    none: 'No quedan POKéMON.',
+    cancel: 'CANCELAR',
+    cancelLabel: 'Volver a la ruta',
+    continueLabel: (message: string) => `Continuar: ${message}`,
+    cardLabel: 'Volver a la ruta desde la Ficha de Entrenador',
+    cardText: (player: string, id: string, bp: number, pokedex: number, time: string, badges: string) =>
+      `Ficha de Entrenador. ${player}. Nº de ID ${id}. Puntos Batalla: ${bp}. POKéDEX: ${pokedex} especies reclutadas. Tiempo desde el inicio: ${time}. Medallas: ${badges}.`,
+    champions: (names: string) => `Campeones: ${names}.`,
+    ended: 'Fin de la campaña. Todas las bajas son permanentes.',
+    memberLabel: (name: string, level: number, fainted: boolean, hp: number) => `${name}, nivel ${level}, ${fainted ? 'baja permanente' : `${hp} PS`}`,
+    protagonist: { brendan: 'BRUNO', may: 'AURA' } as Record<string, string>,
+  },
   // Combate (battle_message.c y battle_controller_player.c: textos del juego en castellano).
   battle: {
     fight: 'LUCHAR',

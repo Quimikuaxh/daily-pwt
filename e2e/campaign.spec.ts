@@ -95,8 +95,11 @@ test('T4 combate de campaña contra Petra con el motor: se reanuda tras recargar
   }
   await page.getByRole('button', { name: /^Continuar/ }).click()
   await page.getByRole('button', { name: 'Aceptar el equipo y preparar los movimientos' }).click()
-  await expect(page.getByRole('status').filter({ hasText: /Petra/ })).toBeVisible()
+  await expect(page.getByRole('status').filter({ hasText: /petra/i })).toBeVisible()
   await playCampaignBattle(page, { reloadAt: 6 })
+  // Resultado (medalla y Ficha, o derrota): se toca hasta volver a la Ruta.
+  await expect(page.locator('.result-screen')).toBeVisible()
+  while (await page.locator('.result-continue').count()) await page.locator('.result-continue').click()
   await expect(page.getByRole('heading', { name: 'Ruta' })).toBeAttached()
   await expect(page.getByRole('button', { name: /^CIUDAD FÉRRICA, gimnasio 1, (superado|próximo)$/ })).toBeVisible()
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('daily-pwt:nuzlocke:v1') ?? 'null'))

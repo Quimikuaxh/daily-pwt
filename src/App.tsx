@@ -250,7 +250,7 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
   if (screen.name === 'campaign' && data) {
     return (
       <Suspense fallback={null}>
-        <CampaignScreen data={data} onExit={() => setScreen({ name: 'today' })} />
+        <CampaignScreen data={data} playerName={nickname} onExit={() => setScreen({ name: 'today' })} />
       </Suspense>
     )
   }

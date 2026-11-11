@@ -49,6 +49,8 @@ export type CampaignState = {
   /** Puntos Batalla por gastar y objetos comprados en el canje (heldItems.ts). */
   battlePoints?: number
   purchases?: readonly string[]
+  /** Momento (ms desde 1970) en que empezó; lo pone la interfaz al crearla, para el TIEMPO de la Ficha de Entrenador. */
+  startedAt?: number
 }
 
 export function createCampaign(seed: string): CampaignState {

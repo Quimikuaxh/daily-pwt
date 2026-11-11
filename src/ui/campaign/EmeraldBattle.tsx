@@ -212,8 +212,8 @@ export function EmeraldBattle({ session, start, data, trainer, intro, rivalLevel
                 aria-label={member ? t.memberLabel(member.name, member.level, member.hp, member.maxHp, member.fainted, member.active) : t.emptySlot(i + 1)}
                 aria-current={member?.active || undefined} disabled={!request || (!forced && menu !== 'party' && menu !== 'confirm')}
                 onClick={() => pickMember(i)}>
-                <PartySlot i={i} mon={member && !member.fainted ? member : null} state={member?.active ? 'activa' : 'normal'} bounce={!!member?.active} />
-                {member?.fainted && <GameText text={t.fainted} x={i === 0 ? 12 : 77} y={i === 0 ? 34 : 4} color="equipo" hidden />}
+                <PartySlot i={i} mon={member} state={member?.fainted ? (member.active ? 'ko-activa' : 'ko') : member?.active ? 'activa' : 'normal'}
+                  bounce={!!member?.active && !member.fainted} description={member?.fainted ? t.fainted : undefined} />
               </button>
             )
           })}

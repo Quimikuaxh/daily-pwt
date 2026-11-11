@@ -37,8 +37,9 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 - **Hecho (11/11/2026):** **Movimientos**, desde el menú del PC de Equipo y PC (MOVER / MOVIMIENTOS / CANCELAR): Recordador arriba y página de movimientos de Datos abajo; los elegidos se guardan por Pokémon en la campaña (DEC-96). Descripciones españolas redactadas en `data/nuzlocke/emerald-move-descriptions-es.json`, **pendientes de que Jose las revise**.
 - **Hecho (11/11/2026):** mensajes del combate al estilo de Esmeralda (`emeraldLog`). Faltan los nombres de la época de objetos y habilidades.
 - **Hecho (11/11/2026):** **Combate** con el motor real (DEC-97): pantalla de Esmeralda, acciones, movimientos (nombres de la época, PP de Gen 3 con su color), cambio con SÍ/NO y cambio forzado; se reanuda tras recargar.
-- **Falta en Combate:** animaciones de entrada, KO y bajada de PS al ritmo del juego, música y efectos de Esmeralda, y la pantalla de Resultado al acabar (ahora vuelve a la Ruta).
-- **Siguiente:** Resultado y Liga (con la elección de evoluciones y el canje de PB).
+- **Falta en Combate:** animaciones de entrada, KO y bajada de PS al ritmo del juego, música y efectos de Esmeralda, 
+- **Hecho (11/11/2026):** **Resultado**: medalla y Ficha de Entrenador (Puntos Batalla en DINERO, especies reclutadas en POKéDEX, tiempo desde el inicio en TIEMPO; Jose), «Has vencido» tras el Alto Mando, Salón de la Fama y derrota. Nombre: nickname o BRUNO/AURA por semilla. Las campañas empezadas antes no tienen `startedAt` y marcan 0:00.
+- **Siguiente:** Liga (elección de evoluciones antes de entrar, plantilla de 3 elecciones, canje de PB y combates del Alto Mando y el campeón).
 - **D6, nombres de la época:** hechos los de los movimientos de la campaña (`data/nuzlocke/emerald-move-names-es.json`, de guiasnintendo.com; aeroblast, followme y jumpkick no están en la guía y conservan el actual). Faltan los de habilidades y objetos de Esmeralda. Regla (PRD §0): cada campaña, con nombres y datos de su generación; revisarlo al hacer otras generaciones.
 
 ## Temas de consola y recursos de Esmeralda (D5, 11/11/2026)

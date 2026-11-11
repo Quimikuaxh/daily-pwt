@@ -26,6 +26,8 @@ import { LocalCampaignSession } from '../../battle/campaignSession'
 import { createCampaignWorkerClient, type CampaignBattleClient } from '../../battle/client'
 import { battleInput } from './campaignBattle'
 import { EmeraldBattle } from './EmeraldBattle'
+import { ResultScreen } from './ResultScreen'
+import { type CampaignResult, minutesSince, playerNameOf, protagonistOf, recruitedSpecies, resultOf, trainerId } from './resultModel'
 import { TeamScreen } from './TeamScreen'
 import './campaign.css'
 
@@ -40,6 +42,8 @@ type CampaignScreenProps = {
   store?: LocalCampaignStore
   /** Semilla de una campaña nueva (por defecto, aleatoria). */
   newSeed?: () => string
+  /** Nickname de la cuenta (mensaje de la medalla y Ficha de Entrenador); sin él, el protagonista de Esmeralda. */
+  playerName?: string
   /** Cliente del worker de combate (por defecto, el real); los tests pasan un doble. */
   createBattleClient?: () => CampaignBattleClient
 }
@@ -56,26 +60,41 @@ const trainerOf = (encounter: CampaignEncounter) => ({
 
 const randomSeed = () => `hoenn-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
 
-export default function CampaignScreen({ data, onExit, store: givenStore, newSeed = randomSeed, createBattleClient = createCampaignWorkerClient }: CampaignScreenProps) {
+export default function CampaignScreen({ data, onExit, store: givenStore, newSeed = randomSeed, createBattleClient = createCampaignWorkerClient, playerName }: CampaignScreenProps) {
   const store = useMemo(() => givenStore ?? new LocalCampaignStore(browserStorage()), [givenStore])
   const [state, setState] = useState(() => store.read()?.state ?? null as CampaignState | null)
+  // Resultado del último combate: el encuentro jugado, la alineación (para enseñar sus bajas), el estado al cerrarlo y los minutos.
+  const [result, setResult] = useState(null as CampaignResult | null)
+  // Estado y alineación con los que se entró en el combate en curso.
+  const [battleContext, setBattleContext] = useState(() => {
+    const record = store.read()
+    return record?.battle ? { before: record.state, lineup: record.battle.source.selected ?? record.state.leagueRoster ?? [] } : null
+  })
   // Con un combate guardado (recarga a mitad), se vuelve a él.
-  const [view, setView] = useState(() => (store.read()?.battle ? 'battle' : 'route') as 'route' | 'draft' | 'team' | 'moves' | 'battle')
+  const [view, setView] = useState(() => (store.read()?.battle ? 'battle' : 'route') as 'route' | 'draft' | 'team' | 'moves' | 'battle' | 'result')
   // El worker de combate (y su sesión) solo se crea al entrar en combate: Ruta, Draft y Equipo no lo necesitan.
   const [session, setSession] = useState(() => (store.read()?.battle ? new LocalCampaignSession(createBattleClient(), store) : null))
-  const enterBattle = () => {
+  const enterBattle = (lineup: readonly string[]) => {
+    if (state) setBattleContext({ before: state, lineup })
     if (!session) setSession(new LocalCampaignSession(createBattleClient(), store))
     setView('battle')
   }
   useEffect(() => () => session?.stop(), [session])
   useEffect(() => session?.subscribe((message) => {
-    if (message.type === 'campaign-finished') { setState(store.read()?.state ?? null); setView('route') }
-  }), [session, store])
+    if (message.type !== 'campaign-finished') return
+    const after = store.read()?.state ?? null
+    if (battleContext && after) {
+      setResult({ ...resultOf(battleContext.before, after, encounters), lineup: battleContext.lineup, after, minutes: minutesSince(after.startedAt, Date.now()) })
+    }
+    setState(after)
+    setView('result')
+  }), [session, store, battleContext])
   // Alineación aceptada en Equipo y PC; la usan Movimientos y el combate.
   const [team, setTeam] = useState(null as string[] | null)
   // Colocación de Equipo y PC mientras se va a Movimientos y se vuelve; se rehace al entrar desde la Ruta.
   const [teamLayout, setTeamLayout] = useState(null as TeamLayout | null)
   const [movesFor, setMovesFor] = useState(null as string | null)
+
   const save = (next: CampaignState) => {
     const record = store.write(next, null, store.read()?.revision ?? 0)
     if (!(record instanceof Promise)) setState(record.state)
@@ -101,7 +120,8 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
 
   const start = () => {
     if (state && !window.confirm(esCampaign.newCampaignConfirm)) return
-    const created = createCampaign(newSeed())
+    // Cuándo empezó: el TIEMPO de la Ficha de Entrenador.
+    const created = { ...createCampaign(newSeed()), startedAt: Date.now() }
     const record = store.write(created, null, store.read()?.revision ?? 0)
     if (!(record instanceof Promise)) setState(record.state)
   }
@@ -115,7 +135,7 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
       limit={teamLimit(state)}
       rivalName={encounters[state.encounterIndex].nameEs}
       itemName={(id) => data.names.items[id] ?? id}
-      onAccept={(chosen) => { setTeam(chosen); enterBattle() }}
+      onAccept={(chosen) => { setTeam(chosen); enterBattle(chosen) }}
       onCancel={() => setView('route')}
       onMoves={(id) => { setMovesFor(id); setView('moves') }}
       onLayoutChange={setTeamLayout}
@@ -131,6 +151,33 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
     if (!record || !team) return
     return session.prepare(battleInput(battleDefinition, record.state, team))
   }, [session, store, team])
+
+  const resultScreen = () => {
+    if (view !== 'result' || !result) return null
+    const { mode, encounter, after, lineup } = result
+    const player = playerNameOf(after.seed, playerName)
+    const badges = badgeCount(after, encounters)
+    const badgeNames = places.filter((place) => place.gym !== null).map((place) => t.badges[place.id])
+    const message = mode === 'medal' ? esCampaign.result.medal(player, t.badges[encounter.id], encounter.nameEs)
+      : mode === 'beaten' ? esCampaign.result.beaten(encounter.nameEs)
+        : mode === 'whiteout' ? esCampaign.result.whiteout(player) : esCampaign.result.hallOfFame
+    const team = lineup.flatMap((id) => {
+      const member = after.members.find((candidate) => { return candidate.id === id })
+      if (!member) return []
+      const mon = teamMonOf(member, data)
+      return [{ species: member.species, name: mon.name, level: member.level, hp: mon.hp, fainted: member.fainted }]
+    })
+    return (
+      <ResultScreen
+        mode={mode} message={message} player={player} protagonist={protagonistOf(after.seed)}
+        badges={badges} badgeNames={badgeNames}
+        card={{ id: trainerId(after.seed), points: after.battlePoints ?? 0, pokedex: recruitedSpecies(after), minutes: result.minutes }}
+        team={team}
+        onDone={() => { setResult(null); setView('route') }}
+        reservedHeight={150}
+      />
+    )
+  }
 
   const battleScreen = () => {
     if (view !== 'battle' || !state || !session) return null
@@ -184,7 +231,7 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
       </header>
       <main id="main" tabIndex={-1} className="campaign-main">
         <h2 className="visually-hidden">{t.screen}</h2>
-        {battleScreen() ?? teamScreen() ?? movesScreen() ?? (view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
+        {resultScreen() ?? battleScreen() ?? teamScreen() ?? movesScreen() ?? (view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
           <DraftScreen
             candidates={state.offer.map((id) => candidateOf(id, Math.max(...encounters[state.encounterIndex].team.map((member) => member.level)), definition, data))}
             pick={state.pick}
