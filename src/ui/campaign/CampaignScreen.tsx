@@ -28,6 +28,9 @@ import { battleInput } from './campaignBattle'
 import { EmeraldBattle } from './EmeraldBattle'
 import { ResultScreen } from './ResultScreen'
 import { EvolutionScene } from './EvolutionScene'
+import { BagScreen } from './BagScreen'
+import { bagContents, itemName as emeraldItemName } from './bagModel'
+import { equipItem } from '../../core/nuzlocke/heldItems'
 import { leagueEvolutions } from './evolutionModel'
 import { LeagueScreen } from './LeagueScreen'
 import { leagueBeaten } from './leagueModel'
@@ -78,7 +81,7 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
     return record?.battle ? { before: record.state, lineup: record.battle.source.selected ?? record.state.leagueRoster ?? [] } : null
   })
   // Con un combate guardado (recarga a mitad), se vuelve a él.
-  const [view, setView] = useState(() => (store.read()?.battle ? 'battle' : 'route') as 'route' | 'draft' | 'team' | 'moves' | 'battle' | 'result' | 'evolution' | 'league')
+  const [view, setView] = useState(() => (store.read()?.battle ? 'battle' : 'route') as 'route' | 'draft' | 'team' | 'moves' | 'battle' | 'result' | 'evolution' | 'league' | 'bag')
   // El worker de combate (y su sesión) solo se crea al entrar en combate: Ruta, Draft y Equipo no lo necesitan.
   const [session, setSession] = useState(() => (store.read()?.battle ? new LocalCampaignSession(createBattleClient(), store) : null))
   const enterBattle = (lineup: readonly string[]) => {
@@ -152,10 +155,12 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
       initial={teamLayout ?? initialLayout(state, teamLimit(state), team ?? [])}
       limit={teamLimit(state)}
       rivalName={encounters[state.encounterIndex].nameEs}
-      itemName={(id) => data.names.items[id] ?? id}
+      itemName={emeraldItemName}
       onAccept={(chosen) => { setTeam(chosen); if (inLeague(state)) setView('league'); else enterBattle(chosen) }}
       onCancel={() => setView('route')}
       onMoves={(id) => { setMovesFor(id); setView('moves') }}
+      onGiveItem={(id) => { setMovesFor(id); setView('bag') }}
+      onTakeItem={(id) => { save(equipItem(state, id, null)) }}
       onLayoutChange={setTeamLayout}
       reservedHeight={150}
     />
@@ -263,6 +268,22 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
     )
   }
 
+  const bagScreen = () => {
+    const member = view === 'bag' && state?.phase === 'prepare' ? state.members.find((candidate) => { return candidate.id === movesFor && !candidate.fainted }) : undefined
+    if (!state || !member) return null
+    const mon = teamMonOf(member, data)
+    return (
+      <BagScreen
+        protagonist={protagonistOf(state.seed)}
+        member={{ species: member.species, name: mon.name, level: member.level, hp: mon.hp, item: member.item ?? null }}
+        contents={(pocket) => bagContents(state, pocket, member.id)}
+        onGive={(item) => { save(equipItem(state, member.id, item)); setView('team') }}
+        onClose={() => setView('team')}
+        reservedHeight={150}
+      />
+    )
+  }
+
   const movesScreen = () => {
     const member = view === 'moves' && state?.phase === 'prepare' ? state.members.find((candidate) => { return candidate.id === movesFor && !candidate.fainted }) : undefined
     if (!state || !member) return null
@@ -295,7 +316,7 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
       </header>
       <main id="main" tabIndex={-1} className="campaign-main">
         <h2 className="visually-hidden">{t.screen}</h2>
-        {resultScreen() ?? battleScreen() ?? evolutionScreen() ?? leagueScreen() ?? teamScreen() ?? movesScreen() ?? (view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
+        {resultScreen() ?? battleScreen() ?? evolutionScreen() ?? leagueScreen() ?? teamScreen() ?? bagScreen() ?? movesScreen() ?? (view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
           <DraftScreen
             candidates={state.offer.map((id) => candidateOf(id, Math.max(...encounters[state.encounterIndex].team.map((member) => member.level)), definition, data))}
             pick={state.pick}

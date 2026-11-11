@@ -32,6 +32,10 @@ type TeamScreenProps = {
   onCancel: () => void
   /** MOVIMIENTOS en el menú del PC: abre la pantalla Movimientos de ese Pokémon. */
   onMoves: (id: string) => void
+  /** OBJETO → DAR: abre la Mochila para ese Pokémon. */
+  onGiveItem: (id: string) => void
+  /** OBJETO → QUITAR: guarda en la Mochila el objeto que lleva. */
+  onTakeItem: (id: string) => void
   /** Cada cambio de colocación, para conservarla al ir a Movimientos y volver. */
   onLayoutChange?: (layout: TeamLayout) => void
   scale?: number
@@ -44,7 +48,7 @@ const PILL_X = 5
 
 const boxCell = (i: number) => ({ x: 100 + 24 * (i % 6), y: 44 + 24 * Math.floor(i / 6) })
 
-export function TeamScreen({ mons, initial, limit, rivalName, itemName, onAccept, onCancel, onMoves, onLayoutChange, scale, reservedHeight }: TeamScreenProps) {
+export function TeamScreen({ mons, initial, limit, rivalName, itemName, onAccept, onCancel, onMoves, onGiveItem, onTakeItem, onLayoutChange, scale, reservedHeight }: TeamScreenProps) {
   const [layout, setLayout] = useState(initial)
   const [box, setBox] = useState(0)
   const [held, setHeld] = useState(null as Place | null)
@@ -52,6 +56,7 @@ export function TeamScreen({ mons, initial, limit, rivalName, itemName, onAccept
   const [note, setNote] = useState(null as MoveNote | null)
   // Menú del PC (MOVER / MOVIMIENTOS / CANCELAR) del Pokémon tocado, como al pulsar A en el juego.
   const [menu, setMenu] = useState(null as Place | null)
+  const [itemMenu, setItemMenu] = useState(false)
 
   const focusPlace = (place: Place) => requestAnimationFrame(() => (document.querySelector(`[data-place="${placeKey(place)}"]`) as HTMLElement | null)?.focus())
   const tryMove = (from: Place, to: Place) => {
@@ -90,6 +95,7 @@ export function TeamScreen({ mons, initial, limit, rivalName, itemName, onAccept
     const place = placeOf(target.dataset.place, box)
     if (event.key === 'Escape' && menu) {
       event.preventDefault()
+      setItemMenu(false)
       setMenu(null)
       focusPlace(menu)
       return
@@ -162,19 +168,20 @@ export function TeamScreen({ mons, initial, limit, rivalName, itemName, onAccept
             </div>
           )}
           {menu && menuId && (
-            <GameWindow {...pcMenuWindow([m.move, m.moves, m.cancel])}>
-              <div role="menu" aria-label={m.label(mons[menuId].name)}>
-                {([[m.move, m.moveLabel(mons[menuId].name), () => { setHeld(menu); setMenu(null) }],
-                  [m.moves, m.movesLabel(mons[menuId].name), () => { setMenu(null); onMoves(menuId) }],
-                  [m.cancel, m.cancelLabel, () => { setMenu(null); focusPlace(menu) }]] as const).map(([label, name, action], i) => (
-                  <button key={label} type="button" role="menuitem" className="team-menu-item" style={{ left: 0, top: i * 16, width: (pcMenuWindow([m.move, m.moves, m.cancel]).width) * 8, height: 16 }}
-                    aria-label={name} autoFocus={i === 0} onClick={action}>
-                    <GameText text={'\u25b6'} y={1} hidden />
-                    <GameText text={label} x={8} y={1} hidden />
-                  </button>
-                ))}
-              </div>
-            </GameWindow>
+            <PcMenu
+              label={itemMenu ? m.itemLabel(mons[menuId].name) : m.label(mons[menuId].name)}
+              options={itemMenu ? [
+                [m.give, m.giveLabel(mons[menuId].name), () => { setMenu(null); setItemMenu(false); onGiveItem(menuId) }],
+                [m.take, m.takeLabel(mons[menuId].name), () => { setMenu(null); setItemMenu(false); onTakeItem(menuId); focusPlace(menu) }],
+                [m.cancel, m.cancelLabel, () => { setItemMenu(false) }],
+              ] : [
+                [m.move, m.moveLabel(mons[menuId].name), () => { setHeld(menu); setMenu(null) }],
+                [m.moves, m.movesLabel(mons[menuId].name), () => { setMenu(null); onMoves(menuId) }],
+                // OBJETO: sin objeto, la Mochila directamente; con objeto, DAR / QUITAR como el menú de equipo del juego.
+                [m.item, m.itemLabel(mons[menuId].name), () => { if (mons[menuId].item) setItemMenu(true); else { setMenu(null); onGiveItem(menuId) } }],
+                [m.cancel, m.cancelLabel, () => { setMenu(null); focusPlace(menu) }],
+              ]}
+            />
           )}
           {info && (
             <div className="team-info" aria-hidden="true">
@@ -182,7 +189,7 @@ export function TeamScreen({ mons, initial, limit, rivalName, itemName, onAccept
               <GameText text={info.name} x={6} y={88} color="pc-datos" hidden />
               <GameText text={`/${info.name}`} x={6} y={103} face="short" color="pc-datos" hidden />
               <GameText text={` {LV_2}${info.level}`} x={10} y={117} face="short" color="pc-nivel" hidden />
-              {info.item && <GameText text={itemName(info.item).toUpperCase()} x={6} y={131} face="short" color="pc-datos" hidden />}
+              {info.item && <GameText text={itemName(info.item)} x={6} y={131} face="short" color="pc-datos" hidden />}
             </div>
           )}
         </div>
@@ -231,5 +238,23 @@ export function TeamScreen({ mons, initial, limit, rivalName, itemName, onAccept
         document.body,
       )}
     </div>
+  )
+}
+
+/** Ventana de menú del PC (AddMenu de pokemon_storage_system.c) con su cursor ▶ en la opción con el foco. */
+function PcMenu({ label, options }: { label: string; options: readonly (readonly [string, string, () => void])[] }) {
+  const window = pcMenuWindow(options.map(([text]) => { return text }))
+  return (
+    <GameWindow {...window}>
+      <div role="menu" aria-label={label}>
+        {options.map(([text, name, action], i) => (
+          <button key={text} type="button" role="menuitem" className="team-menu-item" style={{ left: 0, top: i * 16, width: window.width * 8, height: 16 }}
+            aria-label={name} autoFocus={i === 0} onClick={action} onPointerEnter={(event) => event.currentTarget.focus()}>
+            <GameText text={'\u25b6'} y={1} hidden />
+            <GameText text={text} x={8} y={1} hidden />
+          </button>
+        ))}
+      </div>
+    </GameWindow>
   )
 }

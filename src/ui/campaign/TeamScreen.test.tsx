@@ -16,7 +16,7 @@ function mount() {
   const onAccept = vi.fn()
   const onCancel = vi.fn()
   const onMoves = vi.fn()
-  render(<TeamScreen mons={mons} initial={layout} limit={3} rivalName="MARCIAL" itemName={(id) => id} onAccept={onAccept} onCancel={onCancel} onMoves={onMoves} scale={2} />)
+  render(<TeamScreen mons={mons} initial={layout} limit={3} rivalName="MARCIAL" itemName={(id) => id} onAccept={onAccept} onCancel={onCancel} onMoves={onMoves} onGiveItem={vi.fn()} onTakeItem={vi.fn()} scale={2} />)
   return { onAccept, onCancel, onMoves }
 }
 const status = () => screen.getByRole('status').textContent
@@ -57,17 +57,32 @@ describe('Equipo y PC', () => {
     expect(status()).toContain('Las bajas no vuelven al equipo.')
   })
 
-  it('el menú del PC ofrece MOVER, MOVIMIENTOS y CANCELAR; MOVIMIENTOS abre los de ese Pokémon y Esc lo cierra', () => {
+  it('el menú del PC ofrece MOVER, MOVIMIENTOS, OBJETO y CANCELAR; MOVIMIENTOS abre los de ese Pokémon y Esc lo cierra', () => {
     const { onMoves } = mount()
     fireEvent.click(screen.getByRole('button', { name: /^Equipo, puesto 3: WINGULL/ }))
     const menu = screen.getByRole('menu', { name: 'Opciones de WINGULL' })
     expect(status()).toContain('¿Qué hacer con WINGULL?')
-    expect(screen.getAllByRole('menuitem').map((item) => item.getAttribute('aria-label'))).toEqual(['Mover a WINGULL', 'Movimientos de WINGULL', 'Cerrar el menú'])
+    expect(screen.getAllByRole('menuitem').map((item) => item.getAttribute('aria-label'))).toEqual(['Mover a WINGULL', 'Movimientos de WINGULL', 'Objeto de WINGULL', 'Cerrar el menú'])
     fireEvent.keyDown(menu, { key: 'Escape' })
     expect(screen.queryByRole('menu')).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: /^CAJA 1, hueco 1: SLAKOTH/ }))
     fireEvent.click(screen.getByRole('menuitem', { name: 'Movimientos de SLAKOTH' }))
     expect(onMoves).toHaveBeenCalledWith('slakoth')
+  })
+
+  it('OBJETO: sin objeto abre la Mochila; con objeto ofrece DAR y QUITAR (cambio de requisito del 12/11/2026)', () => {
+    const onGiveItem = vi.fn()
+    const onTakeItem = vi.fn()
+    const holding = { ...mons, machop: { ...mons.machop, item: 'quickclaw' } }
+    render(<TeamScreen mons={holding} initial={layout} limit={3} rivalName="MARCIAL" itemName={(id) => id} onAccept={vi.fn()} onCancel={vi.fn()} onMoves={vi.fn()} onGiveItem={onGiveItem} onTakeItem={onTakeItem} scale={2} />)
+    fireEvent.click(screen.getByRole('button', { name: /^Equipo, puesto 1: GROVYLE/ }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Objeto de GROVYLE' }))
+    expect(onGiveItem).toHaveBeenCalledWith('grovyle')
+    fireEvent.click(screen.getByRole('button', { name: /^Equipo, puesto 2: MACHOP/ }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Objeto de MACHOP' }))
+    expect(screen.getAllByRole('menuitem').map((item) => item.getAttribute('aria-label'))).toEqual(['Dar un objeto a MACHOP', 'Quitar el objeto a MACHOP', 'Cerrar el menú'])
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Quitar el objeto a MACHOP' }))
+    expect(onTakeItem).toHaveBeenCalledWith('machop')
   })
 
   it('CERRAR y CANCELAR vuelven a la ruta', () => {

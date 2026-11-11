@@ -103,7 +103,7 @@ export function EvolutionScene({ evolutions, nameOf, hpOf, onDone, scale, reserv
               <div role="menu" aria-label={message}>
                 {current.targets.map((target, i) => (
                   <button key={target} type="button" role="menuitem" className="team-menu-item" style={{ left: 0, top: i * 16, width: windowWidth * 8, height: 16 }}
-                    aria-label={t.optionLabel(nameOf(target))} autoFocus={i === cursor} onFocus={() => setCursor(i)} onClick={() => choose(target)}>
+                    aria-label={t.optionLabel(nameOf(target))} autoFocus={i === cursor} onFocus={() => setCursor(i)} onPointerEnter={(event) => event.currentTarget.focus()} onClick={() => choose(target)}>
                     <GameText text={'▶'} y={1} hidden />
                     <GameText text={nameOf(target)} x={8} y={1} hidden />
                   </button>
