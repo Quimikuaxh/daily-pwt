@@ -1,7 +1,7 @@
 /**
  * Frases de los mensajes del combate de la campaña de Hoenn, al estilo de la edición española de Esmeralda (DEC-97): sobre las del reto
  * diario (`es.log`) cambian las que el juego dice de otra forma, a partir de src/battle_message.c de pret/pokeemerald (edición inglesa;
- * no hay fuente de los textos españoles del juego). Nombres en mayúsculas, el rival como «GEODUDE enemigo», características en mayúsculas
+ * no hay fuente de los textos españoles del juego). Nombres en mayúsculas (los títulos, no: «la Líder»), el rival como «GEODUDE enemigo», características en mayúsculas
  * y pasado simple («se debilitó», «subió»). Las demás frases se quedan como en el diario.
  */
 import { es } from './es'
@@ -15,9 +15,10 @@ const statWord = (stat: string): string => stat.replace(/^(El|La)\s+(.*)$/, (_, 
 export const emeraldLog: BattleLog = {
   ...base,
   rivalMon: (mon: string) => `${mon} enemigo`,
+  // El título va como en el juego, sin mayúsculas: «la Líder» (Jose, 11/11/2026); el nombre del entrenador, sí.
   trainerTitle: {
-    leader: { M: 'el LÍDER', F: 'la LÍDER' },
-    champion: { M: 'el CAMPEÓN', F: 'la CAMPEONA' },
+    leader: { M: 'el Líder', F: 'la Líder' },
+    champion: { M: 'el Campeón', F: 'la Campeona' },
   },
   // «{CLASS} {NAME} would like to battle!» y «{CLASS} {NAME} sent out {MON}!» (sText_TrainerWantsToBattle / sText_Trainer1SentOutPkmn).
   challenge: (title: string, name: string) => `¡${title.charAt(0).toUpperCase()}${title.slice(1)} ${name.toUpperCase()} quiere luchar!`,

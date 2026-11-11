@@ -22,7 +22,7 @@ describe('frases de Esmeralda', () => {
   })
 
   it('la intro: quiere luchar, envió a y adelante', () => {
-    expect(introLines({ trainer, log: emeraldLog, rivalLead: 'GEODUDE', playerLead: 'ABRA' })).toEqual(['¡La LÍDER PETRA quiere luchar!', '¡PETRA envió a GEODUDE!', '¡Adelante, ABRA!'])
+    expect(introLines({ trainer, log: emeraldLog, rivalLead: 'GEODUDE', playerLead: 'ABRA' })).toEqual(['¡La Líder PETRA quiere luchar!', '¡PETRA envió a GEODUDE!', '¡Adelante, ABRA!'])
   })
 
   it('sin frases propias se usan las del diario, también después de traducir con las de Esmeralda', () => {
