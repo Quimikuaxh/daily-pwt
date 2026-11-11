@@ -880,5 +880,623 @@
     "metalcoat": "premios aleatorios, semanales o posliga excluidos",
     "dragonscale": "premios aleatorios, semanales o posliga excluidos",
     "upgrade": "sin fuente nativa identificada"
-  }
+  },
+  "held": {
+    "kingsrock": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "vito-y-leti",
+          "map": "MossdeepCity",
+          "event": "MossdeepCity_EventScript_KingsRockBoy"
+        }
+      ]
+    },
+    "cheriberry": {
+      "kind": "berry",
+      "before": "petra",
+      "infinite": true,
+      "sources": [
+        {
+          "before": "petra",
+          "map": "Route103",
+          "event": "object_events[6]"
+        },
+        {
+          "before": "petra",
+          "map": "Route103",
+          "event": "object_events[8]"
+        },
+        {
+          "before": "petra",
+          "map": "Route104",
+          "event": "object_events[9]"
+        },
+        {
+          "before": "petra",
+          "map": "Route104",
+          "event": "object_events[19]"
+        }
+      ]
+    },
+    "chestoberry": {
+      "kind": "berry",
+      "before": "petra",
+      "infinite": true,
+      "sources": [
+        {
+          "before": "petra",
+          "map": "Route104",
+          "event": "Route104_EventScript_ExpertF"
+        },
+        {
+          "before": "petra",
+          "map": "Route116",
+          "event": "object_events[1]"
+        },
+        {
+          "before": "petra",
+          "map": "Route116",
+          "event": "object_events[8]"
+        },
+        {
+          "before": "vito-y-leti",
+          "map": "Route121",
+          "event": "object_events[4]"
+        }
+      ]
+    },
+    "pechaberry": {
+      "kind": "berry",
+      "before": "petra",
+      "infinite": true,
+      "sources": [
+        {
+          "before": "vito-y-leti",
+          "map": "LilycoveCity_ContestLobby",
+          "event": "BerryBlender_EventScript_Blender1GiveSpareBerry"
+        },
+        {
+          "before": "vito-y-leti",
+          "map": "LilycoveCity_ContestLobby",
+          "event": "BerryBlender_EventScript_ExpertMGiveBerry"
+        },
+        {
+          "before": "petra",
+          "map": "Route102",
+          "event": "object_events[7]"
+        },
+        {
+          "before": "petra",
+          "map": "Route104",
+          "event": "object_events[14]"
+        },
+        {
+          "before": "candela",
+          "map": "Route112",
+          "event": "object_events[7]"
+        },
+        {
+          "before": "candela",
+          "map": "Route112",
+          "event": "object_events[8]"
+        },
+        {
+          "before": "vito-y-leti",
+          "map": "Route120",
+          "event": "object_events[7]"
+        },
+        {
+          "before": "vito-y-leti",
+          "map": "Route120",
+          "event": "object_events[8]"
+        },
+        {
+          "before": "vito-y-leti",
+          "map": "Route120",
+          "event": "object_events[9]"
+        },
+        {
+          "before": "alana",
+          "map": "Route123",
+          "event": "object_events[22]"
+        }
+      ]
+    },
+    "rawstberry": {
+      "kind": "berry",
+      "before": "candela",
+      "infinite": true,
+      "sources": [
+        {
+          "before": "candela",
+          "map": "Route112",
+          "event": "object_events[6]"
+        },
+        {
+          "before": "candela",
+          "map": "Route112",
+          "event": "object_events[9]"
+        },
+        {
+          "before": "vito-y-leti",
+          "map": "Route121",
+          "event": "object_events[3]"
+        },
+        {
+          "before": "alana",
+          "map": "Route123",
+          "event": "object_events[24]"
+        }
+      ]
+    },
+    "aspearberry": {
+      "kind": "berry",
+      "before": "vito-y-leti",
+      "infinite": true,
+      "sources": [
+        {
+          "before": "vito-y-leti",
+          "map": "Route120",
+          "event": "object_events[4]"
+        },
+        {
+          "before": "vito-y-leti",
+          "map": "Route120",
+          "event": "object_events[5]"
+        },
+        {
+          "before": "vito-y-leti",
+          "map": "Route120",
+          "event": "object_events[6]"
+        },
+        {
+          "before": "vito-y-leti",
+          "map": "Route121",
+          "event": "object_events[2]"
+        }
+      ]
+    },
+    "leppaberry": {
+      "kind": "berry",
+      "before": "petra",
+      "infinite": true,
+      "sources": [
+        {
+          "before": "petra",
+          "map": "Route103",
+          "event": "object_events[7]"
+        },
+        {
+          "before": "petra",
+          "map": "Route104",
+          "event": "object_events[11]"
+        },
+        {
+          "before": "alana",
+          "map": "Route119",
+          "event": "object_events[29]"
+        },
+        {
+          "before": "alana",
+          "map": "Route123",
+          "event": "object_events[4]"
+        },
+        {
+          "before": "alana",
+          "map": "Route123",
+          "event": "object_events[6]"
+        }
+      ]
+    },
+    "oranberry": {
+      "kind": "berry",
+      "before": "petra",
+      "infinite": true,
+      "sources": [
+        {
+          "before": "petra",
+          "map": "Route102",
+          "event": "object_events[6]"
+        },
+        {
+          "before": "petra",
+          "map": "Route104",
+          "event": "object_events[12]"
+        },
+        {
+          "before": "petra",
+          "map": "Route104",
+          "event": "object_events[17]"
+        },
+        {
+          "before": "candela",
+          "map": "Route111",
+          "event": "object_events[18]"
+        },
+        {
+          "before": "candela",
+          "map": "Route111",
+          "event": "object_events[19]"
+        }
+      ]
+    },
+    "persimberry": {
+      "kind": "berry",
+      "before": "candela",
+      "infinite": true,
+      "sources": [
+        {
+          "before": "candela",
+          "map": "Route114",
+          "event": "object_events[0]"
+        },
+        {
+          "before": "candela",
+          "map": "Route114",
+          "event": "object_events[1]"
+        },
+        {
+          "before": "candela",
+          "map": "Route114",
+          "event": "object_events[7]"
+        },
+        {
+          "before": "vito-y-leti",
+          "map": "Route121",
+          "event": "object_events[1]"
+        }
+      ]
+    },
+    "sitrusberry": {
+      "kind": "berry",
+      "before": "alana",
+      "infinite": true,
+      "sources": [
+        {
+          "before": "alana",
+          "map": "Route118",
+          "event": "object_events[0]"
+        },
+        {
+          "before": "alana",
+          "map": "Route118",
+          "event": "object_events[2]"
+        },
+        {
+          "before": "alana",
+          "map": "Route119",
+          "event": "object_events[28]"
+        },
+        {
+          "before": "alana",
+          "map": "Route123",
+          "event": "object_events[23]"
+        }
+      ]
+    },
+    "figyberry": {
+      "kind": "berry",
+      "before": "galano",
+      "infinite": true,
+      "sources": [
+        {
+          "before": "galano",
+          "map": "SootopolisCity",
+          "event": "SootopolisCity_EventScript_GiveFigyBerry"
+        }
+      ]
+    },
+    "iapapaberry": {
+      "kind": "berry",
+      "before": "galano",
+      "infinite": true,
+      "sources": [
+        {
+          "before": "galano",
+          "map": "SootopolisCity",
+          "event": "SootopolisCity_EventScript_GiveIapapaBerry"
+        }
+      ]
+    },
+    "liechiberry": {
+      "kind": "berry",
+      "before": "alana",
+      "infinite": true,
+      "sources": [
+        {
+          "before": "alana",
+          "map": "Route130",
+          "event": "object_events[2]"
+        }
+      ]
+    },
+    "whiteherb": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "petra",
+          "map": "Route104",
+          "event": "Route104_EventScript_WhiteHerbFlorist"
+        }
+      ]
+    },
+    "machobrace": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "candela",
+          "map": "Route111_WinstrateFamilysHouse",
+          "event": "Route111_WinstrateFamilysHouse_EventScript_Victoria"
+        }
+      ]
+    },
+    "expshare": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "petra",
+          "map": "RustboroCity_DevonCorp_3F",
+          "event": "RustboroCity_DevonCorp_3F_EventScript_GiveExpShare"
+        }
+      ]
+    },
+    "quickclaw": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "petra",
+          "map": "RustboroCity_PokemonSchool",
+          "event": "RustboroCity_PokemonSchool_EventScript_Teacher"
+        }
+      ]
+    },
+    "soothebell": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "erico",
+          "map": "SlateportCity_PokemonFanClub",
+          "event": "SlateportCity_PokemonFanClub_EventScript_GiveSootheBell"
+        }
+      ]
+    },
+    "mentalherb": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "alana",
+          "map": "FortreeCity_House4",
+          "event": "FortreeCity_House4_EventScript_WingullReturned"
+        }
+      ]
+    },
+    "amuletcoin": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "petra",
+          "map": "LittlerootTown_BrendansHouse_1F",
+          "event": "PlayersHouse_1F_EventScript_TryGiveAmuletCoin"
+        }
+      ]
+    },
+    "cleansetag": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "vito-y-leti",
+          "map": "MtPyre_1F",
+          "event": "MtPyre_1F_EventScript_CleanseTagWoman"
+        }
+      ]
+    },
+    "smokeball": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "erico",
+          "map": "Route110_TrickHouseEnd",
+          "event": "Route110_TrickHouseEnd_EventScript_CompletedPuzzle4"
+        },
+        {
+          "before": "erico",
+          "map": "Route110_TrickHouseEntrance",
+          "event": "Route110_TrickHouseEntrance_EventScript_GivePuzzle4Reward"
+        }
+      ]
+    },
+    "everstone": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "marcial",
+          "map": "GraniteCave_B2F",
+          "event": "bg_events[0]"
+        },
+        {
+          "before": "marcial",
+          "map": "GraniteCave_B2F",
+          "event": "bg_events[1]"
+        }
+      ]
+    },
+    "focusband": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "vito-y-leti",
+          "map": "ShoalCave_LowTideLowerRoom",
+          "event": "ShoalCave_LowTideLowerRoom_EventScript_BlackBelt"
+        }
+      ]
+    },
+    "softsand": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "marcial",
+          "map": "Route109",
+          "event": "Route109_EventScript_SoftSandGirl"
+        }
+      ]
+    },
+    "hardstone": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "erico",
+          "map": "Route110_TrickHouseEnd",
+          "event": "Route110_TrickHouseEnd_EventScript_CompletedPuzzle3"
+        },
+        {
+          "before": "erico",
+          "map": "Route110_TrickHouseEntrance",
+          "event": "Route110_TrickHouseEntrance_EventScript_GivePuzzle3Reward"
+        }
+      ]
+    },
+    "miracleseed": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "petra",
+          "map": "PetalburgWoods",
+          "event": "PetalburgWoods_EventScript_Girl"
+        }
+      ]
+    },
+    "blackglasses": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "petra",
+          "map": "Route116",
+          "event": "bg_events[10]"
+        }
+      ]
+    },
+    "magnet": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "erico",
+          "map": "Route110_TrickHouseEnd",
+          "event": "Route110_TrickHouseEnd_EventScript_CompletedPuzzle6"
+        },
+        {
+          "before": "erico",
+          "map": "Route110_TrickHouseEntrance",
+          "event": "Route110_TrickHouseEntrance_EventScript_GivePuzzle6Reward"
+        }
+      ]
+    },
+    "nevermeltice": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "vito-y-leti",
+          "map": "ShoalCave_LowTideIceRoom",
+          "event": "ShoalCave_LowTideIceRoom_EventScript_ItemNeverMeltIce"
+        }
+      ]
+    },
+    "charcoal": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "candela",
+          "map": "LavaridgeTown_HerbShop",
+          "event": "LavaridgeTown_HerbShop_EventScript_OldMan"
+        }
+      ]
+    },
+    "silkscarf": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "marcial",
+          "map": "DewfordTown_House2",
+          "event": "DewfordTown_House2_EventScript_Man"
+        }
+      ]
+    },
+    "shellbell": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "vito-y-leti",
+          "map": "ShoalCave_LowTideEntranceRoom",
+          "event": "ShoalCave_LowTideEntranceRoom_EventScript_ShellBellExpert"
+        }
+      ]
+    },
+    "seaincense": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "vito-y-leti",
+          "map": "MtPyre_4F",
+          "event": "MtPyre_4F_EventScript_ItemSeaIncense"
+        }
+      ]
+    },
+    "laxincense": {
+      "kind": "held",
+      "units": [
+        {
+          "before": "vito-y-leti",
+          "map": "MtPyre_5F",
+          "event": "MtPyre_5F_EventScript_ItemLaxIncense"
+        }
+      ]
+    }
+  },
+  "exchange": [
+    {
+      "item": "leftovers",
+      "token": "ITEM_LEFTOVERS",
+      "price": 48
+    },
+    {
+      "item": "whiteherb",
+      "token": "ITEM_WHITE_HERB",
+      "price": 48
+    },
+    {
+      "item": "quickclaw",
+      "token": "ITEM_QUICK_CLAW",
+      "price": 48
+    },
+    {
+      "item": "mentalherb",
+      "token": "ITEM_MENTAL_HERB",
+      "price": 48
+    },
+    {
+      "item": "brightpowder",
+      "token": "ITEM_BRIGHT_POWDER",
+      "price": 64
+    },
+    {
+      "item": "choiceband",
+      "token": "ITEM_CHOICE_BAND",
+      "price": 64
+    },
+    {
+      "item": "kingsrock",
+      "token": "ITEM_KINGS_ROCK",
+      "price": 64
+    },
+    {
+      "item": "focusband",
+      "token": "ITEM_FOCUS_BAND",
+      "price": 64
+    },
+    {
+      "item": "scopelens",
+      "token": "ITEM_SCOPE_LENS",
+      "price": 64
+    }
+  ]
 }

@@ -17,12 +17,25 @@ function habitualIndex(source, milestones) {
   return index
 }
 
+/** Objetos de evolución del calendario (piedras y objetos de intercambio); los demás equipables van en `held`. */
+const evolutionItems = new Set(['thunderstone', 'moonstone', 'firestone', 'leafstone', 'sunstone', 'waterstone', 'kingsrock', 'metalcoat',
+  'dragonscale', 'upgrade', 'deepseatooth', 'deepseascale'])
+
 export function buildEmeraldCalendar(evidence) {
   validateEmeraldItems(evidence)
   const { milestones } = evidence
   const items = {}
   const excluded = {}
+  const held = {}
   for (const [id, item] of Object.entries(evidence.items)) {
+    // Objetos equipables (Jose, 11/11/2026): una unidad por fuente de la aventura, con su hito habitual; las bayas, infinitas.
+    if (item.held) {
+      const units = item.sources.filter(source => source.earliestBefore !== null && !source.decision)
+        .map(source => ({ before: milestones[habitualIndex(source, milestones)], map: source.map, event: source.event }))
+      if (units.length) held[id] = item.held === 'berry' ? { kind: 'berry', before: milestones.find(milestone => units.some(unit => unit.before === milestone)), infinite: true, sources: units }
+        : { kind: 'held', units }
+      if (!item.move && !evolutionItems.has(id)) continue
+    }
     const sources = item.sources.filter(source => source.earliestBefore !== null &&
       (!source.decision || source.decision === 'scanner-choice'))
       .map(source => ({ before: milestones[habitualIndex(source, milestones)], map: source.map, event: source.event }))
@@ -37,7 +50,8 @@ export function buildEmeraldCalendar(evidence) {
   }
   const catalog = { schemaVersion: 1, rulesVersion: 'hoenn-emerald:2026-11-11',
     source: { revision: EMERALD_REVISION, evidence: 'hoenn-emerald-items.json' }, approval,
-    milestones, friendshipWins: 3, leagueFriendship: true, battleHappiness: 255, beautyBefore: 'alana', items, excluded }
+    milestones, friendshipWins: 3, leagueFriendship: true, battleHappiness: 255, beautyBefore: 'alana', items, excluded,
+    held, exchange: evidence.exchange }
   validateEmeraldCalendar(catalog)
   return catalog
 }

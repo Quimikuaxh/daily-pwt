@@ -1,20 +1,21 @@
 // Anotaciones geográficas revisables: no son desbloqueos de la campaña.
 // Los eventos y sus banderas se extraen aparte del código fijado de Esmeralda.
 const regions = [
-  ['petra', [], ['Route104', 'RustboroCity']],
-  ['marcial', ['rescate de Peeko; carta de Devon; barco de Mr. Briney'], [
+  ['petra', [], [ 'LittlerootTown', 'Route101', 'Route102', 'Route103', 'PetalburgWoods', 'Route116','Route104', 'RustboroCity']],
+  ['marcial', ['rescate de Peeko; carta de Devon; barco de Mr. Briney'], [ 'Route109', 'Route117',
     'GraniteCave', 'DewfordTown', 'SlateportCity', 'MauvilleCity', 'VerdanturfTown', 'Route110',
   ]],
-  ['candela', ['FLAG_BADGE03_GET', 'MO06: Rock Smash'], [
+  ['candela', ['FLAG_BADGE03_GET', 'MO06: Rock Smash'], [ 'Route112', 'JaggedPass',
     'Route111', 'Route113', 'Route114', 'MeteorFalls', 'FallarborTown', 'LavaridgeTown', 'RusturfTunnel',
   ]],
-  ['norman', ['FLAG_BADGE04_GET', 'MO04: Strength'], ['FieryPath']],
-  ['alana', ['FLAG_BADGE05_GET', 'MO03: Surf'], [
+  ['norman', ['FLAG_BADGE04_GET', 'MO04: Strength'], [ 'MirageTower','FieryPath']],
+  ['alana', ['FLAG_BADGE05_GET', 'MO03: Surf'], [ 'Route118', 'Route130',
     'Route115', 'Route119', 'Route123', 'Route124', 'Route126', 'FortreeCity', 'LilycoveCity', 'MossdeepCity',
     'PacifidlogTown', 'NewMauville', 'AbandonedShip', 'ScorchedSlab', 'SafariZone', 'MtPyre', 'ShoalCave',
     'Route132', 'Route133', 'Route134',
   ]],
-  ['galano', ['FLAG_BADGE07_GET', 'MO08: Dive'], ['SootopolisCity', 'SeafloorCavern']],
+  ['vito-y-leti', ['FLAG_BADGE06_GET', 'Visor Devon tras Alana'], ['Route120', 'Route121', 'MagmaHideout']],
+  ['galano', ['FLAG_BADGE07_GET', 'MO08: Dive'], [ 'SkyPillar','SootopolisCity', 'SeafloorCavern']],
   ['sixto', ['FLAG_BADGE08_GET', 'MO07: Waterfall'], ['VictoryRoad']],
 ]
 
@@ -28,7 +29,7 @@ export function itemRoute(map, label, item) {
   if (/^ITEM_(RED|BLUE|GREEN)_SHARD$/.test(item)) return {
     earliestBefore: 'galano', requirements: ['FLAG_BADGE07_GET', 'MO08: Dive', 'isla aislada: acceso por los pasajes submarinos de Rutas 124/126'],
   }
-  if (map?.startsWith('BattleFrontier') || map?.startsWith('SSTidal')) {
+  if (map?.startsWith('BattleFrontier') || map?.startsWith('SSTidal') || map?.startsWith('DesertUnderpass') || map?.startsWith('AlteringCave')) {
     return { earliestBefore: null, requirements: ['FLAG_SYS_GAME_CLEAR'], decision: 'postgame' }
   }
   if (map?.includes('_Gym')) {

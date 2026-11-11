@@ -3,6 +3,7 @@ import { draftOffer, EMERALD_DRAFT_RATIO, relativeDraftWindow, type DraftRequest
 import { availableDraftForms } from './draftAvailability'
 import emeraldCalendar from '../../../data/nuzlocke/hoenn-emerald-calendar.json'
 import { gymCounterSpecies } from './gymDraft'
+import { battlePointsFor } from './heldItems'
 import type { StatsTable } from '../types'
 import { advanceLevel, type CampaignMember, type ProgressionDex } from './progression'
 import { campaignEvolutionItems, consumedEvolutionItems, emeraldReached, EMERALD_BEAUTY_BEFORE,
@@ -23,6 +24,8 @@ type Recruit = CampaignMember & {
   id: string; fainted: boolean; victories: number; hiddenPowerIvs?: StatsTable
   /** Transiciones anteriores al reclutamiento: justifican movimientos, no consumen inventario. */
   recruitmentHistoryLength?: number
+  /** Objeto equipado (heldItems.ts). */
+  item?: string
 }
 
 export type CampaignState = {
@@ -41,6 +44,9 @@ export type CampaignState = {
   draftTypeCovered?: boolean
   /** Ya se aplicaron las evoluciones de la Liga (`evolveForLeague`). */
   leagueEvolved?: boolean
+  /** Puntos Batalla por gastar y objetos comprados en el canje (heldItems.ts). */
+  battlePoints?: number
+  purchases?: readonly string[]
 }
 
 export function createCampaign(seed: string): CampaignState {
@@ -314,7 +320,9 @@ export function finishEncounter(
     if (won && knockedOut === false) return { ...member, victories: member.victories + 1 }
     return member
   })
-  const finished = { ...state, members, battleTeam: [], battleSeed: undefined }
+  const gymWin = won && isEmeraldCampaign(definition) && encounterAt(definition, state).kind === 'gym'
+  const earned = gymWin ? battlePointsFor(fainted) : 0
+  const finished = { ...state, members, battleTeam: [], battleSeed: undefined, ...(earned ? { battlePoints: (state.battlePoints ?? 0) + earned } : {}) }
   if (!won) return { ...finished, phase: 'lost' }
 
   const nextIndex = state.encounterIndex + 1

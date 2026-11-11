@@ -76,7 +76,7 @@ function buildCampaignBattleInit(
     const ivs = member.hiddenPowerIvs ?? (hasHiddenPower(moves)
       ? hiddenPowerIvs(deriveSeed(state.seed, 'nuzlocke-hidden-power:v1', 'player', id))
       : undefined)
-    return { ...battleSet(definition, { species: member.species, level: member.level, item: null, moves }, ivs),
+    return { ...battleSet(definition, { species: member.species, level: member.level, item: member.item ?? null, moves }, ivs),
       ...(isEmeraldCampaign(definition) ? { happiness: EMERALD_BATTLE_HAPPINESS } : {}) }
   })
   const battleSeed = deriveSeed(state.seed, 'nuzlocke-battle:v1', encounter.id,
