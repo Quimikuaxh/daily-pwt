@@ -12,7 +12,7 @@ import { emeraldSprite, emeraldTheme } from '../console/themes/emerald'
 import { esCampaign } from '../../i18n/esCampaign'
 import { PartySlot } from './PartySlot'
 import { messagePages } from './emeraldBattleModel'
-import { animationFrame, evolutionLength, firstStep, nextStep, optionsWidth, type EvolutionChoices, type EvolutionStep, type LeagueEvolution } from './evolutionModel'
+import { animationFrame, evolutionLength, sceneSpriteTop, firstStep, nextStep, optionsWidth, type EvolutionChoices, type EvolutionStep, type LeagueEvolution } from './evolutionModel'
 
 const LENGTH = evolutionLength()
 const frameShowsNew = (step: EvolutionStep, frame: number) => { return step === 'animating' && animationFrame(frame).evolved }
@@ -89,11 +89,11 @@ export function EvolutionScene({ evolutions, nameOf, hpOf, onDone, scale, reserv
           {row >= 0 && <div className="evolution-bg" style={{ left: 0, top: 0, width: 240, height: 112, backgroundImage: `url("${emeraldTheme.asset('evolucion-fondo')}")`, backgroundPosition: `0 ${-160 * row}px` }} />}
           {scales ? (
             <>
-              <img className="mon-front evolution-silhouette" src={emeraldSprite('front', current.species)} alt="" style={{ left: 88, top: 24, transform: `scale(${scales[0] / 256})` }} />
-              <img className="mon-front evolution-silhouette" src={emeraldSprite('front', chosen)} alt="" style={{ left: 88, top: 24, transform: `scale(${scales[1] / 256})` }} />
+              <img className="mon-front evolution-silhouette" src={emeraldSprite('front', current.species)} alt="" style={{ left: 88, top: sceneSpriteTop(current.species), transform: `scale(${scales[0] / 256})` }} />
+              <img className="mon-front evolution-silhouette" src={emeraldSprite('front', chosen)} alt="" style={{ left: 88, top: sceneSpriteTop(chosen), transform: `scale(${scales[1] / 256})` }} />
             </>
           ) : (
-            <img className="mon-front" src={emeraldSprite('front', shownSpecies)} alt="" style={{ left: 88, top: 24 }} />
+            <img className="mon-front" src={emeraldSprite('front', shownSpecies)} alt="" style={{ left: 88, top: sceneSpriteTop(shownSpecies) }} />
           )}
           {flash > 0 && <div className="evolution-flash" style={{ left: 0, top: 0, width: 240, height: 160, opacity: flash }} />}
           <img src={emeraldTheme.asset('combate-caja-mensaje')} alt="" style={{ left: 0, top: 112 }} />

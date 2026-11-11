@@ -583,10 +583,12 @@ def evolution_bg():
         colors = [(0, 0, 0)] * 256
         for bank in range(16):
             colors[bank * 16:(bank + 1) * 16] = [base[i] for i in row]
-        frame = Image.new('RGBA', (240, 160), (0, 0, 0, 255))
+        # El mapa entero (32 x 32 teselas) tiene el centro del remolino en (128,80); se recorta para dejarlo en (120,64), el centro
+        # del Pokémon en la escena (CreateSprite(…, 120, 64, …)), y que los dos coincidan (Jose, 12/11/2026).
+        frame = Image.new('RGBA', (256, 256), (0, 0, 0, 255))
         for layer in ('bg_outer.bin', 'bg_inner.bin'):
-            frame.alpha_composite(tilemap(tiles, u16(p / layer), 30, 20, 32, colors))
-        strip.paste(frame.convert('RGB'), (0, 160 * k))
+            frame.alpha_composite(tilemap(tiles, u16(p / layer), 32, 32, 32, colors))
+        strip.paste(frame.crop((8, 16, 248, 176)).convert('RGB'), (0, 160 * k))
     save(strip, 'evolucion-fondo.png')
 
 

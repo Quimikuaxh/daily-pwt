@@ -3,6 +3,7 @@
  * `leagueEvolutionTargets`), y la secuencia de mensajes de la escena por miembro. Los de una forma no preguntan; los de varias, sí.
  */
 import { leagueEvolutionTargets, type CampaignDefinition, type CampaignState } from '../../core/nuzlocke/campaign'
+import emeraldSprites from '../../generated/emerald/sprites.json'
 
 export type LeagueEvolution = { id: string; species: string; level: number; targets: string[] }
 
@@ -93,3 +94,10 @@ export function animationFrame(frame: number): { row: number; scales: [number, n
     evolved: after >= 0,
   }
 }
+
+/**
+ * Arriba del sprite en la escena para que el dibujo quede centrado en (120,64), el centro del remolino del fondo (Jose, 12/11/2026):
+ * el frente va pegado abajo en su recuadro de 64 x 64 con `frontY` filas vacías encima, así que se sube la mitad de ese hueco.
+ */
+export const sceneSpriteTop = (species: string): number =>
+  32 - Math.round(((emeraldSprites as Record<string, { frontY: number }>)[species]?.frontY ?? 0) / 2)
