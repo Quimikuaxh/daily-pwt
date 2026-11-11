@@ -310,6 +310,8 @@ npm run lint
 
 ### Tests e2e
 
+
+- **Cuenta simulada (E2E-78):** `npx playwright test --config e2e/nickname.config.ts`, aparte de `npm run test:e2e` porque necesita un build con una URL de Supabase ficticia (intercepta toda la API) y usa el mismo `dist-e2e` y puerto.
 ```sh
 npm run test:e2e:install   # solo la primera vez: chromium y webkit
 npm run test:e2e

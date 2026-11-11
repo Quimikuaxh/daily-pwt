@@ -28,6 +28,8 @@ type TopScreenProps = {
   /** Cambio de Pokémon en curso (retirada y envío) de ese bando; `null` si no hay. */
   switchAnim: SwitchAnimation | null
   avatar: Avatar
+  /** Nombre del jugador en la pancarta VS (su nickname); sin él, el del protagonista (Nate o Rosa). */
+  playerName?: string
   message: string | null
   onAdvance: () => void
   speed?: number
@@ -105,7 +107,7 @@ function MonShadow({ mon, side, data }: { mon: MonView; side: 'front' | 'back'; 
 }
 
 /** Pantalla superior (256x192): fondo del PWT, Pokémon, cajas de datos, clima y caja de mensajes. */
-export function TopScreen({ view, data, challenge, introPhase, switchAnim, avatar, message, onAdvance, speed, reducedMotion, moveFx = null }: TopScreenProps) {
+export function TopScreen({ view, data, challenge, introPhase, switchAnim, avatar, message, onAdvance, speed, reducedMotion, moveFx = null, playerName }: TopScreenProps) {
   const fieldRef = useRef(null as HTMLElement | null)
   const rivalMon = view ? activeMon(view.rival) : null
   const playerMon = view ? activeMon(view.player) : null
@@ -162,7 +164,7 @@ export function TopScreen({ view, data, challenge, introPhase, switchAnim, avata
       <MessageBox text={message} onAdvance={onAdvance} />
       {(introPhase === 'loading' || introPhase === 'iris') && <IrisWipe />}
       {introPhase === 'vs' && (
-        <VsBanner playerName={avatar.name} playerSprite={avatar.front} rivalName={challenge.trainer.nameEs} rivalSprite={trainerVsSprite(challenge.trainer.sprite)} />
+        <VsBanner playerName={playerName ?? avatar.name} playerSprite={avatar.front} rivalName={challenge.trainer.nameEs} rivalSprite={trainerVsSprite(challenge.trainer.sprite)} />
       )}
     </section>
   )

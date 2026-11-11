@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { VsBanner } from './VsBanner'
 import { AVATARS, VS_LOGO } from './introAssets'
 import { INTRO_DURATIONS_MS } from '../../hooks/useBattle'
@@ -14,6 +14,13 @@ describe('VsBanner', () => {
     expect(banner).toHaveTextContent('Nate')
     expect(banner).toHaveTextContent('Misty')
     expect(banner.querySelector('img.bt-vs-logo')).toHaveAttribute('src', VS_LOGO)
+  })
+
+  it('muestra el nickname literal también en el nombre accesible (UT-180)', () => {
+    render(<VsBanner playerName="Jose_11" playerSprite={AVATARS.rosa.front} rivalName="Misty" rivalSprite="/sprites/trainers/misty-vs.png" />)
+    const banner = screen.getByRole('img', { name: 'Jose_11 contra Misty' })
+    expect(within(banner).getByText('Jose_11')).toBeInTheDocument()
+    expect(banner.querySelector('img.bt-vs-trainer')).toHaveAttribute('src', AVATARS.rosa.front)
   })
 
   it('cada protagonista tiene su sprite de frente y la fase dura 2 s a x1', () => {

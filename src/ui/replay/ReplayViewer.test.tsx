@@ -328,3 +328,17 @@ describe('visor de repeticiones (UT-107)', () => {
     for (const spy of [stop, play, paused]) spy.mockRestore()
   })
 })
+
+// UT-180: el nombre del dueño prevalece sobre el nickname de quien mira, también en directo.
+describe('nickname en la pancarta de repeticiones (RF-137)', () => {
+  it.each([
+    { own: true, ownName: 'Jose_11', expected: 'Jose_11' },
+    { own: false, ownName: 'Jose_11', playerName: 'Eva', expected: 'Eva' },
+    { own: false, ownName: 'Jose_11', playerName: 'Eva', live: { nickname: 'Eva' }, expected: 'Eva' },
+    { own: true, expected: 'Rosa' },
+  ])('muestra $expected (propia: $own, directo: $live)', async ({ expected, ...names }) => {
+    render(<ReplayViewer replay={{ ...replay, battleSeed: 'a' }} data={data} settings={DEFAULT_SETTINGS} onSoundChange={vi.fn()} onExit={vi.fn()} {...names} />)
+    await settle(10)
+    expect(within(screen.getByRole('img', { name: `${expected} contra ${challenge.trainer.nameEs}` })).getByText(expected)).toBeInTheDocument()
+  })
+})

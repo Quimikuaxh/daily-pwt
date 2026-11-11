@@ -12,10 +12,10 @@ const data = makeGameData()
 const challenge = getDailyChallenge('2026-10-17', data)
 const TURN_LINES = ['|move|p1a: Garchomp|Earthquake|p2a: Snorlax', '|-supereffective|p2a: Snorlax', '|move|p2a: Snorlax|Tackle|p1a: Garchomp']
 
-function mount(animations: 'always' | 'system' | 'never' = 'always') {
+function mount(animations: 'always' | 'system' | 'never' = 'always', names: { trainerName?: string; playerLabel?: string; battleSeed?: string } = {}) {
   const client = mockClient()
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-  render(<BattleScreen client={client as any} data={data} challenge={challenge} playerLead={0} battleSeed="seed-1" animations={animations} onFinish={vi.fn()} onExit={vi.fn()} />)
+  render(<BattleScreen client={client as any} data={data} challenge={challenge} playerLead={0} battleSeed="seed-1" {...names} animations={animations} onFinish={vi.fn()} onExit={vi.fn()} />)
   return { client, user }
 }
 const phase = () => screen.getByTestId('field').getAttribute('data-intro')
@@ -129,6 +129,20 @@ describe('intro del combate (PRD §10.2.1)', () => {
     client.emit(mkUpdate())
     expect(await msUntil(() => phase() === 'done')).toBeLessThanOrEqual(7000)
     expect(screen.getByTestId('battle-screen')).toHaveAttribute('data-reduced-motion', 'true')
+  })
+})
+
+describe('nombre del jugador en la pancarta VS (UT-180, RF-137)', () => {
+  it.each([
+    { trainerName: 'Jose_11', expected: 'Jose_11' },
+    { trainerName: 'Jose_11', playerLabel: 'Eva', expected: 'Eva' },
+    { playerLabel: 'Eva', expected: 'Eva' },
+    { battleSeed: 'b', expected: 'Nate' },
+    { battleSeed: 'a', expected: 'Rosa' },
+  ])('usa $expected con $trainerName / $playerLabel / $battleSeed', ({ expected, ...names }) => {
+    const { client } = mount('always', names)
+    client.emit(mkUpdate())
+    expect(within(screen.getByRole('img', { name: `${expected} contra ${challenge.trainer.nameEs}` })).getByText(expected)).toBeInTheDocument()
   })
 })
 

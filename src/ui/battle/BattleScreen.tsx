@@ -52,6 +52,8 @@ type BattleScreenProps = {
   replayBadge?: { text: string; label: string }
   /** Rótulo del contador del jugador: «Tú» o, en el visor del combate de otro (amigo, directo, enlace ajeno), su nickname. */
   playerLabel?: string
+  /** Nickname de quien juega, para la pancarta VS; si el combate es de otro, va su `playerLabel`. */
+  trainerName?: string
   controls?: (openTeam: (side: ReplayTeam) => void) => ReactNode
   /** Reanudación de un oficial guardado: sin intro y con las decisiones ya tomadas reproducidas. */
   replay?: BattleParams['replay']
@@ -83,7 +85,7 @@ type TouchChoice = { request: BattleRequest | null; mode: TouchMode }
 
 const isInteractive = (target: EventTarget | null): boolean => target instanceof HTMLElement && target.closest('button, a, input, select, textarea, [role="dialog"]') !== null
 
-export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', replayBadge, playerLabel = es.battle.you, liveApi, controls, replay, onDecision, onSettled, onReplayFailed, paused, initialSpeed, onSpeedChange, animations = 'always', sound, onSoundChange, musicMuted = false, onFinish, onExit }: BattleScreenProps) {
+export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', replayBadge, playerLabel = es.battle.you, liveApi, controls, replay, onDecision, onSettled, onReplayFailed, paused, initialSpeed, onSpeedChange, animations = 'always', sound, onSoundChange, musicMuted = false, onFinish, onExit, trainerName }: BattleScreenProps) {
   const { trainer, rivalTeam, playerTeam } = challenge
   const speciesName = (speciesId: string, fallback: string): string => data.names.species[speciesId] ?? fallback
   // Grito de una especie: va por su `spriteId` (las formas tienen el suyo o el de la especie base; `gen:cries`).
@@ -337,7 +339,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                 />
               )}
               <div className="bt-underlay" inert={partyOpen || rivalOpen || replayPartyOpen || replayRivalOpen}>
-                <TopScreen view={battle.view} data={data} challenge={challenge} introPhase={battle.introPhase} switchAnim={battle.switchAnim} avatar={avatar} message={message} onAdvance={advance} speed={battle.speed} reducedMotion={reducedMotion} moveFx={reducedMotion ? null : battle.moveFx} />
+                <TopScreen view={battle.view} data={data} challenge={challenge} introPhase={battle.introPhase} switchAnim={battle.switchAnim} avatar={avatar} playerName={playerLabel !== es.battle.you ? playerLabel : trainerName} message={message} onAdvance={advance} speed={battle.speed} reducedMotion={reducedMotion} moveFx={reducedMotion ? null : battle.moveFx} />
                 {battle.failed ? (
                   <section role="alert" className="bt-touch bt-error" style={{ height: SCREEN_HEIGHT }}>
                     <p>{es.battle.failure}</p>

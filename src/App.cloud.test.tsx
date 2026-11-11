@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
 import { getDailyChallenge } from './core/challenge'
@@ -34,12 +34,12 @@ afterEach(() => {
   window.history.replaceState(null, '', '/')
 })
 
-async function mountApp(cloud: ReturnType<typeof fakeCloud>) {
+async function mountApp(cloud: ReturnType<typeof fakeCloud> | null) {
   setMadridTime(LAUNCH, 12, 0, 0)
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-  render(<App data={data} store={new LocalStorageStore(new MemoryStorage())} cloud={Promise.resolve(cloud)} createClient={() => { const client = mockClient(); clients.push(client); return client as any }} />)
+  render(<App data={data} store={new LocalStorageStore(new MemoryStorage())} cloud={cloud ? Promise.resolve(cloud) : null} createClient={() => { const client = mockClient(); clients.push(client); return client as any }} />)
   // La cuenta se carga aparte (import dinámico): se espera a que abra la sesión.
-  await vi.waitFor(() => expect(cloud.auth.getSession).toHaveBeenCalled())
+  if (cloud) await vi.waitFor(() => expect(cloud.auth.getSession).toHaveBeenCalled())
   await settle(10)
   return user
 }
@@ -130,5 +130,55 @@ describe('réplica del oficial (UT-101)', () => {
     await settle(10)
     expect(screen.getByText(/en otro dispositivo/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /^combate oficial/i })).toHaveTextContent(/reanudar/i)
+  })
+})
+
+describe('nickname desde la cuenta hasta la pancarta VS (UT-180, RF-137)', () => {
+  it.each([false, true])('combate propio con sesión anónima=%s usa el nickname', async (anonymous) => {
+    const cloud = fakeCloud({ userId: 'jugador-vs', anonymous }, fakeApi({
+      ensureProfile: async () => ({ nickname: 'Jose_11', created: false, registered: !anonymous }),
+    }))
+    const user = await mountApp(cloud)
+    await startOfficial(user)
+    await settle(10)
+    clients[0].emit(mkUpdate())
+    const rival = getDailyChallenge(LAUNCH, data).trainer.nameEs
+    expect(within(screen.getByRole('img', { name: `Jose_11 contra ${rival}` })).getByText('Jose_11')).toBeInTheDocument()
+  })
+
+  it('sin servicio de cuentas usa Nate o Rosa', async () => {
+    const user = await mountApp(null)
+    await startOfficial(user)
+    await settle(10)
+    clients[0].emit(mkUpdate())
+    const banner = screen.getByRole('img', { name: /^(Nate|Rosa) contra / })
+    expect(within(banner).getByText(/^(Nate|Rosa)$/)).toBeInTheDocument()
+  })
+
+  it('sin nickname por fallo al cargar el perfil usa el protagonista', async () => {
+    const cloud = fakeCloud({ userId: 'invitado-vs', anonymous: true }, fakeApi({
+      ensureProfile: async () => { throw serverError('profile_unavailable') },
+    }))
+    const user = await mountApp(cloud)
+    await startOfficial(user)
+    await settle(10)
+    clients[0].emit(mkUpdate())
+    const banner = screen.getByRole('img', { name: /^(Nate|Rosa) contra / })
+    expect(within(banner).getByText(/^(Nate|Rosa)$/)).toBeInTheDocument()
+  })
+
+  it.each([true, false])('enlace compartido propio=%s conserva el nombre de su dueño', async (mine) => {
+    const challenge = getDailyChallenge(LAUNCH, data)
+    const encoded = await encodeReplay({ version: 1, challenge, playerLead: 0, battleSeed: 's', ai: 'heuristic', steps: [{ lines: [], view: (mkUpdate() as { view: unknown }).view as never }], ended: null })
+    const cloud = fakeCloud({ userId: 'jugador-vs', anonymous: false }, fakeApi({
+      ensureProfile: async () => ({ nickname: 'Jose_11', created: false, registered: true }),
+      getSharedReplay: async (id) => ({ id, nickname: mine ? 'Jose_11' : 'Eva', date: LAUNCH, challengeNumber: 1, trainerId: challenge.trainer.id, data: encoded, mine }),
+    }))
+    window.history.replaceState(null, '', '/?replay=abcde12345')
+    await mountApp(cloud)
+    await vi.waitFor(() => expect(screen.getByTestId('battle-mode')).toHaveAttribute('data-mode', 'replay'))
+    await settle(10)
+    const expected = mine ? 'Jose_11' : 'Eva'
+    expect(within(screen.getByRole('img', { name: `${expected} contra ${challenge.trainer.nameEs}` })).getByText(expected)).toBeInTheDocument()
   })
 })
