@@ -5,7 +5,7 @@ import progression from '../../../data/nuzlocke/hoenn-emerald-progression.json'
 import { createCampaign, type CampaignDefinition, type CampaignState } from '../../core/nuzlocke/campaign'
 import type { CampaignEncounter } from './hoennRoute'
 import { leagueBeaten, participantText, toggleParticipant } from './leagueModel'
-import { leagueEvolutions, nextStep, optionsWidth } from './evolutionModel'
+import { animationFrame, backgroundRows, EVOLUTION_INTRO_FRAMES, evolutionLength, leagueEvolutions, nextStep, optionsWidth, silhouetteFrames } from './evolutionModel'
 import { LeagueScreen } from './LeagueScreen'
 import { EvolutionScene } from './EvolutionScene'
 
@@ -34,9 +34,19 @@ describe('modelo de la Liga', () => {
     const state = { ...createCampaign('ut184'), phase: 'prepare', encounterIndex: 8,
       members: [member('a', 'kirlia'), member('b', 'grovyle'), member('c', 'gloom'), member('d', 'sceptile'), member('e', 'ralts', { fainted: true })] } as unknown as CampaignState
     expect(leagueEvolutions(definition, state).map((evolution) => [evolution.id, evolution.targets])).toEqual([['a', ['gardevoir']], ['b', ['sceptile']]])
-    expect(nextStep('evolving', 1)).toBe('evolved')
+    // Cambio de requisito (Jose, 12/11/2026): entre la pregunta y la felicitación va la animación de evolución.
+    expect(nextStep('evolving', 1)).toBe('animating')
     expect(nextStep('evolving', 2)).toBe('choose')
+    expect(nextStep('choose', 2)).toBe('animating')
+    expect(nextStep('animating', 2)).toBe('evolved')
     expect(nextStep('evolved', 2)).toBeNull()
+    const frames = silhouetteFrames()
+    expect(frames[0]).toEqual([246, 26])
+    expect(frames.at(-1)).toEqual([256, 16])
+    expect(backgroundRows().slice(0, 20).every((row) => row === -1)).toBe(true)
+    expect(animationFrame(0)).toMatchObject({ scales: null, evolved: false })
+    expect(animationFrame(EVOLUTION_INTRO_FRAMES).scales).toEqual(frames[0])
+    expect(animationFrame(evolutionLength() - 1)).toMatchObject({ scales: null, evolved: true })
     expect(optionsWidth(['VILEPLUME', 'BELLOSSOM'])).toBe(11)
   })
 })
@@ -76,9 +86,13 @@ describe('pantallas de la Liga', () => {
     fireEvent.click(screen.getByRole('button', { name: /^Continuar: / }))
     expect(screen.getByRole('status')).toHaveTextContent('¿En qué debería evolucionar GLOOM?')
     fireEvent.click(screen.getByRole('menuitem', { name: 'Evolucionar en VILEPLUME' }))
+    // Durante la animación sigue el anuncio; tocar la salta.
+    expect(screen.getByRole('status')).toHaveTextContent('¿Qué? ¡GLOOM está evolucionando!')
+    fireEvent.click(screen.getByRole('button', { name: /^Continuar: / }))
     expect(screen.getByRole('status')).toHaveTextContent('¡Enhorabuena! ¡Tu GLOOM ha evolucionado en VILEPLUME!')
     fireEvent.click(screen.getByRole('button', { name: /^Continuar: / }))
     expect(screen.getByRole('status')).toHaveTextContent('¿Qué? ¡KIRLIA está evolucionando!')
+    fireEvent.click(screen.getByRole('button', { name: /^Continuar: / }))
     fireEvent.click(screen.getByRole('button', { name: /^Continuar: / }))
     expect(screen.getByRole('status')).toHaveTextContent('¡Enhorabuena! ¡Tu KIRLIA ha evolucionado en GARDEVOIR!')
     fireEvent.click(screen.getByRole('button', { name: /^Continuar: / }))

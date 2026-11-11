@@ -566,5 +566,29 @@ def bag():
         save(out, f'mochila-{who}.png')
 
 
+def evolution_bg():
+    # Fondo animado de la escena de evolución (evolution_scene.c): bg.png con las capas bg_inner/bg_outer.bin y los 50 pasos de
+    # paleta de sBgAnim_PalIndexes sobre bg_anim.pal (InitMovingBgPalette), en una tira vertical de 50 fotogramas de 240 x 160 que la
+    # escena recorre con sBgAnim_PaletteControl. bg.png está en gris (modo L): el gris v es el índice 15 - v/17, como arrow.png.
+    p = G / 'evolution_scene'
+    source = (SRC / 'src/evolution_scene.c').read_text()
+    table = re.search(r'sBgAnim_PalIndexes\[\]\[16\] = \{(.*?)\};', source, re.S).group(1)
+    rows = [[int(n) for n in row.split(',') if n.strip()] for row in re.findall(r'\{([^}]*)\}', table)]
+    base = jasc(p / 'bg_anim.pal')[:16]
+    gray = Image.open(p / 'bg.png').convert('L')
+    tiles = Image.new('P', gray.size)
+    tiles.putdata([15 - v // 17 for v in gray.getdata()])
+    strip = Image.new('RGB', (240, 160 * len(rows)))
+    for k, row in enumerate(rows):
+        colors = [(0, 0, 0)] * 256
+        for bank in range(16):
+            colors[bank * 16:(bank + 1) * 16] = [base[i] for i in row]
+        frame = Image.new('RGBA', (240, 160), (0, 0, 0, 255))
+        for layer in ('bg_outer.bin', 'bg_inner.bin'):
+            frame.alpha_composite(tilemap(tiles, u16(p / layer), 30, 20, 32, colors))
+        strip.paste(frame.convert('RGB'), (0, 160 * k))
+    save(strip, 'evolucion-fondo.png')
+
+
 comun.terminar((fonts, window_frames, region_map, dome_card, badges, portraits, species, factory, summary_pages, ball_display,
-                storage, party_screen, moves_page, type_icons, list_arrows, battle_screen, final_screens, item_icons, bag))
+                storage, party_screen, moves_page, type_icons, list_arrows, battle_screen, final_screens, item_icons, bag, evolution_bg))

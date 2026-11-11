@@ -120,8 +120,10 @@ test('T5 Liga: evoluciones, los seis del PC, elección de participantes y combat
   await page.getByRole('button', { name: /^Continuar/ }).click()
   // Kirlia, Grovyle y Machop evolucionan (sin objetos); el caído no.
   await expect(page.getByRole('status').filter({ hasText: '¿Qué? ¡KIRLIA está evolucionando!' })).toBeVisible()
-  for (let i = 0; i < 6; i++) await page.getByRole('button', { name: /^Continuar: / }).click()
-  await expect(page.getByRole('button', { name: /^Equipo, puesto 1: GARDEVOIR/ })).toBeVisible()
+  // Anuncio, animación (tocar la salta) y felicitación por cada uno, hasta llegar a Equipo y PC.
+  const team = page.getByRole('button', { name: /^Equipo, puesto 1: GARDEVOIR/ })
+  for (let i = 0; i < 20 && !(await team.count()); i++) await page.getByRole('button', { name: /^Continuar: / }).click({ timeout: 2000 }).catch(() => undefined)
+  await expect(team).toBeVisible()
   await page.getByRole('button', { name: 'Aceptar el equipo y preparar los movimientos' }).click()
   await expect(page.getByRole('region', { name: 'Próximo rival de la Liga: Sixto' })).toBeVisible()
   await page.getByRole('button', { name: /^SCEPTILE, nivel 45, APTO$/ }).click()
