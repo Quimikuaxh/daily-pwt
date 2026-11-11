@@ -13,7 +13,7 @@ function toCloudError(error: { message?: string; code?: string } | null | undefi
 }
 
 /** `functionsUrl`: las Edge Functions del proyecto (`…/functions/v1`), para el aviso por Discord. */
-function supabaseApi(client: SupabaseClient, functionsUrl: string): CloudApi {
+export function supabaseApi(client: SupabaseClient, functionsUrl: string): CloudApi {
   async function rpc<T>(name: string, args: Record<string, unknown> = {}): Promise<T> {
     let result
     try {
@@ -27,6 +27,11 @@ function supabaseApi(client: SupabaseClient, functionsUrl: string): CloudApi {
   const numeric = <T extends Record<string, unknown>>(rows: T[], key: keyof T) => rows.map((row) => ({ ...row, [key]: Number(row[key]) }))
 
   return {
+    getCampaign: () => rpc('get_campaign'),
+    saveCampaign: ({ operationId, expectedRevision, record }) => rpc('save_campaign', {
+      p_operation_id: operationId, p_expected_revision: expectedRevision,
+      p_version: record.version, p_state: record.state, p_battle: record.battle,
+    }),
     ensureProfile: () => rpc('ensure_profile'),
     setNickname: (nickname) => rpc('set_nickname', { p_nickname: nickname }),
     createGuestClaim: () => rpc('create_guest_claim'),

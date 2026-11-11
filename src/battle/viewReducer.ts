@@ -1,5 +1,6 @@
 import type { BattleView, MonView, SideView } from './protocol'
 import { isFaintedCondition } from './condition'
+import { parseBattleIdentity } from './identity'
 import { toId } from '../core/id'
 import { applyFieldLine } from './fieldState'
 
@@ -30,11 +31,13 @@ type Target = { side: 'player' | 'rival'; name: string }
 function parseTarget(text: string | undefined): Target | null {
   const match = /^p([12])[a-c]?: (.*)$/.exec(text ?? '')
   if (!match) return null
-  return { side: match[1] === '1' ? 'player' : 'rival', name: toId(match[2]) }
+  return { side: match[1] === '1' ? 'player' : 'rival', name: match[2] }
 }
 
 function indexOfMon(side: SideView, speciesId: string, preferBench: boolean): number {
-  const matches = side.team.flatMap((mon, index) => (mon.species === speciesId ? [index] : []))
+  const identity = parseBattleIdentity(speciesId)
+  if (identity.teamIndex !== undefined) return side.team.findIndex(mon => mon.teamIndex === identity.teamIndex && mon.species === identity.species)
+  const matches = side.team.flatMap((mon, index) => (mon.species === identity.species ? [index] : []))
   if (matches.length <= 1) return matches[0] ?? -1
   const alive = matches.filter((index) => !side.team[index].fainted)
   if (preferBench) return alive.find((index) => index !== side.active) ?? alive[0] ?? matches[0]
@@ -78,7 +81,7 @@ function applyLine(view: BattleView, line: string): void {
       if (!target) return
       const side = view[target.side]
       const detailsSpecies = toId((fields[3] ?? '').split(',')[0])
-      const index = indexOfMon(side, detailsSpecies || target.name, true)
+      const index = indexOfMon(side, parseBattleIdentity(target.name).teamIndex !== undefined ? target.name : detailsSpecies || target.name, true)
       if (index < 0) return
       // El que se va pierde el sustituto (con Relevo pasa al nuevo: lo trae la instantánea del final del turno).
       if (side.active !== null && side.team[side.active]) delete side.team[side.active].substitute

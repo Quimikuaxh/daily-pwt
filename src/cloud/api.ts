@@ -1,5 +1,9 @@
 import type { AiKind, EndReason, EngineEnd } from '../battle/protocol'
 import type { DayRecord, Decision, NewOfficial, VoidReason } from '../storage/gameStore'
+import type { CampaignRecord } from '../storage/campaignStore'
+
+export type CampaignOperation = { operationId: string; expectedRevision: number; record: CampaignRecord }
+export type CampaignReceipt = { operationId: string; revision: number }
 
 /**
  * Llamadas a las funciones del esquema `pwt` (supabase/migrations, DEC-63). La aplicación solo conoce esta interfaz: la implementación
@@ -71,6 +75,8 @@ export type LiveBattle =
   | { state: 'void'; date: string }
 
 export interface CloudApi {
+  getCampaign(): Promise<unknown>
+  saveCampaign(operation: CampaignOperation): Promise<CampaignReceipt>
   ensureProfile(): Promise<{ nickname: string; created: boolean; registered: boolean }>
   setNickname(nickname: string): Promise<string>
   /** Sesión anónima: código de un solo uso (una hora) para pasar lo jugado a la cuenta al iniciar sesión. */

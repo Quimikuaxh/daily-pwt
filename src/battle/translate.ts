@@ -1,5 +1,6 @@
 import type { NamesEs, TrainerGender } from '../core/types'
 import { es } from '../i18n/es'
+import { parseBattleIdentity } from './identity'
 import { toId } from '../core/id'
 
 export type TranslateContext = {
@@ -50,6 +51,9 @@ function effectName(ctx: TranslateContext, text: string | undefined): string | u
   return undefined
 }
 
+const speciesName = (ctx: TranslateContext, name: string): string =>
+  lookup(ctx.names.species, parseBattleIdentity(name).species) ?? name.replace(/__\d+$/, '')
+
 const moveName = (ctx: TranslateContext, name: string | undefined): string => lookup(ctx.names.moves, name) ?? log.unknownMove
 const itemName = (ctx: TranslateContext, name: string | undefined): string => lookup(ctx.names.items, name) ?? log.unknownItem
 const abilityName = (ctx: TranslateContext, name: string | undefined): string => lookup(ctx.names.abilities, name) ?? log.unknownAbility
@@ -65,7 +69,7 @@ function parseMon(ref: string | undefined): MonRef | null {
 function monText(ctx: TranslateContext, ref: string | undefined): string {
   const mon = parseMon(ref)
   if (!mon) return log.unknownMon
-  const species = lookup(ctx.names.species, mon.name) ?? mon.name
+  const species = speciesName(ctx, mon.name)
   return mon.isRival ? log.rivalMon(species, ctx.trainer.nameEs) : species
 }
 
@@ -237,7 +241,7 @@ function translateKnownLine(f: Fields, ctx: TranslateContext): string | null | u
     case 'switch': {
       const mon = parseMon(first)
       if (!mon?.isRival) return log.playerSends(monText(ctx, first))
-      return log.rivalSwitchIn(ctx.trainer.nameEs, lookup(ctx.names.species, mon.name) ?? mon.name)
+      return log.rivalSwitchIn(ctx.trainer.nameEs, speciesName(ctx, mon.name))
     }
     case 'drag':
       return parseMon(first)?.isRival ? log.rivalDragged(monText(ctx, first)) : log.playerDragged(monText(ctx, first))
@@ -345,7 +349,7 @@ function translateKnownLine(f: Fields, ctx: TranslateContext): string | null | u
     }
     case '-transform': {
       const target = parseMon(f.args[1])
-      const species = target ? lookup(ctx.names.species, target.name) ?? target.name : monText(ctx, f.args[1])
+      const species = target ? speciesName(ctx, target.name) : monText(ctx, f.args[1])
       return log.transformed(monText(ctx, first), species)
     }
     case '-formechange':

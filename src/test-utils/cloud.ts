@@ -10,6 +10,8 @@ export const networkError = () => new CloudError('Failed to fetch', false)
 /** `CloudApi` falsa: todo responde bien y vacío; cada método es un `vi.fn` que los tests cambian. */
 export function fakeApi(over: Partial<CloudApi> = {}): CloudApi & { [K in keyof CloudApi]: ReturnType<typeof vi.fn> } {
   const api: CloudApi = {
+    getCampaign: async () => null,
+    saveCampaign: async ({ operationId, record }) => ({ operationId, revision: record.revision }),
     ensureProfile: async () => ({ nickname: 'entrenador_00001', created: true, registered: true }),
     setNickname: async (nickname) => nickname,
     createGuestClaim: async () => 'codigo-1',

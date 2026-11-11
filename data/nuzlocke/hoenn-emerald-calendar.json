@@ -1,0 +1,884 @@
+{
+  "schemaVersion": 1,
+  "rulesVersion": "hoenn-emerald:2026-11-11",
+  "source": {
+    "revision": "731ad5bfd6e6f265508d0efcca0ba42f9dcf5881",
+    "evidence": "hoenn-emerald-items.json"
+  },
+  "approval": "2026-11-11",
+  "milestones": [
+    "petra",
+    "marcial",
+    "erico",
+    "candela",
+    "norman",
+    "alana",
+    "vito-y-leti",
+    "galano",
+    "sixto",
+    "fatima",
+    "nivea",
+    "dracon",
+    "plubio"
+  ],
+  "friendshipWins": 3,
+  "leagueFriendship": true,
+  "battleHappiness": 255,
+  "beautyBefore": "alana",
+  "items": {
+    "tm01": {
+      "before": "alana",
+      "move": "focuspunch",
+      "sources": [
+        {
+          "before": "alana",
+          "map": "Route115",
+          "event": "Route115_EventScript_ItemTMFocusPunch"
+        }
+      ]
+    },
+    "tm02": {
+      "before": "sixto",
+      "move": "dragonclaw",
+      "sources": [
+        {
+          "before": "sixto",
+          "map": "MeteorFalls_B1F_2R",
+          "event": "MeteorFalls_B1F_2R_EventScript_ItemTMDragonClaw"
+        }
+      ]
+    },
+    "tm03": {
+      "before": "sixto",
+      "move": "waterpulse",
+      "sources": [
+        {
+          "before": "sixto",
+          "map": "SootopolisCity_Gym_1F",
+          "event": "SootopolisCity_Gym_1F_EventScript_GiveWaterPulse"
+        },
+        {
+          "before": "sixto",
+          "map": "SootopolisCity_Gym_1F",
+          "event": "SootopolisCity_Gym_1F_EventScript_GiveWaterPulse2"
+        }
+      ]
+    },
+    "tm04": {
+      "before": "galano",
+      "move": "calmmind",
+      "sources": [
+        {
+          "before": "galano",
+          "map": "MossdeepCity_Gym",
+          "event": "MossdeepCity_Gym_EventScript_GiveCalmMind2"
+        },
+        {
+          "before": "galano",
+          "map": "MossdeepCity_Gym",
+          "event": "MossdeepCity_Gym_EventScript_GiveCalmMind"
+        }
+      ]
+    },
+    "tm05": {
+      "before": "candela",
+      "move": "roar",
+      "sources": [
+        {
+          "before": "candela",
+          "map": "Route114",
+          "event": "Route114_EventScript_RoarGentleman"
+        }
+      ]
+    },
+    "tm06": {
+      "before": "norman",
+      "move": "toxic",
+      "sources": [
+        {
+          "before": "norman",
+          "map": "FieryPath",
+          "event": "FieryPath_EventScript_ItemTMToxic"
+        }
+      ]
+    },
+    "tm07": {
+      "before": "vito-y-leti",
+      "move": "hail",
+      "sources": [
+        {
+          "before": "vito-y-leti",
+          "map": "ShoalCave_LowTideIceRoom",
+          "event": "ShoalCave_LowTideIceRoom_EventScript_ItemTMHail"
+        }
+      ]
+    },
+    "tm08": {
+      "before": "erico",
+      "move": "bulkup",
+      "sources": [
+        {
+          "before": "erico",
+          "map": "DewfordTown_Gym",
+          "event": "DewfordTown_Gym_EventScript_GiveBulkUp"
+        },
+        {
+          "before": "erico",
+          "map": "DewfordTown_Gym",
+          "event": "DewfordTown_Gym_EventScript_GiveBulkUp2"
+        }
+      ]
+    },
+    "tm09": {
+      "before": "petra",
+      "move": "bulletseed",
+      "sources": [
+        {
+          "before": "petra",
+          "map": "Route104",
+          "event": "Route104_EventScript_Boy2"
+        }
+      ]
+    },
+    "tm10": {
+      "before": "erico",
+      "move": "hiddenpower",
+      "sources": [
+        {
+          "before": "alana",
+          "map": "FortreeCity_House2",
+          "event": "FortreeCity_House2_EventScript_HiddenPowerGiver"
+        },
+        {
+          "before": "erico",
+          "map": "SlateportCity",
+          "event": "SlateportCity_Pokemart_PowerTMs"
+        }
+      ]
+    },
+    "tm11": {
+      "before": "alana",
+      "move": "sunnyday",
+      "sources": [
+        {
+          "before": "alana",
+          "map": "ScorchedSlab",
+          "event": "ScorchedSlab_EventScript_ItemTMSunnyDay"
+        }
+      ]
+    },
+    "tm12": {
+      "before": "vito-y-leti",
+      "move": "taunt",
+      "sources": [
+        {
+          "before": "vito-y-leti",
+          "map": "Route110_TrickHouseEnd",
+          "event": "Route110_TrickHouseEnd_EventScript_CompletedPuzzle5"
+        },
+        {
+          "before": "vito-y-leti",
+          "map": "Route110_TrickHouseEntrance",
+          "event": "Route110_TrickHouseEntrance_EventScript_GivePuzzle5Reward"
+        }
+      ]
+    },
+    "tm13": {
+      "before": "erico",
+      "move": "icebeam",
+      "sources": [
+        {
+          "before": "erico",
+          "map": "MauvilleCity_GameCorner",
+          "event": "MauvilleCity_GameCorner_EventScript_BuyTMIceBeam"
+        },
+        {
+          "before": "alana",
+          "map": "AbandonedShip_Room_B1F",
+          "event": "AbandonedShip_Room_B1F_EventScript_ItemTMIceBeam"
+        }
+      ]
+    },
+    "tm14": {
+      "before": "vito-y-leti",
+      "move": "blizzard",
+      "sources": [
+        {
+          "before": "vito-y-leti",
+          "map": "LilycoveCity_DepartmentStore_4F",
+          "event": "LilycoveCity_DepartmentStore_4F_Pokemart_AttackTMs"
+        }
+      ]
+    },
+    "tm15": {
+      "before": "vito-y-leti",
+      "move": "hyperbeam",
+      "sources": [
+        {
+          "before": "vito-y-leti",
+          "map": "LilycoveCity_DepartmentStore_4F",
+          "event": "LilycoveCity_DepartmentStore_4F_Pokemart_AttackTMs"
+        }
+      ]
+    },
+    "tm16": {
+      "before": "vito-y-leti",
+      "move": "lightscreen",
+      "sources": [
+        {
+          "before": "vito-y-leti",
+          "map": "LilycoveCity_DepartmentStore_4F",
+          "event": "LilycoveCity_DepartmentStore_4F_Pokemart_DefenseTMs"
+        }
+      ]
+    },
+    "tm17": {
+      "before": "vito-y-leti",
+      "move": "protect",
+      "sources": [
+        {
+          "before": "vito-y-leti",
+          "map": "LilycoveCity_DepartmentStore_4F",
+          "event": "LilycoveCity_DepartmentStore_4F_Pokemart_DefenseTMs"
+        }
+      ]
+    },
+    "tm18": {
+      "before": "galano",
+      "move": "raindance",
+      "sources": [
+        {
+          "before": "galano",
+          "map": "AbandonedShip_HiddenFloorRooms",
+          "event": "AbandonedShip_HiddenFloorRooms_EventScript_ItemTMRainDance"
+        }
+      ]
+    },
+    "tm19": {
+      "before": "alana",
+      "move": "gigadrain",
+      "sources": [
+        {
+          "before": "alana",
+          "map": "Route123",
+          "event": "Route123_EventScript_GigaDrainGirl"
+        }
+      ]
+    },
+    "tm20": {
+      "before": "vito-y-leti",
+      "move": "safeguard",
+      "sources": [
+        {
+          "before": "vito-y-leti",
+          "map": "LilycoveCity_DepartmentStore_4F",
+          "event": "LilycoveCity_DepartmentStore_4F_Pokemart_DefenseTMs"
+        }
+      ]
+    },
+    "tm22": {
+      "before": "vito-y-leti",
+      "move": "solarbeam",
+      "sources": [
+        {
+          "before": "vito-y-leti",
+          "map": "SafariZone_Northwest",
+          "event": "SafariZone_Northwest_EventScript_ItemTMSolarBeam"
+        }
+      ]
+    },
+    "tm23": {
+      "before": "sixto",
+      "move": "irontail",
+      "sources": [
+        {
+          "before": "sixto",
+          "map": "MeteorFalls_1F_1R",
+          "event": "MeteorFalls_1F_1R_EventScript_ItemTMIronTail"
+        }
+      ]
+    },
+    "tm24": {
+      "before": "erico",
+      "move": "thunderbolt",
+      "sources": [
+        {
+          "before": "alana",
+          "map": "MauvilleCity",
+          "event": "MauvilleCity_EventScript_CompletedNewMauville"
+        },
+        {
+          "before": "erico",
+          "map": "MauvilleCity_GameCorner",
+          "event": "MauvilleCity_GameCorner_EventScript_BuyTMThunderbolt"
+        }
+      ]
+    },
+    "tm25": {
+      "before": "vito-y-leti",
+      "move": "thunder",
+      "sources": [
+        {
+          "before": "vito-y-leti",
+          "map": "LilycoveCity_DepartmentStore_4F",
+          "event": "LilycoveCity_DepartmentStore_4F_Pokemart_AttackTMs"
+        }
+      ]
+    },
+    "tm26": {
+      "before": "galano",
+      "move": "earthquake",
+      "sources": [
+        {
+          "before": "galano",
+          "map": "SeafloorCavern_Room9",
+          "event": "SeafloorCavern_Room9_EventScript_ItemTMEarthquake"
+        }
+      ]
+    },
+    "tm27": {
+      "before": "candela",
+      "move": "return",
+      "sources": [
+        {
+          "before": "candela",
+          "map": "FallarborTown_CozmosHouse",
+          "event": "FallarborTown_CozmosHouse_EventScript_PlayerHasMeteorite"
+        }
+      ]
+    },
+    "tm28": {
+      "before": "candela",
+      "move": "dig",
+      "sources": [
+        {
+          "before": "candela",
+          "map": "Route114_FossilManiacsHouse",
+          "event": "Route114_FossilManiacsHouse_EventScript_FossilManiacsBrother"
+        }
+      ]
+    },
+    "tm29": {
+      "before": "erico",
+      "move": "psychic",
+      "sources": [
+        {
+          "before": "erico",
+          "map": "MauvilleCity_GameCorner",
+          "event": "MauvilleCity_GameCorner_EventScript_BuyTMPsychic"
+        },
+        {
+          "before": "sixto",
+          "map": "VictoryRoad_B1F",
+          "event": "VictoryRoad_B1F_EventScript_ItemTMPsychic"
+        }
+      ]
+    },
+    "tm30": {
+      "before": "vito-y-leti",
+      "move": "shadowball",
+      "sources": [
+        {
+          "before": "vito-y-leti",
+          "map": "MtPyre_6F",
+          "event": "MtPyre_6F_EventScript_ItemTMShadowBall"
+        }
+      ]
+    },
+    "tm31": {
+      "before": "galano",
+      "move": "brickbreak",
+      "sources": [
+        {
+          "before": "galano",
+          "map": "SootopolisCity_House1",
+          "event": "SootopolisCity_House1_EventScript_BrickBreakBlackBelt"
+        }
+      ]
+    },
+    "tm32": {
+      "before": "erico",
+      "move": "doubleteam",
+      "sources": [
+        {
+          "before": "erico",
+          "map": "MauvilleCity_GameCorner",
+          "event": "MauvilleCity_GameCorner_EventScript_BuyTMDoubleTeam"
+        },
+        {
+          "before": "candela",
+          "map": "Route113",
+          "event": "bg_events[6]"
+        }
+      ]
+    },
+    "tm33": {
+      "before": "vito-y-leti",
+      "move": "reflect",
+      "sources": [
+        {
+          "before": "vito-y-leti",
+          "map": "LilycoveCity_DepartmentStore_4F",
+          "event": "LilycoveCity_DepartmentStore_4F_Pokemart_DefenseTMs"
+        }
+      ]
+    },
+    "tm34": {
+      "before": "candela",
+      "move": "shockwave",
+      "sources": [
+        {
+          "before": "candela",
+          "map": "MauvilleCity_Gym",
+          "event": "MauvilleCity_Gym_EventScript_GiveShockWave2"
+        },
+        {
+          "before": "candela",
+          "map": "MauvilleCity_Gym",
+          "event": "MauvilleCity_Gym_EventScript_GiveShockWave"
+        }
+      ]
+    },
+    "tm35": {
+      "before": "erico",
+      "move": "flamethrower",
+      "sources": [
+        {
+          "before": "erico",
+          "map": "MauvilleCity_GameCorner",
+          "event": "MauvilleCity_GameCorner_EventScript_BuyTMFlamethrower"
+        }
+      ]
+    },
+    "tm36": {
+      "before": "alana",
+      "move": "sludgebomb",
+      "sources": [
+        {
+          "before": "alana",
+          "map": "DewfordTown_Hall",
+          "event": "DewfordTown_Hall_EventScript_SludgeBombMan"
+        }
+      ]
+    },
+    "tm37": {
+      "before": "norman",
+      "move": "sandstorm",
+      "sources": [
+        {
+          "before": "norman",
+          "map": "Route111",
+          "event": "Route111_EventScript_ItemTMSandstorm"
+        }
+      ]
+    },
+    "tm38": {
+      "before": "vito-y-leti",
+      "move": "fireblast",
+      "sources": [
+        {
+          "before": "vito-y-leti",
+          "map": "LilycoveCity_DepartmentStore_4F",
+          "event": "LilycoveCity_DepartmentStore_4F_Pokemart_AttackTMs"
+        }
+      ]
+    },
+    "tm39": {
+      "before": "marcial",
+      "move": "rocktomb",
+      "sources": [
+        {
+          "before": "marcial",
+          "map": "RustboroCity_Gym",
+          "event": "RustboroCity_Gym_EventScript_GiveRockTomb"
+        }
+      ]
+    },
+    "tm40": {
+      "before": "vito-y-leti",
+      "move": "aerialace",
+      "sources": [
+        {
+          "before": "vito-y-leti",
+          "map": "FortreeCity_Gym",
+          "event": "FortreeCity_Gym_EventScript_GiveAerialAce2"
+        },
+        {
+          "before": "vito-y-leti",
+          "map": "FortreeCity_Gym",
+          "event": "FortreeCity_Gym_EventScript_GiveAerialAce"
+        }
+      ]
+    },
+    "tm41": {
+      "before": "erico",
+      "move": "torment",
+      "sources": [
+        {
+          "before": "erico",
+          "map": "SlateportCity_BattleTentLobby",
+          "event": "SlateportCity_BattleTentLobby_EventScript_TormentGiver"
+        }
+      ]
+    },
+    "tm42": {
+      "before": "alana",
+      "move": "facade",
+      "sources": [
+        {
+          "before": "alana",
+          "map": "PetalburgCity_Gym",
+          "event": "PetalburgCity_Gym_EventScript_GiveFacade"
+        }
+      ]
+    },
+    "tm43": {
+      "before": "erico",
+      "move": "secretpower",
+      "sources": [
+        {
+          "before": "erico",
+          "map": "SlateportCity",
+          "event": "SlateportCity_Pokemart_PowerTMs"
+        },
+        {
+          "before": "candela",
+          "map": "Route111",
+          "event": "Route111_EventScript_GiveSecretPower"
+        }
+      ]
+    },
+    "tm44": {
+      "before": "vito-y-leti",
+      "move": "rest",
+      "sources": [
+        {
+          "before": "vito-y-leti",
+          "map": "LilycoveCity_House2",
+          "event": "LilycoveCity_House2_EventScript_FatMan"
+        }
+      ]
+    },
+    "tm45": {
+      "before": "erico",
+      "move": "attract",
+      "sources": [
+        {
+          "before": "erico",
+          "map": "VerdanturfTown_BattleTentLobby",
+          "event": "VerdanturfTown_BattleTentLobby_EventScript_AttractGiver"
+        }
+      ]
+    },
+    "tm46": {
+      "before": "erico",
+      "move": "thief",
+      "sources": [
+        {
+          "before": "erico",
+          "map": "SlateportCity_OceanicMuseum_1F",
+          "event": "SlateportCity_OceanicMuseum_1F_EventScript_FamiliarGrunt"
+        }
+      ]
+    },
+    "tm47": {
+      "before": "marcial",
+      "move": "steelwing",
+      "sources": [
+        {
+          "before": "marcial",
+          "map": "GraniteCave_StevensRoom",
+          "event": "GraniteCave_StevensRoom_EventScript_Steven"
+        }
+      ]
+    },
+    "tm48": {
+      "before": "vito-y-leti",
+      "move": "skillswap",
+      "sources": [
+        {
+          "before": "vito-y-leti",
+          "map": "MtPyre_Exterior",
+          "event": "MtPyre_Exterior_EventScript_ItemTMSkillSwap"
+        }
+      ]
+    },
+    "tm50": {
+      "before": "norman",
+      "move": "overheat",
+      "sources": [
+        {
+          "before": "norman",
+          "map": "LavaridgeTown_Gym_1F",
+          "event": "LavaridgeTown_Gym_1F_EventScript_GiveOverheat2"
+        },
+        {
+          "before": "norman",
+          "map": "LavaridgeTown_Gym_1F",
+          "event": "LavaridgeTown_Gym_1F_EventScript_GiveOverheat"
+        }
+      ]
+    },
+    "hm01": {
+      "before": "petra",
+      "move": "cut",
+      "fieldUse": {
+        "badgeFlag": "FLAG_BADGE01_GET",
+        "after": "petra",
+        "source": "src/party_menu.c"
+      },
+      "sources": [
+        {
+          "before": "petra",
+          "map": "RustboroCity_CuttersHouse",
+          "event": "RustboroCity_CuttersHouse_EventScript_Cutter"
+        }
+      ]
+    },
+    "hm02": {
+      "before": "alana",
+      "move": "fly",
+      "fieldUse": {
+        "badgeFlag": "FLAG_BADGE06_GET",
+        "after": "alana",
+        "source": "src/party_menu.c"
+      },
+      "sources": [
+        {
+          "before": "alana",
+          "map": "Route119",
+          "event": "Route119_EventScript_GiveFlyHM"
+        }
+      ]
+    },
+    "hm03": {
+      "before": "alana",
+      "move": "surf",
+      "fieldUse": {
+        "badgeFlag": "FLAG_BADGE05_GET",
+        "after": "norman",
+        "source": "src/party_menu.c"
+      },
+      "sources": [
+        {
+          "before": "alana",
+          "map": "PetalburgCity_WallysHouse",
+          "event": "PetalburgCity_WallysHouse_EventScript_GiveHMSurf"
+        }
+      ]
+    },
+    "hm04": {
+      "before": "candela",
+      "move": "strength",
+      "fieldUse": {
+        "badgeFlag": "FLAG_BADGE04_GET",
+        "after": "candela",
+        "source": "src/party_menu.c"
+      },
+      "sources": [
+        {
+          "before": "candela",
+          "map": "RusturfTunnel",
+          "event": "RusturfTunnel_EventScript_ClearTunnelScene"
+        }
+      ]
+    },
+    "hm05": {
+      "before": "marcial",
+      "move": "flash",
+      "fieldUse": {
+        "badgeFlag": "FLAG_BADGE02_GET",
+        "after": "marcial",
+        "source": "src/party_menu.c"
+      },
+      "sources": [
+        {
+          "before": "marcial",
+          "map": "GraniteCave_1F",
+          "event": "GraniteCave_1F_EventScript_Hiker"
+        }
+      ]
+    },
+    "hm06": {
+      "before": "erico",
+      "move": "rocksmash",
+      "fieldUse": {
+        "badgeFlag": "FLAG_BADGE03_GET",
+        "after": "erico",
+        "source": "src/party_menu.c"
+      },
+      "sources": [
+        {
+          "before": "erico",
+          "map": "MauvilleCity_House1",
+          "event": "MauvilleCity_House1_EventScript_RockSmashDude"
+        }
+      ]
+    },
+    "hm07": {
+      "before": "galano",
+      "move": "waterfall",
+      "fieldUse": {
+        "badgeFlag": "FLAG_BADGE08_GET",
+        "after": "galano",
+        "source": "src/party_menu.c"
+      },
+      "sources": [
+        {
+          "before": "galano",
+          "map": "SootopolisCity",
+          "event": "SootopolisCity_EventScript_GiveWaterfall"
+        }
+      ]
+    },
+    "hm08": {
+      "before": "galano",
+      "move": "dive",
+      "fieldUse": {
+        "badgeFlag": "FLAG_BADGE07_GET",
+        "after": "vito-y-leti",
+        "source": "src/party_menu.c"
+      },
+      "sources": [
+        {
+          "before": "galano",
+          "map": "MossdeepCity_StevensHouse",
+          "event": "MossdeepCity_StevensHouse_EventScript_StevenGivesDive"
+        }
+      ]
+    },
+    "thunderstone": {
+      "before": "alana",
+      "quantity": 1,
+      "sources": [
+        {
+          "before": "vito-y-leti",
+          "map": "Route124_DivingTreasureHuntersHouse",
+          "event": "Route124_DivingTreasureHuntersHouse_EventScript_TradeYellowShard"
+        },
+        {
+          "before": "alana",
+          "map": "NewMauville_Inside",
+          "event": "NewMauville_Inside_EventScript_ItemThunderStone"
+        }
+      ]
+    },
+    "moonstone": {
+      "before": "candela",
+      "quantity": 1,
+      "sources": [
+        {
+          "before": "candela",
+          "map": "MeteorFalls_1F_1R",
+          "event": "MeteorFalls_1F_1R_EventScript_ItemMoonStone"
+        }
+      ]
+    },
+    "firestone": {
+      "before": "norman",
+      "quantity": 1,
+      "sources": [
+        {
+          "before": "galano",
+          "map": "Route124_DivingTreasureHuntersHouse",
+          "event": "Route124_DivingTreasureHuntersHouse_EventScript_TradeRedShard"
+        },
+        {
+          "before": "norman",
+          "map": "FieryPath",
+          "event": "FieryPath_EventScript_ItemFireStone"
+        }
+      ]
+    },
+    "leafstone": {
+      "before": "alana",
+      "quantity": 1,
+      "sources": [
+        {
+          "before": "galano",
+          "map": "Route124_DivingTreasureHuntersHouse",
+          "event": "Route124_DivingTreasureHuntersHouse_EventScript_TradeGreenShard"
+        },
+        {
+          "before": "alana",
+          "map": "Route119",
+          "event": "Route119_EventScript_ItemLeafStone"
+        }
+      ]
+    },
+    "sunstone": {
+      "before": "vito-y-leti",
+      "quantity": 1,
+      "sources": [
+        {
+          "before": "vito-y-leti",
+          "map": "MossdeepCity_SpaceCenter_1F",
+          "event": "MossdeepCity_SpaceCenter_1F_EventScript_SunStoneMan"
+        },
+        {
+          "before": "galano",
+          "map": "MossdeepCity_SpaceCenter_1F",
+          "event": "MossdeepCity_SpaceCenter_1F_EventScript_SunStoneManMagma"
+        }
+      ]
+    },
+    "waterstone": {
+      "before": "galano",
+      "quantity": 1,
+      "sources": [
+        {
+          "before": "galano",
+          "map": "Route124_DivingTreasureHuntersHouse",
+          "event": "Route124_DivingTreasureHuntersHouse_EventScript_TradeBlueShard"
+        },
+        {
+          "before": "galano",
+          "map": "AbandonedShip_HiddenFloorRooms",
+          "event": "AbandonedShip_HiddenFloorRooms_EventScript_ItemWaterStone"
+        }
+      ]
+    },
+    "kingsrock": {
+      "before": "vito-y-leti",
+      "quantity": 1,
+      "sources": [
+        {
+          "before": "vito-y-leti",
+          "map": "MossdeepCity",
+          "event": "MossdeepCity_EventScript_KingsRockBoy"
+        }
+      ]
+    },
+    "deepseatooth": {
+      "before": "galano",
+      "quantity": 1,
+      "choice": "scanner",
+      "sources": [
+        {
+          "before": "galano",
+          "map": "SlateportCity_Harbor",
+          "event": "SlateportCity_Harbor_EventScript_DeepSeaTooth"
+        }
+      ]
+    },
+    "deepseascale": {
+      "before": "galano",
+      "quantity": 1,
+      "choice": "scanner",
+      "sources": [
+        {
+          "before": "galano",
+          "map": "SlateportCity_Harbor",
+          "event": "SlateportCity_Harbor_EventScript_DeepSeaScale"
+        }
+      ]
+    }
+  },
+  "excluded": {
+    "tm21": "premios aleatorios, semanales o posliga excluidos",
+    "tm49": "premios aleatorios, semanales o posliga excluidos",
+    "metalcoat": "premios aleatorios, semanales o posliga excluidos",
+    "dragonscale": "premios aleatorios, semanales o posliga excluidos",
+    "upgrade": "sin fuente nativa identificada"
+  }
+}

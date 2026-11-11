@@ -1,0 +1,810 @@
+{
+  "schemaVersion": 1,
+  "region": "hoenn",
+  "edition": "emerald",
+  "source": {
+    "revision": "731ad5bfd6e6f265508d0efcca0ba42f9dcf5881"
+  },
+  "encounters": [
+    {
+      "id": "petra",
+      "nameEs": "Petra",
+      "kind": "gym",
+      "sourceTrainer": "TRAINER_ROXANNE_1",
+      "team": [
+        {
+          "species": "geodude",
+          "level": 12,
+          "item": null,
+          "moves": [
+            "tackle",
+            "defensecurl",
+            "rockthrow",
+            "rocktomb"
+          ],
+          "iv": 12
+        },
+        {
+          "species": "geodude",
+          "level": 12,
+          "item": null,
+          "moves": [
+            "tackle",
+            "defensecurl",
+            "rockthrow",
+            "rocktomb"
+          ],
+          "iv": 12
+        },
+        {
+          "species": "nosepass",
+          "level": 15,
+          "item": "oranberry",
+          "moves": [
+            "block",
+            "harden",
+            "tackle",
+            "rocktomb"
+          ],
+          "iv": 24
+        }
+      ]
+    },
+    {
+      "id": "marcial",
+      "nameEs": "Marcial",
+      "kind": "gym",
+      "sourceTrainer": "TRAINER_BRAWLY_1",
+      "team": [
+        {
+          "species": "machop",
+          "level": 16,
+          "item": null,
+          "moves": [
+            "karatechop",
+            "lowkick",
+            "seismictoss",
+            "bulkup"
+          ],
+          "iv": 12
+        },
+        {
+          "species": "meditite",
+          "level": 16,
+          "item": null,
+          "moves": [
+            "focuspunch",
+            "lightscreen",
+            "reflect",
+            "bulkup"
+          ],
+          "iv": 12
+        },
+        {
+          "species": "makuhita",
+          "level": 19,
+          "item": "sitrusberry",
+          "moves": [
+            "armthrust",
+            "vitalthrow",
+            "reversal",
+            "bulkup"
+          ],
+          "iv": 24
+        }
+      ]
+    },
+    {
+      "id": "erico",
+      "nameEs": "Erico",
+      "kind": "gym",
+      "sourceTrainer": "TRAINER_WATTSON_1",
+      "team": [
+        {
+          "species": "voltorb",
+          "level": 20,
+          "item": null,
+          "moves": [
+            "rollout",
+            "spark",
+            "selfdestruct",
+            "shockwave"
+          ],
+          "iv": 24
+        },
+        {
+          "species": "electrike",
+          "level": 20,
+          "item": null,
+          "moves": [
+            "shockwave",
+            "leer",
+            "quickattack",
+            "howl"
+          ],
+          "iv": 24
+        },
+        {
+          "species": "magneton",
+          "level": 22,
+          "item": null,
+          "moves": [
+            "supersonic",
+            "shockwave",
+            "thunderwave",
+            "sonicboom"
+          ],
+          "iv": 26
+        },
+        {
+          "species": "manectric",
+          "level": 24,
+          "item": "sitrusberry",
+          "moves": [
+            "quickattack",
+            "thunderwave",
+            "shockwave",
+            "howl"
+          ],
+          "iv": 30
+        }
+      ]
+    },
+    {
+      "id": "candela",
+      "nameEs": "Candela",
+      "kind": "gym",
+      "sourceTrainer": "TRAINER_FLANNERY_1",
+      "team": [
+        {
+          "species": "numel",
+          "level": 24,
+          "item": null,
+          "moves": [
+            "overheat",
+            "takedown",
+            "magnitude",
+            "sunnyday"
+          ],
+          "iv": 24
+        },
+        {
+          "species": "slugma",
+          "level": 24,
+          "item": null,
+          "moves": [
+            "overheat",
+            "smog",
+            "lightscreen",
+            "sunnyday"
+          ],
+          "iv": 24
+        },
+        {
+          "species": "camerupt",
+          "level": 26,
+          "item": null,
+          "moves": [
+            "overheat",
+            "tackle",
+            "sunnyday",
+            "attract"
+          ],
+          "iv": 30
+        },
+        {
+          "species": "torkoal",
+          "level": 29,
+          "item": "whiteherb",
+          "moves": [
+            "overheat",
+            "sunnyday",
+            "bodyslam",
+            "attract"
+          ],
+          "iv": 30
+        }
+      ]
+    },
+    {
+      "id": "norman",
+      "nameEs": "Norman",
+      "kind": "gym",
+      "sourceTrainer": "TRAINER_NORMAN_1",
+      "team": [
+        {
+          "species": "spinda",
+          "level": 27,
+          "item": null,
+          "moves": [
+            "teeterdance",
+            "psybeam",
+            "facade",
+            "encore"
+          ],
+          "iv": 24
+        },
+        {
+          "species": "vigoroth",
+          "level": 27,
+          "item": null,
+          "moves": [
+            "slash",
+            "facade",
+            "encore",
+            "feintattack"
+          ],
+          "iv": 24
+        },
+        {
+          "species": "linoone",
+          "level": 29,
+          "item": null,
+          "moves": [
+            "slash",
+            "bellydrum",
+            "facade",
+            "headbutt"
+          ],
+          "iv": 24
+        },
+        {
+          "species": "slaking",
+          "level": 31,
+          "item": "sitrusberry",
+          "moves": [
+            "counter",
+            "yawn",
+            "facade",
+            "feintattack"
+          ],
+          "iv": 30
+        }
+      ]
+    },
+    {
+      "id": "alana",
+      "nameEs": "Alana",
+      "kind": "gym",
+      "sourceTrainer": "TRAINER_WINONA_1",
+      "team": [
+        {
+          "species": "swablu",
+          "level": 29,
+          "item": null,
+          "moves": [
+            "perishsong",
+            "mirrormove",
+            "safeguard",
+            "aerialace"
+          ],
+          "iv": 25
+        },
+        {
+          "species": "tropius",
+          "level": 29,
+          "item": null,
+          "moves": [
+            "sunnyday",
+            "aerialace",
+            "solarbeam",
+            "synthesis"
+          ],
+          "iv": 25
+        },
+        {
+          "species": "pelipper",
+          "level": 30,
+          "item": null,
+          "moves": [
+            "watergun",
+            "supersonic",
+            "protect",
+            "aerialace"
+          ],
+          "iv": 25
+        },
+        {
+          "species": "skarmory",
+          "level": 31,
+          "item": null,
+          "moves": [
+            "sandattack",
+            "furyattack",
+            "steelwing",
+            "aerialace"
+          ],
+          "iv": 26
+        },
+        {
+          "species": "altaria",
+          "level": 33,
+          "item": "oranberry",
+          "moves": [
+            "earthquake",
+            "dragonbreath",
+            "dragondance",
+            "aerialace"
+          ],
+          "iv": 31
+        }
+      ]
+    },
+    {
+      "id": "vito-y-leti",
+      "nameEs": "Vito y Leti",
+      "kind": "gym",
+      "sourceTrainer": "TRAINER_TATE_AND_LIZA_1",
+      "team": [
+        {
+          "species": "claydol",
+          "level": 41,
+          "item": null,
+          "moves": [
+            "earthquake",
+            "ancientpower",
+            "psychic",
+            "lightscreen"
+          ],
+          "iv": 30
+        },
+        {
+          "species": "xatu",
+          "level": 41,
+          "item": null,
+          "moves": [
+            "psychic",
+            "sunnyday",
+            "confuseray",
+            "calmmind"
+          ],
+          "iv": 30
+        },
+        {
+          "species": "lunatone",
+          "level": 42,
+          "item": "sitrusberry",
+          "moves": [
+            "lightscreen",
+            "psychic",
+            "hypnosis",
+            "calmmind"
+          ],
+          "iv": 30
+        },
+        {
+          "species": "solrock",
+          "level": 42,
+          "item": "sitrusberry",
+          "moves": [
+            "sunnyday",
+            "solarbeam",
+            "psychic",
+            "flamethrower"
+          ],
+          "iv": 30
+        }
+      ]
+    },
+    {
+      "id": "galano",
+      "nameEs": "Galano",
+      "kind": "gym",
+      "sourceTrainer": "TRAINER_JUAN_1",
+      "team": [
+        {
+          "species": "luvdisc",
+          "level": 41,
+          "item": null,
+          "moves": [
+            "waterpulse",
+            "attract",
+            "sweetkiss",
+            "flail"
+          ],
+          "iv": 24
+        },
+        {
+          "species": "whiscash",
+          "level": 41,
+          "item": null,
+          "moves": [
+            "raindance",
+            "waterpulse",
+            "amnesia",
+            "earthquake"
+          ],
+          "iv": 24
+        },
+        {
+          "species": "sealeo",
+          "level": 43,
+          "item": null,
+          "moves": [
+            "encore",
+            "bodyslam",
+            "aurorabeam",
+            "waterpulse"
+          ],
+          "iv": 24
+        },
+        {
+          "species": "crawdaunt",
+          "level": 43,
+          "item": null,
+          "moves": [
+            "waterpulse",
+            "crabhammer",
+            "taunt",
+            "leer"
+          ],
+          "iv": 24
+        },
+        {
+          "species": "kingdra",
+          "level": 46,
+          "item": "chestoberry",
+          "moves": [
+            "waterpulse",
+            "doubleteam",
+            "icebeam",
+            "rest"
+          ],
+          "iv": 30
+        }
+      ]
+    },
+    {
+      "id": "sixto",
+      "nameEs": "Sixto",
+      "kind": "elite",
+      "sourceTrainer": "TRAINER_SIDNEY",
+      "team": [
+        {
+          "species": "mightyena",
+          "level": 46,
+          "item": null,
+          "moves": [
+            "roar",
+            "doubleedge",
+            "sandattack",
+            "crunch"
+          ],
+          "iv": 30
+        },
+        {
+          "species": "shiftry",
+          "level": 48,
+          "item": null,
+          "moves": [
+            "torment",
+            "doubleteam",
+            "swagger",
+            "extrasensory"
+          ],
+          "iv": 30
+        },
+        {
+          "species": "cacturne",
+          "level": 46,
+          "item": null,
+          "moves": [
+            "leechseed",
+            "feintattack",
+            "needlearm",
+            "cottonspore"
+          ],
+          "iv": 30
+        },
+        {
+          "species": "crawdaunt",
+          "level": 48,
+          "item": null,
+          "moves": [
+            "surf",
+            "swordsdance",
+            "strength",
+            "facade"
+          ],
+          "iv": 30
+        },
+        {
+          "species": "absol",
+          "level": 49,
+          "item": "sitrusberry",
+          "moves": [
+            "aerialace",
+            "rockslide",
+            "swordsdance",
+            "slash"
+          ],
+          "iv": 31
+        }
+      ]
+    },
+    {
+      "id": "fatima",
+      "nameEs": "Fátima",
+      "kind": "elite",
+      "sourceTrainer": "TRAINER_PHOEBE",
+      "team": [
+        {
+          "species": "dusclops",
+          "level": 48,
+          "item": null,
+          "moves": [
+            "shadowpunch",
+            "confuseray",
+            "curse",
+            "protect"
+          ],
+          "iv": 30
+        },
+        {
+          "species": "banette",
+          "level": 49,
+          "item": null,
+          "moves": [
+            "shadowball",
+            "grudge",
+            "willowisp",
+            "feintattack"
+          ],
+          "iv": 30
+        },
+        {
+          "species": "sableye",
+          "level": 50,
+          "item": null,
+          "moves": [
+            "shadowball",
+            "doubleteam",
+            "nightshade",
+            "feintattack"
+          ],
+          "iv": 30
+        },
+        {
+          "species": "banette",
+          "level": 49,
+          "item": null,
+          "moves": [
+            "shadowball",
+            "psychic",
+            "thunderbolt",
+            "facade"
+          ],
+          "iv": 30
+        },
+        {
+          "species": "dusclops",
+          "level": 51,
+          "item": "sitrusberry",
+          "moves": [
+            "shadowball",
+            "icebeam",
+            "rockslide",
+            "earthquake"
+          ],
+          "iv": 31
+        }
+      ]
+    },
+    {
+      "id": "nivea",
+      "nameEs": "Nívea",
+      "kind": "elite",
+      "sourceTrainer": "TRAINER_GLACIA",
+      "team": [
+        {
+          "species": "sealeo",
+          "level": 50,
+          "item": null,
+          "moves": [
+            "encore",
+            "bodyslam",
+            "hail",
+            "iceball"
+          ],
+          "iv": 30
+        },
+        {
+          "species": "glalie",
+          "level": 50,
+          "item": null,
+          "moves": [
+            "lightscreen",
+            "crunch",
+            "icywind",
+            "icebeam"
+          ],
+          "iv": 30
+        },
+        {
+          "species": "sealeo",
+          "level": 52,
+          "item": null,
+          "moves": [
+            "attract",
+            "doubleedge",
+            "hail",
+            "blizzard"
+          ],
+          "iv": 30
+        },
+        {
+          "species": "glalie",
+          "level": 52,
+          "item": null,
+          "moves": [
+            "shadowball",
+            "explosion",
+            "hail",
+            "icebeam"
+          ],
+          "iv": 30
+        },
+        {
+          "species": "walrein",
+          "level": 53,
+          "item": "sitrusberry",
+          "moves": [
+            "surf",
+            "bodyslam",
+            "icebeam",
+            "sheercold"
+          ],
+          "iv": 31
+        }
+      ]
+    },
+    {
+      "id": "dracon",
+      "nameEs": "Dracón",
+      "kind": "elite",
+      "sourceTrainer": "TRAINER_DRAKE",
+      "team": [
+        {
+          "species": "shelgon",
+          "level": 52,
+          "item": null,
+          "moves": [
+            "rocktomb",
+            "dragonclaw",
+            "protect",
+            "doubleedge"
+          ],
+          "iv": 30
+        },
+        {
+          "species": "altaria",
+          "level": 54,
+          "item": null,
+          "moves": [
+            "doubleedge",
+            "dragonbreath",
+            "dragondance",
+            "aerialace"
+          ],
+          "iv": 30
+        },
+        {
+          "species": "kingdra",
+          "level": 53,
+          "item": null,
+          "moves": [
+            "smokescreen",
+            "dragondance",
+            "surf",
+            "bodyslam"
+          ],
+          "iv": 30
+        },
+        {
+          "species": "flygon",
+          "level": 53,
+          "item": null,
+          "moves": [
+            "flamethrower",
+            "crunch",
+            "dragonbreath",
+            "earthquake"
+          ],
+          "iv": 30
+        },
+        {
+          "species": "salamence",
+          "level": 55,
+          "item": "sitrusberry",
+          "moves": [
+            "flamethrower",
+            "dragonclaw",
+            "rockslide",
+            "crunch"
+          ],
+          "iv": 31
+        }
+      ]
+    },
+    {
+      "id": "plubio",
+      "nameEs": "Plubio",
+      "kind": "champion",
+      "sourceTrainer": "TRAINER_WALLACE",
+      "team": [
+        {
+          "species": "wailord",
+          "level": 57,
+          "item": null,
+          "moves": [
+            "raindance",
+            "waterspout",
+            "doubleedge",
+            "blizzard"
+          ],
+          "iv": 31
+        },
+        {
+          "species": "tentacruel",
+          "level": 55,
+          "item": null,
+          "moves": [
+            "toxic",
+            "hydropump",
+            "sludgebomb",
+            "icebeam"
+          ],
+          "iv": 31
+        },
+        {
+          "species": "ludicolo",
+          "level": 56,
+          "item": null,
+          "moves": [
+            "gigadrain",
+            "surf",
+            "leechseed",
+            "doubleteam"
+          ],
+          "iv": 31
+        },
+        {
+          "species": "whiscash",
+          "level": 56,
+          "item": null,
+          "moves": [
+            "earthquake",
+            "surf",
+            "amnesia",
+            "hyperbeam"
+          ],
+          "iv": 31
+        },
+        {
+          "species": "gyarados",
+          "level": 56,
+          "item": null,
+          "moves": [
+            "dragondance",
+            "earthquake",
+            "hyperbeam",
+            "surf"
+          ],
+          "iv": 31
+        },
+        {
+          "species": "milotic",
+          "level": 58,
+          "item": "sitrusberry",
+          "moves": [
+            "recover",
+            "surf",
+            "icebeam",
+            "toxic"
+          ],
+          "iv": 31
+        }
+      ]
+    }
+  ]
+}

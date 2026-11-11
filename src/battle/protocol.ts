@@ -4,13 +4,23 @@ export type Choice = { type: 'move' | 'switch'; slot: number }
 
 export type AiKind = 'heuristic' | 'trivial'
 
+export type BattleGeneration = 3 | 5
+
+/** Un set de combate, con nivel de 1 a 100, de uno a cuatro movimientos y `''` cuando no lleva objeto. */
+export type BattleSet = Omit<ResolvedSet, 'level' | 'moves'> & {
+  level: number
+  moves: string[]
+  happiness?: number
+}
+
 export type EngineInit = {
   battleSeed: string
-  player: ResolvedSet[]
+  generation?: BattleGeneration
+  player: BattleSet[]
   /** Índice, dentro de `player`, del Pokémon que sale primero. */
   playerLead?: number
   /** `rival[0]` es el inicial. */
-  rival: ResolvedSet[]
+  rival: BattleSet[]
   ai: AiKind
   maxTurns: number
 }
@@ -45,6 +55,8 @@ export type BattleRequest = {
 }
 
 export type MonView = {
+  /** Posición en el equipo de entrada cuando la especie se repite; ausente en repeticiones antiguas. */
+  teamIndex?: number
   species: string
   hpPercent: number
   status: string | null
@@ -99,4 +111,39 @@ export type EngineUpdate = {
   view: EngineBattleView
   request: BattleRequest | null
   ended?: EngineEnd
+}
+
+/** Preparación transportable y persistible como JSON; los Set se reconstruyen solo en el worker. */
+export type CampaignBattlePreparation = Omit<import('../core/nuzlocke/battle').BattlePreparation, 'unlockedMoves'> & {
+  unlockedMoves: readonly string[]
+}
+
+export type CampaignBattleInput = {
+  definition: import('../core/nuzlocke/battle').CampaignBattleDefinition
+  state: import('../core/nuzlocke/campaign').CampaignState
+  preparation: CampaignBattlePreparation
+  selected?: readonly string[]
+}
+
+/** El estado vigente lo aporta el hilo principal; el resultado se obtiene del motor del worker. */
+export type CampaignBattleFinish = {
+  definition: import('../core/nuzlocke/battle').CampaignBattleDefinition
+  state: import('../core/nuzlocke/campaign').CampaignState
+  battleSeed: string
+}
+
+export type CampaignDecision = import('../storage/gameStore').Decision
+export type SavedCampaignBattle = {
+  /** Estado anterior al combate y preparación serializable; la definición se aporta al reanudar. */
+  source: Omit<CampaignBattleInput, 'definition'>
+  /** null mientras el worker aún no ha confirmado la preparación. */
+  init: EngineInit | null
+  decisions: CampaignDecision[]
+  checkpoint: { decisions: number; update: EngineUpdate } | null
+}
+
+export type CampaignBattleResume = {
+  definition: CampaignBattleInput['definition']
+  state: CampaignBattleInput['state']
+  battle: SavedCampaignBattle & { init: EngineInit }
 }

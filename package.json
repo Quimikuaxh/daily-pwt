@@ -31,11 +31,16 @@
     "gen:ui": "node scripts/fetch-ui-assets.mjs",
     "gen:pwt-raw": "node scripts/import-pwt.mjs",
     "gen:pwt": "node scripts/merge-pwt.mjs",
+    "gen:emerald": "node scripts/import-emerald.mjs",
+    "gen:emerald-progression": "node scripts/import-emerald-progression.mjs",
+    "simulate:emerald-draft": "node scripts/simulate-nuzlocke-draft.mjs",
     "validate:data": "node scripts/validate-data.mjs",
     "gen": "npm run gen:names && npm run gen:dex && npm run gen:player-sets",
     "gen:audio": "node scripts/build-audio.mjs",
     "gen:cries": "node scripts/fetch-cries.mjs",
-    "gen:item-icons": "node scripts/fetch-item-icons.mjs"
+    "gen:item-icons": "node scripts/fetch-item-icons.mjs",
+    "gen:emerald-items": "node scripts/import-emerald-items.mjs",
+    "gen:emerald-calendar": "node scripts/build-emerald-calendar.mjs"
   },
   "dependencies": {
     "@pkmn/sim": "0.10.11",

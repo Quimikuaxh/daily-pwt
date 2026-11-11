@@ -234,6 +234,30 @@ Los tests eligen el escenario por id, no por fecha (DEC-35 en [ARQUITECTURA.md](
 - `verified: true` indica que el set se ha cotejado con dos fuentes.
 - Los 53 entrenadores se generan con `npm run gen:pwt -- --write` (ver [docs/F2-DATOS.md](docs/F2-DATOS.md)); un nuevo `--write` sobrescribe el fichero. `rosterSchedule` tiene una única entrada con los 53 desde el día 0. Los tests y `npm run validate:data` comprueban forma, legalidad en Gen 5 y prohibiciones del PWT, pero no la exactitud frente al juego.
 
+### Catálogo de Hoenn Esmeralda
+
+[`data/nuzlocke/hoenn-emerald.json`](data/nuzlocke/hoenn-emerald.json) reúne los 13 equipos rivales de la primera visita de Esmeralda en orden de campaña. Conserva el orden de los Pokémon, las especies repetidas, los niveles, los movimientos, los objetos equipados y los IV de origen.
+
+`npm run gen:emerald` descarga las cabeceras de [pret/pokeemerald](https://github.com/pret/pokeemerald/tree/731ad5bfd6e6f265508d0efcca0ba42f9dcf5881) de la revisión fijada y sobrescribe el catálogo. Usa `npm run gen:emerald -- --source-dir /ruta/a/pokeemerald` para regenerarlo sin red a partir de una copia de esa revisión. El importador verifica el SHA-256 de ambas cabeceras antes de escribir el catálogo. `npm run validate:data` comprueba el JSON versionado sin red ni cabeceras locales.
+
+`npm run gen:emerald-progression` genera el aprendizaje por nivel, evoluciones y compatibilidad de MT y MO de las 386 especies. Acepta también `--source-dir` con la revisión fijada y valida las cabeceras por SHA-256. El JSON incluye la suma de estadísticas base de tercera generación y los IDs de las 50 MT y 8 MO. `npm run validate:data` comprueba ambos catálogos sin conexión.
+
+`npm run simulate:emerald-draft -- --seeds 100 --scenarios A --margins '' --absolute 30,40 --out docs/nuzlocke/draft-results-absolute-100.json` reproduce la ventana absoluta aprobada. Sin `--absolute`, el simulador compara tres escenarios de disponibilidad con y sin la garantía de tipo supereficaz por tramo de gimnasio. No cambia las reglas aprobadas ni las partidas. Usa `openDraft(definition, state)` para el draft de Esmeralda: el núcleo fija A y −30/+40 sin límites manuales. Consulta escenarios, métricas, límites y reproducción en [Simulación del draft](docs/nuzlocke/SIMULACION-DRAFT.md).
+
+`npm run gen:emerald-items -- --source-dir /ruta/a/pokeemerald` extrae la evidencia de MT/MO y objetos, con SHA-256; `--check` exige igualdad byte a byte sin escribir. `npm run gen:emerald-calendar` compila sin red el calendario de campaña con las decisiones de Jose del 11/11/2026; `npm run gen:emerald-calendar -- --check` comprueba su reproducción. `validate:data` valida también estos dos catálogos y la correspondencia del calendario aplicado con la evidencia. Las fechas, exclusiones y operaciones de preparación están en [CALENDARIO-MT.md](docs/nuzlocke/CALENDARIO-MT.md).
+
+
+### Guardado local del combate de campaña
+
+Para el guardado con cuenta usa `account.campaign`: integración, conflictos, reintentos y pruebas en la [guía de guardado de campaña](docs/nuzlocke/GUARDADO.md). El aviso y el botón de recarga se conectan en D7; los textos y las operaciones están disponibles sin modificar las pantallas del diario.
+
+Usa `LocalCampaignSession` (`src/battle/campaignSession.ts`) con `createCampaignWorkerClient()` y `new LocalCampaignStore(browserStorage())`. El registro de campaña usa la clave independiente `daily-pwt:nuzlocke:v1`; no modifica los oficiales ni las repeticiones del PWT. Consulta el contrato y la recuperación de fallos en [DEC-85 y DEC-86](docs/ARQUITECTURA.md).
+
+- Inicia con `session.prepare({ definition, state, preparation, selected })`. `preparation.unlockedMoves` es una lista de IDs, no un `Set`. Suscríbete antes con `session.subscribe(...)` y espera `campaign-prepared` antes de decidir.
+- Envía decisiones con `session.choose({ type: 'move' | 'switch', slot })` o `session.forfeit()`. Tras un update con `ended`, aplica el resultado con `session.finish(definition)` y espera `campaign-finished`.
+- Al recargar, crea otra sesión, consulta `session.snapshot()` y, si tiene `battle`, llama a `session.resume(definition)`. Espera `campaign-resumed` o, si la preparación estaba sin confirmar, `campaign-prepared`. El worker comprueba y reconstruye el combate; no importes el simulador desde la pantalla.
+- Lee el estado autoritativo con `session.snapshot()`. Consulta `session.persistent`: si es `false`, los cambios solo están garantizados en memoria. Un error de reconstrucción conserva el guardado para inspección; no lo sustituyas por un combate nuevo automáticamente. Cierra el cliente con `session.stop()` al abandonar la sesión.
+
 ### Pool del jugador (`data/player-sets.json`)
 
 - Sets de los que se elige el equipo del jugador cada día: 1568 sets de 329 especies, de Smogon (Gen 5, individuales: Ubers, OU, UU, RU, NU, PU y ZU) y de los equipos de los rivales del PWT. De Smogon solo se toman objeto, habilidad y movimientos; EVs 0, naturaleza Seria, IV iguales a los del rival del día.

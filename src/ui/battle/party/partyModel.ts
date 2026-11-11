@@ -1,4 +1,5 @@
 import type { BattleRequest, BattleView, MonView, RequestPokemon } from '../../../battle/protocol'
+import { battleIdentity, parseBattleIdentity } from '../../../battle/identity'
 import { isFaintedCondition } from '../../../battle/condition'
 import { calcStats, natureEffect } from '../../../core/stats'
 import { toId } from '../../../core/id'
@@ -88,7 +89,10 @@ export function partyMembers(request: BattleRequest | null, view: BattleView | n
   const pokemon = request?.side.pokemon ?? []
   return pokemon.flatMap((member, index) => {
     const speciesId = toId(member.details.split(',')[0])
-    const set = team.find((candidate) => candidate.species === speciesId)
+    const identity = parseBattleIdentity(member.ident.split(': ')[1] ?? '')
+    const set = identity.teamIndex === undefined ? team.find((candidate) => candidate.species === speciesId) : team[identity.teamIndex]
+    const viewMon = view?.player.team.find(mon => identity.teamIndex === undefined
+      ? mon.species === speciesId : mon.teamIndex === identity.teamIndex)
     const species = data.dex.species[speciesId]
     if (!species) return []
     const condition = parseCondition(member)
@@ -100,7 +104,7 @@ export function partyMembers(request: BattleRequest | null, view: BattleView | n
       ? calcStats(species.baseStats, set.ivs, set.evs, set.nature, level)
       : ({ hp: condition.maxHp, ...Object.fromEntries(STAT_KEYS.filter((key) => key !== 'hp').map((key) => [key, requestStats?.[STAT_FROM_REQUEST[key]] ?? 0])) } as StatsTable)
     // El que lleva ahora (Truco, Desarme, bayas…); sin vista, el del set.
-    const itemId = view?.player.team.find((mon) => mon.species === speciesId)?.item ?? set?.item ?? member.item ?? ''
+    const itemId = viewMon?.item ?? set?.item ?? member.item ?? ''
     const abilityId = set?.ability ?? member.baseAbility ?? ''
     // Debilitado, el simulador manda «0 fnt» sin PS máximos: se toman de las estadísticas.
     const maxHp = condition.maxHp || stats.hp
@@ -129,7 +133,7 @@ export function partyMembers(request: BattleRequest | null, view: BattleView | n
         natureUp: natureEffects?.up ?? null,
         natureDown: natureEffects?.down ?? null,
         stats,
-        moves: partyMoves(set?.moves ?? member.moves ?? [], data, view?.player.team.find((mon) => mon.species === speciesId), set?.ivs),
+        moves: partyMoves(set?.moves ?? member.moves ?? [], data, viewMon, set?.ivs),
       },
     ]
   })
@@ -146,9 +150,9 @@ export function requestFromView(view: BattleView | null, team: readonly Resolved
       name: '',
       id: 'p1',
       pokemon: view.player.team.map((mon, index) => {
-        const set = team.find((candidate) => candidate.species === mon.species)
+        const set = mon.teamIndex === undefined ? team.find((candidate) => candidate.species === mon.species) : team[mon.teamIndex]
         const condition = mon.fainted ? '0 fnt' : `${mon.hp ?? 0}/${mon.maxHp ?? 0}${mon.status ? ` ${mon.status}` : ''}`
-        return { ident: `p1: ${mon.species}`, details: `${mon.species}, L${set?.level ?? 50}${set?.gender ? `, ${set.gender}` : ''}`, condition, active: view.player.active === index }
+        return { ident: `p1: ${battleIdentity(mon.species, mon.teamIndex)}`, details: `${mon.species}, L${set?.level ?? 50}${set?.gender ? `, ${set.gender}` : ''}`, condition, active: view.player.active === index }
       }),
     },
   }

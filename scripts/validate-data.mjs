@@ -1,9 +1,13 @@
 /**
  * Validación de datos (PRD §8.3, DEC-38). Comprueba data/*.json, src/generated/ y public/sprites/ sin red ni scripts/.cache:
- * solo lee ficheros versionados y @pkmn/data (Gen 5). Sale con código 1 si hay algún problema.
+ * solo lee ficheros versionados y @pkmn/data. Sale con código 1 si hay algún problema.
  * Uso: npm run validate:data
  */
 import { existsSync, readFileSync } from 'node:fs'
+import { EMERALD_PROGRESSION, validateEmeraldProgression } from './import-emerald-progression.mjs'
+import { EMERALD_ITEMS, validateEmeraldItems } from './import-emerald-items.mjs'
+import { EMERALD_CALENDAR, validateEmeraldCalendarAgainstEvidence } from './build-emerald-calendar.mjs'
+import { EMERALD_CATALOG, validateEmeraldCatalog } from './import-emerald.mjs'
 import { isMain } from './lib/cli.mjs'
 import { gen5, toId } from './lib/dex.mjs'
 import { fromRoot } from './lib/paths.mjs'
@@ -212,6 +216,20 @@ export async function validateData() {
   const rules = readJson('src', 'core', 'pwt-rules.json')
   const { trainers } = trainersFile
   const problems = []
+
+  for (const [name, path, validate] of [
+    ['hoenn-emerald.json', EMERALD_CATALOG, validateEmeraldCatalog],
+    ['hoenn-emerald-progression.json', EMERALD_PROGRESSION, validateEmeraldProgression],
+    ['hoenn-emerald-items.json', EMERALD_ITEMS, validateEmeraldItems],
+    ['hoenn-emerald-calendar.json', EMERALD_CALENDAR,
+      catalog => validateEmeraldCalendarAgainstEvidence(catalog, JSON.parse(readFileSync(EMERALD_ITEMS, 'utf8')))],
+  ]) {
+    try {
+      validate(JSON.parse(readFileSync(path, 'utf8')))
+    } catch (error) {
+      problems.push(`${name}: ${error.message}`)
+    }
+  }
 
   if (typeof trainersFile.dataVersion !== 'string' || !trainersFile.dataVersion) problems.push('trainers.json: sin dataVersion')
 

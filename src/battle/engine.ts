@@ -1,17 +1,17 @@
 import { Battle, Dex, extractChannelMessages, type Pokemon, type PokemonSet, type Side } from '@pkmn/sim'
+import { battleIdentity } from './identity'
 import { toId } from '../core/id'
 import { Prng } from '../core/prng'
-import type { ResolvedSet } from '../core/types'
 import { buildAiState } from './ai/state'
 import { aiSeed, chooseRivalAction } from './ai/heuristic'
 import { chooseTrivialAction } from './ai/trivial'
 import { evaluateEnd, forfeitBattle } from './end'
-import type { BattleRequest, Choice, EngineBattleView, EngineEnd, EngineInit, EngineUpdate, MonView } from './protocol'
+import type { BattleRequest, BattleSet, Choice, EngineBattleView, EngineEnd, EngineInit, EngineUpdate, MonView } from './protocol'
 import { hpPercentOf } from './viewReducer'
 import { boostsFrom, effectsFrom, emptyActive, FIELD_EFFECTS, MON_EFFECTS, SIDE_EFFECTS, type ActiveState, type FieldState } from './fieldState'
 
 // Formato de depuración sin Team Preview (DEC-09). Reglas ausentes a propósito: sin cláusula de sueño, de KO en un golpe, de especie ni de objeto.
-const BATTLE_FORMAT = 'gen5customgame@@@!teampreview'
+const BATTLE_FORMAT = { 3: 'gen3customgame', 5: 'gen5customgame@@@!teampreview' }
 const PLAYER_NAME = 'Jugador'
 const RIVAL_NAME = 'Rival'
 const PLAYER_VIEWER_CHANNEL = 1
@@ -31,10 +31,10 @@ export type BattleEngine = {
  * («Rotom-Mow» -> «Rotom») y el registro no casaba con la especie (la barra de PS no bajaba y los mensajes decían «Rotom»). Con el id,
  * `toId` de la línea da la especie exacta y su nombre en español.
  */
-function toSimSet(set: ResolvedSet): PokemonSet {
+function toSimSet(set: BattleSet, name = toId(set.species)): PokemonSet {
   const speciesName = Dex.species.get(set.species).name || set.species
   return {
-    name: toId(set.species),
+    name,
     species: speciesName,
     item: set.item,
     ability: set.ability,
@@ -44,6 +44,7 @@ function toSimSet(set: ResolvedSet): PokemonSet {
     evs: { ...set.evs },
     ivs: { ...set.ivs },
     level: set.level,
+    ...(set.happiness !== undefined ? { happiness: set.happiness } : {}),
     shiny: false,
   } as PokemonSet
 }
@@ -73,18 +74,37 @@ export function createBattleEngine(init: EngineInit): BattleEngine {
   }
   const playerTeam = withLeadFirst(init.player, playerLead)
 
-  const battle = new Battle({ formatid: BATTLE_FORMAT as never, seed: simSeed(init.battleSeed) as never })
+  const formatid = BATTLE_FORMAT[init.generation ?? 5]
+  const battle = new Battle({ formatid: formatid as never, seed: simSeed(init.battleSeed) as never })
   battle.reportExactHP = false
   battle.reportPercentages = true
-  battle.setPlayer('p1', { name: PLAYER_NAME, team: playerTeam.map(toSimSet) })
-  battle.setPlayer('p2', { name: RIVAL_NAME, team: init.rival.map(toSimSet) })
+  const identities = new Map<string, string>()
+  function simTeam(team: BattleSet[], side: string, indexes: number[]): PokemonSet[] {
+    return team.map((set, index) => {
+      if (team.filter(member => member.species === set.species).length < 2) return toSimSet(set)
+      // Nombre interno corto: el simulador recorta los apodos; la identidad externa conserva la especie completa.
+      const name = `member${indexes[index]}`
+      identities.set(`${side}: ${name}`, battleIdentity(set.species, indexes[index]))
+      return toSimSet(set, name)
+    })
+  }
+  const playerIndexes = withLeadFirst(init.player.map((_, index) => index), playerLead)
+  battle.setPlayer('p1', { name: PLAYER_NAME, team: simTeam(playerTeam, 'p1', playerIndexes) })
+  battle.setPlayer('p2', { name: RIVAL_NAME, team: simTeam(init.rival, 'p2', init.rival.map((_, index) => index)) })
+
+  function externalIdent(text: string): string {
+    return text.replace(/p([12])([a-c]?): (member\d+)\b/g, (ref, side: string, position: string, name: string) => {
+      const identity = identities.get(`p${side}: ${name}`)
+      return identity === undefined ? ref : `p${side}${position}: ${identity}`
+    })
+  }
 
   const playerSide = battle.sides[0]
   const rivalSide = battle.sides[1]
   // La vista usa un orden fijo (el inicial); el sim reordena `side.pokemon` tras cada cambio.
   const playerRoster: Pokemon[] = [...playerSide.pokemon]
   const rivalRoster: Pokemon[] = [...rivalSide.pokemon]
-  const rosterSpecies = (roster: Pokemon[], team: ResolvedSet[]) => new Map(roster.map((pokemon, index) => [pokemon, team[index].species]))
+  const rosterSpecies = (roster: Pokemon[], team: BattleSet[]) => new Map(roster.map((pokemon, index) => [pokemon, team[index].species]))
   const playerSpecies = rosterSpecies(playerRoster, playerTeam)
   const rivalSpecies = rosterSpecies(rivalRoster, init.rival)
 
@@ -116,11 +136,11 @@ export function createBattleEngine(init: EngineInit): BattleEngine {
     const lines = extractChannelMessages(chunk, [PLAYER_VIEWER_CHANNEL])[PLAYER_VIEWER_CHANNEL].filter((line) => !DROPPED_LINE.test(line))
     const upkeep = lines.indexOf('|upkeep')
     if (upkeep >= 0) lines.splice(upkeep, 0, ...magicGuardLeechSeedLines())
-    return lines
+    return lines.map(externalIdent)
   }
 
   function sideView(side: Side, roster: Pokemon[], species: Map<Pokemon, string>, exact: boolean): EngineBattleView['player'] {
-    const team: MonView[] = roster.map((pokemon) => {
+    const team: MonView[] = roster.map((pokemon, index) => {
       const fainted = pokemon.hp <= 0
       const view: MonView = {
         species: species.get(pokemon)!,
@@ -128,6 +148,7 @@ export function createBattleEngine(init: EngineInit): BattleEngine {
         status: fainted ? null : pokemon.status || null,
         fainted,
       }
+      if (identities.has(`${side.id}: ${pokemon.name}`)) view.teamIndex = exact ? playerIndexes[index] : index
       if (exact) {
         view.hp = pokemon.hp
         view.maxHp = pokemon.maxhp
@@ -174,7 +195,9 @@ export function createBattleEngine(init: EngineInit): BattleEngine {
 
   function playerRequest(): BattleRequest | null {
     if (battle.ended || !playerSide.requestState) return null
-    return JSON.parse(JSON.stringify(playerSide.activeRequest)) as BattleRequest
+    const request = JSON.parse(JSON.stringify(playerSide.activeRequest)) as BattleRequest
+    for (const member of request.side.pokemon) member.ident = externalIdent(member.ident)
+    return request
   }
 
   function rivalFainted(): number {

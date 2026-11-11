@@ -1,5 +1,6 @@
 import type { Prng } from '../../core/prng'
 import { damageOrZero, type DamageField, type DamageSide } from '../damage'
+import type { BattleGeneration } from '../protocol'
 import { moveInfo, speciesTypes, typeMultiplier, type BoostId, type MoveInfo, type StatusId } from './moveInfo'
 import type { AiMon, AiState, Choice } from './state'
 
@@ -48,9 +49,9 @@ const asDamageSide = (mon: AiMon): DamageSide => ({
   status: mon.status,
 })
 
-/** Robustez y Banda Focus dejan a 1 PS a quien está a PS completos: un golpe suficiente no basta para el KO. */
-function survivesAnyOneHit(mon: AiMon): boolean {
-  return mon.hp >= mon.maxHp && (mon.set.ability === 'sturdy' || mon.set.item === 'focussash')
+/** En quinta generación, Robustez y Banda Focus dejan a 1 PS a quien está a PS completos: un golpe suficiente no basta para el KO. */
+function survivesAnyOneHit(mon: AiMon, generation: BattleGeneration | undefined): boolean {
+  return generation !== 3 && mon.hp >= mon.maxHp && (mon.set.ability === 'sturdy' || mon.set.item === 'focussash')
 }
 
 const hasPp = (move: AiMon['moves'][number]): boolean => !move.disabled && move.pp > 0
@@ -73,7 +74,7 @@ function attackOption(candidate: Candidate, attacker: AiMon, defender: AiMon, fi
 function strongestHit(attacker: AiMon, defender: AiMon, field: DamageField): number {
   let strongest = 0
   for (const move of attacker.moves) {
-    const info = moveInfo(move.id)
+    const info = moveInfo(move.id, field.generation)
     if (info.kind !== 'attack') continue
     strongest = Math.max(strongest, damageOrZero(asDamageSide(attacker), asDamageSide(defender), move.id, field).max)
   }
@@ -83,7 +84,7 @@ function strongestHit(attacker: AiMon, defender: AiMon, field: DamageField): num
 function bestExpectedHit(attacker: AiMon, defender: AiMon, field: DamageField): number {
   let best = 0
   for (const move of attacker.moves) {
-    const info = moveInfo(move.id)
+    const info = moveInfo(move.id, field.generation)
     if (info.kind !== 'attack') continue
     best = Math.max(best, attackOption({ slot: 0, move, info }, attacker, defender, field).expected)
   }
@@ -113,30 +114,30 @@ function livingBench(state: AiState): { mon: AiMon; slot: number }[] {
 function chooseSuccessor(state: AiState, rng: Prng): Choice {
   const bench = livingBench(state)
   if (bench.length === 0) return { type: 'switch', slot: 2 }
-  const field = { weather: state.weather }
+  const field = { weather: state.weather, generation: state.generation }
   const foe = activeFoe(state)
   const best = bestBy(bench, ({ mon }) => matchupScore(mon, foe, field), rng)
   return { type: 'switch', slot: best.slot }
 }
 
-function canInflict(status: StatusId, move: MoveInfo, foe: AiMon): boolean {
+function canInflict(status: StatusId, move: MoveInfo, foe: AiMon, generation: BattleGeneration | undefined): boolean {
   if (foe.status !== null || foe.fainted) return false
   if (foe.hp < foe.maxHp * MIN_FOE_HP_FRACTION_FOR_STATUS) return false
   if (STATUS_IMMUNE_ABILITIES[status].includes(foe.set.ability)) return false
-  if (speciesTypes(foe.set.species).some((type) => STATUS_IMMUNE_TYPES[status].includes(type))) return false
-  return move.ignoresImmunity || typeMultiplier(move.type, foe.set.species) > 0
+  if (speciesTypes(foe.set.species, generation).some((type) => STATUS_IMMUNE_TYPES[status].includes(type))) return false
+  return move.ignoresImmunity || typeMultiplier(move.type, foe.set.species, generation) > 0
 }
 
-function hasMoveOfCategory(mon: AiMon, category: 'Physical' | 'Special'): boolean {
-  return mon.moves.some((move) => moveInfo(move.id).category === category)
+function hasMoveOfCategory(mon: AiMon, category: 'Physical' | 'Special', generation: BattleGeneration | undefined): boolean {
+  return mon.moves.some((move) => moveInfo(move.id, generation).category === category)
 }
 
-function setupIsUseful(move: MoveInfo, me: AiMon): boolean {
+function setupIsUseful(move: MoveInfo, me: AiMon, generation: BattleGeneration | undefined): boolean {
   const boosts = Object.entries(move.boosts ?? {}) as [BoostId, number][]
   return boosts.some(([stat, amount]) => {
     if (amount <= 0 || stat === 'accuracy' || stat === 'evasion') return false
-    if (stat === 'atk' && !hasMoveOfCategory(me, 'Physical')) return false
-    if (stat === 'spa' && !hasMoveOfCategory(me, 'Special')) return false
+    if (stat === 'atk' && !hasMoveOfCategory(me, 'Physical', generation)) return false
+    if (stat === 'spa' && !hasMoveOfCategory(me, 'Special', generation)) return false
     return (me.boosts[stat] ?? 0) < MAX_USEFUL_BOOST
   })
 }
@@ -154,9 +155,9 @@ function nonDamageMoveApplies(info: MoveInfo, state: AiState, me: AiMon, foe: Ai
     case 'weather':
       return state.weather === null
     case 'inflictStatus':
-      return canInflict(info.status!, info, foe)
+      return canInflict(info.status!, info, foe, state.generation)
     case 'setup':
-      return setupIsUseful(info, me)
+      return setupIsUseful(info, me, state.generation)
     case 'heal':
       return me.hp < me.maxHp
     case 'hazard':
@@ -168,16 +169,16 @@ function nonDamageMoveApplies(info: MoveInfo, state: AiState, me: AiMon, foe: Ai
 
 // Regla 4: cambiar ante clara desventaja.
 function chooseEscape(state: AiState, me: AiMon, foe: AiMon, rng: Prng): Choice | null {
-  const field = { weather: state.weather }
+  const field = { weather: state.weather, generation: state.generation }
   const threats = foe.moves.filter((move) => {
-    if (moveInfo(move.id).kind !== 'attack') return false
+    if (moveInfo(move.id, field.generation).kind !== 'attack') return false
     return damageOrZero(asDamageSide(foe), asDamageSide(me), move.id, field).max >= me.hp
   })
   const resistsEveryThreat = (candidate: AiMon): boolean => {
     const survivesHit = strongestHit(foe, candidate, field) < candidate.hp
     const resists = threats.every((threat) => {
-      const info = moveInfo(threat.id)
-      return typeMultiplier(info.type, candidate.set.species) < 1 ||
+      const info = moveInfo(threat.id, field.generation)
+      return typeMultiplier(info.type, candidate.set.species, field.generation) < 1 ||
         damageOrZero(asDamageSide(foe), asDamageSide(candidate), threat.id, field).max === 0
     })
     return survivesHit && resists
@@ -198,10 +199,10 @@ export function chooseRivalAction(state: AiState, rng: Prng): Choice {
 
   const me = state.self.pokemon[0]
   const foe = activeFoe(state)
-  const field = { weather: state.weather }
+  const field = { weather: state.weather, generation: state.generation }
 
   const usable: Candidate[] = me.moves
-    .map((move, index) => ({ slot: index + 1, move, info: moveInfo(move.id) }))
+    .map((move, index) => ({ slot: index + 1, move, info: moveInfo(move.id, field.generation) }))
     .filter(({ move }) => hasPp(move))
   if (usable.length === 0) return { type: 'move', slot: 1 }
 
@@ -211,7 +212,7 @@ export function chooseRivalAction(state: AiState, rng: Prng): Choice {
 
   // Regla 1: KO garantizado (sin crítico) con más precisión. Los de dos turnos no llegan a tiempo, los poco fiables (Sorpresa...)
   // pueden fallar y no cuentan, y Robustez o Banda Focus a PS completos impiden el KO; los suicidas, solo si no hay otro.
-  const guaranteedKos = survivesAnyOneHit(foe)
+  const guaranteedKos = survivesAnyOneHit(foe, state.generation)
     ? []
     : attacks.filter(({ min, info }) => min > 0 && min >= foe.hp && !info.twoTurn && !info.unreliable)
   const nonSuicideKos = guaranteedKos.filter(({ info }) => !info.suicide)

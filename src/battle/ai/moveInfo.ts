@@ -1,11 +1,12 @@
 import { Dex } from '@pkmn/sim'
+import type { BattleGeneration } from '../protocol'
 
-const gen5 = Dex.forGen(5)
+const dexByGeneration = { 3: Dex.forGen(3), 5: Dex.forGen(5) }
 
 export type StatusId = 'par' | 'brn' | 'slp' | 'psn' | 'tox' | 'frz'
 export type BoostId = 'atk' | 'def' | 'spa' | 'spd' | 'spe' | 'accuracy' | 'evasion'
 
-/** Qué hace un movimiento a efectos de la IA, sacado de los datos Gen 5 del simulador (no de listas escritas a mano). */
+/** Qué hace un movimiento a efectos de la IA, sacado de los datos del simulador para la generación del combate (no de listas escritas a mano). */
 export type MoveInfo = {
   id: string
   kind: 'attack' | 'weather' | 'inflictStatus' | 'setup' | 'heal' | 'hazard' | 'other'
@@ -30,10 +31,11 @@ const DELAYED_HEAL_MOVES = new Set(['wish', 'healingwish', 'lunardance'])
 const INFLICTABLE: readonly string[] = ['par', 'brn', 'slp', 'psn', 'tox', 'frz']
 const HAZARDS: readonly string[] = ['stealthrock', 'spikes', 'toxicspikes']
 
-const cache = new Map<string, MoveInfo>()
+const cache = { 3: new Map<string, MoveInfo>(), 5: new Map<string, MoveInfo>() }
 
-function classify(id: string): MoveInfo {
-  const data = gen5.moves.get(id)
+function classify(id: string, generation: BattleGeneration): MoveInfo {
+  const dex = dexByGeneration[generation]
+  const data = dex.moves.get(id)
   const base = {
     id,
     category: data.category,
@@ -48,7 +50,7 @@ function classify(id: string): MoveInfo {
   if (!data.exists) return { ...base, kind: 'other', category: 'Status', accuracy: 1 }
   if (data.category !== 'Status') return { ...base, kind: 'attack' }
 
-  if (data.weather) return { ...base, kind: 'weather', weather: gen5.toID(data.weather) }
+  if (data.weather) return { ...base, kind: 'weather', weather: dex.toID(data.weather) }
   if (data.sideCondition && HAZARDS.includes(data.sideCondition)) {
     return { ...base, kind: 'hazard', hazard: data.sideCondition as MoveInfo['hazard'] }
   }
@@ -60,23 +62,25 @@ function classify(id: string): MoveInfo {
   return { ...base, kind: 'other' }
 }
 
-export function moveInfo(moveId: string): MoveInfo {
-  let info = cache.get(moveId)
+export function moveInfo(moveId: string, generation: BattleGeneration = 5): MoveInfo {
+  const moves = cache[generation]
+  let info = moves.get(moveId)
   if (!info) {
-    info = classify(moveId)
-    cache.set(moveId, info)
+    info = classify(moveId, generation)
+    moves.set(moveId, info)
   }
   return info
 }
 
-export function speciesTypes(speciesId: string): string[] {
-  return [...gen5.species.get(speciesId).types]
+export function speciesTypes(speciesId: string, generation: BattleGeneration = 5): string[] {
+  return [...dexByGeneration[generation].species.get(speciesId).types]
 }
 
-/** Multiplicador de tipo Gen 5 de un movimiento de ese tipo sobre un Pokémon de esa especie. */
-export function typeMultiplier(attackType: string, defenderSpeciesId: string): number {
-  return speciesTypes(defenderSpeciesId).reduce((multiplier, defenderType) => {
-    if (!gen5.getImmunity(attackType, defenderType)) return 0
-    return multiplier * 2 ** gen5.getEffectiveness(attackType, defenderType)
+/** Multiplicador de tipo de un movimiento de ese tipo sobre un Pokémon de esa especie. */
+export function typeMultiplier(attackType: string, defenderSpeciesId: string, generation: BattleGeneration = 5): number {
+  const dex = dexByGeneration[generation]
+  return speciesTypes(defenderSpeciesId, generation).reduce((multiplier, defenderType) => {
+    if (!dex.getImmunity(attackType, defenderType)) return 0
+    return multiplier * 2 ** dex.getEffectiveness(attackType, defenderType)
   }, 1)
 }

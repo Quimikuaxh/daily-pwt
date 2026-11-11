@@ -6,6 +6,7 @@ import type { CloudAuth, Session } from './auth'
 import type { GoogleCredential } from './googleIdentity'
 import { CloudSync, outboxKey, type TurnState } from './cloudSync'
 import { isPlayer, type AccountState } from './state'
+import { AccountCampaign } from './campaign'
 
 export { isPlayer, type AccountState }
 
@@ -28,6 +29,8 @@ export type ConflictListener = (date: string) => void
  * la cuenta) y replica el oficial en la base de datos con `CloudSync`. Nada de esto bloquea el juego: si algo falla, se sigue en local.
  */
 export class Account {
+  readonly campaign: AccountCampaign
+  private campaignSuspended = false
   private state: AccountState
   private readonly listeners = new Set<() => void>()
   private readonly conflictListeners = new Set<ConflictListener>()
@@ -43,6 +46,7 @@ export class Account {
     private readonly localStore: GameStore,
   ) {
     this.state = cloudLoader ? { status: 'connecting' } : { status: 'disabled' }
+    this.campaign = new AccountCampaign(storage)
   }
 
   getState = (): AccountState => this.state
@@ -59,6 +63,8 @@ export class Account {
 
   private set(state: AccountState): void {
     this.state = state
+    this.campaign.setAccount(!this.campaignSuspended && state.status === 'signedIn' ? this.cloud?.api ?? null : null,
+      !this.campaignSuspended && state.status === 'signedIn' ? state.userId : null)
     for (const listener of this.listeners) listener()
   }
 
@@ -203,9 +209,14 @@ export class Account {
       }
     }
     let session: Session
+    this.campaignSuspended = true
+    this.campaign.setAccount(null, null)
     try {
       session = await this.cloud.auth.signInWithGoogle(credential)
     } catch (error) {
+      this.campaignSuspended = false
+      this.campaign.setAccount(this.state.status === 'signedIn' ? this.cloud.api : null,
+        this.state.status === 'signedIn' ? this.state.userId : null)
       try {
         this.storage?.removeItem(GUEST_CLAIM_KEY)
       } catch {
@@ -216,6 +227,7 @@ export class Account {
     this.accountStore = null
     this.sync = null
     this.set({ status: 'connecting' })
+    this.campaignSuspended = false
     try {
       await this.open(session)
     } catch {
@@ -227,6 +239,8 @@ export class Account {
   /** RF-96: vuelve al modo local (con una sesión anónima nueva); lo guardado en el navegador no se borra. */
   async signOut(): Promise<void> {
     if (!this.cloud) return
+    this.campaignSuspended = true
+    this.campaign.setAccount(null, null)
     try {
       this.storage?.removeItem(ACCOUNT_SESSION_KEY)
     } catch {
@@ -236,6 +250,7 @@ export class Account {
     this.accountStore = null
     this.sync = null
     this.set({ status: 'connecting' })
+    this.campaignSuspended = false
     try {
       await this.open(await this.cloud.auth.signInAnonymously())
     } catch {

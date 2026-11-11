@@ -1,11 +1,10 @@
 import type { Battle, Pokemon } from '@pkmn/sim'
-import type { ResolvedSet } from '../../core/types'
-import type { BattleRequest, Choice, RequestMove } from '../protocol'
+import type { BattleGeneration, BattleRequest, BattleSet, Choice, RequestMove } from '../protocol'
 
 export type AiMove = { id: string; pp: number; disabled: boolean }
 
 export type AiMon = {
-  set: ResolvedSet
+  set: BattleSet
   hp: number
   maxHp: number
   status: string | null
@@ -22,6 +21,7 @@ export type FoeHazards = { stealthrock?: number; spikes?: number; toxicspikes?: 
  * así que el slot de un `switch` es la posición + 1.
  */
 export type AiState = {
+  generation?: BattleGeneration
   turn: number
   weather: string | null
   self: { pokemon: AiMon[]; trapped: boolean; mustSwitch: boolean }
@@ -37,20 +37,21 @@ function resolveMoveId(moveId: string, pokemon: Pokemon): string {
   return moveId === 'hiddenpower' && pokemon.hpType ? `hiddenpower${pokemon.hpType.toLowerCase()}` : moveId
 }
 
-function toResolvedSet(pokemon: Pokemon): ResolvedSet {
+function toBattleSet(pokemon: Pokemon): BattleSet {
   const moves = pokemon.moveSlots.map((slot) => resolveMoveId(slot.id, pokemon))
-  const resolved: ResolvedSet = {
+  const resolved: BattleSet = {
     species: pokemon.species.id,
     nameEs: pokemon.name,
-    level: pokemon.level as 50,
+    level: pokemon.level,
     item: pokemon.item,
     ability: pokemon.ability,
-    moves: moves as ResolvedSet['moves'],
+    moves,
     nature: pokemon.set.nature,
     ivs: { ...pokemon.set.ivs },
     evs: { ...pokemon.set.evs },
   }
   if (pokemon.set.gender === 'M' || pokemon.set.gender === 'F') resolved.gender = pokemon.set.gender
+  if (pokemon.battle.gen === 3 && pokemon.side.id === 'p1') resolved.happiness = pokemon.happiness
   return resolved
 }
 
@@ -59,7 +60,7 @@ function toAiMon(pokemon: Pokemon, requestMoves?: RequestMove[]): AiMon {
     ? requestMoves.map((move) => ({ id: resolveMoveId(move.id, pokemon), pp: move.pp ?? 1, disabled: !!move.disabled }))
     : pokemon.moveSlots.map((slot) => ({ id: resolveMoveId(slot.id, pokemon), pp: slot.pp, disabled: !!slot.disabled }))
   return {
-    set: toResolvedSet(pokemon),
+    set: toBattleSet(pokemon),
     hp: pokemon.hp,
     maxHp: pokemon.maxhp,
     status: pokemon.status || null,
@@ -87,6 +88,7 @@ export function buildAiState(battle: Battle): AiState {
   const activeRequestMoves = request?.active?.[0]?.moves
 
   return {
+    generation: battle.gen === 3 ? 3 : 5,
     turn: battle.turn,
     weather: battle.field.weather || null,
     self: {
