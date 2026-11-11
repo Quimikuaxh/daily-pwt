@@ -10,7 +10,7 @@ import { boostEntries } from '../fieldText'
 import { hpFillColor } from '../party/hpBar'
 import { MemberIcon } from '../party/MemberIcon'
 import { memberHpText, type PartyMember, type PartyMove } from '../party/partyModel'
-import { effectivenessTone, moveEffectiveness, statsWithBoosts } from './sideModel'
+import { effectivenessTone, factValueClass, moveEffectiveness, statsWithBoosts } from './sideModel'
 import './side.css'
 
 const text = es.battle.side
@@ -287,15 +287,15 @@ function MoveFacts({ move }: { move: PartyMove }) {
       </div>
       <div>
         <dt>{summary.power}</dt>
-        <dd>{move.power}</dd>
+        <dd className={factValueClass(move.power)}>{move.power}</dd>
       </div>
       <div>
         <dt>{summary.accuracy}</dt>
-        <dd>{move.accuracy}</dd>
+        <dd className={factValueClass(move.accuracy)}>{move.accuracy}</dd>
       </div>
       <div>
         <dt>{summary.pp}</dt>
-        <dd>{move.maxPp ?? es.today.notApplicable}</dd>
+        <dd className={factValueClass(move.maxPp)}>{move.maxPp ?? es.today.notApplicable}</dd>
       </div>
     </dl>
   )

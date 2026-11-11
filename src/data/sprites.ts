@@ -20,5 +20,8 @@ export const trainerSpriteUrl = (sprite: string, baseUrl = DEFAULT_BASE_URL): st
 /** public/sprites/trainers/<sprite>-vs.png: retrato de la pancarta VS, último fotograma del gif recortado por arriba (`gen:trainer-vs`). */
 export const trainerVsSpriteUrl = (sprite: string, baseUrl = DEFAULT_BASE_URL): string => `${baseUrl}sprites/trainers/${sprite}-vs.png`
 
+/** public/sprites/trainers/<sprite>-side.png: sprite de mapa de pie de lado, mirando a la izquierda (`gen:trainer-side`). */
+export const trainerSideSpriteUrl = (sprite: string, baseUrl = DEFAULT_BASE_URL): string => `${baseUrl}sprites/trainers/${sprite}-side.png`
+
 /** public/sprites/trainers/<sprite>-mini.png (icono pequeño). */
 export const trainerMiniSpriteUrl = (sprite: string, baseUrl = DEFAULT_BASE_URL): string => `${baseUrl}sprites/trainers/${sprite}-mini.png`

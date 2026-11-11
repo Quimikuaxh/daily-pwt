@@ -29,10 +29,10 @@ const MULTI_HIT_LEAD_MS = 450
 
 /**
  * Fases de la intro (PRD §10.2.1) y lo que dura cada una a x1. Las animaciones CSS de battle.css (`[data-intro]`) deben
- * durar lo mismo: el tiempo de cada fase lo marca este guion y el CSS solo lo dibuja. Total: 4,9 s.
+ * durar lo mismo: el tiempo de cada fase lo marca este guion y el CSS solo lo dibuja. Total: 8,9 s (la fase vs: escenario de STAGE_MS, 2 s, y pancarta de 2 s).
  */
 export type IntroPhase = 'loading' | 'vs' | 'iris' | 'enter' | 'challenge' | 'rivalSend' | 'playerSend' | 'done'
-export const INTRO_DURATIONS_MS = { vs: 2000, iris: 500, enter: 700, challenge: 900, rivalSend: 1300, playerSend: 1500 } as const
+export const INTRO_DURATIONS_MS = { vs: 4000, iris: 500, enter: 700, challenge: 900, rivalSend: 1300, playerSend: 1500 } as const
 
 /**
  * Cambio de Pokémon (retirada y envío): el entrenador aparece, recoge al Pokémon con el rayo rojo (recall) y lanza la bola del nuevo (send).
@@ -81,6 +81,11 @@ export type BattleParams = {
   playCry?: (species: string, faint: boolean) => void
   /** Duraciones de la intro (por defecto, las del PWT). La campaña de Hoenn no tiene pancarta ni iris: los pone a 0. */
   introDurations?: Readonly<Record<keyof typeof INTRO_DURATIONS_MS, number>>
+  /**
+   * Imágenes de la intro listas (escenario y pancarta VS): la intro se queda en `loading` hasta que resuelve. Sin ella, en el móvil el
+   * escenario salía antes que los sprites la primera vez con cada entrenador (Jose, 11/11/2026). Debe resolver siempre (con tope).
+   */
+  introReady?: () => Promise<void> | void
 }
 
 /** Especie del Pokémon que entra en `|switch|p1a: X|Garchomp, L50, M|…` (id). */
@@ -273,6 +278,11 @@ export function useBattle(params: BattleParams): BattleController {
       setView(shown)
       isFirstUpdate = false
 
+      const introWait = steps[0]?.phase ? paramsRef.current.introReady?.() : undefined
+      if (introWait) {
+        await introWait
+        if (cancelled) return
+      }
       const lines = steps.map((step) => step.line)
       for (const [index, step] of steps.entries()) {
         if (cancelled) return

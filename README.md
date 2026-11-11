@@ -53,6 +53,7 @@ npm install
 | `npm run gen:player-sets` | Genera `data/player-sets.json` (pool del jugador) desde `data/smogon/` y `data/trainers.json`, y `data/smogon/discarded.json`. Sin red. |
 | `npm run gen:ui-index` | Genera `src/generated/battle-ui-images.json` (gráficos de interfaz que se precargan desde Hoy). |
 | `npm run gen:emerald-ui -- RUTA_POKEEMERALD [--comprobar]` | Recursos de Pokémon Esmeralda desde el decompilado de pret (ver «Recursos de Esmeralda»). Necesita Python 3.10 y Pillow 10. |
+| `npm run gen:trainer-side` | Sprites de mapa de pie de lado de los entrenadores (escenario previo a la pancarta VS): recorta las celdas de `data/trainer-side-sprites.json` de las hojas de The Spriters Resource vía Internet Archive. Necesita red. |
 | `npm run gen:vs-logo` | Dibuja el logo «VS.» de la pancarta en pixel art (`public/ui/battle/vs-logo.png`); sin dependencias. |
 | `npm run gen:trainer-vs` | Retratos de la pancarta VS: último fotograma de cada gif de entrenador (y del sprite de frente de Nate y Rosa) recortado por arriba, en `<sprite>-vs.png`. Necesita `ffmpeg`/`ffprobe`. |
 | `npm run validate:data` | Valida `data/*.json`, `src/generated/` y los sprites (PRD §8.3; ver [Validación de datos](#validación-de-datos-y-ci)). Sin red ni `scripts/.cache`; sale con código 1 si hay algún problema. |
@@ -69,7 +70,7 @@ npm install
 
 `npm run validate:data` (`scripts/validate-data.mjs`) ejecuta las comprobaciones de PRD §8.3 sin red: 53 entrenadores del roster con ≥ 1 variante (líderes ≥ 2: regional y Mundial; los 46 tienen 2), 6 Pokémon por variante, especies, movimientos (aprendibles), habilidades (de la especie) y objetos de Gen 5, nada prohibido por el PWT, ids únicos, nombres en español, IV por categoría, pool del jugador, calendario y sprites existentes. Imprime el informe de cobertura (sets `verified: false`, entrenadores sin variantes).
 
-`.github/workflows/ci.yml` (pull requests, push a ramas distintas de `main` y requisito previo del despliegue) ejecuta `npm ci`, `validate:data`, `npm test`, `npx tsc -b`, `npm run lint` y `npm run build`. No ejecuta Playwright (en local son ~7 min con 4 workers; en CI, con 2 workers y la instalación de navegadores, pasaría de 10 min y es sensible a la carga): se lanza en local antes de hacer merge.
+`.github/workflows/ci.yml` (pull requests, push a ramas distintas de `main` y requisito previo del despliegue) ejecuta `npm ci`, `validate:data`, `npm test`, `npx tsc -b`, `npm run lint` y `npm run build`. El Playwright completo no corre en CI (en local son ~7 min con 4 workers; en CI pasaría de 10 min y es sensible a la carga): se lanza en local antes de hacer merge. En CI solo corre un humo en Chromium (job `e2e-smoke`, casos `@smoke`); el navegador se guarda en caché y las dependencias de sistema (apt) se instalan aparte con reintentos y sin bloquear el job si los espejos de Ubuntu no responden.
 
 ## Construcción y despliegue
 
@@ -286,7 +287,7 @@ Traducciones manuales que prevalecen sobre las de PokeAPI.
 ### Gráficos de interfaz (`public/ui/`)
 
 - `data/ui-assets.json` es la fuente de verdad: cada fichero de `public/ui/` lleva su origen, URL, crédito y licencia, y, si sale de una hoja, el recorte `[x, y, ancho, alto]`, los colores clave que pasan a transparentes y los rectángulos borrados.
-- Orígenes: Bulbagarden Archives (fondos de combate de N2/B2, iconos de tipo y de categoría, protagonistas de espaldas, capturas de Negro/Blanco para el fondo de la pantalla de datos), The Spriters Resource vía Internet Archive (databoxes y barras de PS, botones de la pantalla táctil, Poké Ball de transición y fotogramas de la Poké Ball lanzada, fondos y placas de la pantalla de equipo, protagonistas lanzando; el sitio está tras Cloudflare) y Pokémon Showdown (iconos de menú de los Pokémon, destello, protagonistas de frente para la pancarta VS: `trainers/nate-front.png` y `rosa-front.png`).
+- Orígenes: Bulbagarden Archives (fondos de combate de N2/B2, iconos de tipo y de categoría, protagonistas de espaldas, capturas de Negro/Blanco para el fondo de la pantalla de datos), The Spriters Resource vía Internet Archive (databoxes y barras de PS, botones de la pantalla táctil, Poké Ball de transición y fotogramas de la Poké Ball lanzada, fondos y placas de la pantalla de equipo, protagonistas lanzando; el sitio está tras Cloudflare) y Pokémon Showdown (iconos de menú de los Pokémon, destello, protagonistas de frente para la pancarta VS: `trainers/nate-front.png` y `rosa-front.png`). Escenario del PWT de la pancarta VS (`pwt-stage.png`): captura del juego aportada por Jose, limpiada a mano (sin entrenadores, retratos ni nombres). Escudo del estadio (`vs-emblem.png`): calcado de los píxeles de un vídeo del juego. Sprites de mapa de lado (`trainers/<id>-side.png`, `gen:trainer-side`): The Spriters Resource (ripeados por Dazz, sin crédito obligatorio) vía Internet Archive.
 - **Fondo de la pantalla de datos**: es de Negro/Blanco, no de N2/B2. Sale de capturas de Bulbagarden Archives limpiadas por script (`cleanups` en el manifest: `tile`, `clone`, `fill` con `clip`); los textos, el sprite y las barras se pintan en ejecución. Para sustituirlo por un rip limpio basta cambiar la URL y quitar la limpieza.
 - Iconos de tipo en español: `types-blank/` (icono sin rótulo, `fill` con `from`) más el nombre pintado en ejecución. La Poké Ball es una tira de 7 fotogramas (`strip`, reducida a la mitad con `shrink`) de la hoja «Poké Balls» de Negro/Blanco.
 - `npm run gen:ui` (`scripts/fetch-ui-assets.mjs`) solo escribe dentro de `public/ui/` (rutas `^[a-z0-9-]+(/[a-z0-9-]+)*\.png$`), valida la cabecera PNG y el tamaño esperado, recorta sin reescalar y salta lo que ya existe. Los PNG quedan en su resolución nativa de DS (256x192 por pantalla).
@@ -344,6 +345,8 @@ npm run lint
 
 ### Tests e2e
 
+
+- **Cuenta simulada (E2E-78):** `npx playwright test --config e2e/nickname.config.ts`, aparte de `npm run test:e2e` porque necesita un build con una URL de Supabase ficticia (intercepta toda la API) y usa el mismo `dist-e2e` y puerto.
 ```sh
 npm run test:e2e:install   # solo la primera vez: chromium y webkit
 npm run test:e2e

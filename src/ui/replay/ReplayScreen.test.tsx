@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { getDailyChallenge } from '../../core/challenge'
 import { encodeReplay } from '../../replay/replayCodec'
 import type { ReplayData, ReplayStep } from '../../replay/replayData'
@@ -18,9 +18,11 @@ const replay: ReplayData = { version: 1, challenge, playerLead: 0, battleSeed: '
 describe('repetición de un amigo (UT-119)', () => {
   it('se pide al servidor con su nickname y su fecha, y el botón de su equipo dice «Equipo»', async () => {
     const api = fakeApi({ getFriendReplay: async () => encodeReplay(replay) })
-    render(<ReplayScreen source={{ kind: 'friend', nickname: 'Eva', date: '2026-10-26' }} api={api} ready data={data} settings={DEFAULT_SETTINGS} onSoundChange={vi.fn()} onExit={vi.fn()} />)
+    render(<ReplayScreen source={{ kind: 'friend', nickname: 'Eva', date: '2026-10-26' }} api={api} ready ownName="Jose_11" data={data} settings={DEFAULT_SETTINGS} onSoundChange={vi.fn()} onExit={vi.fn()} />)
     expect(await screen.findByTestId('battle-mode')).toHaveAttribute('data-mode', 'replay')
     expect(api.getFriendReplay).toHaveBeenCalledWith('Eva', '2026-10-26')
+    // UT-180: un amigo conserva su nombre aunque quien mira tenga otro nickname.
+    expect(within(await screen.findByRole('img', { name: `Eva contra ${challenge.trainer.nameEs}` })).getByText('Eva')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Equipo' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Borrar enlace' })).toBeNull()
   })

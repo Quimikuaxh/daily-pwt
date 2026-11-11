@@ -218,6 +218,7 @@ export const es = {
     hpValues: (current: number, max: number) => `${current}/${max}`,
     fieldLabel: 'Campo de combate',
     /** Pancarta VS del PWT (RF-137): logo y nombre accesible. */
+    vsScreen: 'VS',
     vsLabel: (player: string, rival: string) => `${player} contra ${rival}`,
     controlsLabel: 'Pantalla táctil',
     logLabel: 'Registro del combate',

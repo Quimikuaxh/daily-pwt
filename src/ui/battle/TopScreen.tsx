@@ -5,7 +5,7 @@ import type { IntroPhase, SwitchAnimation } from '../../hooks/useBattle'
 import { Sprite } from '../common/Sprite'
 import { FieldLights } from './FieldLights'
 import { VsBanner } from './VsBanner'
-import { speciesSprite, substituteSprite, trainerSprite, trainerVsSprite } from '../common/spriteUrls'
+import { speciesSprite, substituteSprite, trainerSideSprite, trainerSprite, trainerVsSprite } from '../common/spriteUrls'
 import { es } from '../../i18n/es'
 import { DataBox } from './DataBox'
 import { IntroLayer, IrisWipe } from './IntroLayer'
@@ -28,6 +28,8 @@ type TopScreenProps = {
   /** Cambio de Pokémon en curso (retirada y envío) de ese bando; `null` si no hay. */
   switchAnim: SwitchAnimation | null
   avatar: Avatar
+  /** Nombre del jugador en la pancarta VS (su nickname); sin él, el del protagonista (Nate o Rosa). */
+  playerName?: string
   message: string | null
   onAdvance: () => void
   speed?: number
@@ -65,19 +67,6 @@ function MonSprite({ mon, side, data }: { mon: MonView; side: 'front' | 'back'; 
   return <Sprite src={speciesSprite(data.dex, mon.species, side)} name={speciesLabel(data.names, mon.species)} width={FALLBACK_BOX} height={FALLBACK_BOX} className="bt-sprite" />
 }
 
-/**
- * Cámara de los ataques (como el PWT de N2/B2): si ataca el rival, se acerca a él y vuelve; si atacas tú, avanza hacia el
- * rival, que recibe el golpe. El punto fijo es el Pokémon rival; el atributo alterna con cada ataque para reiniciar la
- * animación aunque se repita el mismo lado. Los efectos de movimiento van dentro de la cámara y se acercan con ella.
- */
-function moveCameraProps(event: MoveFxEvent | null, rival: { x: number; y: number }) {
-  if (!event) return {}
-  return {
-    'data-move-camera': `${event.user}-${event.key % 2}`,
-    style: { '--cam-x': `${rival.x}px`, '--cam-y': `${rival.y}px` } as CSSProperties,
-  }
-}
-
 /** Destello blanco y chispas naranjas al abrirse la escena tras la cortinilla, como en la presentación del PWT. */
 const SPARKS = [20, 65, 110, 155, 200, 245, 290, 335] as const
 function IntroFlash() {
@@ -105,7 +94,7 @@ function MonShadow({ mon, side, data }: { mon: MonView; side: 'front' | 'back'; 
 }
 
 /** Pantalla superior (256x192): fondo del PWT, Pokémon, cajas de datos, clima y caja de mensajes. */
-export function TopScreen({ view, data, challenge, introPhase, switchAnim, avatar, message, onAdvance, speed, reducedMotion, moveFx = null }: TopScreenProps) {
+export function TopScreen({ view, data, challenge, introPhase, switchAnim, avatar, message, onAdvance, speed, reducedMotion, moveFx = null, playerName }: TopScreenProps) {
   const fieldRef = useRef(null as HTMLElement | null)
   const rivalMon = view ? activeMon(view.rival) : null
   const playerMon = view ? activeMon(view.player) : null
@@ -118,7 +107,7 @@ export function TopScreen({ view, data, challenge, introPhase, switchAnim, avata
     <section ref={fieldRef} data-testid="field" className="bt-top bt-field" data-intro={introPhase} data-switch={switchAnim ?? undefined} aria-label={es.battle.fieldLabel}>
       {/* Cámara: fondo, luces, Pokémon y entrenadores se mueven juntos durante la intro (encuadre del rival y vuelta al
           plano general); cajas de PS, mensajes y efectos de movimiento quedan fuera y no se mueven. */}
-      <div className="bt-camera" {...moveCameraProps(moveFx, rivalLandingPoint(rivalSpriteId))}>
+      <div className="bt-camera">
       <img className="bt-bg" src={uiAsset('bg/pwt.png')} alt="" />
       <FieldLights />
 
@@ -162,7 +151,8 @@ export function TopScreen({ view, data, challenge, introPhase, switchAnim, avata
       <MessageBox text={message} onAdvance={onAdvance} />
       {(introPhase === 'loading' || introPhase === 'iris') && <IrisWipe />}
       {introPhase === 'vs' && (
-        <VsBanner playerName={avatar.name} playerSprite={avatar.front} rivalName={challenge.trainer.nameEs} rivalSprite={trainerVsSprite(challenge.trainer.sprite)} />
+        <VsBanner playerName={playerName ?? avatar.name} playerSprite={avatar.front} playerSide={avatar.side} rivalName={challenge.trainer.nameEs}
+          rivalSprite={trainerVsSprite(challenge.trainer.sprite)} rivalSide={trainerSideSprite(challenge.trainer.sprite)} speed={speed} reducedMotion={reducedMotion} />
       )}
     </section>
   )

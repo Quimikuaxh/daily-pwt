@@ -14,6 +14,7 @@ const index: AudioIndex = {
 }
 
 type FakeSource = { buffer: unknown; playbackRate: { value: number }; loop: boolean; loopStart: number; loopEnd: number; started: boolean; offset: number; stoppedAt: number | null; connect: () => void; start: (when?: number, offset?: number) => void; stop: (at?: number) => void }
+type FakeAudioContext = Omit<AudioContextLike, 'state'> & { state: AudioContextState }
 
 function fakeContext() {
   const sources: FakeSource[] = []
@@ -66,7 +67,7 @@ function fakeContext() {
       return { name, numberOfChannels: 1, sampleRate: 48000, getChannelData: () => channel }
     },
   }
-  return { context: context as unknown as AudioContextLike, sources, gains, decoded }
+  return { context: context as unknown as FakeAudioContext, sources, gains, decoded }
 }
 
 function setup(withContext = true) {
@@ -111,6 +112,53 @@ describe('motor de sonido', () => {
     expect(engine.state()).toMatchObject({ unlocked: true, music: 'gym-kanto' })
     expect(fake.sources.filter((source) => source.started)).toHaveLength(1)
     expect(fake.context.resume).toHaveBeenCalled()
+    expect([...listeners.keys()].sort()).toEqual(['click', 'keydown', 'pointerdown', 'pointerup', 'touchend'])
+  })
+
+  it.each(['pointerup', 'touchend', 'click', 'keydown'])('reintenta con %s tras pointerdown suspendido sin perder ni duplicar la música', async (event) => {
+    const { engine, fake, interact, settle, listeners } = setup()
+    engine.playMusic('gym-kanto')
+    interact()
+    await settle()
+    expect(fake.context.state).toBe('suspended')
+    expect(fake.context.resume).toHaveBeenCalledTimes(1)
+    const source = fake.sources[0]
+    listeners.get(event)?.()
+    await settle()
+    expect(fake.context.resume).toHaveBeenCalledTimes(2)
+    expect(listeners.size).toBe(5)
+    expect(engine.state()).toMatchObject({ music: 'gym-kanto', wantedMusic: 'gym-kanto' })
+    expect(fake.sources).toEqual([source])
+    expect(source).toMatchObject({ started: true, stoppedAt: null })
+    fake.context.resume = vi.fn(async () => { fake.context.state = 'running' })
+    listeners.get(event)?.()
+    await settle()
+    expect(fake.context.resume).toHaveBeenCalledTimes(1)
+    expect(listeners.size).toBe(0)
+    expect(fake.sources).toEqual([source])
+  })
+
+  it.each(['pointerdown', 'pointerup', 'touchend', 'click', 'keydown'])('con el contexto en marcha al primer %s no deja escuchadores', async (event) => {
+    const { fake, settle, listeners } = setup()
+    fake.context.state = 'running'
+    listeners.get(event)?.()
+    await settle()
+    expect(fake.context.resume).toHaveBeenCalledTimes(1)
+    expect(listeners.size).toBe(0)
+  })
+
+  it('quita los escuchadores cuando el reintento pasa a running al resolverse resume, sin otro gesto', async () => {
+    const { fake, interact, settle, listeners } = setup()
+    interact()
+    await settle()
+    fake.context.resume = vi.fn(async () => {
+      await Promise.resolve()
+      fake.context.state = 'running'
+    })
+    listeners.get('touchend')?.()
+    await settle()
+    expect(fake.context.state).toBe('running')
+    expect(fake.context.resume).toHaveBeenCalledTimes(1)
     expect(listeners.size).toBe(0)
   })
 

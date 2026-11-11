@@ -4,7 +4,7 @@ import { BattleScreen } from './BattleScreen'
 import { getDailyChallenge } from '../../core/challenge'
 import { makeGameData } from '../../test-utils/fixtures'
 import { mkUpdate, mockClient } from '../../test-utils/clientMock'
-import { settle } from '../../test-utils/ui'
+import { settleIntro } from '../../test-utils/ui'
 import userEvent from '@testing-library/user-event'
 
 // PRD §10.2: etiqueta visible OFICIAL / PRÁCTICA y textos propios de rendirse y salir en el oficial.
@@ -19,7 +19,7 @@ async function mount(mode?: 'official' | 'practice') {
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
   render(<BattleScreen client={client as any} data={data} challenge={challenge} playerLead={0} battleSeed="seed-1" mode={mode} onFinish={vi.fn()} onExit={vi.fn()} />)
   client.emit(mkUpdate())
-  await settle(8000)
+  await settleIntro()
   return { user }
 }
 

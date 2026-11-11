@@ -47,7 +47,24 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      # El navegador sale del CDN de Playwright y se guarda en caché (clave: package-lock, que fija su versión). Las dependencias del
+      # sistema van por apt aparte, con límite de tiempo, reintentos y sin tumbar el job: el 11/11/2026 el runner no resolvía los
+      # espejos de Ubuntu y `install --with-deps` se colgó 10 min y bloqueó el despliegue. La imagen ubuntu-latest ya trae Chrome con
+      # sus librerías; si de verdad faltara alguna, falla el humo y el despliegue sigue bloqueado.
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - run: npx playwright install chromium
+      - name: Dependencias del sistema de Chromium (sin bloquear si apt falla)
+        continue-on-error: true
+        timeout-minutes: 6
+        run: |
+          for i in 1 2 3; do
+            timeout 120 npx playwright install-deps chromium && exit 0
+            echo "install-deps falló (intento $i)"; sleep 10
+          done
+          exit 1
       - run: npm run test:e2e:smoke
         env:
           CI: 'true'

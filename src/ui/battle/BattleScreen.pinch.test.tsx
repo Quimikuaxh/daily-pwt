@@ -6,7 +6,7 @@ import { getDailyChallenge } from '../../core/challenge'
 import { makeGameData } from '../../test-utils/fixtures'
 import { mkUpdate, mockClient } from '../../test-utils/clientMock'
 import { mkView, pMon, rMon } from '../../test-utils/view'
-import { settle } from '../../test-utils/ui'
+import { settle, settleIntro } from '../../test-utils/ui'
 import { BattleScreen } from './BattleScreen'
 
 // UT-121 · Música de vida baja (decisión de Jose, 30/10/2026): con el Pokémon del jugador en rojo suena ella en vez de la del rival.
@@ -27,7 +27,7 @@ describe('música de vida baja en combate (UT-121)', () => {
     const client = mockClient()
     const { unmount } = render(<BattleScreen client={client as never} data={data} challenge={challenge} playerLead={0} battleSeed="s" onFinish={vi.fn()} onExit={vi.fn()} />)
     client.emit(mkUpdate({ view: viewWith(150) }))
-    await settle(8000)
+    await settleIntro()
     expect(pinch).not.toHaveBeenCalled()
     // A 20/150 (13 %): en rojo.
     client.emit(mkUpdate({ lines: ['|-damage|p1a: Garchomp|20/150'], view: viewWith(20) }))
@@ -56,7 +56,7 @@ describe('tema del último Pokémon del rival (UT-122)', () => {
     const client = mockClient()
     const { unmount } = render(<BattleScreen client={client as never} data={data} challenge={challenge} playerLead={0} battleSeed="s" onFinish={vi.fn()} onExit={vi.fn()} />)
     client.emit(mkUpdate({ view: viewWith(150) }))
-    await settle(8000)
+    await settleIntro()
     expect(play.mock.calls.at(-1)).toEqual([expect.stringMatching(/^(gym|champion|rival)-/), undefined])
     // Cae el penúltimo: aún no ha salido el último.
     client.emit(mkUpdate({ lines: ['|faint|p2a: Starmie'], view: rivalDown(4) }))
@@ -86,7 +86,7 @@ describe('tema del último Pokémon del rival (UT-122)', () => {
     const client = mockClient()
     const { unmount } = render(<BattleScreen client={client as never} data={data} challenge={challenge} playerLead={0} battleSeed="s" onFinish={vi.fn()} onExit={vi.fn()} />)
     client.emit(mkUpdate({ view: rivalDown(5) }))
-    await settle(8000)
+    await settleIntro()
     play.mockClear()
     client.emit(mkUpdate({ lines: ['|move|p1a: Garchomp|Earthquake|p2a: Gyarados', '|-damage|p2a: Gyarados|0 fnt', '|faint|p2a: Gyarados'], view: rivalDown(5, 6) }))
     for (let step = 0; step < 40; step++) await settle(100)
@@ -105,7 +105,7 @@ describe('músicas especiales desactivadas en Ajustes (UT-137)', () => {
     const client = mockClient()
     const { unmount } = render(<BattleScreen client={client as never} data={data} challenge={challenge} playerLead={0} battleSeed="s" sound={off} onSoundChange={vi.fn()} onFinish={vi.fn()} onExit={vi.fn()} />)
     client.emit(mkUpdate({ view: viewWith(150) }))
-    await settle(8000)
+    await settleIntro()
     client.emit(mkUpdate({ lines: ['|-damage|p1a: Garchomp|20/150'], view: viewWith(20) }))
     await settle(8000)
     expect(pinch).not.toHaveBeenCalledWith('critical-health')
@@ -118,7 +118,7 @@ describe('músicas especiales desactivadas en Ajustes (UT-137)', () => {
     const client = mockClient()
     const { unmount } = render(<BattleScreen client={client as never} data={data} challenge={challenge} playerLead={0} battleSeed="s" sound={off} onSoundChange={vi.fn()} onFinish={vi.fn()} onExit={vi.fn()} />)
     client.emit(mkUpdate({ view: rivalDown(5) }))
-    await settle(8000)
+    await settleIntro()
     expect(play.mock.calls.map(([id]) => id)).not.toContain('last-pokemon')
     expect(play.mock.calls.at(-1)?.[0]).toMatch(/^(gym|champion|rival)-/)
     unmount()

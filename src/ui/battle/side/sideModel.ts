@@ -76,3 +76,10 @@ export const SIDE_STAT_KEYS = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'] as const
 export function statsWithBoosts(stats: StatsTable, boosts: Boosts | null): { key: keyof StatsTable; value: number; stage: number }[] {
   return SIDE_STAT_KEYS.map((key) => ({ key, value: stats[key], stage: key === 'hp' ? 0 : boosts?.[key] ?? 0 }))
 }
+
+/**
+ * Clase de una cifra de la ficha: en pokemon-dp.ttf el «1» deja 157/2048 de em vacíos a la izquierda (ninguna otra cifra ni letra lo
+ * hace), así que un valor que empieza por «1» quedaba 1–2 px a la derecha de su rótulo (Jose, 11/11/2026). Con la clase se compensa.
+ */
+export const factValueClass = (value: string | number | null | undefined): string | undefined =>
+  String(value ?? '').startsWith('1') ? 'bt-side-fact-one' : undefined

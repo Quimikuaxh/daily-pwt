@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { TYPE_CHART } from '../../../core/typeChart'
-import { effectivenessTone, moveEffectiveness, statsWithBoosts } from './sideModel'
+import { effectivenessTone, factValueClass, moveEffectiveness, statsWithBoosts } from './sideModel'
 
 // UT-152 · Paneles laterales (RF-44c, DEC-81): eficacia contra el de enfrente (con habilidad y objeto) y estadísticas con sus subidas.
 const target = (types: string[], abilityId = '', itemId = '') => ({ types: types.map((id) => ({ id, label: id })), abilityId, itemId })
@@ -58,5 +58,12 @@ describe('estadísticas con subidas y bajadas (UT-152)', () => {
       ['spe', 125, -2],
     ])
     expect(statsWithBoosts(stats, null).map((stat) => stat.stage)).toEqual([0, 0, 0, 0, 0, 0])
+  })
+})
+
+describe('cifras de la ficha (UT-182)', () => {
+  it('las que empiezan por «1» llevan la clase que compensa el hueco del glifo; las demás y las vacías, no', () => {
+    for (const value of [1, 100, '16', 120]) expect(factValueClass(value)).toBe('bt-side-fact-one')
+    for (const value of [90, '24', 0, null, undefined, '—']) expect(factValueClass(value)).toBeUndefined()
   })
 })

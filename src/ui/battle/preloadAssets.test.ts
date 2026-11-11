@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { BATTLE_DATABOX_IMAGES, BATTLE_UI_IMAGES, PARTY_SCREEN_IMAGES, SUMMARY_SCREEN_IMAGES, challengeItemIconUrls, challengeSpriteUrls, imagesReady, preloadBattleImages, preloadChallengeSprites } from './preloadAssets'
+import { BATTLE_DATABOX_IMAGES, BATTLE_UI_IMAGES, PARTY_SCREEN_IMAGES, SUMMARY_SCREEN_IMAGES, challengeItemIconUrls, challengeSpriteUrls, imagesReady, INTRO_IMAGES_TIMEOUT_MS, introImagesReady, introImageUrls, preloadBattleImages, preloadChallengeSprites } from './preloadAssets'
 import { challengeFor } from '../../core/challenge'
 import { loadGameData } from '../../data/gameData'
 import { existsSync } from 'node:fs'
@@ -23,15 +23,16 @@ describe('precarga de la interfaz y de los sprites del reto', () => {
   const data = loadGameData()
   const challenge = challengeFor({ trainerId: 'maximo', date: '2026-10-21' }, data)
 
-  it('los sprites precargados son solo los del reto: frente y espalda de los 6 rivales y los 6 propios, y el entrenador con su retrato de la pancarta VS (RF-137)', () => {
+  it('los sprites precargados son solo los del reto: frente y espalda de los 6 rivales y los 6 propios, y el entrenador con su retrato VS y su sprite de lado (RF-137)', () => {
     const urls = challengeSpriteUrls(challenge, data)
     const species = new Set([...challenge.rivalTeam, ...challenge.playerTeam].map((set) => set.species))
-    expect(urls.length).toBe(species.size * 2 + 2)
+    expect(urls.length).toBe(species.size * 2 + 3)
     for (const url of urls.filter((candidate) => candidate.includes('/pokemon/'))) {
       expect([...species].some((id) => url.endsWith(`/${data.dex.species[id].spriteId}.gif`)), url).toBe(true)
     }
     expect(urls.some((url) => url.includes(`trainers/${challenge.trainer.sprite}.gif`))).toBe(true)
     expect(urls.some((url) => url.includes(`trainers/${challenge.trainer.sprite}-vs.png`))).toBe(true)
+    expect(urls.some((url) => url.endsWith(`trainers/${challenge.trainer.sprite}-side.png`))).toBe(true)
   })
 
   // UT-158 (Jose, 06/11/2026): los iconos de los objetos del reto también se precargan (ficha del objeto), y existen en public/.
@@ -54,6 +55,9 @@ describe('precarga de la interfaz y de los sprites del reto', () => {
     expect(PARTY_SCREEN_IMAGES.some((url) => url.endsWith('party/bg-top.png'))).toBe(true)
     expect(SUMMARY_SCREEN_IMAGES.some((url) => url.endsWith('summary/info-top.png'))).toBe(true)
     expect(BATTLE_UI_IMAGES.some((url) => url.endsWith('bg/pwt.png'))).toBe(true)
+    for (const file of ['pwt-stage.png', 'vs-emblem.png', 'vs-logo.png', 'trainers/nate-side.png', 'trainers/rosa-side.png']) {
+      expect(BATTLE_UI_IMAGES.some((url) => url.endsWith(`/battle/${file}`)), file).toBe(true)
+    }
     expect(BATTLE_UI_IMAGES.filter((url) => url.includes('/bg/'))).toHaveLength(1)
   })
 
@@ -73,6 +77,24 @@ describe('precarga de la interfaz y de los sprites del reto', () => {
     const bounded = imagesReady(['/ui/b.png'], 1500, never)
     await vi.advanceTimersByTimeAsync(1500)
     await expect(bounded).resolves.toBeUndefined()
+    vi.useRealTimers()
+  })
+
+  it('UT-181 la intro pide con prioridad alta el escenario, el escudo, el logo y el retrato y el sprite de lado de los dos, con tope de 4 s', async () => {
+    const urls = introImageUrls({ front: '/ui/battle/trainers/rosa-vs.png', side: '/ui/battle/trainers/rosa-side.png' }, 'misty')
+    expect(urls).toHaveLength(7)
+    for (const end of ['pwt-stage.png', 'vs-emblem.png', 'vs-logo.png', 'rosa-vs.png', 'rosa-side.png', 'trainers/misty-vs.png', 'trainers/misty-side.png']) {
+      expect(urls.some((url) => url.endsWith(end)), end).toBe(true)
+    }
+    vi.useFakeTimers()
+    const priorities: string[] = []
+    const never = () => ({ src: '', set fetchPriority(value: string) { priorities.push(value) }, decode: () => new Promise<void>(() => undefined) })
+    const bounded = introImagesReady(introImageUrls({ front: '/x/a-vs.png', side: '/x/a-side.png' }, 'ut181'), never)
+    await vi.advanceTimersByTimeAsync(INTRO_IMAGES_TIMEOUT_MS)
+    await expect(bounded).resolves.toBeUndefined()
+    expect(INTRO_IMAGES_TIMEOUT_MS).toBe(4000)
+    expect(priorities.length).toBeGreaterThan(0)
+    expect(priorities.every((value) => value === 'high')).toBe(true)
     vi.useRealTimers()
   })
 })

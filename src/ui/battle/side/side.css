@@ -488,6 +488,11 @@
   margin: 0;
 }
 
+/* El «1» de pokemon-dp.ttf deja 157/2048 de em a la izquierda: se compensa para que la cifra empiece bajo su rótulo (factValueClass). */
+.bt-side-move-facts dd.bt-side-fact-one {
+  margin-left: calc(-157em / 2048);
+}
+
 .bt-side-move-facts .category-icon {
   margin: 0;
 }
