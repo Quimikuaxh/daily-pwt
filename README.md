@@ -69,7 +69,7 @@ npm install
 
 `npm run validate:data` (`scripts/validate-data.mjs`) ejecuta las comprobaciones de PRD §8.3 sin red: 53 entrenadores del roster con ≥ 1 variante (líderes ≥ 2: regional y Mundial; los 46 tienen 2), 6 Pokémon por variante, especies, movimientos (aprendibles), habilidades (de la especie) y objetos de Gen 5, nada prohibido por el PWT, ids únicos, nombres en español, IV por categoría, pool del jugador, calendario y sprites existentes. Imprime el informe de cobertura (sets `verified: false`, entrenadores sin variantes).
 
-`.github/workflows/ci.yml` (pull requests, push a ramas distintas de `main` y requisito previo del despliegue) ejecuta `npm ci`, `validate:data`, `npm test`, `npx tsc -b`, `npm run lint` y `npm run build`. No ejecuta Playwright (en local son ~7 min con 4 workers; en CI, con 2 workers y la instalación de navegadores, pasaría de 10 min y es sensible a la carga): se lanza en local antes de hacer merge.
+`.github/workflows/ci.yml` (pull requests, push a ramas distintas de `main` y requisito previo del despliegue) ejecuta `npm ci`, `validate:data`, `npm test`, `npx tsc -b`, `npm run lint` y `npm run build`. El Playwright completo no corre en CI (en local son ~7 min con 4 workers; en CI pasaría de 10 min y es sensible a la carga): se lanza en local antes de hacer merge. En CI solo corre un humo en Chromium (job `e2e-smoke`, casos `@smoke`); el navegador se guarda en caché y las dependencias de sistema (apt) se instalan aparte con reintentos y sin bloquear el job si los espejos de Ubuntu no responden.
 
 ## Construcción y despliegue
 
