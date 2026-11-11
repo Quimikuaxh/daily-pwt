@@ -124,3 +124,51 @@
   .campaign-medals img { width: 18px; height: 18px; }
   .campaign-action { font-size: 20px; }
 }
+
+/* Draft: Poké Balls de pokeball_selection (3 fotogramas de 32 x 32 en vertical); la elegida se bambolea como sAnim_Select_Pokeball_Moving
+   (fotogramas 1, 0, 2, 0… en pasos de 1/60 s, con una pausa). */
+.console-screen .draft-ball-sprite {
+  left: 0;
+  top: 0;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+}
+
+@keyframes draft-wobble {
+  0% { background-position: 0 -32px; }
+  2.5% { background-position: 0 0; }
+  5% { background-position: 0 -64px; }
+  7.5% { background-position: 0 0; }
+  10% { background-position: 0 -32px; }
+  12.5% { background-position: 0 0; }
+  15% { background-position: 0 -64px; }
+  17.5% { background-position: 0 0; }
+  40% { background-position: 0 -32px; }
+  45% { background-position: 0 0; }
+  50% { background-position: 0 -64px; }
+  55% { background-position: 0 0; }
+  60% { background-position: 0 -32px; }
+  65% { background-position: 0 0; }
+  70% { background-position: 0 -64px; }
+  75% { background-position: 0 0; }
+}
+
+.console-screen .draft-ball-active { animation: draft-wobble 2.67s steps(1) infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .console-screen .draft-ball-active { animation: none; }
+}
+
+/* Resalte del menú de alquiler detrás de la opción con el puntero o el foco. */
+.console-screen .draft-highlight { visibility: hidden; }
+.console-screen .draft-option:hover .draft-highlight,
+.console-screen .draft-option:focus-visible .draft-highlight { visibility: visible; }
+.console-screen .draft-option:focus-visible { outline: 0; }
+
+/* Frente del Pokémon: hoja de 2 fotogramas de 64 x 64; se ve el primero. */
+.console-screen .mon-front {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  object-position: 0 0;
+}

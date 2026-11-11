@@ -4,7 +4,7 @@
  * guardada, la barra ofrece empezarla; empezar otra sobre una en curso pide confirmación. Se carga aparte (lazy) desde App.
  */
 import { useMemo, useState } from 'react'
-import { createCampaign, type CampaignState } from '../../core/nuzlocke/campaign'
+import { chooseRecruit, createCampaign, draftPicks, openDraft, type CampaignDefinition, type CampaignState } from '../../core/nuzlocke/campaign'
 import type { GameData } from '../../core/types'
 import { LocalCampaignStore } from '../../storage/campaignStore'
 import { browserStorage } from '../../storage/browserStorage'
@@ -12,12 +12,16 @@ import { es } from '../../i18n/es'
 import { esCampaign } from '../../i18n/esCampaign'
 import { emeraldTheme } from '../console/themes/emerald'
 import catalog from '../../../data/nuzlocke/hoenn-emerald.json'
+import progression from '../../../data/nuzlocke/hoenn-emerald-progression.json'
+import { candidateOf } from './draftModel'
+import { DraftScreen } from './DraftScreen'
 import { badgeCount, routePlaces, type CampaignEncounter } from './hoennRoute'
 import { RouteScreen } from './RouteScreen'
 import './campaign.css'
 
 const t = esCampaign.route
 const encounters = catalog.encounters as readonly CampaignEncounter[]
+const definition = { encounters, species: progression.species } as unknown as CampaignDefinition
 
 type CampaignScreenProps = {
   data: GameData
@@ -33,6 +37,24 @@ const randomSeed = () => `hoenn-${Date.now().toString(36)}-${Math.random().toStr
 export default function CampaignScreen({ data, onExit, store: givenStore, newSeed = randomSeed }: CampaignScreenProps) {
   const store = useMemo(() => givenStore ?? new LocalCampaignStore(browserStorage()), [givenStore])
   const [state, setState] = useState(() => store.read()?.state ?? null as CampaignState | null)
+  const [view, setView] = useState('route' as 'route' | 'draft')
+  const save = (next: CampaignState) => {
+    const record = store.write(next, null, store.read()?.revision ?? 0)
+    if (!(record instanceof Promise)) setState(record.state)
+    return next
+  }
+  const openNext = (current: CampaignState) => save(current.offer.length ? current : openDraft(definition, current))
+  const continueCampaign = () => {
+    if (state?.phase !== 'draft') return
+    openNext(state)
+    setView('draft')
+  }
+  const recruit = (id: string) => {
+    if (!state) return
+    const next = chooseRecruit(definition, state, id)
+    if (next.phase === 'draft') openNext(next)
+    else { save(next); setView('route') }
+  }
   const places = useMemo(() => routePlaces(encounters), [])
   const badges = state ? badgeCount(state, encounters) : 0
   const next = places[Math.min(badges, places.length - 1)]
@@ -60,7 +82,19 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
       </header>
       <main id="main" tabIndex={-1} className="campaign-main">
         <h2 className="visually-hidden">{t.screen}</h2>
-        <RouteScreen places={places} badges={badges} speciesName={speciesName} reservedHeight={150} />
+        {view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
+          <DraftScreen
+            candidates={state.offer.map((id) => candidateOf(id, Math.max(...encounters[state.encounterIndex].team.map((member) => member.level)), definition, data))}
+            pick={state.pick}
+            picks={draftPicks(definition, state.encounterIndex)}
+            level={Math.max(...encounters[state.encounterIndex].team.map((member) => member.level))}
+            rivalName={encounters[state.encounterIndex].nameEs}
+            onRecruit={recruit}
+            reservedHeight={150}
+          />
+        ) : (
+          <RouteScreen places={places} badges={badges} speciesName={speciesName} reservedHeight={150} />
+        )}
         <div className="campaign-bar">
           <ul className="campaign-medals" aria-label={t.medals(badges)}>
             {places.filter((place) => place.gym !== null).map((place) => (
@@ -71,10 +105,14 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
             ))}
           </ul>
           {state ? (
-            <button type="button" className="campaign-action" disabled
-              aria-label={next.gym === null ? t.continueLeague : t.continueLabel(next.gym)}>
-              {t.continue}
-            </button>
+            view === 'draft' ? (
+              <button type="button" className="campaign-action" onClick={() => setView('route')}>{esCampaign.draft.back}</button>
+            ) : (
+              <button type="button" className="campaign-action" disabled={state.phase !== 'draft'} onClick={continueCampaign}
+                aria-label={next.gym === null ? t.continueLeague : t.continueLabel(next.gym)}>
+                {t.continue}
+              </button>
+            )
           ) : (
             <button type="button" className="campaign-action" onClick={start}>{esCampaign.newCampaign}</button>
           )}
