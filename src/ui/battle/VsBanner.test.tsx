@@ -57,7 +57,10 @@ describe('VsBanner (RF-137)', () => {
     const banner = screen.getByRole('img', { name: 'Jose_11 contra Misty' })
     advance(STAGE_MS / speed - 1)
     expect(banner.querySelector('.bt-vs-band')).toBeNull()
+    // El fundido a negro del final se monta con la pancarta: si estuviera desde el escenario, se dispararía antes y la taparía.
+    expect(banner.querySelector('.bt-vs-fade')).toBeNull()
     advance(1)
+    expect(banner.querySelector(':scope > .bt-vs-fade')).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'Jose_11 contra Misty' })).toBe(banner)
     expect(banner.querySelector('.bt-vs-band-player .bt-vs-trainer')).toHaveAttribute('src', props.playerSprite)
     expect(banner.querySelector('.bt-vs-band-rival .bt-vs-trainer')).toHaveAttribute('src', props.rivalSprite)
@@ -86,12 +89,12 @@ describe('VsBanner (RF-137)', () => {
     expect(vi.getTimerCount()).toBe(0)
   })
 
-  it('usa los retratos y sprites de lado de ambos protagonistas; escenario de 1,5 s y fase VS de 3,5 s', () => {
+  it('usa los retratos y sprites de lado de ambos protagonistas; escenario de 2 s y fase VS de 4 s', () => {
     for (const id of ['nate', 'rosa'] as const) {
       expect(AVATARS[id].front).toMatch(new RegExp(`${id}-vs\\.png$`))
       expect(AVATARS[id].side).toMatch(new RegExp(`${id}-side\\.png$`))
     }
-    expect(STAGE_MS).toBe(1500)
-    expect(INTRO_DURATIONS_MS.vs).toBe(3500)
+    expect(STAGE_MS).toBe(2000)
+    expect(INTRO_DURATIONS_MS.vs).toBe(4000)
   })
 })

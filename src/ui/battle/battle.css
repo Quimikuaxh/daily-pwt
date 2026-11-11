@@ -2337,8 +2337,9 @@
   z-index: 5;
 }
 
-.bt-vs::after {
-  content: '';
+/* Fundido a negro del final: es un elemento de la pancarta (no del contenedor .bt-vs, que se monta con el escenario), así cuenta desde que
+   entra la franja; como ::after de .bt-vs se disparaba a los 1,58 s del escenario y tapaba la pancarta entera (11/11/2026). */
+.bt-vs-fade {
   position: absolute;
   inset: 0;
   background: #000;
@@ -2450,7 +2451,7 @@
   inset: 0;
   background: #fff;
   opacity: 0;
-  animation: bt-vs-camera calc(1500ms / var(--speed, 1)) linear both;
+  animation: bt-vs-camera calc(2000ms / var(--speed, 1)) linear both;
 }
 
 @keyframes bt-vs-camera {
@@ -2623,7 +2624,7 @@
 
 /* Sin animaciones: la pancarta se ve ya compuesta, sin movimiento ni destellos. */
 [data-reduced-motion="true"] .bt-vs *,
-[data-reduced-motion="true"] .bt-vs::after {
+[data-reduced-motion="true"] .bt-vs-fade {
   animation: none !important;
 }
 

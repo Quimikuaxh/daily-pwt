@@ -15,7 +15,7 @@ type VsSequence = {
 }
 
 for (const speed of [1, 2, 4] as const) {
-  test(`E2E-79 escenario, pancarta con escudo e intro de 8,4 s / x${speed} @timing`, async ({ page }) => {
+  test(`E2E-79 escenario, pancarta con escudo e intro de 8,9 s / x${speed} @timing`, async ({ page }) => {
     // Observar desde el montaje evita perder el escenario a x4 por la latencia de los selectores.
     await page.addInitScript(({ key, settings }) => {
       localStorage.setItem(key, JSON.stringify({ version: 1, ...settings }))
@@ -64,7 +64,7 @@ for (const speed of [1, 2, 4] as const) {
     expect(result.bandLabel).toBe(result.stageLabel)
     expect(result.emblem).toMatch(/\/vs-emblem\.png$/)
     expect(result.logo).toMatch(/\/vs-logo\.png$/)
-    for (const [end, expected] of [[result.bandAt, 1500 / speed], [result.irisAt, 3500 / speed], [result.doneAt, 8400 / speed]] as const) {
+    for (const [end, expected] of [[result.bandAt, 2000 / speed], [result.irisAt, 4000 / speed], [result.doneAt, 8900 / speed]] as const) {
       expect(end, 'se observó la fase').toBeDefined()
       const elapsed = end! - result.stageAt!
       expect(elapsed).toBeGreaterThanOrEqual(expected - 50)
@@ -89,3 +89,14 @@ for (const animations of ['never', 'system'] as const) {
     await expect(banner.locator('.bt-vs-trainer').first()).toHaveCSS('filter', 'none')
   })
 }
+
+test('E2E-81 la pancarta se ve sin el fundido a negro durante su primer segundo (el fundido no cuenta desde el escenario)', async ({ page }) => {
+  await page.addInitScript(({ key, settings }) => localStorage.setItem(key, JSON.stringify({ version: 1, ...settings })),
+    { key: SETTINGS_KEY, settings: { ...DEFAULT_SETTINGS, speed: 1, sound: false } })
+  await startBattle(page, { scenario: MISTY, seed: 'a' })
+  await page.locator('.bt-vs-band').first().waitFor({ timeout: 20_000 })
+  await page.waitForTimeout(1000)
+  const opacity = await page.locator('.bt-vs-fade').evaluate((el) => Number(getComputedStyle(el).opacity))
+  expect(opacity).toBeLessThan(0.05)
+  await expect(page.locator('.bt-vs-logo')).toBeVisible()
+})

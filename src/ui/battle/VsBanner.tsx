@@ -23,7 +23,7 @@ type VsBannerProps = {
 }
 
 /** Duración del escenario antes de que entre la franja, a x1. */
-export const STAGE_MS = 1500
+export const STAGE_MS = 2000
 
 const SPARKS = [10, 50, 95, 140, 185, 230, 275, 320] as const
 /** Bolas de fuego del choque: ángulo y distancia. */
@@ -89,6 +89,7 @@ export function VsBanner({ playerName, playerSprite, playerSide, rivalName, riva
           <div className="bt-vs-sparks">
             {SPARKS.map((angle) => <i key={angle} style={{ '--a': `${angle}deg` } as CSSProperties} />)}
           </div>
+          <div className="bt-vs-fade" />
         </>
       )}
     </div>

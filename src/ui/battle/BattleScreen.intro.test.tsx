@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { BattleScreen } from './BattleScreen'
+import { STAGE_MS } from './VsBanner'
 import { getDailyChallenge } from '../../core/challenge'
 import { makeGameData } from '../../test-utils/fixtures'
 import { mkUpdate, mockClient } from '../../test-utils/clientMock'
@@ -25,7 +26,8 @@ async function step(ms: number) { await settle(ms) }
 /** Milisegundos (en pasos de 50) hasta que se cumple la condición. */
 async function msUntil(condition: () => boolean, limit = 20_000): Promise<number> {
   let elapsed = 0
-  while (!condition() && elapsed < limit) { await step(50); elapsed += 50 }
+  // Pasos de 25 ms: la intro a x4 dura 2225 ms (8,9 s / 4), que no es múltiplo de 50.
+  while (!condition() && elapsed < limit) { await step(25); elapsed += 25 }
   return elapsed
 }
 
@@ -43,25 +45,25 @@ describe('intro del combate (PRD §10.2.1)', () => {
     const { client } = mount()
     client.emit(mkUpdate())
     const seen: (string | null)[] = []
-    for (let elapsed = 0; elapsed <= 8400; elapsed += 50) {
+    for (let elapsed = 0; elapsed <= 8900; elapsed += 50) {
       if (seen[seen.length - 1] !== phase()) seen.push(phase())
       await step(50)
     }
     expect(seen).toEqual(['vs', 'iris', 'enter', 'challenge', 'rivalSend', 'playerSend', 'done'])
   })
 
-  it('dura 8,4 segundos a velocidad x1 (escenario y pancarta VS de 3,5 s; RF-137)', async () => {
+  it('dura 8,9 segundos a velocidad x1 (escenario y pancarta VS de 4 s; RF-137)', async () => {
     const { client } = mount()
     client.emit(mkUpdate())
     const duration = await msUntil(() => phase() === 'done')
-    expect(duration).toBe(8400)
+    expect(duration).toBe(8900)
   })
 
-  it.each([2, 4])('a x%s dura 8,4 segundos divididos por la velocidad', async (speed) => {
+  it.each([2, 4])('a x%s dura 8,9 segundos divididos por la velocidad', async (speed) => {
     const { client, user } = mount()
     for (let current = 1; current < speed; current *= 2) await user.click(screen.getByRole('button', { name: /velocidad/i }))
     client.emit(mkUpdate())
-    expect(await msUntil(() => phase() === 'done')).toBe(8400 / speed)
+    expect(await msUntil(() => phase() === 'done')).toBe(8900 / speed)
   })
 
   it('cada frase de la intro sale en su fase: desafío, rival saca su Pokémon, yo saco el mío', async () => {
@@ -128,7 +130,7 @@ describe('intro del combate (PRD §10.2.1)', () => {
     const banner = screen.getByRole('img', { name: new RegExp(`contra ${challenge.trainer.nameEs}$`) })
     expect(banner.querySelector(':scope > .bt-vs-stage')).toBeNull()
     expect(banner.querySelectorAll('.bt-vs-band')).toHaveLength(2)
-    expect(await msUntil(() => phase() === 'done')).toBe(8400)
+    expect(await msUntil(() => phase() === 'done')).toBe(8900)
     expect(screen.getByTestId('battle-screen')).toHaveAttribute('data-reduced-motion', 'true')
   })
 })
@@ -157,7 +159,7 @@ describe('sprites del escenario integrados en el combate (RF-137)', () => {
     expect(banner.querySelector('.bt-vs-stage-portrait-left img')).toHaveAttribute('src', expect.stringContaining(`/trainers/${avatar}-vs.png`))
     expect(banner.querySelector('.bt-vs-stage-portrait-right img')).toHaveAttribute('src', expect.stringContaining(`/trainers/${challenge.trainer.sprite}-vs.png`))
     expect(banner.querySelector('.bt-vs-band')).toBeNull()
-    await step(1500)
+    await step(STAGE_MS)
     expect(banner.querySelectorAll('.bt-vs-band')).toHaveLength(2)
     expect(banner).toHaveAccessibleName(`Jose_11 contra ${challenge.trainer.nameEs}`)
   })
