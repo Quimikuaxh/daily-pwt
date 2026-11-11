@@ -5,7 +5,7 @@ import type { BattleClient, ClientMessage } from '../battle/client'
 import { createWorkerHandler } from '../battle/messages'
 import type { EngineEnd, EngineInit } from '../battle/protocol'
 import { attackers } from '../test-utils/teams'
-import { settle } from '../test-utils/ui'
+import { settle, settleIntro } from '../test-utils/ui'
 import { makeGameData } from '../test-utils/fixtures'
 import type { Decision } from '../storage/gameStore'
 
@@ -50,7 +50,7 @@ async function playLive(turns: number) {
   const decisions: Decision[] = []
   const settled: { turn: number; playerRemaining: number; rivalRemaining: number }[] = []
   const live = mount({ onDecision: (decision) => decisions.push(decision), onSettled: (state) => settled.push(state) })
-  await settle(8000)
+  await settleIntro()
   for (let turn = 0; turn < turns; turn += 1) {
     act(() => live.result.current.choose({ type: 'move', slot: 1 }))
     await settle(12_000)
@@ -138,7 +138,7 @@ describe('reproducción de un combate guardado (DEC-43)', () => {
   it('el registro de decisiones del jugador incluye la rendición', async () => {
     const decisions: Decision[] = []
     const live = mount({ onDecision: (decision) => decisions.push(decision) })
-    await settle(8000)
+    await settleIntro()
     act(() => live.result.current.forfeit())
     await settle(5000)
     expect(decisions).toEqual([{ type: 'forfeit' }])
@@ -150,7 +150,7 @@ describe('efectos de sonido del combate', () => {
   it('en vivo: las dos Poké Ball de la intro (lanzar y abrir) y un golpe por cada daño de movimiento', async () => {
     const playSfx = vi.fn()
     const live = mount({ playSfx })
-    await settle(8000)
+    await settleIntro()
     const intro = playSfx.mock.calls.map(([id]) => id)
     expect(intro).toEqual(['ball-throw', 'ball-open', 'ball-throw', 'ball-open'])
     act(() => live.result.current.choose({ type: 'move', slot: 1 }))

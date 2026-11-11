@@ -5,7 +5,7 @@ import App from './App'
 import { getDailyChallenge } from './core/challenge'
 import { makeGameData } from './test-utils/fixtures'
 import { mkUpdate, mockClient, type MockClient } from './test-utils/clientMock'
-import { settle, setMadridTime } from './test-utils/ui'
+import { settle, settleIntro, setMadridTime } from './test-utils/ui'
 import { LAUNCH } from './test-utils/dates'
 import { MemoryStorage } from './test-utils/memoryStorage'
 import { LocalStorageStore } from './storage/localStorageStore'
@@ -59,7 +59,7 @@ describe('réplica del oficial (UT-101)', () => {
     expect(cloud.api.startOfficial).toHaveBeenCalledWith(expect.objectContaining({ date: LAUNCH, trainerId: challenge.trainer.id, battle: expect.objectContaining({ leadIndex: 1 }) }), { player: challenge.playerTeam.length, rival: challenge.rivalTeam.length })
     await settle(8000)
     clients[0].emit(mkUpdate())
-    await settle(8000)
+    await settleIntro()
     expect(cloud.api.saveTurn).not.toHaveBeenCalled()
     await user.click(screen.getByRole('button', { name: /^luchar$/i }))
     await user.click(screen.getAllByRole('button', { name: /pp/i })[0])

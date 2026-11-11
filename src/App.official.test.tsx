@@ -5,7 +5,7 @@ import App from './App'
 import { getDailyChallenge } from './core/challenge'
 import { makeGameData } from './test-utils/fixtures'
 import { mkUpdate, mockClient, type MockClient } from './test-utils/clientMock'
-import { settle, setMadridTime } from './test-utils/ui'
+import { settle, settleIntro, setMadridTime } from './test-utils/ui'
 import { LAUNCH, addDays } from './test-utils/dates'
 import { MemoryStorage } from './test-utils/memoryStorage'
 import { LocalStorageStore } from './storage/localStorageStore'
@@ -83,7 +83,7 @@ describe('un combate oficial por día', () => {
     await startOfficial(first.user)
     await settle(8000)
     clients[0].emit(mkUpdate())
-    await settle(8000)
+    await settleIntro()
     await first.user.click(screen.getByRole('button', { name: /luchar/i }))
     await first.user.click(screen.getByRole('button', { name: new RegExp(data.names.moves.earthquake) }))
     expect(clients[0].choose).toHaveBeenCalledWith({ type: 'move', slot: 1 })
@@ -129,7 +129,7 @@ describe('un combate oficial por día', () => {
     const { user } = mountApp()
     await startOfficial(user)
     clients[0].emit(mkUpdate())
-    await settle(8000)
+    await settleIntro()
     await user.click(screen.getByRole('button', { name: /rendirse/i }))
     await user.click(screen.getByRole('button', { name: /sí, rendirme/i }))
     expect(clients[0].forfeit).toHaveBeenCalled()

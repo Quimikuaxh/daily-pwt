@@ -32,7 +32,7 @@ const MULTI_HIT_LEAD_MS = 450
  * durar lo mismo: el tiempo de cada fase lo marca este guion y el CSS solo lo dibuja. Total: 4,9 s.
  */
 export type IntroPhase = 'loading' | 'vs' | 'iris' | 'enter' | 'challenge' | 'rivalSend' | 'playerSend' | 'done'
-export const INTRO_DURATIONS_MS = { vs: 2000, iris: 500, enter: 700, challenge: 900, rivalSend: 1300, playerSend: 1500 } as const
+export const INTRO_DURATIONS_MS = { vs: 3500, iris: 500, enter: 700, challenge: 900, rivalSend: 1300, playerSend: 1500 } as const
 
 /**
  * Cambio de Pokémon (retirada y envío): el entrenador aparece, recoge al Pokémon con el rayo rojo (recall) y lanza la bola del nuevo (send).

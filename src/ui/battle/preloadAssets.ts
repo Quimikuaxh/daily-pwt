@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useState, type RefObject } from 'react'
 import type { Challenge, GameData } from '../../core/types'
 import battleUiImages from '../../generated/battle-ui-images.json'
-import { itemIconUrl, speciesSprite, trainerSprite, trainerVsSprite } from '../common/spriteUrls'
+import { itemIconUrl, speciesSprite, trainerSideSprite, trainerSprite, trainerVsSprite } from '../common/spriteUrls'
 import { uiAsset } from '../common/uiAssets'
 
 const DIGITS = Array.from({ length: 10 }, (_, digit) => digit)
@@ -59,7 +59,7 @@ export function preloadBattleImages(createImage: ImageFactory = () => new Image(
 export function challengeSpriteUrls(challenge: Challenge, data: GameData): string[] {
   const species = [...challenge.rivalTeam, ...challenge.playerTeam].map((set) => set.species)
   const urls = [...new Set(species)].flatMap((id) => [speciesSprite(data.dex, id, 'front'), speciesSprite(data.dex, id, 'back')])
-  return [...urls.filter((url): url is string => url !== null), trainerSprite(challenge.trainer.sprite), trainerVsSprite(challenge.trainer.sprite)]
+  return [...urls.filter((url): url is string => url !== null), trainerSprite(challenge.trainer.sprite), trainerVsSprite(challenge.trainer.sprite), trainerSideSprite(challenge.trainer.sprite)]
 }
 
 /**

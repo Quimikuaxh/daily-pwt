@@ -5,7 +5,7 @@ import { BattleScreen } from './BattleScreen'
 import { getDailyChallenge } from '../../core/challenge'
 import { makeGameData } from '../../test-utils/fixtures'
 import { mkUpdate, mockClient } from '../../test-utils/clientMock'
-import { settle } from '../../test-utils/ui'
+import { settle, settleIntro } from '../../test-utils/ui'
 import { mkView, pMon, rMon } from '../../test-utils/view'
 import { SWITCH_DURATIONS_MS } from '../../hooks/useBattle'
 
@@ -28,7 +28,7 @@ const step = (ms: number) => settle(ms)
 async function afterIntro(animations: 'always' | 'system' | 'never' = 'always') {
   const context = mount(animations)
   context.client.emit(mkUpdate())
-  await step(8000)
+  await settleIntro()
   return context
 }
 const afterSwitchView = (lines: string[], over: Parameters<typeof mkView>[0] = {}) =>

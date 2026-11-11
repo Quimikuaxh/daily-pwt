@@ -4,7 +4,7 @@ import { BattleScreen } from './BattleScreen'
 import { getDailyChallenge } from '../../core/challenge'
 import { makeGameData } from '../../test-utils/fixtures'
 import { mkUpdate, mockClient } from '../../test-utils/clientMock'
-import { settle } from '../../test-utils/ui'
+import { settle, settleIntro } from '../../test-utils/ui'
 import { mkView, pMon, rMon } from '../../test-utils/view'
 import { HP_BAR_ANIMATION_MS } from '../../hooks/useBattle'
 
@@ -22,7 +22,7 @@ async function afterIntro() {
   const client = mockClient()
   render(<BattleScreen client={client as any} data={data} challenge={challenge} playerLead={0} battleSeed="seed-1" onFinish={vi.fn()} onExit={vi.fn()} />)
   client.emit(mkUpdate())
-  await settle(8000)
+  await settleIntro()
   return client
 }
 
