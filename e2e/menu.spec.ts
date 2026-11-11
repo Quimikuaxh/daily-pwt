@@ -5,16 +5,18 @@ import { finishOfficial, stageScale, startBattle } from './support'
 
 // F3 · PRD §10.5, §10.6 y decisiones del 22/10/2026: Ayuda, Ajustes (velocidad guardada, borrar datos) y marco de consola en escritorio.
 test.describe('Ayuda y Ajustes', () => {
-  test('E2E-61 Ayuda se abre desde Hoy con créditos y aviso legal, y se cierra con Escape @smoke', async ({ page }) => {
+  test('E2E-61 Ayuda desde Ajustes con créditos y aviso legal; Escape vuelve a Ajustes @smoke', async ({ page }) => {
     const today = new TodayPage(page)
     await today.goto()
-    await page.getByRole('button', { name: 'Ayuda' }).click()
+    await page.getByRole('button', { name: 'Ajustes' }).click()
+    await page.getByRole('button', { name: 'Cómo se juega' }).click()
     const dialog = page.getByRole('dialog', { name: 'Ayuda' })
     await expect(dialog.getByRole('heading', { name: 'Cómo se juega' })).toBeVisible()
     await expect(dialog.getByRole('heading', { name: 'Créditos' })).toBeAttached()
     await expect(dialog).toContainText('no oficial')
     await page.keyboard.press('Escape')
-    await expect(page.getByRole('dialog')).toHaveCount(0)
+    await expect(page.getByRole('dialog', { name: 'Ayuda' })).toHaveCount(0)
+    await expect(page.getByRole('dialog', { name: 'Ajustes' })).toBeVisible()
   })
 
   test('E2E-62 la velocidad elegida en Ajustes se guarda al recargar y la usa el combate', async ({ page }) => {

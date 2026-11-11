@@ -16,15 +16,16 @@ const mount = (over: Parameters<typeof testMenu>[1] = {}) => {
 }
 
 describe('AppMenu', () => {
-  it('tres accesos con nombre: Estadísticas, Ayuda y Ajustes', () => {
+  it('tres accesos con nombre: Estadísticas, Modos de juego y Ajustes', () => {
     mount()
     const nav = screen.getByRole('navigation')
-    expect(within(nav).getAllByRole('button').map((button) => button.getAttribute('aria-label'))).toEqual(['Estadísticas', 'Ayuda', 'Ajustes'])
+    expect(within(nav).getAllByRole('button').map((button) => button.getAttribute('aria-label'))).toEqual(['Estadísticas', 'Modos de juego', 'Ajustes'])
   })
 
   it('Ayuda trae cómo se juega, reglas, mecánicas, consejos, créditos y aviso legal', async () => {
     const { user } = mount()
-    await user.click(screen.getByRole('button', { name: 'Ayuda' }))
+    await user.click(screen.getByRole('button', { name: 'Ajustes' }))
+    await user.click(await screen.findByRole('button', { name: 'Cómo se juega' }))
     const dialog = await screen.findByRole('dialog', { name: 'Ayuda' })
     for (const heading of ['Cómo se juega', 'Reglas del combate', 'Mecánicas de la 5.ª generación', 'Consejos', 'Estadísticas', 'Cuenta, puntos y rankings', 'Créditos', 'Aviso legal']) {
       expect(within(dialog).getByRole('heading', { name: heading })).toBeInTheDocument()
@@ -40,6 +41,26 @@ describe('AppMenu', () => {
     expect(dialog).toHaveTextContent(/no oficial/)
     expect(dialog).toHaveTextContent(/1 \+ \(6 − media de Pokémon en pie de todos los jugadores\) \/ 6/)
     expect(dialog).toHaveTextContent(/medianoche, hora de Madrid/)
+  })
+
+  it.each(['Cerrar', 'Escape'])('cerrar Ayuda con %s vuelve a Ajustes', async (action) => {
+    const { user } = mount()
+    await user.click(screen.getByRole('button', { name: 'Ajustes' }))
+    await user.click(await screen.findByRole('button', { name: 'Cómo se juega' }))
+    const help = await screen.findByRole('dialog', { name: 'Ayuda' })
+    if (action === 'Escape') await user.keyboard('{Escape}')
+    else await user.click(within(help).getByRole('button', { name: 'Cerrar' }))
+    expect(await screen.findByRole('dialog', { name: 'Ajustes' })).toBeInTheDocument()
+    expect(screen.queryByRole('dialog', { name: 'Ayuda' })).not.toBeInTheDocument()
+  })
+
+  it('Modos abre la campaña configurada y cierra la ventana', async () => {
+    const onOpen = vi.fn()
+    const { user } = mount({ modes: [{ id: 'hoenn', label: 'Nuzlocke de Hoenn', hint: 'Campaña', onOpen }] })
+    await user.click(screen.getByRole('button', { name: 'Modos de juego' }))
+    await user.click(await screen.findByRole('button', { name: 'Nuzlocke de Hoenn' }))
+    expect(onOpen).toHaveBeenCalledOnce()
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
   it('Ajustes: la velocidad marcada es la guardada y cambiarla avisa', async () => {

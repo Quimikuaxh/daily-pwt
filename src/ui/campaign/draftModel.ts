@@ -42,7 +42,8 @@ export function candidateOf(id: string, level: number, definition: CampaignDefin
     types,
     typeNames: rawTypes.map((type) => data.names.types[type] ?? type),
     total: species?.baseStatTotal ?? 0,
-    stats: dex ? STAT_KEYS.map((key, i) => statAt(dex.baseStats[key], level, i === 0)) : [0, 0, 0, 0, 0, 0],
+    // Shedinja tiene siempre 1 PS (Gen 3), sea cual sea el nivel.
+    stats: dex ? STAT_KEYS.map((key, i) => (i === 0 && id === 'shedinja' ? 1 : statAt(dex.baseStats[key], level, i === 0))) : [0, 0, 0, 0, 0, 0],
     ability: (data.names.abilities[dex?.abilities[0] ?? ''] ?? dex?.abilities[0] ?? '').toUpperCase(),
     evolution: evolution ? { target: (data.names.species[evolution.target] ?? evolution.target).toUpperCase(), level: Number(evolution.parameter) } : null,
   }

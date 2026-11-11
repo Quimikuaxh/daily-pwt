@@ -11,6 +11,28 @@ Base: [REQUISITOS-F1](REQUISITOS-F1.md), [ARQUITECTURA](ARQUITECTURA.md) §9.
 - Ningún test hace peticiones de red; los scripts de descarga no se ejecutan en tests.
 - Aserciones estadísticas: semillas fijas; no relajar umbrales sin analizar.
 
+## Encargo T3 · Ruta, Modos y Draft (11/11/2026)
+
+- Cambio de requisito de Jose (11/11/2026, PRD/backlog): la cabecera ofrece «Modos de juego» con el icono de mando en el lugar de Ayuda. Abre Ayuda desde Ajustes → «Cómo se juega»; cerrarla con Cerrar o Escape devuelve a Ajustes. Adapta UT-67, la lista de accesos de UT-100 y E2E-61, E2E-75 y la navegación de E2E-11 a este recorrido; conserva las comprobaciones de contenido, privacidad y accesibilidad.
+- `ModesDialog.test.tsx`, `AppMenu.test.tsx`, `App.campaign.test.tsx`: reto diario marcado como actual, descripción de los modos, cierre previo a abrir Nuzlocke y recorrido Hoy → campaña → Hoy.
+- `hoennRoute.test.ts`: ciudades y campeón, catálogo incompleto, medallas por fase, estados de las ciudades, ubicación del protagonista y límites de páginas por botones y teclado.
+- `RouteScreen.test.tsx`: ciudad próxima seleccionada, cambio de ficha accesible, campeón de la Liga, paginación de seis Pokémon, reinicio de página al cambiar de ciudad e icono del protagonista en Villa Raíz y el último gimnasio ganado.
+- `draftModel.test.ts`: estadísticas con IV 20, EV 0 y naturaleza neutra (incluida la excepción de PS de Shedinja), datos y traducciones del candidato, evolución por nivel, reparto de texto y notas dentro de 144 píxeles.
+- `DraftScreen.test.tsx`: bola pulsada, opciones DATOS/RECLUTAR/OTROS, alternancia INFO/ESTADÍSTICAS, cierre por OTROS/Escape, flechas circulares y callback con el identificador reclutado.
+- `CampaignScreen.test.tsx`: almacén local en memoria, inicio y reinicio confirmado/cancelado, nombres de medallas, aviso sin almacenamiento, recuperación de oferta guardada, regreso a Ruta y cuatro reclutamientos persistidos hasta preparación con Continuar desactivado. Simula `canvas.getContext` como `console.test.tsx`; no sustituye el núcleo del draft.
+- `e2e/campaign.spec.ts`: Hoy → Modos → Nuzlocke → Empezar campaña → texto accesible «LÍDER PETRA» → cuatro elecciones del draft de Petra → Ruta con Continuar desactivado → recarga y comprobación de persistencia → Volver a Hoy. Su ejecución corresponde a Claude/Jose según el reparto del encargo.
+
+Error de producción detectado por T3 (11/11/2026): `candidateOf('shedinja', 50, definition, data).stats[0]` devuelve 71 PS en vez de 1. `draftModel.ts` aplica la fórmula general sin la excepción de Shedinja; el cálculo de combate en `core/stats.ts` sí la contempla. Conserva el test fallido «los PS de Shedinja son siempre 1» hasta corregir producción. El reparto de T3 exige detener el desarrollo ante este error y encargar la corrección a Claude.
+
+Verificación T3 (11/11/2026):
+
+- `npx tsc -b`, `npm run lint` y `npm run validate:data`: correctos.
+- `npx vitest run`: no arranca por EROFS al escribir `node_modules/.vite-temp`; `node_modules` enlaza otro checkout fuera de las rutas de escritura. Ejecuta `npx vitest run --configLoader runner --cache false` en este entorno para cargar la misma configuración sin esa escritura.
+- Batería completa con ese ajuste: 2581 correctos, 40 fallidos y 3 omitidos (159 ficheros, 196,65 s). Esta ejecución precede a corregir las expectativas de cuatro candidatos y del acceso Modos en UT-100. También falla el recorrido nuevo de App por tiempo; pasa en la tanda aislada. No atribuyas todos los fallos de esta tanda a T3: incluye tiempos y fallos posteriores en combate/repeticiones, extracción de objetos, informe/simulación del draft, rendimiento UT-44 y preparación de Liga. Conserva el diagnóstico en `/tmp/daily-pwt-t3-vitest.log`; no cambies esos tests sin contrastar sus requisitos.
+- Tanda aislada de nueve ficheros de T3 y UT-100: 71 correctos y 2 fallidos (73 casos). Uno corresponde a Shedinja y el otro a la expectativa errónea de tres candidatos. Corrige esa expectativa a cuatro, como exige PRD §0 «Cobertura del draft de Hoenn»; la repetición de `CampaignScreen.test.tsx` da 6/6 correctos. Resultado combinado aislado: 72 casos correctos y un error de producción pendiente (Shedinja). Logs: `/tmp/daily-pwt-t3-focused.log` y `/tmp/daily-pwt-t3-campaign-final.log`.
+- E2E escrito y adaptaciones de Ayuda pendientes de ejecución por Claude/Jose. Build y nueva tanda completa pendientes tras la corrección de producción; detén T3 según el reparto acordado.
+
+
 ## 1. Unitarios
 **Núcleo y fechas**
 - UT-01 PRNG: misma semilla → misma secuencia; distinta → distinta; `nextInt` en rango; `shuffle`/`sample` permutan sin mutar; `deriveSeed` distinto por flujo. (RF-02/03)
@@ -265,7 +287,7 @@ Las fechas "D0", "3 fechas" y "5 fechas" de abajo son, desde DEC-35, escenarios 
 - E2E-58 Registro guardado irreproducible (versión de datos y variante que ya no existen): aviso en español, oficial «Anulado» y deshabilitado, también tras recargar, y la práctica sigue disponible. (política de DEC-43)
 - E2E-59 JSON corrupto en `daily-pwt:v1`: Hoy carga sin errores y el oficial está libre.
 - E2E-60 (F3) `e2e/official.spec.ts`: tras rendirse en el oficial, Resultado enseña jugados 1, 0 % y racha de días 1; Copiar copia (Chromium) el texto con el formato de PRD §11 sin el nombre del rival; Estadísticas se abre desde Hoy y se cierra con Escape. E2E-11 pasa también axe con Estadísticas abierto.
-- E2E-61 a 63 (F3) `e2e/menu.spec.ts`: Ayuda desde Hoy con créditos y aviso legal (Escape la cierra); la velocidad de Ajustes sobrevive a recargar y la usa el combate; borrar datos tras el oficial lo deja otra vez «Jugar» y sin claves `daily-pwt*`. E2E-11 pasa axe también con Ayuda y Ajustes abiertos.
+- E2E-61 a 63 (F3) `e2e/menu.spec.ts`: Ayuda desde Ajustes → Cómo se juega con créditos y aviso legal (Escape vuelve a Ajustes); la velocidad de Ajustes sobrevive a recargar y la usa el combate; borrar datos tras el oficial lo deja otra vez «Jugar» y sin claves `daily-pwt*`. E2E-11 pasa axe también con Ayuda y Ajustes abiertos.
 - E2E-64 (F3) `e2e/menu.spec.ts`: a 1440×900 el combate va enmarcado con escala 2; a 1280×720, sin marco.
 - Humo en CI (DEC-50): los casos marcados `@smoke` (E2E-01, E2E-05 registro en español, E2E-17 build sin ganchos, E2E-60 y E2E-61) corren en Chromium en el job `e2e-smoke` de `ci.yml` (`npm run test:e2e:smoke`).
 - E2E-65 `e2e/intro-slide.spec.ts` (DEC-51): tras un KO, la animación del entrenador rival es `bt-visit-right-send` y, recorrida con la Animation API, empieza fuera por la derecha, está en el centro al lanzar (30 %) y acaba fuera. E2E-49 (red lenta) vuelve a pasar con `useImagesLoadedIn` y los fondos de Datos montados siempre.

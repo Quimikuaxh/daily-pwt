@@ -40,7 +40,7 @@ async function mount(session: { userId: string; anonymous: boolean } | null, api
 describe('cuenta en la interfaz (UT-100)', () => {
   it('icono Cuenta en la cabecera, delante de los demás; sin cuenta, su ventana lleva a Google (RF-93)', async () => {
     const { user, cloud } = await mount(null)
-    expect(within(screen.getByRole('navigation')).getAllByRole('button').map((button) => button.getAttribute('aria-label'))).toEqual(['Cuenta', 'Estadísticas', 'Ayuda', 'Ajustes'])
+    expect(within(screen.getByRole('navigation')).getAllByRole('button').map((button) => button.getAttribute('aria-label'))).toEqual(['Cuenta', 'Estadísticas', 'Modos de juego', 'Ajustes'])
     await user.click(screen.getByRole('button', { name: 'Cuenta' }))
     const dialog = await screen.findByRole('dialog', { name: 'Cuenta' })
     await user.click(await within(dialog).findByRole('button', { name: 'Iniciar sesión con Google' }))

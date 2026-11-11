@@ -41,7 +41,8 @@ export function DomeCard({ rivalId, title, party, page, lines, onPage, accessibl
   }
   return (
     <div className="dome" onKeyDown={onKeyDown}>
-      <img src={emeraldTheme.asset('domo-fondo')} alt="" style={{ left: 0, top: 0 }} />
+      {/* Fondo del Domo: tesela de 64 x 64 que se repite por toda la pantalla. */}
+      <div aria-hidden="true" style={{ left: 0, top: 0, width: 240, height: 160, backgroundImage: `url("${emeraldTheme.asset('domo-fondo')}")` }} />
       <div className="dome-card" aria-hidden="true" style={{ left: 8, top: 8, width: 224, height: 144, backgroundImage: `url("${emeraldTheme.asset('domo-ficha')}")` }}>
         <GameText text={title} x={8} y={8} width={208} align="center" face="short" color="domo" hidden />
         <img src={emeraldTheme.asset(`lider-${rivalId}`)} alt="" style={{ left: 8, top: 24 }} />

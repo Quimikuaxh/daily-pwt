@@ -19,9 +19,15 @@ test.describe('Accesibilidad (axe, WCAG 2 A/AA, incluye contraste)', () => {
     await today.rivalToggle.click()
     await today.chooseLead(1)
     expect(await seriousViolations(page), 'Hoy con paneles y selección').toEqual([])
-    for (const name of ['Estadísticas', 'Ayuda', 'Ajustes']) {
+    for (const name of ['Estadísticas', 'Modos de juego', 'Ajustes']) {
       await page.getByRole('button', { name }).click()
       expect(await seriousViolations(page), name).toEqual([])
+      if (name === 'Ajustes') {
+        await page.getByRole('button', { name: 'Cómo se juega' }).click()
+        expect(await seriousViolations(page), 'Ayuda').toEqual([])
+        await page.keyboard.press('Escape')
+        await expect(page.getByRole('dialog', { name: 'Ajustes' })).toBeVisible()
+      }
       await page.keyboard.press('Escape')
     }
   })
