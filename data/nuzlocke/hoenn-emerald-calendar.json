@@ -1295,14 +1295,9 @@
       "kind": "held",
       "units": [
         {
-          "before": "erico",
+          "before": "alana",
           "map": "Route110_TrickHouseEnd",
           "event": "Route110_TrickHouseEnd_EventScript_CompletedPuzzle4"
-        },
-        {
-          "before": "erico",
-          "map": "Route110_TrickHouseEntrance",
-          "event": "Route110_TrickHouseEntrance_EventScript_GivePuzzle4Reward"
         }
       ]
     },
@@ -1345,14 +1340,9 @@
       "kind": "held",
       "units": [
         {
-          "before": "erico",
+          "before": "norman",
           "map": "Route110_TrickHouseEnd",
           "event": "Route110_TrickHouseEnd_EventScript_CompletedPuzzle3"
-        },
-        {
-          "before": "erico",
-          "map": "Route110_TrickHouseEntrance",
-          "event": "Route110_TrickHouseEntrance_EventScript_GivePuzzle3Reward"
         }
       ]
     },
@@ -1380,14 +1370,9 @@
       "kind": "held",
       "units": [
         {
-          "before": "erico",
+          "before": "galano",
           "map": "Route110_TrickHouseEnd",
           "event": "Route110_TrickHouseEnd_EventScript_CompletedPuzzle6"
-        },
-        {
-          "before": "erico",
-          "map": "Route110_TrickHouseEntrance",
-          "event": "Route110_TrickHouseEntrance_EventScript_GivePuzzle6Reward"
         }
       ]
     },

@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { importScript } from '../src/test-utils/paths'
@@ -45,5 +46,58 @@ describe('calendario aprobado por Jose el 11/11', () => {
     expect(calendar.items.tm27.before).toBe('candela')
     expect(calendar.items.deepseatooth).toMatchObject({ before: 'galano', quantity: 1, choice: 'scanner' })
     expect(calendar.items.deepseascale).toMatchObject({ before: 'galano', quantity: 1, choice: 'scanner' })
+  })
+})
+
+describe('DEC-94: calendario de equipables', () => {
+  it('conserva las 65 entradas de MT/MO y evolución anteriores al canje', () => {
+    // SHA-256 de JSON.stringify(items) en el padre de 31bbc1e: no cambia al añadir held/exchange.
+    expect(createHash('sha256').update(JSON.stringify(calendar.items)).digest('hex'))
+      .toBe('14f294ab4eda2215ee06d9a59c7a74a4117d0114df707e98f24c4f2a8edeed54')
+    expect(calendar.exchange).toEqual(evidence.exchange)
+    expect(Object.keys(calendar.held)).toHaveLength(35)
+    expect(calendar.held.oranberry).toMatchObject({ kind: 'berry', before: 'petra', infinite: true })
+    expect(calendar.held.sitrusberry).toMatchObject({ kind: 'berry', before: 'alana', infinite: true })
+    expect(calendar.held.silkscarf).toEqual({ kind: 'held', units: [{ before: 'marcial', map: 'DewfordTown_House2', event: 'DewfordTown_House2_EventScript_Man' }] })
+    expect(calendar.held.everstone.units).toHaveLength(2)
+    for (const item of ['leftovers', 'metalcoat', 'potion']) expect(calendar.held[item]).toBeUndefined()
+  })
+
+  it('aplica el hito habitual a cada fuente y conserva unidades de hitos distintos', () => {
+    const changed = structuredClone(evidence)
+    const source = changed.items.quickclaw.sources.find((entry: any) => entry.map === 'RustboroCity_PokemonSchool')
+    changed.items.quickclaw.sources = [
+      { ...source, earliestBefore: 'petra', map: 'RustboroCity', event: 'first' },
+      { ...source, earliestBefore: 'marcial', map: 'SlateportCity', event: 'second' },
+      { ...source, earliestBefore: 'alana', map: 'LilycoveCity', event: 'third' },
+      { ...source, earliestBefore: 'alana', map: 'Route132', event: 'fourth' },
+    ]
+    expect(buildEmeraldCalendar(changed).held.quickclaw.units).toEqual([
+      { before: 'petra', map: 'RustboroCity', event: 'first' },
+      { before: 'erico', map: 'SlateportCity', event: 'second' },
+      { before: 'vito-y-leti', map: 'LilycoveCity', event: 'third' },
+      { before: 'galano', map: 'Route132', event: 'fourth' },
+    ])
+  })
+
+  it.each(['hardstone', 'smokeball', 'magnet'])('%s: la entrega normal y la recogida con bolsa llena son una sola unidad', item => {
+    // pokeemerald: TrickHouseEnd da el premio; TrickHouseEntrance lo recupera solo si la bolsa estaba llena.
+    expect(buildEmeraldCalendar(evidence).held[item].units).toHaveLength(1)
+  })
+
+  it.each([
+    ['held ausente', (value: any) => { delete value.held }],
+    ['tipo de equipable desconocido', (value: any) => { value.held.quickclaw.kind = 'other' }],
+    ['hito de unidad inexistente', (value: any) => { value.held.quickclaw.units[0].before = 'missing' }],
+    ['baya no infinita', (value: any) => { value.held.oranberry.infinite = false }],
+    ['exchange ausente', (value: any) => { delete value.exchange }],
+    ['precio negativo', (value: any) => { value.exchange[0].price = -1 }],
+    ['precio fraccionario', (value: any) => { value.exchange[0].price = 0.5 }],
+    ['objeto del canje desconocido', (value: any) => { value.exchange[0].item = 'missing' }],
+    ['entrada duplicada del canje', (value: any) => { value.exchange[1] = value.exchange[0] }],
+  ])('rechaza %s en la validación del calendario', (_label, corrupt) => {
+    const changed = structuredClone(calendar)
+    corrupt(changed)
+    expect(() => validateEmeraldCalendar(changed)).toThrow()
   })
 })

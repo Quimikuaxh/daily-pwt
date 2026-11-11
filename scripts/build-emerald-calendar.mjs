@@ -30,7 +30,17 @@ export function buildEmeraldCalendar(evidence) {
   for (const [id, item] of Object.entries(evidence.items)) {
     // Objetos equipables (Jose, 11/11/2026): una unidad por fuente de la aventura, con su hito habitual; las bayas, infinitas.
     if (item.held) {
+      // Una misma entrega con su guion de recuperación (bolsa llena) es una sola unidad: en la Casa Trampa, el premio del puzle N lo da
+      // TrickHouseEnd y, si no cabía, lo recoge TrickHouseEntrance.
+      const seen = new Set()
       const units = item.sources.filter(source => source.earliestBefore !== null && !source.decision)
+        .filter(source => {
+          const puzzle = source.map?.startsWith('Route110_TrickHouse') && source.event.match(/Puzzle(\d)/)?.[1]
+          const key = puzzle ? `trick-house:${puzzle}` : `${source.map}:${source.event}`
+          if (seen.has(key)) return false
+          seen.add(key)
+          return true
+        })
         .map(source => ({ before: milestones[habitualIndex(source, milestones)], map: source.map, event: source.event }))
       if (units.length) held[id] = item.held === 'berry' ? { kind: 'berry', before: milestones.find(milestone => units.some(unit => unit.before === milestone)), infinite: true, sources: units }
         : { kind: 'held', units }
@@ -63,6 +73,23 @@ export function validateEmeraldCalendar(catalog) {
     Object.keys(catalog.items ?? {}).length !== 65 || Object.keys(catalog.excluded ?? {}).length !== 5 ||
     catalog.friendshipWins !== 3 || catalog.leagueFriendship !== true || catalog.battleHappiness !== 255 || catalog.beautyBefore !== 'alana') {
     throw new Error('Calendario aprobado de Esmeralda inválido')
+  }
+  // Equipables (DEC-94): cada uno es «held» con unidades en hitos válidos o «berry» infinita desde un hito válido.
+  if (!catalog.held || typeof catalog.held !== 'object') throw new Error('Calendario sin equipables')
+  for (const [id, entry] of Object.entries(catalog.held)) {
+    const valid = entry.kind === 'held'
+      ? Array.isArray(entry.units) && entry.units.length > 0 && entry.units.every(unit => catalog.milestones.includes(unit.before))
+      : entry.kind === 'berry' && entry.infinite === true && catalog.milestones.includes(entry.before)
+    if (!valid) throw new Error(`${id}: equipable inválido en el calendario`)
+  }
+  // Canje del Frente Batalla: objetos equipables distintos con precio entero positivo.
+  if (!Array.isArray(catalog.exchange) || !catalog.exchange.length) throw new Error('Calendario sin canje')
+  const exchanged = new Set()
+  for (const entry of catalog.exchange) {
+    if (!Number.isInteger(entry?.price) || entry.price <= 0 || typeof entry.item !== 'string' || exchanged.has(entry.item) ||
+      !/^ITEM_\w+$/.test(entry.token ?? '') ||
+      entry.item !== entry.token.slice(5).toLowerCase().replaceAll('_', '')) throw new Error(`${entry?.item}: entrada del canje inválida`)
+    exchanged.add(entry.item)
   }
   for (const [id, item] of Object.entries(catalog.items)) {
     if (!catalog.milestones.includes(item.before) || !Array.isArray(item.sources) || !item.sources.length ||
