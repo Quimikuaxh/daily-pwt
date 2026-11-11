@@ -3,6 +3,7 @@ import type { Challenge, GameData } from '../../core/types'
 import battleUiImages from '../../generated/battle-ui-images.json'
 import { itemIconUrl, speciesSprite, trainerSideSprite, trainerSprite, trainerVsSprite } from '../common/spriteUrls'
 import { uiAsset } from '../common/uiAssets'
+import { PWT_STAGE, VS_EMBLEM, VS_LOGO, type Avatar } from './introAssets'
 
 const DIGITS = Array.from({ length: 10 }, (_, digit) => digit)
 
@@ -26,11 +27,11 @@ type ImageFactory = () => ImageLike
 const loaded = new Map<string, ImageLike>()
 
 /** Pide una imagen con prioridad baja y la deja decodificada; se guarda la referencia para que el navegador no la descarte. */
-function requestImage(url: string, createImage: ImageFactory): Promise<void> {
+function requestImage(url: string, createImage: ImageFactory, priority: 'low' | 'high' = 'low'): Promise<void> {
   const existing = loaded.get(url)
   if (existing) return existing.decode?.().catch(() => undefined) ?? Promise.resolve()
   const image = createImage()
-  image.fetchPriority = 'low'
+  image.fetchPriority = priority
   image.decoding = 'async'
   image.src = url
   loaded.set(url, image)
@@ -71,6 +72,21 @@ export function challengeItemIconUrls(challenge: Challenge): string[] {
   return [...new Set(items)].map(itemIconUrl)
 }
 
+/** Tope de la espera de la intro por sus imágenes: con una que falle o una red muy lenta, el combate empieza igual. */
+export const INTRO_IMAGES_TIMEOUT_MS = 4000
+
+/** Imágenes del escenario y la pancarta VS (RF-137): fondo, escudo, logo y retrato y sprite de lado de los dos entrenadores. */
+export function introImageUrls(avatar: Pick<Avatar, 'front' | 'side'>, trainerSpriteId: string): string[] {
+  return [PWT_STAGE, VS_EMBLEM, VS_LOGO, avatar.front, avatar.side, trainerVsSprite(trainerSpriteId), trainerSideSprite(trainerSpriteId)]
+}
+
+/** Espera de la intro por sus imágenes; `undefined` si no hay que esperar. */
+export type IntroImagesWait = (urls: string[]) => Promise<void> | void
+
+/** La intro espera a que estén decodificadas (con prioridad alta: el combate ya está abierto), como mucho INTRO_IMAGES_TIMEOUT_MS. */
+export const introImagesReady = (urls: readonly string[], createImage?: ImageFactory): Promise<void> =>
+  imagesReady(urls, INTRO_IMAGES_TIMEOUT_MS, createImage, 'high')
+
 /** Precarga los iconos de los objetos de un combate en reposo (también para repeticiones y directos, que no pasan por Hoy). */
 export function preloadItemIcons(challenge: Challenge, createImage: ImageFactory = () => new Image()): void {
   const urls = challengeItemIconUrls(challenge)
@@ -94,8 +110,8 @@ export function usePreloadChallengeSprites(challenge: Challenge, data: GameData)
 }
 
 /** Resuelve cuando todas están decodificadas, o al cabo de `timeoutMs` (nunca deja una pantalla sin abrir por una imagen que falla). */
-export function imagesReady(urls: readonly string[], timeoutMs = 1500, createImage: ImageFactory = () => new Image()): Promise<void> {
-  const all = Promise.all(urls.map((url) => requestImage(url, createImage))).then(() => undefined)
+export function imagesReady(urls: readonly string[], timeoutMs = 1500, createImage: ImageFactory = () => new Image(), priority: 'low' | 'high' = 'low'): Promise<void> {
+  const all = Promise.all(urls.map((url) => requestImage(url, createImage, priority))).then(() => undefined)
   const timeout = new Promise<void>((resolve) => setTimeout(resolve, timeoutMs))
   return Promise.race([all, timeout])
 }

@@ -142,6 +142,7 @@ describe('nickname desde la cuenta hasta la pancarta VS (UT-180, RF-137)', () =>
     await startOfficial(user)
     await settle(10)
     clients[0].emit(mkUpdate())
+    await settle(10) // la intro espera a sus imágenes (UT-181)
     const rival = getDailyChallenge(LAUNCH, data).trainer.nameEs
     expect(within(screen.getByRole('img', { name: `Jose_11 contra ${rival}` })).getByText('Jose_11')).toBeInTheDocument()
   })
@@ -151,6 +152,7 @@ describe('nickname desde la cuenta hasta la pancarta VS (UT-180, RF-137)', () =>
     await startOfficial(user)
     await settle(10)
     clients[0].emit(mkUpdate())
+    await settle(10) // la intro espera a sus imágenes (UT-181)
     const banner = screen.getByRole('img', { name: /^(Nate|Rosa) contra / })
     expect(within(banner).getByText(/^(Nate|Rosa)$/)).toBeInTheDocument()
   })
@@ -163,6 +165,7 @@ describe('nickname desde la cuenta hasta la pancarta VS (UT-180, RF-137)', () =>
     await startOfficial(user)
     await settle(10)
     clients[0].emit(mkUpdate())
+    await settle(10) // la intro espera a sus imágenes (UT-181)
     const banner = screen.getByRole('img', { name: /^(Nate|Rosa) contra / })
     expect(within(banner).getByText(/^(Nate|Rosa)$/)).toBeInTheDocument()
   })

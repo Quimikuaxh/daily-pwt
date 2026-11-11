@@ -9,14 +9,15 @@ import { mkUpdate, mockClient } from '../../test-utils/clientMock'
 import { settle, settleIntro } from '../../test-utils/ui'
 
 // PRD §0 "Redirección visual" · §10.2.1: intro del combate, mensajes uno a uno en la caja de texto y historial aparte.
+// `introImages` inmediata: estos tests miden el guion de la intro desde que llega el combate; la espera por las imágenes la prueba UT-181.
 const data = makeGameData()
 const challenge = getDailyChallenge('2026-10-17', data)
 const TURN_LINES = ['|move|p1a: Garchomp|Earthquake|p2a: Snorlax', '|-supereffective|p2a: Snorlax', '|move|p2a: Snorlax|Tackle|p1a: Garchomp']
 
-function mount(animations: 'always' | 'system' | 'never' = 'always', names: { trainerName?: string; playerLabel?: string; battleSeed?: string } = {}) {
+function mount(animations: 'always' | 'system' | 'never' = 'always', names: { trainerName?: string; playerLabel?: string; battleSeed?: string; introImages?: (urls: string[]) => Promise<void> | void } = {}) {
   const client = mockClient()
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-  render(<BattleScreen client={client as any} data={data} challenge={challenge} playerLead={0} battleSeed="seed-1" {...names} animations={animations} onFinish={vi.fn()} onExit={vi.fn()} />)
+  render(<BattleScreen client={client as any} data={data} challenge={challenge} playerLead={0} battleSeed="seed-1" introImages={() => undefined} {...names} animations={animations} onFinish={vi.fn()} onExit={vi.fn()} />)
   return { client, user }
 }
 const phase = () => screen.getByTestId('field').getAttribute('data-intro')
@@ -132,6 +133,24 @@ describe('intro del combate (PRD §10.2.1)', () => {
     expect(banner.querySelectorAll('.bt-vs-band')).toHaveLength(2)
     expect(await msUntil(() => phase() === 'done')).toBe(8900)
     expect(screen.getByTestId('battle-screen')).toHaveAttribute('data-reduced-motion', 'true')
+  })
+})
+
+describe('la intro espera a sus imágenes (UT-181, RF-137)', () => {
+  it('se queda cargando hasta que el escenario y los sprites de los dos entrenadores están listos, y entonces dura lo de siempre', async () => {
+    let release: () => void = () => undefined
+    let asked: string[] = []
+    const introImages = (urls: string[]) => { asked = urls; return new Promise<void>((resolve) => { release = resolve }) }
+    const { client } = mount('always', { introImages })
+    client.emit(mkUpdate())
+    await step(5000)
+    expect(phase()).toBe('loading')
+    expect(asked).toEqual(expect.arrayContaining([expect.stringContaining('pwt-stage.png'), expect.stringContaining(`/trainers/${challenge.trainer.sprite}-side.png`),
+      expect.stringContaining(`/trainers/${challenge.trainer.sprite}-vs.png`), expect.stringMatching(/\/trainers\/(nate|rosa)-side\.png$/)]))
+    release()
+    await step(0)
+    expect(phase()).toBe('vs')
+    expect(await msUntil(() => phase() === 'done')).toBe(8900)
   })
 })
 

@@ -2514,10 +2514,12 @@
 
 /* Centros a 52 px del centro de la pantalla (x=76 y x=180; la franja del rival empieza en x=114). Los retratos van
    recortados a su tinta, así que centrar la caja centra el dibujo (medido: antes 59 y 45 px por los márgenes). */
-.bt-vs-band-player .bt-vs-trainer { left: 76px; translate: -50% 0; --from: -60px; }
+.bt-vs-band-player .bt-vs-trainer { left: 76px; translate: -50% 0; }
 /* El retrato de frente de Nate y Rosa mira a la izquierda: a la izquierda se voltea para que mire al centro (Jose, 11/11/2026); los de
-   los rivales ya miran a la izquierda o de frente. */
-.bt-vs-band-player .bt-vs-trainer { scale: -2 2; }
+   los rivales ya miran a la izquierda o de frente. `transform` va después de `scale`, así que el desplazamiento de la entrada también se
+   voltea: con --from positivo entra por la izquierda, a juego con el rival por la derecha (Jose, 11/11/2026; con -60px entraba por la
+   derecha). */
+.bt-vs-band-player .bt-vs-trainer { scale: -2 2; --from: 60px; }
 .bt-vs-stage-portrait-left img { scale: -1 1; }
 .bt-vs-band-rival .bt-vs-trainer { left: 66px; translate: -50% 0; --from: 60px; }
 

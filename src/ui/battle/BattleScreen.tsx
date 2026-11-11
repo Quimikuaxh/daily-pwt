@@ -18,7 +18,7 @@ import { RemainingIndicator } from './RemainingIndicator'
 import { ChromeIcon } from './ChromeIcon'
 import { TopScreen } from './TopScreen'
 import { PartyScreen } from './party/PartyScreen'
-import { PARTY_SCREEN_IMAGES, preloadItemIcons, useImagesReady } from './preloadAssets'
+import { introImagesReady, introImageUrls, type IntroImagesWait, PARTY_SCREEN_IMAGES, preloadItemIcons, useImagesReady } from './preloadAssets'
 import { partyMembers, requestFromView, rivalMembers } from './party/partyModel'
 import { TouchBackground, TouchScreen, type TouchMode } from './TouchScreen'
 import { FieldPanel, FieldPill } from './FieldStatus'
@@ -34,6 +34,8 @@ import './battle.css'
 const SidePanel = lazy(() => import('./side/SidePanel').then((module) => ({ default: module.SidePanel })))
 
 type BattleScreenProps = {
+  /** Espera de la intro por sus imágenes (UT-181); por defecto, decodificarlas con tope (`introImagesReady`). */
+  introImages?: IntroImagesWait
   client: BattleClient
   data: GameData
   challenge: Challenge
@@ -85,12 +87,13 @@ type TouchChoice = { request: BattleRequest | null; mode: TouchMode }
 
 const isInteractive = (target: EventTarget | null): boolean => target instanceof HTMLElement && target.closest('button, a, input, select, textarea, [role="dialog"]') !== null
 
-export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', replayBadge, playerLabel = es.battle.you, liveApi, controls, replay, onDecision, onSettled, onReplayFailed, paused, initialSpeed, onSpeedChange, animations = 'always', sound, onSoundChange, musicMuted = false, onFinish, onExit, trainerName }: BattleScreenProps) {
+export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', replayBadge, playerLabel = es.battle.you, liveApi, controls, replay, onDecision, onSettled, onReplayFailed, paused, initialSpeed, onSpeedChange, animations = 'always', sound, onSoundChange, musicMuted = false, onFinish, onExit, trainerName, introImages = introImagesReady }: BattleScreenProps) {
   const { trainer, rivalTeam, playerTeam } = challenge
   const speciesName = (speciesId: string, fallback: string): string => data.names.species[speciesId] ?? fallback
   // Grito de una especie: va por su `spriteId` (las formas tienen el suyo o el de la especie base; `gen:cries`).
   const cryIdOf = useCallback((speciesId: string): string => data.dex.species[speciesId]?.spriteId ?? speciesId, [data])
 
+  const avatar = useMemo(() => avatarForSeed(battleSeed), [battleSeed])
   const battle = useBattle({
     client,
     init: { battleSeed, player: playerTeam, playerLead, rival: rivalTeam, ai, maxTurns: MAX_TURNS },
@@ -108,13 +111,13 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
     initialSpeed,
     onSpeedChange,
     playCry: (species, faint) => getAudio().playCry(cryIdOf(species), { faint }),
+    introReady: () => introImages(introImageUrls(avatar, trainer.sprite)),
   })
 
   const reducedMotion = useReducedMotion(animations)
   const layoutRef = useRef(null as HTMLDivElement | null)
   const { scale, layout, frame, sideZoom } = useStageScale(layoutRef)
   const panels = layout === 'panels'
-  const avatar = useMemo(() => avatarForSeed(battleSeed), [battleSeed])
   const [touchChoice, setTouchChoice] = useState({ request: null, mode: 'main' } as TouchChoice)
   const [dialog, setDialog] = useState(null as PendingDialog)
   // Petición de cambio forzado ya contestada: la pantalla de equipo se cierra al elegir para que se vea el lanzamiento de la Poké Ball del nuevo Pokémon.

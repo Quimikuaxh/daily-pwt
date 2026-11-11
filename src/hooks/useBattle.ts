@@ -79,6 +79,11 @@ export type BattleParams = {
   playSfx?: (id: SfxId) => void
   /** Grito de un Pokémon (id de especie) al salir o, con `faint`, al debilitarse (Jose, 31/10/2026). Por defecto, el motor de la página. */
   playCry?: (species: string, faint: boolean) => void
+  /**
+   * Imágenes de la intro listas (escenario y pancarta VS): la intro se queda en `loading` hasta que resuelve. Sin ella, en el móvil el
+   * escenario salía antes que los sprites la primera vez con cada entrenador (Jose, 11/11/2026). Debe resolver siempre (con tope).
+   */
+  introReady?: () => Promise<void> | void
 }
 
 /** Especie del Pokémon que entra en `|switch|p1a: X|Garchomp, L50, M|…` (id). */
@@ -271,6 +276,11 @@ export function useBattle(params: BattleParams): BattleController {
       setView(shown)
       isFirstUpdate = false
 
+      const introWait = steps[0]?.phase ? paramsRef.current.introReady?.() : undefined
+      if (introWait) {
+        await introWait
+        if (cancelled) return
+      }
       const lines = steps.map((step) => step.line)
       for (const [index, step] of steps.entries()) {
         if (cancelled) return

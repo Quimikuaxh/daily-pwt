@@ -90,13 +90,44 @@ for (const animations of ['never', 'system'] as const) {
   })
 }
 
-test('E2E-81 la pancarta se ve sin el fundido a negro durante su primer segundo (el fundido no cuenta desde el escenario)', async ({ page }) => {
+test('E2E-81 el fundido a negro de la pancarta cuenta desde que entra la franja, no desde el escenario', async ({ page }) => {
   await page.addInitScript(({ key, settings }) => localStorage.setItem(key, JSON.stringify({ version: 1, ...settings })),
     { key: SETTINGS_KEY, settings: { ...DEFAULT_SETTINGS, speed: 1, sound: false } })
   await startBattle(page, { scenario: MISTY, seed: 'a' })
   await page.locator('.bt-vs-band').first().waitFor({ timeout: 20_000 })
-  await page.waitForTimeout(1000)
-  const opacity = await page.locator('.bt-vs-fade').evaluate((el) => Number(getComputedStyle(el).opacity))
-  expect(opacity).toBeLessThan(0.05)
-  await expect(page.locator('.bt-vs-logo')).toBeVisible()
+  // Con la Animation API, sin esperas reales (con la máquina cargada, 1 s de espera podía llegar tarde): el fundido arranca con la franja,
+  // no con el escenario, y no empieza hasta los 1583 ms.
+  const timing = await page.evaluate(() => {
+    const animation = (selector: string, name: string) => document.querySelector(selector)!.getAnimations().find((a) => (a as CSSAnimation).animationName === name)!
+    const fade = animation('.bt-vs-fade', 'bt-vs-fade')
+    const band = animation('.bt-vs-band-player', 'bt-vs-in-left')
+    return { gap: Math.abs(Number(fade.startTime) - Number(band.startTime)), delay: Number(fade.effect!.getComputedTiming().delay) }
+  })
+  expect(timing.gap).toBeLessThan(50)
+  expect(timing.delay).toBeGreaterThanOrEqual(1500)
+})
+
+test('E2E-82 en la pancarta el jugador entra desde la izquierda y el rival desde la derecha, con el mismo recorrido', async ({ page }) => {
+  await page.addInitScript(({ key, settings }) => localStorage.setItem(key, JSON.stringify({ version: 1, ...settings })),
+    { key: SETTINGS_KEY, settings: { ...DEFAULT_SETTINGS, speed: 1, sound: false } })
+  await startBattle(page, { scenario: MISTY, seed: 'a' })
+  await page.locator('.bt-vs-band').first().waitFor({ timeout: 20_000 })
+  // Congela la entrada del retrato (bt-vs-trainer-in) al principio y al final y mide el centro de cada uno en pantalla.
+  const travel = await page.evaluate(() => {
+    const centre = (img: Element) => { const r = img.getBoundingClientRect(); return r.x + r.width / 2 }
+    return (['player', 'rival'] as const).map((side) => {
+      const img = document.querySelector(`.bt-vs-band-${side} .bt-vs-trainer`)!
+      const entry = img.getAnimations().find((a) => (a as CSSAnimation).animationName === 'bt-vs-trainer-in')!
+      entry.pause()
+      const timing = entry.effect!.getComputedTiming()
+      entry.currentTime = Number(timing.delay)
+      const start = centre(img)
+      entry.currentTime = Number(timing.endTime) - 1
+      return centre(img) - start
+    })
+  })
+  const [player, rival] = travel
+  expect(player, 'el jugador avanza hacia la derecha').toBeGreaterThan(0)
+  expect(rival, 'el rival avanza hacia la izquierda').toBeLessThan(0)
+  expect(Math.abs(Math.abs(player) - Math.abs(rival))).toBeLessThan(2)
 })
