@@ -52,6 +52,8 @@ npm install
 | `npm run gen:smogon` | Descarga los sets de Smogon Gen 5 (individuales) a `data/smogon/` (requiere red; el resultado se versiona). |
 | `npm run gen:player-sets` | Genera `data/player-sets.json` (pool del jugador) desde `data/smogon/` y `data/trainers.json`, y `data/smogon/discarded.json`. Sin red. |
 | `npm run gen:ui-index` | Genera `src/generated/battle-ui-images.json` (gráficos de interfaz que se precargan desde Hoy). |
+| `npm run gen:vs-logo` | Dibuja el logo «VS.» de la pancarta en pixel art (`public/ui/battle/vs-logo.png`); sin dependencias. |
+| `npm run gen:trainer-vs` | Retratos de la pancarta VS: último fotograma de cada gif de entrenador (y del sprite de frente de Nate y Rosa) recortado por arriba, en `<sprite>-vs.png`. Necesita `ffmpeg`/`ffprobe`. |
 | `npm run validate:data` | Valida `data/*.json`, `src/generated/` y los sprites (PRD §8.3; ver [Validación de datos](#validación-de-datos-y-ci)). Sin red ni `scripts/.cache`; sale con código 1 si hay algún problema. |
 | `npm run gen:pwt-raw` / `npm run gen:pwt` | Extraen los equipos del PWT de Bulbapedia, Serebii y WikiDex y los fusionan (ver [docs/F2-DATOS.md](docs/F2-DATOS.md)). `npm run gen:pwt -- --write` además escribe `data/trainers.json`. |
 | `npm run gen:sprites` | Descarga a `public/sprites/` los sprites que falten (requiere red). |
@@ -60,7 +62,7 @@ npm install
 | `npm run gen:cries` | Baja de Pokémon Showdown los gritos de las especies del juego (rivales y pool del jugador), los codifica a `public/audio/cries/<spriteId>.m4a` y escribe `src/generated/cries-index.json`. Requiere `ffmpeg` y `ffprobe`. Desde la nube Showdown está bloqueado: se lanza en local. Lo ya convertido no se vuelve a bajar. Ver «Sonido». |
 | `npm run gen:item-icons` | Baja del repositorio de sprites de PokeAPI (`sprites/items/<slug>.png`) los iconos de la bolsa de los objetos que llevan los sets del juego, a `public/sprites/items/<id>.png` (ficha del objeto de los paneles laterales). Necesita red; lo ya bajado no se vuelve a bajar. `validate:data` comprueba que no falte ninguno. |
 
-`gen:sprites`, `gen:ui`, `gen:audio`, `gen:pwt-raw` y `gen:pwt` no forman parte de `npm run gen`. Tras cargar o cambiar entrenadores: `npm run gen:pwt -- --write`, `npm run gen`, `npm run gen:sprites` (si faltan sprites), `npm run gen:sprite-boxes`, `gen:icon-index`, `gen:descriptions`, `gen:ui-index` (si cambian sprites o especies) y `npm run validate:data`.
+`gen:sprites`, `gen:ui`, `gen:audio`, `gen:pwt-raw` y `gen:pwt` no forman parte de `npm run gen`. Tras cargar o cambiar entrenadores: `npm run gen:pwt -- --write`, `npm run gen`, `npm run gen:sprites` (si faltan sprites), `npm run gen:sprite-boxes`, `gen:icon-index`, `gen:descriptions`, `gen:ui-index` (si cambian sprites o especies), `gen:trainer-vs` (si cambian sprites de entrenador) y `npm run validate:data`.
 
 ## Validación de datos y CI
 
@@ -257,7 +259,7 @@ Traducciones manuales que prevalecen sobre las de PokeAPI.
 ### Gráficos de interfaz (`public/ui/`)
 
 - `data/ui-assets.json` es la fuente de verdad: cada fichero de `public/ui/` lleva su origen, URL, crédito y licencia, y, si sale de una hoja, el recorte `[x, y, ancho, alto]`, los colores clave que pasan a transparentes y los rectángulos borrados.
-- Orígenes: Bulbagarden Archives (fondos de combate de N2/B2, iconos de tipo y de categoría, protagonistas de espaldas, capturas de Negro/Blanco para el fondo de la pantalla de datos), The Spriters Resource vía Internet Archive (databoxes y barras de PS, botones de la pantalla táctil, Poké Ball de transición y fotogramas de la Poké Ball lanzada, fondos y placas de la pantalla de equipo, protagonistas lanzando; el sitio está tras Cloudflare) y Pokémon Showdown (iconos de menú de los Pokémon, destello).
+- Orígenes: Bulbagarden Archives (fondos de combate de N2/B2, iconos de tipo y de categoría, protagonistas de espaldas, capturas de Negro/Blanco para el fondo de la pantalla de datos), The Spriters Resource vía Internet Archive (databoxes y barras de PS, botones de la pantalla táctil, Poké Ball de transición y fotogramas de la Poké Ball lanzada, fondos y placas de la pantalla de equipo, protagonistas lanzando; el sitio está tras Cloudflare) y Pokémon Showdown (iconos de menú de los Pokémon, destello, protagonistas de frente para la pancarta VS: `trainers/nate-front.png` y `rosa-front.png`).
 - **Fondo de la pantalla de datos**: es de Negro/Blanco, no de N2/B2. Sale de capturas de Bulbagarden Archives limpiadas por script (`cleanups` en el manifest: `tile`, `clone`, `fill` con `clip`); los textos, el sprite y las barras se pintan en ejecución. Para sustituirlo por un rip limpio basta cambiar la URL y quitar la limpieza.
 - Iconos de tipo en español: `types-blank/` (icono sin rótulo, `fill` con `from`) más el nombre pintado en ejecución. La Poké Ball es una tira de 7 fotogramas (`strip`, reducida a la mitad con `shrink`) de la hoja «Poké Balls» de Negro/Blanco.
 - `npm run gen:ui` (`scripts/fetch-ui-assets.mjs`) solo escribe dentro de `public/ui/` (rutas `^[a-z0-9-]+(/[a-z0-9-]+)*\.png$`), valida la cabecera PNG y el tamaño esperado, recorta sin reescalar y salta lo que ya existe. Los PNG quedan en su resolución nativa de DS (256x192 por pantalla).

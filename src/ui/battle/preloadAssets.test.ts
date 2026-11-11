@@ -23,14 +23,15 @@ describe('precarga de la interfaz y de los sprites del reto', () => {
   const data = loadGameData()
   const challenge = challengeFor({ trainerId: 'maximo', date: '2026-10-21' }, data)
 
-  it('los sprites precargados son solo los del reto: frente y espalda de los 6 rivales y los 6 propios, y el entrenador', () => {
+  it('los sprites precargados son solo los del reto: frente y espalda de los 6 rivales y los 6 propios, y el entrenador con su retrato de la pancarta VS (RF-137)', () => {
     const urls = challengeSpriteUrls(challenge, data)
     const species = new Set([...challenge.rivalTeam, ...challenge.playerTeam].map((set) => set.species))
-    expect(urls.length).toBe(species.size * 2 + 1)
+    expect(urls.length).toBe(species.size * 2 + 2)
     for (const url of urls.filter((candidate) => candidate.includes('/pokemon/'))) {
       expect([...species].some((id) => url.endsWith(`/${data.dex.species[id].spriteId}.gif`)), url).toBe(true)
     }
     expect(urls.some((url) => url.includes(`trainers/${challenge.trainer.sprite}.gif`))).toBe(true)
+    expect(urls.some((url) => url.includes(`trainers/${challenge.trainer.sprite}-vs.png`))).toBe(true)
   })
 
   // UT-158 (Jose, 06/11/2026): los iconos de los objetos del reto también se precargan (ficha del objeto), y existen en public/.

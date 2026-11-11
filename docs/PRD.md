@@ -19,6 +19,12 @@
 | Roster completo y calendario (21/10/2026) | **Los 53 entrenadores se barajan todos juntos** (solo azar, sin restricciones de región; el 27/10/2026 se añadió el reparto: ver «Reparto de entrenadores») en una única entrada base del `rosterSchedule`, rebarajada desde el inicio: no se mantienen los 6 de F1 delante ni se añaden los 47 en una entrada posterior. `LAUNCH_DATE` sigue provisional (2026-10-19) y la fija Jose al final; con la fecha actual los días ya jugados (19 a 21 de octubre) pasan a Hiedra, Fredo y Antón y Máximo toca el 2026-11-26 (ver `F2-DATOS.md`, «Calendario») | Decisión de Jose. Cambia los retos ya publicados. Descartado: mantener los 6 delante, entrada de calendario nueva en fecha futura y restricciones por región |
 | Skills de diseño | `web-design-guidelines` (revisión UI/accesibilidad) y `playwright-cli` (verificación visual con capturas) | `taste-skill` excluye pantallas de app; solo se aprovecha su bucle mirar-y-corregir sobre capturas. `image-to-code` no aplica (requiere generar imágenes) |
 
+### Ambiente del estadio (10/11/2026)
+
+| Tema | Decisión | Motivo / alcance |
+|---|---|---|
+| Animaciones del PWT | Jose pasa un vídeo de un combate real del PWT y pide sus animaciones «lo que se pueda, de lo más fácil a lo más difícil», en una rama aparte desde `main` (`feature/animaciones-pwt`). Hechas: focos del suelo, haces del techo, sombras de los Pokémon (silueta aplastada que se mueve con ellos, elegida por Jose), destello con chispas, cámara de la intro, cámara de los ataques y estallido de la Poké Ball (RF-136) | Fidelidad al juego. Descartado: el plano general del estadio con pantalla gigante y focos (escena 3D sin gráficos aprovechables; no quedaría como el original). Pancarta VS (RF-137): sin los retratos VS de N2/B2 (no están en Bulbapedia ni en su copia del Internet Archive), Jose pide recrearla lo más parecida posible: se hace con CSS y los sprites de combate del rival y los de frente de Nate y Rosa (Showdown); alarga la intro 2 s a x1 (hasta 6,9 s; Jose aprobó hasta 7 s) |
+
 ### Redirección visual (19/10/2026)
 
 Sustituye la fila "Estética" de la tabla anterior y la fuente Pixelify Sans de REQUISITOS-F1.
@@ -349,7 +355,7 @@ Al empezar cada combate (oficial y práctica) se reproduce una intro que imita l
 3. Texto: "¡[Categoría] [Nombre] te desafía!" (p. ej. "¡La Líder Camila te desafía!").
 4. El rival **lanza su primer Pokémon**: animación de lanzar del entrenador, Poké Ball volando y abriéndose con destello, y aparece el sprite animado del Pokémon. El entrenador sale de la pantalla deslizándose.
 5. Texto: "¡[Nombre] saca a [Pokémon]!". Después el jugador saca su inicial con la misma secuencia de Poké Ball.
-- Duración total orientativa: 3-5 s. Se puede **saltar** con un toque o tecla.
+- Duración total orientativa: 3-7 s a x1 (era 3-5 s; la pancarta VS de 2 s la alarga, decisión de Jose del 11/11/2026, RF-137). Se puede **saltar** con un toque o tecla.
 - Respetar `prefers-reduced-motion`: versión sin desplazamientos, solo fundidos.
 - Al reanudar un combate guardado, no se repite la intro.
 

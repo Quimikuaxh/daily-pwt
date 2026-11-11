@@ -58,6 +58,9 @@ export function IntroLayer({ trainerName, trainerSpriteUrl, avatar, player, riva
       <span className="bt-beam bt-beam-player" />
       <img className="bt-shine bt-shine-rival" src={shine} alt="" />
       <img className="bt-shine bt-shine-player" src={shine} alt="" />
+      {/* Estallido de la Poké Ball como en N2/B2: estrella de rayos y círculos de luz alrededor del destello. */}
+      <span className="bt-burst bt-burst-rival"><i /><i /><i /><i /><i /><i /></span>
+      <span className="bt-burst bt-burst-player"><i /><i /><i /><i /><i /><i /></span>
     </div>
   )
 }

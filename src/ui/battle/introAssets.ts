@@ -3,6 +3,10 @@ export type Box = readonly [x: number, y: number, width: number, height: number]
 
 export type Avatar = {
   id: 'nate' | 'rosa'
+  /** Nombre que lleva en la pancarta VS. */
+  name: string
+  /** Retrato de la pancarta VS: sprite de frente (Showdown, trainers/<id>-front.png) recortado por arriba (`gen:trainer-vs`). */
+  front: string
   stand: string
   sheet: string
   /** Pose con el brazo en alto y pose de lanzamiento, recortes de la hoja (los pies quedan abajo en las dos). */
@@ -15,9 +19,12 @@ export type Avatar = {
 const BASE = import.meta.env.BASE_URL
 const trainers = (file: string): string => `${BASE}ui/battle/trainers/${file}`
 
+/** Logo «VS.» de la pancarta VS, en pixel art (`npm run gen:vs-logo`). */
+export const VS_LOGO = `${BASE}ui/battle/vs-logo.png`
+
 export const AVATARS: Record<Avatar['id'], Avatar> = {
-  nate: { id: 'nate', stand: trainers('nate-back.png'), sheet: trainers('nate-throw-sheet.png'), raise: [51, 11, 58, 117], throw: [112, 28, 87, 100], hand: { x: 34, y: 4 } },
-  rosa: { id: 'rosa', stand: trainers('rosa-back.png'), sheet: trainers('rosa-throw-sheet.png'), raise: [50, 14, 70, 114], throw: [122, 38, 84, 90], hand: { x: 45, y: 3 } },
+  nate: { id: 'nate', name: 'Nate', front: trainers('nate-vs.png'), stand: trainers('nate-back.png'), sheet: trainers('nate-throw-sheet.png'), raise: [51, 11, 58, 117], throw: [112, 28, 87, 100], hand: { x: 34, y: 4 } },
+  rosa: { id: 'rosa', name: 'Rosa', front: trainers('rosa-vs.png'), stand: trainers('rosa-back.png'), sheet: trainers('rosa-throw-sheet.png'), raise: [50, 14, 70, 114], throw: [122, 38, 84, 90], hand: { x: 45, y: 3 } },
 }
 
 /** El protagonista sale de la semilla del combate: estable en los tests, variado entre combates. */

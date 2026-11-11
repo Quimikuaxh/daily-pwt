@@ -17,5 +17,8 @@ export const substituteSpriteUrl = (side: PokemonSide, baseUrl = DEFAULT_BASE_UR
 /** public/sprites/trainers/<sprite>.gif (animado N2/B2). */
 export const trainerSpriteUrl = (sprite: string, baseUrl = DEFAULT_BASE_URL): string => `${baseUrl}sprites/trainers/${sprite}.gif`
 
+/** public/sprites/trainers/<sprite>-vs.png: retrato de la pancarta VS, último fotograma del gif recortado por arriba (`gen:trainer-vs`). */
+export const trainerVsSpriteUrl = (sprite: string, baseUrl = DEFAULT_BASE_URL): string => `${baseUrl}sprites/trainers/${sprite}-vs.png`
+
 /** public/sprites/trainers/<sprite>-mini.png (icono pequeño). */
 export const trainerMiniSpriteUrl = (sprite: string, baseUrl = DEFAULT_BASE_URL): string => `${baseUrl}sprites/trainers/${sprite}-mini.png`

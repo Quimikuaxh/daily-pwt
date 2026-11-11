@@ -4,6 +4,12 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 **Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). El sonido va en `feature/f3-sonido` (desde `main`): los audios ya están descargados y versionados (se descargaron en local, desde la nube las fuentes están bloqueadas); falta implementarlo según «Sonido: plan de implementación».
 
+## Ambiente del estadio y pancarta VS (11/11/2026, en `main`)
+
+- **Hecho:** focos del suelo, haces del techo, sombras, destello con chispas, cámara de la intro y de los ataques, estallido al abrirse la Poké Ball (RF-136; giro por JS a 12 fps, DEC-87) y pancarta VS (RF-137): franja fina que entra sobre el estadio y choca, retratos del último fotograma del gif (`gen:trainer-vs`), logo en pixel art (`gen:vs-logo`), fogonazo que descubre la rejilla. Aprobado por Jose. También en repeticiones y directo.
+- **Sin hacer:** fondo oscurecido en algunos ataques especiales (falta saber en cuáles). Si aparecieran los retratos VS de N2/B2, sustituirían a los `-vs.png`.
+- **Conocido:** E2E-19 en WebKit falla con la máquina cargada por un aviso de precarga de chunk («preloaded but not used within a few seconds»); pasa igual en `main`. `npm run vis` se para antes del combate porque pulsa «Práctica», deshabilitado hasta jugar el oficial (desfase del script con `main`).
+
 ## Antes de desplegar el ajuste de estadísticas base (RF-13d)
 - Fija `BST_WINDOW_2_FROM` al día siguiente del despliegue para conservar los retos publicados. Si cambia respecto al 10/11/2026, ajusta las fechas de los tests en `src/core/team.test.ts` y `src/test-utils/rules.ts`, y comprueba UT-17 y UT-103.
 
