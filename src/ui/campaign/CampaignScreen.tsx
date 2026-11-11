@@ -4,7 +4,7 @@
  * guardada, la barra ofrece empezarla; empezar otra sobre una en curso pide confirmación. Se carga aparte (lazy) desde App.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { chooseRecruit, createCampaign, draftPicks, openDraft, type CampaignDefinition, type CampaignState } from '../../core/nuzlocke/campaign'
+import { chooseRecruit, createCampaign, draftPicks, evolveForLeague, lockLeagueRoster, openDraft, type CampaignDefinition, type CampaignState } from '../../core/nuzlocke/campaign'
 import type { GameData } from '../../core/types'
 import { LocalCampaignStore } from '../../storage/campaignStore'
 import { browserStorage } from '../../storage/browserStorage'
@@ -27,6 +27,10 @@ import { createCampaignWorkerClient, type CampaignBattleClient } from '../../bat
 import { battleInput } from './campaignBattle'
 import { EmeraldBattle } from './EmeraldBattle'
 import { ResultScreen } from './ResultScreen'
+import { EvolutionScene } from './EvolutionScene'
+import { leagueEvolutions } from './evolutionModel'
+import { LeagueScreen } from './LeagueScreen'
+import { leagueBeaten } from './leagueModel'
 import { type CampaignResult, minutesSince, playerNameOf, protagonistOf, recruitedSpecies, resultOf, trainerId } from './resultModel'
 import { TeamScreen } from './TeamScreen'
 import './campaign.css'
@@ -49,6 +53,9 @@ type CampaignScreenProps = {
 }
 
 /** Plazas del equipo: las del líder en los gimnasios; seis en la Liga. */
+/** Preparando un combate de la Liga (Alto Mando o campeón). */
+const inLeague = (state: CampaignState) => encounters[state.encounterIndex].kind !== 'gym'
+
 const teamLimit = (state: CampaignState) => encounters[state.encounterIndex].kind === 'gym' ? encounters[state.encounterIndex].team.length : 6
 
 const battleDefinition = definition as unknown as CampaignBattleDefinition
@@ -71,7 +78,7 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
     return record?.battle ? { before: record.state, lineup: record.battle.source.selected ?? record.state.leagueRoster ?? [] } : null
   })
   // Con un combate guardado (recarga a mitad), se vuelve a él.
-  const [view, setView] = useState(() => (store.read()?.battle ? 'battle' : 'route') as 'route' | 'draft' | 'team' | 'moves' | 'battle' | 'result')
+  const [view, setView] = useState(() => (store.read()?.battle ? 'battle' : 'route') as 'route' | 'draft' | 'team' | 'moves' | 'battle' | 'result' | 'evolution' | 'league')
   // El worker de combate (y su sesión) solo se crea al entrar en combate: Ruta, Draft y Equipo no lo necesitan.
   const [session, setSession] = useState(() => (store.read()?.battle ? new LocalCampaignSession(createBattleClient(), store) : null))
   const enterBattle = (lineup: readonly string[]) => {
@@ -102,6 +109,17 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
   }
   const openNext = (current: CampaignState) => save(current.offer.length ? current : openDraft(definition, current))
   const continueCampaign = () => {
+    if (state?.phase === 'prepare' && inLeague(state)) {
+      // Liga: evoluciones (una vez), después los 6 en Equipo y PC y la elección de participantes; con la plantilla fijada, el rival.
+      if (state.leagueRoster) { setView('league'); return }
+      if (!state.leagueEvolved) {
+        if (leagueEvolutions(definition, state).length) { setView('evolution'); return }
+        save(evolveForLeague(definition, state, {}))
+      }
+      setTeamLayout(null)
+      setView('team')
+      return
+    }
     if (state?.phase === 'prepare') { setTeamLayout(null); setView('team'); return }
     if (state?.phase !== 'draft') return
     openNext(state)
@@ -135,7 +153,7 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
       limit={teamLimit(state)}
       rivalName={encounters[state.encounterIndex].nameEs}
       itemName={(id) => data.names.items[id] ?? id}
-      onAccept={(chosen) => { setTeam(chosen); enterBattle(chosen) }}
+      onAccept={(chosen) => { setTeam(chosen); if (inLeague(state)) setView('league'); else enterBattle(chosen) }}
       onCancel={() => setView('route')}
       onMoves={(id) => { setMovesFor(id); setView('moves') }}
       onLayoutChange={setTeamLayout}
@@ -148,8 +166,12 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
     if (!session) return
     const record = store.read()
     if (record?.battle) return session.resume(battleDefinition)
-    if (!record || !team) return
-    return session.prepare(battleInput(battleDefinition, record.state, team))
+    if (!record) return
+    // En la Liga sale la plantilla fijada (los que siguen en pie, en su orden); en un gimnasio, la alineación de Equipo y PC.
+    const roster = record.state.leagueRoster?.filter((id) => record.state.members.some((member) => { return member.id === id && !member.fainted }))
+    const lineup = roster ?? team
+    if (!lineup?.length) return
+    return session.prepare(battleInput(battleDefinition, record.state, lineup))
   }, [session, store, team])
 
   const resultScreen = () => {
@@ -183,7 +205,7 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
     if (view !== 'battle' || !state || !session) return null
     const encounter = encounters[state.encounterIndex]
     const record = store.read()
-    const leadId = record?.battle?.source.preparation.leadId ?? team?.[0]
+    const leadId = record?.battle?.source.preparation.leadId ?? state.leagueRoster?.[0] ?? team?.[0]
     const lead = state.members.find((member) => { return member.id === leadId })
     return (
       <EmeraldBattle
@@ -191,9 +213,51 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
         start={startBattle}
         data={data}
         trainer={trainerOf(encounter)}
-        intro={{ rivalLead: speciesName(encounter.team[0].species), playerLead: lead ? speciesName(lead.species) : '' }}
+        intro={{ rivalLead: speciesName(encounter.team[0].species).toUpperCase(), playerLead: lead ? speciesName(lead.species).toUpperCase() : '' }}
         rivalLevels={encounter.team.map((member) => member.level)}
         onEnded={() => { session.finish(battleDefinition) }}
+        reservedHeight={150}
+      />
+    )
+  }
+
+  const evolutionScreen = () => {
+    if (view !== 'evolution' || state?.phase !== 'prepare') return null
+    return (
+      <EvolutionScene
+        evolutions={leagueEvolutions(definition, state)}
+        nameOf={(species) => speciesName(species).toUpperCase()}
+        hpOf={(id, species) => {
+          const member = state.members.find((candidate) => { return candidate.id === id })
+          return member ? teamMonOf({ ...member, species }, data).hp : 1
+        }}
+        onDone={(choices) => { save(evolveForLeague(definition, state, choices)); setTeamLayout(null); setView('team') }}
+        reservedHeight={150}
+      />
+    )
+  }
+
+  const leagueScreen = () => {
+    if (view !== 'league' || state?.phase !== 'prepare') return null
+    const ids = state.leagueRoster ?? team ?? []
+    const members = ids.flatMap((id) => {
+      const member = state.members.find((candidate) => { return candidate.id === id })
+      if (!member) return []
+      const mon = teamMonOf(member, data)
+      return [{ id, species: member.species, name: mon.name, level: member.level, hp: mon.hp, fainted: member.fainted }]
+    })
+    return (
+      <LeagueScreen
+        rival={encounters[state.encounterIndex]}
+        beaten={leagueBeaten(state.encounterIndex, encounters)}
+        members={members}
+        roster={state.leagueRoster}
+        speciesName={(id) => speciesName(id).toUpperCase()}
+        onAccept={(selected) => {
+          const locked = state.leagueRoster ? state : save(lockLeagueRoster(definition, state, selected))
+          enterBattle((locked.leagueRoster ?? selected).filter((id) => locked.members.some((member) => { return member.id === id && !member.fainted })))
+        }}
+        onCancel={() => setView('route')}
         reservedHeight={150}
       />
     )
@@ -231,7 +295,7 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
       </header>
       <main id="main" tabIndex={-1} className="campaign-main">
         <h2 className="visually-hidden">{t.screen}</h2>
-        {resultScreen() ?? battleScreen() ?? teamScreen() ?? movesScreen() ?? (view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
+        {resultScreen() ?? battleScreen() ?? evolutionScreen() ?? leagueScreen() ?? teamScreen() ?? movesScreen() ?? (view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
           <DraftScreen
             candidates={state.offer.map((id) => candidateOf(id, Math.max(...encounters[state.encounterIndex].team.map((member) => member.level)), definition, data))}
             pick={state.pick}

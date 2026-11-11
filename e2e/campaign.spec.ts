@@ -106,3 +106,31 @@ test('T4 combate de campaña contra Petra con el motor: se reanuda tras recargar
   expect(saved.battle).toBeNull()
   expect(['draft', 'lost']).toContain(saved.state.phase)
 })
+
+test('T5 Liga: evoluciones, los seis del PC, elección de participantes y combate contra Sixto con la plantilla fijada', async ({ page }) => {
+  const member = (id: string, species: string, level: number, extra = {}) => ({ id, species, level, history: [], fainted: false, victories: 3, ...extra })
+  const state = { seed: 'e2e-liga', encounterIndex: 8, phase: 'prepare', pick: 3, offer: [], previousOffer: [], leagueRoster: null, battleTeam: [],
+    members: [member('a', 'kirlia', 45), member('b', 'grovyle', 45), member('c', 'machop', 45), member('d', 'ralts', 30, { fainted: true })] }
+  await page.addInitScript((record) => { if (!localStorage.getItem('e2e-sembrado')) { localStorage.setItem('daily-pwt:nuzlocke:v1', JSON.stringify(record)); localStorage.setItem('e2e-sembrado', '1') } },
+    { version: 1, revision: 1, state, battle: null })
+  const today = new TodayPage(page)
+  await today.goto()
+  await page.getByRole('button', { name: 'Modos de juego' }).click()
+  await page.getByRole('button', { name: 'Nuzlocke de Hoenn' }).click()
+  await page.getByRole('button', { name: /^Continuar/ }).click()
+  // Kirlia, Grovyle y Machop evolucionan (sin objetos); el caído no.
+  await expect(page.getByRole('status').filter({ hasText: '¿Qué? ¡KIRLIA está evolucionando!' })).toBeVisible()
+  for (let i = 0; i < 6; i++) await page.getByRole('button', { name: /^Continuar: / }).click()
+  await expect(page.getByRole('button', { name: /^Equipo, puesto 1: GARDEVOIR/ })).toBeVisible()
+  await page.getByRole('button', { name: 'Aceptar el equipo y preparar los movimientos' }).click()
+  await expect(page.getByRole('region', { name: 'Próximo rival de la Liga: Sixto' })).toBeVisible()
+  await page.getByRole('button', { name: /^SCEPTILE, nivel 45, APTO$/ }).click()
+  await page.getByRole('button', { name: /^GARDEVOIR, nivel 45, APTO$/ }).click()
+  await page.getByRole('button', { name: 'Aceptar participantes de la Liga' }).click()
+  await expect(page.locator('.emerald-battle')).toBeVisible()
+  await expect(page.getByRole('status').filter({ hasText: /SIXTO/ })).toBeVisible()
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('daily-pwt:nuzlocke:v1') ?? 'null'))
+  expect(saved.state.leagueRoster).toEqual(['b', 'a'])
+  expect(saved.state.leagueEvolved).toBe(true)
+  expect(saved.battle.source.preparation.leadId).toBe('b')
+})

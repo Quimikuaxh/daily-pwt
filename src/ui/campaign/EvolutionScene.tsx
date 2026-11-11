@@ -1,0 +1,99 @@
+/**
+ * Escena de evolución de la Liga (D7, opción A aprobada el 11/11/2026; evolution_scene.c): fondo negro, el Pokémon en el centro y la
+ * caja de mensajes del combate. Por cada miembro que evoluciona: «¿Qué? ¡GLOOM está evolucionando!», la ventana con las formas si hay
+ * varias y «¡Enhorabuena! ¡Tu GLOOM ha evolucionado en VILEPLUME!». Abajo, el miembro en el equipo y el progreso. Al acabar devuelve
+ * la forma elegida de cada uno (`evolveForLeague`).
+ */
+import { useState } from 'react'
+import { ConsoleStage } from '../console/ConsoleStage'
+import { GameText } from '../console/GameText'
+import { GameWindow } from '../console/GameWindow'
+import { emeraldSprite, emeraldTheme } from '../console/themes/emerald'
+import { esCampaign } from '../../i18n/esCampaign'
+import { PartySlot } from './PartySlot'
+import { messagePages } from './emeraldBattleModel'
+import { firstStep, nextStep, optionsWidth, type EvolutionChoices, type LeagueEvolution } from './evolutionModel'
+
+const t = esCampaign.evolution
+
+type EvolutionSceneProps = {
+  evolutions: readonly LeagueEvolution[]
+  nameOf: (species: string) => string
+  /** PS al nivel del miembro con la forma que se ve. */
+  hpOf: (id: string, species: string) => number
+  onDone: (choices: EvolutionChoices) => void
+  scale?: number
+  reservedHeight?: number
+}
+
+export function EvolutionScene({ evolutions, nameOf, hpOf, onDone, scale, reservedHeight }: EvolutionSceneProps) {
+  const [index, setIndex] = useState(0)
+  const [step, setStep] = useState(firstStep)
+  const [choices, setChoices] = useState({} as EvolutionChoices)
+  const [cursor, setCursor] = useState(0)
+  const current = evolutions[index]
+  const name = nameOf(current.species)
+  const chosen = choices[current.id] ?? current.targets[0]
+  const shownSpecies = step === 'evolved' ? chosen : current.species
+  const message = step === 'evolving' ? t.evolving(name) : step === 'choose' ? t.which(name) : t.evolved(name, nameOf(chosen))
+  const lines = messagePages(message)[0] ?? []
+
+  const advance = () => {
+    const next = nextStep(step, current.targets.length)
+    if (next) { setStep(next); return }
+    const all = { ...choices, [current.id]: chosen }
+    if (index + 1 < evolutions.length) {
+      setChoices(all)
+      setIndex(index + 1)
+      setStep(firstStep)
+      setCursor(0)
+      return
+    }
+    onDone(all)
+  }
+  const choose = (target: string) => {
+    setChoices({ ...choices, [current.id]: target })
+    setStep('evolved')
+  }
+  // La ventana de formas (como la de la maqueta: derecha, a media altura), con tantas filas como formas.
+  const windowWidth = optionsWidth(current.targets.map(nameOf))
+
+  return (
+    <div className="evolution-screen">
+      <ConsoleStage theme={emeraldTheme} scale={scale} reservedHeight={reservedHeight} screens={[(
+        <div key="scene" className="evolution-scene">
+          <div className="moves-black" />
+          <img className="mon-front" src={emeraldSprite('front', shownSpecies)} alt="" style={{ left: 88, top: 24 }} />
+          <img src={emeraldTheme.asset('combate-caja-mensaje')} alt="" style={{ left: 0, top: 112 }} />
+          {lines.map((line, i) => <GameText key={i} text={line} x={16} y={121 + 16 * i} color="combate-mensaje" hidden />)}
+          {step === 'choose' ? (
+            <GameWindow x={28 - windowWidth} y={13 - current.targets.length * 2} width={windowWidth} height={current.targets.length * 2}>
+              <div role="menu" aria-label={message}>
+                {current.targets.map((target, i) => (
+                  <button key={target} type="button" role="menuitem" className="team-menu-item" style={{ left: 0, top: i * 16, width: windowWidth * 8, height: 16 }}
+                    aria-label={t.optionLabel(nameOf(target))} autoFocus={i === cursor} onFocus={() => setCursor(i)} onClick={() => choose(target)}>
+                    <GameText text={'▶'} y={1} hidden />
+                    <GameText text={nameOf(target)} x={8} y={1} hidden />
+                  </button>
+                ))}
+              </div>
+            </GameWindow>
+          ) : (
+            <button type="button" className="result-continue" style={{ left: 0, top: 0, width: 240, height: 160 }} aria-label={t.continueLabel(message)} onClick={advance} />
+          )}
+          <p className="sr-only" role="status">{message}</p>
+        </div>
+      ), (
+        <div key="party" className="evolution-party">
+          <img src={emeraldTheme.asset('equipo-fondo')} alt="" style={{ left: 0, top: 0 }} />
+          <div style={{ left: 8, top: 24, width: 80, height: 56 }} aria-hidden="true">
+            <PartySlot i={0} mon={{ species: shownSpecies, name: nameOf(shownSpecies), level: current.level, hp: hpOf(current.id, shownSpecies), maxHp: hpOf(current.id, shownSpecies) }} state="activa" bounce />
+          </div>
+          <GameWindow x={1} y={17} width={21} height={2}>
+            <GameText text={t.progress(index + 1, evolutions.length)} y={1} width={168} fit />
+          </GameWindow>
+        </div>
+      )]} />
+    </div>
+  )
+}
