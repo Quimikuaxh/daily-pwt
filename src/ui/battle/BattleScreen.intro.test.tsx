@@ -2,20 +2,22 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { BattleScreen } from './BattleScreen'
+import { STAGE_MS } from './VsBanner'
 import { getDailyChallenge } from '../../core/challenge'
 import { makeGameData } from '../../test-utils/fixtures'
 import { mkUpdate, mockClient } from '../../test-utils/clientMock'
-import { settle } from '../../test-utils/ui'
+import { settle, settleIntro } from '../../test-utils/ui'
 
 // PRD §0 "Redirección visual" · §10.2.1: intro del combate, mensajes uno a uno en la caja de texto y historial aparte.
+// `introImages` inmediata: estos tests miden el guion de la intro desde que llega el combate; la espera por las imágenes la prueba UT-181.
 const data = makeGameData()
 const challenge = getDailyChallenge('2026-10-17', data)
 const TURN_LINES = ['|move|p1a: Garchomp|Earthquake|p2a: Snorlax', '|-supereffective|p2a: Snorlax', '|move|p2a: Snorlax|Tackle|p1a: Garchomp']
 
-function mount(animations: 'always' | 'system' | 'never' = 'always') {
+function mount(animations: 'always' | 'system' | 'never' = 'always', names: { trainerName?: string; playerLabel?: string; battleSeed?: string; introImages?: (urls: string[]) => Promise<void> | void } = {}) {
   const client = mockClient()
   const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
-  render(<BattleScreen client={client as any} data={data} challenge={challenge} playerLead={0} battleSeed="seed-1" animations={animations} onFinish={vi.fn()} onExit={vi.fn()} />)
+  render(<BattleScreen client={client as any} data={data} challenge={challenge} playerLead={0} battleSeed="seed-1" introImages={() => undefined} {...names} animations={animations} onFinish={vi.fn()} onExit={vi.fn()} />)
   return { client, user }
 }
 const phase = () => screen.getByTestId('field').getAttribute('data-intro')
@@ -25,7 +27,8 @@ async function step(ms: number) { await settle(ms) }
 /** Milisegundos (en pasos de 50) hasta que se cumple la condición. */
 async function msUntil(condition: () => boolean, limit = 20_000): Promise<number> {
   let elapsed = 0
-  while (!condition() && elapsed < limit) { await step(50); elapsed += 50 }
+  // Pasos de 25 ms: la intro a x4 dura 2225 ms (8,9 s / 4), que no es múltiplo de 50.
+  while (!condition() && elapsed < limit) { await step(25); elapsed += 25 }
   return elapsed
 }
 
@@ -43,27 +46,25 @@ describe('intro del combate (PRD §10.2.1)', () => {
     const { client } = mount()
     client.emit(mkUpdate())
     const seen: (string | null)[] = []
-    for (let elapsed = 0; elapsed < 8000; elapsed += 50) {
+    for (let elapsed = 0; elapsed <= 8900; elapsed += 50) {
       if (seen[seen.length - 1] !== phase()) seen.push(phase())
       await step(50)
     }
     expect(seen).toEqual(['vs', 'iris', 'enter', 'challenge', 'rivalSend', 'playerSend', 'done'])
   })
 
-  it('dura entre 3 y 7 segundos a velocidad x1 (con la pancarta VS de 2 s; Jose, 11/11/2026, RF-137)', async () => {
+  it('dura 8,9 segundos a velocidad x1 (escenario y pancarta VS de 4 s; RF-137)', async () => {
     const { client } = mount()
     client.emit(mkUpdate())
     const duration = await msUntil(() => phase() === 'done')
-    expect(duration).toBeGreaterThanOrEqual(3000)
-    expect(duration).toBeLessThanOrEqual(7000)
+    expect(duration).toBe(8900)
   })
 
-  it('a x4 dura la cuarta parte', async () => {
+  it.each([2, 4])('a x%s dura 8,9 segundos divididos por la velocidad', async (speed) => {
     const { client, user } = mount()
-    await user.click(screen.getByRole('button', { name: /velocidad/i }))
-    await user.click(screen.getByRole('button', { name: /velocidad/i }))
+    for (let current = 1; current < speed; current *= 2) await user.click(screen.getByRole('button', { name: /velocidad/i }))
     client.emit(mkUpdate())
-    expect(await msUntil(() => phase() === 'done')).toBeLessThanOrEqual(2100)
+    expect(await msUntil(() => phase() === 'done')).toBe(8900 / speed)
   })
 
   it('cada frase de la intro sale en su fase: desafío, rival saca su Pokémon, yo saco el mío', async () => {
@@ -116,7 +117,7 @@ describe('intro del combate (PRD §10.2.1)', () => {
   it('sin saltar, las frases de la intro tampoco se duplican en el historial', async () => {
     const { client, user } = mount()
     client.emit(mkUpdate())
-    await step(8000)
+    await settleIntro()
     await user.click(screen.getByRole('button', { name: /registro/i }))
     const lines = within(screen.getByRole('log')).getAllByText(/./).map((node) => node.textContent)
     expect(new Set(lines).size).toBe(lines.length)
@@ -127,8 +128,59 @@ describe('intro del combate (PRD §10.2.1)', () => {
     mockMatchMedia(true)
     const { client } = mount('system')
     client.emit(mkUpdate())
-    expect(await msUntil(() => phase() === 'done')).toBeLessThanOrEqual(7000)
+    const banner = screen.getByRole('img', { name: new RegExp(`contra ${challenge.trainer.nameEs}$`) })
+    expect(banner.querySelector(':scope > .bt-vs-stage')).toBeNull()
+    expect(banner.querySelectorAll('.bt-vs-band')).toHaveLength(2)
+    expect(await msUntil(() => phase() === 'done')).toBe(8900)
     expect(screen.getByTestId('battle-screen')).toHaveAttribute('data-reduced-motion', 'true')
+  })
+})
+
+describe('la intro espera a sus imágenes (UT-181, RF-137)', () => {
+  it('se queda cargando hasta que el escenario y los sprites de los dos entrenadores están listos, y entonces dura lo de siempre', async () => {
+    let release: () => void = () => undefined
+    let asked: string[] = []
+    const introImages = (urls: string[]) => { asked = urls; return new Promise<void>((resolve) => { release = resolve }) }
+    const { client } = mount('always', { introImages })
+    client.emit(mkUpdate())
+    await step(5000)
+    expect(phase()).toBe('loading')
+    expect(asked).toEqual(expect.arrayContaining([expect.stringContaining('pwt-stage.png'), expect.stringContaining(`/trainers/${challenge.trainer.sprite}-side.png`),
+      expect.stringContaining(`/trainers/${challenge.trainer.sprite}-vs.png`), expect.stringMatching(/\/trainers\/(nate|rosa)-side\.png$/)]))
+    release()
+    await step(0)
+    expect(phase()).toBe('vs')
+    expect(await msUntil(() => phase() === 'done')).toBe(8900)
+  })
+})
+
+describe('nombre del jugador en la pancarta VS (UT-180, RF-137)', () => {
+  it.each([
+    { trainerName: 'Jose_11', expected: 'Jose_11' },
+    { trainerName: 'Jose_11', playerLabel: 'Eva', expected: 'Eva' },
+    { playerLabel: 'Eva', expected: 'Eva' },
+    { battleSeed: 'b', expected: 'Nate' },
+    { battleSeed: 'a', expected: 'Rosa' },
+  ])('usa $expected con $trainerName / $playerLabel / $battleSeed', ({ expected, ...names }) => {
+    const { client } = mount('always', names)
+    client.emit(mkUpdate())
+    expect(within(screen.getByRole('img', { name: `${expected} contra ${challenge.trainer.nameEs}` })).getByText(expected)).toBeInTheDocument()
+  })
+})
+
+describe('sprites del escenario integrados en el combate (RF-137)', () => {
+  it.each([{ battleSeed: 'b', avatar: 'nate' }, { battleSeed: 'a', avatar: 'rosa' }])('con semilla $battleSeed usa los retratos y sprites de lado de $avatar y del rival', async ({ battleSeed, avatar }) => {
+    const { client } = mount('always', { battleSeed, trainerName: 'Jose_11' })
+    client.emit(mkUpdate())
+    const banner = screen.getByRole('img', { name: `Jose_11 contra ${challenge.trainer.nameEs}` })
+    expect(banner.querySelector('.bt-vs-stage-trainer-left')).toHaveAttribute('src', expect.stringContaining(`/trainers/${avatar}-side.png`))
+    expect(banner.querySelector('.bt-vs-stage-trainer-right')).toHaveAttribute('src', expect.stringContaining(`/trainers/${challenge.trainer.sprite}-side.png`))
+    expect(banner.querySelector('.bt-vs-stage-portrait-left img')).toHaveAttribute('src', expect.stringContaining(`/trainers/${avatar}-vs.png`))
+    expect(banner.querySelector('.bt-vs-stage-portrait-right img')).toHaveAttribute('src', expect.stringContaining(`/trainers/${challenge.trainer.sprite}-vs.png`))
+    expect(banner.querySelector('.bt-vs-band')).toBeNull()
+    await step(STAGE_MS)
+    expect(banner.querySelectorAll('.bt-vs-band')).toHaveLength(2)
+    expect(banner).toHaveAccessibleName(`Jose_11 contra ${challenge.trainer.nameEs}`)
   })
 })
 
@@ -136,7 +188,7 @@ describe('mensajes uno a uno (caja de texto)', () => {
   async function afterIntro(lines: string[]) {
     const m = mount()
     m.client.emit(mkUpdate())
-    await step(8000)
+    await settleIntro()
     await m.user.click(fight())
     m.client.emit(mkUpdate({ lines }))
     return m
@@ -192,7 +244,7 @@ describe('mensajes uno a uno (caja de texto)', () => {
   it('cuando es mi turno la caja pregunta qué hará mi Pokémon', async () => {
     const { client } = mount()
     client.emit(mkUpdate())
-    await step(8000)
+    await settleIntro()
     expect(message()).toMatch(/¿Qué hará/)
   })
 
@@ -250,7 +302,7 @@ describe('pantalla táctil (menú principal, movimientos y Volver)', () => {
   async function turn() {
     const m = mount()
     m.client.emit(mkUpdate())
-    await step(8000)
+    await settleIntro()
     return m
   }
 

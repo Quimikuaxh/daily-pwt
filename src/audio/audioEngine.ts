@@ -39,7 +39,12 @@ export const MUSIC_RETURN_FADE_IN_MS = 1500
 export const MUSIC_CHANGE_FADE_MS = 800
 /** Grito al debilitarse: más lento y grave que al salir (como en N2/B2). */
 export const FAINT_CRY_RATE = 0.8
-const UNLOCK_EVENTS = ['pointerdown', 'keydown'] as const
+/**
+ * Eventos que desbloquean el audio. En el móvil un toque solo cuenta como interacción del usuario al levantar el dedo (`pointerup`,
+ * `touchend`, `click`), no en `pointerdown` (que sí vale con ratón): con solo `pointerdown`, el primer toque gastaba el desbloqueo sin
+ * que el contexto arrancase y la música no empezaba (Jose, 11/11/2026).
+ */
+const UNLOCK_EVENTS = ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown'] as const
 
 /** Volumen de Ajustes (0-100) a ganancia: curva cuadrática, que se percibe más pareja que la lineal. */
 export const volumeToGain = (volume: number): number => (Math.min(100, Math.max(0, volume)) / 100) ** 2
@@ -200,6 +205,20 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
     }
   }
 
+  /**
+   * Reanuda el contexto y, si el navegador no lo deja arrancar con este evento (en el móvil `pointerdown` no cuenta como interacción),
+   * lo reintenta en cada evento siguiente hasta que esté sonando.
+   */
+  function resumeUntilRunning() {
+    const ctx = context
+    if (!ctx) return
+    // `resume()` cambia el estado de forma asíncrona: se comprueba al resolverse para quitar los reintentos en cuanto suena.
+    const stop = () => { if (ctx.state === 'running') for (const type of UNLOCK_EVENTS) unlockTarget?.removeEventListener(type, retry) }
+    const retry = () => { void ctx.resume().then(stop, () => undefined); stop() }
+    for (const type of UNLOCK_EVENTS) unlockTarget?.addEventListener(type, retry)
+    retry()
+  }
+
   function unlock() {
     if (unlocked) return
     if (!context) {
@@ -217,7 +236,7 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
     }
     unlocked = true
     for (const type of UNLOCK_EVENTS) unlockTarget?.removeEventListener(type, unlock)
-    if (!paused) void context.resume().catch(() => undefined)
+    if (!paused) resumeUntilRunning()
     // Lo que ya se precargó sin contexto (solo los bytes) se decodifica ahora: así la de vida baja suena en cuanto se pide.
     for (const key of [...bytes.keys()]) void bufferOf(key)
     for (const listener of [...unlockListeners]) listener()

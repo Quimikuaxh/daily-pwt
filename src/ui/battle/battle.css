@@ -477,53 +477,11 @@
   transform: rotate(var(--a)) translateX(var(--r));
 }
 
-/* Cámara de la intro (como el PWT de N2/B2): los entrenadores entran con el plano general (E2E-47: cada uno debe cruzar
-   el campo a la vista ≥ 400 ms; con el zoom ya puesto el protagonista quedaba fuera de plano), la cámara se acerca al
-   rival (punto fijo en su plataforma, (186,80)) mientras desafía y lanza, y vuelve al plano general al final de su
-   envío. Las duraciones son las de INTRO_DURATIONS_MS divididas por la velocidad; no cambian los tiempos de la intro. */
+/* Capa del campo (fondo, luces, Pokémon y efectos). Sin zoom de cámara: Jose (11/11/2026) los vio raros y distintos del juego y se quitaron
+   los de la intro y los de los ataques. */
 .bt-camera {
   position: absolute;
   inset: 0;
-  transform-origin: 186px 80px;
-}
-
-[data-intro="challenge"] .bt-camera {
-  animation: bt-camera-focus calc(900ms / var(--speed, 1)) ease-out both;
-}
-
-[data-intro="rivalSend"] .bt-camera {
-  animation: bt-camera-release calc(1300ms / var(--speed, 1)) ease-in-out both;
-}
-
-@keyframes bt-camera-focus {
-  from { transform: none; }
-  45%, to { transform: scale(1.22); }
-}
-
-@keyframes bt-camera-release {
-  0%, 60% { transform: scale(1.22); }
-  100% { transform: none; }
-}
-
-/* Cámara de los ataques (moveCameraProps): punto fijo en el Pokémon rival; el sufijo -0/-1 alterna con cada ataque para
-   reiniciar la animación. Ataca el rival: se acerca a él y vuelve. Atacas tú: avanza hacia el rival y vuelve. */
-[data-move-camera] {
-  transform-origin: var(--cam-x, 186px) var(--cam-y, 80px);
-}
-
-[data-move-camera="rival-0"] { animation: bt-cam-rival-a calc(1100ms / var(--speed, 1)) ease-in-out both; }
-[data-move-camera="rival-1"] { animation: bt-cam-rival-b calc(1100ms / var(--speed, 1)) ease-in-out both; }
-[data-move-camera="player-0"] { animation: bt-cam-player-a calc(1100ms / var(--speed, 1)) ease-in-out both; }
-[data-move-camera="player-1"] { animation: bt-cam-player-b calc(1100ms / var(--speed, 1)) ease-in-out both; }
-
-@keyframes bt-cam-rival-a { 0%, 100% { transform: none; } 22%, 70% { transform: scale(1.25); } }
-@keyframes bt-cam-rival-b { 0%, 100% { transform: none; } 22%, 70% { transform: scale(1.25); } }
-@keyframes bt-cam-player-a { 0%, 100% { transform: none; } 25%, 65% { transform: scale(1.15); } }
-@keyframes bt-cam-player-b { 0%, 100% { transform: none; } 25%, 65% { transform: scale(1.15); } }
-
-[data-reduced-motion="true"] .bt-camera {
-  animation: none !important;
-  transform: none !important;
 }
 
 /* Destello y chispas al abrirse la escena (IntroFlash, fase «enter»). */
@@ -2379,8 +2337,9 @@
   z-index: 5;
 }
 
-.bt-vs::after {
-  content: '';
+/* Fundido a negro del final: es un elemento de la pancarta (no del contenedor .bt-vs, que se monta con el escenario), así cuenta desde que
+   entra la franja; como ::after de .bt-vs se disparaba a los 1,58 s del escenario y tapaba la pancarta entera (11/11/2026). */
+.bt-vs-fade {
   position: absolute;
   inset: 0;
   background: #000;
@@ -2396,11 +2355,114 @@
   opacity: 0;
   animation: bt-vs-show 1ms calc(640ms / var(--speed, 1)) both;
   background:
-    radial-gradient(ellipse 70px 34px at 128px 160px, transparent 40px, rgb(130 130 140 / 0.55) 41px 47px, transparent 48px),
     repeating-linear-gradient(60deg, transparent 0 9px, rgb(170 170 180 / 0.55) 9px 10px),
     repeating-linear-gradient(-60deg, transparent 0 9px, rgb(170 170 180 / 0.55) 9px 10px),
     linear-gradient(#202026, #121216);
 }
+
+/* Escudo del estadio (vs-emblem.png, calcado del vídeo): asoma bajo la franja, con su parte de arriba tapada por ella y por el logo. */
+.bt-vs-emblem {
+  position: absolute;
+  left: 63px;
+  top: 104px;
+  image-rendering: pixelated;
+}
+
+/* Escenario previo a la pancarta (STAGE_MS): estadio, pantalla gigante con los dos entrenadores y sus nombres, focos, suelo del escenario y
+   los dos entrenadores de pie de lado; dos flashes de cámara. Sigue debajo (.bt-vs-backdrop) mientras entra la franja, hasta el fogonazo. */
+.bt-vs-stage,
+.bt-vs-backdrop {
+  position: absolute;
+  inset: 0;
+}
+
+.bt-vs-stage-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  image-rendering: pixelated;
+}
+
+/* Interior de las cajas de retrato de la pantalla gigante (en pwt-stage.png): izquierda (jugador) en (67,44), 31 x 31; derecha (rival) en
+   (153,28), 32 x 32. */
+.bt-vs-stage-portrait {
+  position: absolute;
+  overflow: hidden;
+}
+
+.bt-vs-stage-portrait img {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  translate: -50% 0;
+  image-rendering: pixelated;
+}
+
+.bt-vs-stage-portrait-left { left: 67px; top: 44px; width: 31px; height: 31px; }
+.bt-vs-stage-portrait-right { left: 153px; top: 28px; width: 32px; height: 32px; }
+
+/* Nombres en el interior de las placas (jugador arriba, x 77-139; rival abajo, x 110-176), centrados: 3 px de hueco arriba y abajo. */
+.bt-vs-stage-plate {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Sin recortar (con descent-override: 0% un overflow cortaría las colas de y, g, p). El tamaño, en pasos enteros (la fuente de
+     píxeles se emborrona a tamaños fraccionarios), lo elige VsBanner por la longitud del nombre para que quepa en la placa. 1,5 px a la
+     izquierda de relleno compensa el avance que la fuente deja tras la última letra (medido: el texto quedaba 0,75 px a la izquierda). */
+  font-size: var(--size, 12px);
+  padding-left: 1.5px;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 1px 1px 0 #4a4a52;
+  white-space: nowrap;
+}
+
+.bt-vs-stage-plate-top { left: 77px; top: 22px; width: 63px; height: 15px; --w: 59px; }
+.bt-vs-stage-plate-bottom { left: 110px; top: 63px; width: 67px; height: 14px; --w: 63px; }
+
+/* Entrenadores de pie de lado sobre el escenario, mirándose: el jugador a la izquierda (el sprite de Nate y Rosa ya mira a la derecha) y
+   el rival a la derecha (el suyo ya mira a la izquierda). Pies a la altura de los de la captura (y 103), con la sombra de la captura. */
+.bt-vs-stage-trainer {
+  position: absolute;
+  top: 72px;
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+}
+
+.bt-vs-stage-trainer-left { left: 63px; }
+.bt-vs-stage-trainer-right { left: 154px; }
+
+.bt-vs-stage-shadow {
+  position: absolute;
+  top: 100px;
+  width: 16px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgb(40 40 48 / 0.45);
+}
+
+.bt-vs-stage-shadow-left { left: 71px; }
+.bt-vs-stage-shadow-right { left: 162px; }
+
+.bt-vs-stage-flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  animation: bt-vs-camera calc(2000ms / var(--speed, 1)) linear both;
+}
+
+@keyframes bt-vs-camera {
+  0%, 18% { opacity: 0; }
+  22% { opacity: 0.85; }
+  30%, 48% { opacity: 0; }
+  52% { opacity: 0.85; }
+  60%, 100% { opacity: 0; }
+}
+
+[data-reduced-motion="true"] .bt-vs-stage-flash { animation: none; }
 
 /* Franja fina: dos mitades que entran desde los lados y se encuentran en un borde en zigzag en el centro, con estelas
    horizontales de movimiento y líneas blancas arriba y abajo. Como en el juego, enseña el medio cuerpo de arriba. */
@@ -2452,7 +2514,13 @@
 
 /* Centros a 52 px del centro de la pantalla (x=76 y x=180; la franja del rival empieza en x=114). Los retratos van
    recortados a su tinta, así que centrar la caja centra el dibujo (medido: antes 59 y 45 px por los márgenes). */
-.bt-vs-band-player .bt-vs-trainer { left: 76px; translate: -50% 0; --from: -60px; }
+.bt-vs-band-player .bt-vs-trainer { left: 76px; translate: -50% 0; }
+/* El retrato de frente de Nate y Rosa mira a la izquierda: a la izquierda se voltea para que mire al centro (Jose, 11/11/2026); los de
+   los rivales ya miran a la izquierda o de frente. `transform` va después de `scale`, así que el desplazamiento de la entrada también se
+   voltea: con --from positivo entra por la izquierda, a juego con el rival por la derecha (Jose, 11/11/2026; con -60px entraba por la
+   derecha). */
+.bt-vs-band-player .bt-vs-trainer { scale: -2 2; --from: 60px; }
+.bt-vs-stage-portrait-left img { scale: -1 1; }
 .bt-vs-band-rival .bt-vs-trainer { left: 66px; translate: -50% 0; --from: 60px; }
 
 .bt-vs-name {
@@ -2558,7 +2626,7 @@
 
 /* Sin animaciones: la pancarta se ve ya compuesta, sin movimiento ni destellos. */
 [data-reduced-motion="true"] .bt-vs *,
-[data-reduced-motion="true"] .bt-vs::after {
+[data-reduced-motion="true"] .bt-vs-fade {
   animation: none !important;
 }
 

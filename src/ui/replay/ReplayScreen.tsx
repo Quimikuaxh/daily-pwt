@@ -25,6 +25,8 @@ type ReplayScreenProps = {
   api: CloudApi | null
   /** La cuenta ya no está cargando: sin `api`, no hay servicio. */
   ready: boolean
+  /** Nickname de quien mira (pancarta VS de sus repeticiones). */
+  ownName?: string
   data: GameData
   settings: Settings
   /** Botón «Sonido» del visor (Jose, 06/11/2026): volumen y silencio, guardados en Ajustes. */
@@ -33,7 +35,7 @@ type ReplayScreenProps = {
 }
 
 /** Carga y abre una repetición (RF-127, RF-132). Un enlace que no existe muestra un aviso y el camino a Hoy (RF-134). */
-export function ReplayScreen({ source, api, ready, data, settings, onSoundChange, onExit }: ReplayScreenProps) {
+export function ReplayScreen({ source, api, ready, ownName, data, settings, onSoundChange, onExit }: ReplayScreenProps) {
   const [loaded, setLoaded] = useState((source.kind === 'local' ? { status: 'ready', replay: source.replay, mine: false } : { status: 'loading' }) as Loaded)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const key = source.kind === 'mine' ? source.date : source.kind === 'friend' ? `${source.nickname}/${source.date}` : source.kind === 'shared' ? source.id : 'local'
@@ -76,7 +78,7 @@ export function ReplayScreen({ source, api, ready, data, settings, onSoundChange
   const canDelete = source.kind === 'shared' && loaded.mine && api !== null
   return (
     <>
-      <ReplayViewer replay={loaded.replay} data={data} settings={settings} onSoundChange={onSoundChange} onExit={onExit} onDelete={canDelete ? () => setConfirmDelete(true) : undefined} own={source.kind === 'shared' ? loaded.mine : source.kind !== 'friend'} playerName={source.kind === 'friend' ? source.nickname : source.kind === 'shared' && !loaded.mine ? (loaded.nickname ?? text.someone) : undefined} />
+      <ReplayViewer replay={loaded.replay} data={data} settings={settings} onSoundChange={onSoundChange} onExit={onExit} onDelete={canDelete ? () => setConfirmDelete(true) : undefined} own={source.kind === 'shared' ? loaded.mine : source.kind !== 'friend'} ownName={ownName} playerName={source.kind === 'friend' ? source.nickname : source.kind === 'shared' && !loaded.mine ? (loaded.nickname ?? text.someone) : undefined} />
       {confirmDelete && source.kind === 'shared' && api && (
         <Dialog
           title={text.deleteTitle}

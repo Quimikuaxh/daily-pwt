@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useState, useSyncExternalStore } from 'react'
 import { newBattleSeed } from './battle/seed'
 import type { Account, Cloud } from './cloud/account'
-import { CONNECTING, DISABLED, OFFLINE } from './cloud/state'
+import { CONNECTING, DISABLED, OFFLINE, isPlayer } from './cloud/state'
 import { recordingClient, type ReplayData, type ReplayStep } from './replay/replayData'
 import type { BattleClient } from './battle/client'
 import type { AiKind, EngineEnd } from './battle/protocol'
@@ -82,6 +82,8 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
   const accountState = useSyncExternalStore(account?.subscribe ?? noSubscription, account?.getState ?? (() => (accountFailed ? OFFLINE : cloud ? CONNECTING : DISABLED)))
   // Con sesión de Google, la caché de la cuenta; si no, el historial de este navegador.
   const store = account && accountState.status === 'signedIn' ? account.store : localStore
+  // Nickname del jugador (pancarta VS de sus combates y repeticiones); sin cuenta o sin nombre, sale el del protagonista.
+  const nickname = isPlayer(accountState) ? (accountState.nickname ?? undefined) : undefined
   const [settings, setSettings] = useState<Settings>(() => loadSettings(browserStorage()))
   // Tras «Borrar datos locales» se vuelve a pintar: Hoy relee el historial (vacío) en cada render; Ajustes sigue abierto con su aviso.
   const [, setDataGeneration] = useState(0)
@@ -260,7 +262,7 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
     const ready = accountState.status !== 'connecting'
     return (
       <Suspense fallback={null}>
-        <ReplayScreen source={screen.source} api={account?.api ?? null} ready={ready} data={data} settings={settings} onSoundChange={(sound) => changeSettings({ ...settings, ...sound })} onExit={leaveReplay} />
+        <ReplayScreen source={screen.source} api={account?.api ?? null} ready={ready} ownName={nickname} data={data} settings={settings} onSoundChange={(sound) => changeSettings({ ...settings, ...sound })} onExit={leaveReplay} />
       </Suspense>
     )
   }
@@ -277,6 +279,7 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
       // eslint-disable-next-line react-hooks/static-components
       <BattleScreen
         key={battle.seed}
+        trainerName={nickname}
         client={battle.client}
         data={data as GameData}
         challenge={battle.challenge}

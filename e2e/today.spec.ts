@@ -198,7 +198,10 @@ test.describe('Ver/ocultar los sets del rival', () => {
 test.describe('Precarga de la interfaz y de los sprites del reto', () => {
   test('E2E-48 Hoy solo pide sprites del reto de hoy (12 Pokémon, frente y espalda, y el entrenador), no los del resto del pool @timing', async ({ page }) => {
     const spriteRequests = new Set<string>()
+    const trainerPngRequests = new Set<string>()
     page.on('request', (request) => {
+      const trainerPng = /\/sprites\/trainers\/([a-z0-9-]+)-(vs|side)\.png$/.exec(new URL(request.url()).pathname)
+      if (trainerPng) trainerPngRequests.add(`${trainerPng[1]}-${trainerPng[2]}`)
       const match = /\/sprites\/(pokemon\/(?:front|back)|trainers)\/([a-z0-9-]+)\.gif$/.exec(new URL(request.url()).pathname)
       if (match) spriteRequests.add(`${match[1]}/${match[2]}`)
     })
@@ -213,7 +216,10 @@ test.describe('Precarga de la interfaz y de los sprites del reto', () => {
     for (const id of speciesIds) {
       expect(pokemon, `${id}: frente y espalda`).toEqual(expect.arrayContaining([`pokemon/front/${id}`, `pokemon/back/${id}`]))
     }
-    expect([...spriteRequests].filter((request) => request.startsWith('trainers/')), 'solo el entrenador rival').toHaveLength(1)
+    const trainers = [...spriteRequests].filter((request) => request.startsWith('trainers/'))
+    expect(trainers, 'solo el entrenador rival').toHaveLength(1)
+    const rival = trainers[0].split('/')[1]
+    expect([...trainerPngRequests].sort(), 'solo retrato VS y sprite de lado del rival').toEqual([`${rival}-side`, `${rival}-vs`])
   })
 
   test('E2E-49 con la red lenta, Equipo y Datos no se enseñan a medio cargar (todas las imágenes visibles ya cargadas en el primer fotograma) @timing', async ({ page }) => {

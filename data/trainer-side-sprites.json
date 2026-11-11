@@ -1,0 +1,412 @@
+{
+  "description": "Sprites de mapa de pie de lado de los entrenadores para el escenario previo a la pancarta VS (RF-137). Celdas de 32 x 32 de las hojas de The Spriters Resource (ripeadas por Dazz, sin crédito obligatorio), copiadas del Internet Archive porque el sitio está tras Cloudflare. El rival mira a la izquierda (fila de lado de la hoja, el frame de la izquierda: de pie); Nate y Rosa, a la derecha. El fondo de cada celda (su píxel de la esquina) pasa a transparente. Coordenadas localizadas buscando el sprite de mapa de frente de cada entrenador (`<id>-mini.png`) en la hoja. Regenerar: npm run gen:trainer-side.",
+  "sheets": {
+    "entities": {
+      "page": "https://www.spriters-resource.com/ds_dsi/pokemonblack2white2/asset/48049/",
+      "url": "https://web.archive.org/web/20251114093853im_/https://www.spriters-resource.com/media/assets/45/48049.png?updated=1755472948",
+      "width": 1024,
+      "height": 6048
+    },
+    "nate": {
+      "page": "https://www.spriters-resource.com/ds_dsi/pokemonblack2white2/asset/48040/",
+      "url": "https://web.archive.org/web/20251126120009im_/https://www.spriters-resource.com/media/assets/45/48040.png?updated=1755472947",
+      "width": 364,
+      "height": 724
+    },
+    "rosa": {
+      "page": "https://www.spriters-resource.com/ds_dsi/pokemonblack2white2/asset/48044/",
+      "url": "https://web.archive.org/web/20250828154058im_/https://www.spriters-resource.com/media/assets/45/48044.png",
+      "width": 364,
+      "height": 724
+    }
+  },
+  "trainers": {
+    "aceron": {
+      "sheet": "entities",
+      "cell": [
+        896,
+        3840
+      ]
+    },
+    "alana": {
+      "sheet": "entities",
+      "cell": [
+        864,
+        3712
+      ]
+    },
+    "aloe": {
+      "sheet": "entities",
+      "cell": [
+        352,
+        1184
+      ]
+    },
+    "anibal": {
+      "sheet": "entities",
+      "cell": [
+        672,
+        3616
+      ]
+    },
+    "anton": {
+      "sheet": "entities",
+      "cell": [
+        320,
+        3584
+      ]
+    },
+    "azul": {
+      "sheet": "entities",
+      "cell": [
+        256,
+        3968
+      ]
+    },
+    "blaine": {
+      "sheet": "entities",
+      "cell": [
+        0,
+        3616
+      ]
+    },
+    "blanca": {
+      "sheet": "entities",
+      "cell": [
+        448,
+        3584
+      ]
+    },
+    "brega": {
+      "sheet": "entities",
+      "cell": [
+        640,
+        3840
+      ]
+    },
+    "brock": {
+      "sheet": "entities",
+      "cell": [
+        320,
+        3360
+      ]
+    },
+    "camila": {
+      "sheet": "entities",
+      "cell": [
+        544,
+        3136
+      ]
+    },
+    "camus": {
+      "sheet": "entities",
+      "cell": [
+        448,
+        1184
+      ]
+    },
+    "candela": {
+      "sheet": "entities",
+      "cell": [
+        640,
+        3744
+      ]
+    },
+    "cheren": {
+      "sheet": "entities",
+      "cell": [
+        256,
+        3136
+      ]
+    },
+    "cintia": {
+      "sheet": "entities",
+      "cell": [
+        256,
+        2880
+      ]
+    },
+    "ciprian": {
+      "sheet": "entities",
+      "cell": [
+        928,
+        3136
+      ]
+    },
+    "debora": {
+      "sheet": "entities",
+      "cell": [
+        0,
+        3712
+      ]
+    },
+    "erico": {
+      "sheet": "entities",
+      "cell": [
+        512,
+        3712
+      ]
+    },
+    "erika": {
+      "sheet": "entities",
+      "cell": [
+        704,
+        3360
+      ]
+    },
+    "fantina": {
+      "sheet": "entities",
+      "cell": [
+        544,
+        3872
+      ]
+    },
+    "fredo": {
+      "sheet": "entities",
+      "cell": [
+        896,
+        3616
+      ]
+    },
+    "galano": {
+      "sheet": "entities",
+      "cell": [
+        192,
+        3872
+      ]
+    },
+    "gardenia": {
+      "sheet": "entities",
+      "cell": [
+        416,
+        3840
+      ]
+    },
+    "gerania": {
+      "sheet": "entities",
+      "cell": [
+        736,
+        1184
+      ]
+    },
+    "giovanni": {
+      "sheet": "entities",
+      "cell": [
+        96,
+        3616
+      ]
+    },
+    "hiedra": {
+      "sheet": "entities",
+      "cell": [
+        352,
+        3136
+      ]
+    },
+    "inverna": {
+      "sheet": "entities",
+      "cell": [
+        0,
+        3968
+      ]
+    },
+    "junco": {
+      "sheet": "entities",
+      "cell": [
+        832,
+        1184
+      ]
+    },
+    "lance": {
+      "sheet": "entities",
+      "cell": [
+        384,
+        3968
+      ]
+    },
+    "lectro": {
+      "sheet": "entities",
+      "cell": [
+        128,
+        3968
+      ]
+    },
+    "leti": {
+      "sheet": "entities",
+      "cell": [
+        0,
+        3872
+      ]
+    },
+    "lirio": {
+      "sheet": "entities",
+      "cell": [
+        0,
+        2304
+      ]
+    },
+    "maiz": {
+      "sheet": "entities",
+      "cell": [
+        768,
+        2176
+      ]
+    },
+    "mananti": {
+      "sheet": "entities",
+      "cell": [
+        768,
+        3840
+      ]
+    },
+    "marcial": {
+      "sheet": "entities",
+      "cell": [
+        384,
+        3712
+      ]
+    },
+    "maximo": {
+      "sheet": "entities",
+      "cell": [
+        512,
+        3968
+      ]
+    },
+    "millo": {
+      "sheet": "entities",
+      "cell": [
+        256,
+        1152
+      ]
+    },
+    "mirto": {
+      "sheet": "entities",
+      "cell": [
+        384,
+        1312
+      ]
+    },
+    "misty": {
+      "sheet": "entities",
+      "cell": [
+        448,
+        3360
+      ]
+    },
+    "morti": {
+      "sheet": "entities",
+      "cell": [
+        576,
+        3616
+      ]
+    },
+    "norman": {
+      "sheet": "entities",
+      "cell": [
+        736,
+        3712
+      ]
+    },
+    "pegaso": {
+      "sheet": "entities",
+      "cell": [
+        192,
+        3584
+      ]
+    },
+    "petra": {
+      "sheet": "entities",
+      "cell": [
+        256,
+        3712
+      ]
+    },
+    "plubio": {
+      "sheet": "entities",
+      "cell": [
+        640,
+        4000
+      ]
+    },
+    "roco": {
+      "sheet": "entities",
+      "cell": [
+        288,
+        3840
+      ]
+    },
+    "rojo": {
+      "sheet": "entities",
+      "cell": [
+        192,
+        5888
+      ]
+    },
+    "sabrina": {
+      "sheet": "entities",
+      "cell": [
+        832,
+        3360
+      ]
+    },
+    "sachiko": {
+      "sheet": "entities",
+      "cell": [
+        128,
+        3712
+      ]
+    },
+    "teniente-surge": {
+      "sheet": "entities",
+      "cell": [
+        576,
+        3360
+      ]
+    },
+    "vito": {
+      "sheet": "entities",
+      "cell": [
+        0,
+        3872
+      ]
+    },
+    "yakon": {
+      "sheet": "entities",
+      "cell": [
+        640,
+        1184
+      ]
+    },
+    "yasmina": {
+      "sheet": "entities",
+      "cell": [
+        768,
+        3584
+      ]
+    },
+    "zeo": {
+      "sheet": "entities",
+      "cell": [
+        864,
+        2176
+      ]
+    }
+  },
+  "players": {
+    "nate": {
+      "sheet": "nate",
+      "cell": [
+        1,
+        100
+      ]
+    },
+    "rosa": {
+      "sheet": "rosa",
+      "cell": [
+        1,
+        100
+      ]
+    }
+  }
+}
