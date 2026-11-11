@@ -39,6 +39,8 @@ export type CampaignState = {
   scannerChoice?: ScannerChoice
   /** Alguna oferta del tramo ya incluyó un tipo propio supereficaz. */
   draftTypeCovered?: boolean
+  /** Ya se aplicaron las evoluciones de la Liga (`evolveForLeague`). */
+  leagueEvolved?: boolean
 }
 
 export function createCampaign(seed: string): CampaignState {
@@ -210,6 +212,53 @@ export function evolveRecruit(
   }
 }
 
+/**
+ * Vías de evolución que no necesitan objeto (Jose, 11/11/2026): al entrar en la Liga se aplican sin esperar nivel ni condición, para que
+ * se puedan usar Pokémon que tardan demasiado en evolucionar (Tyranitar, Salamence). Las de piedra u objeto evolutivo (`ITEM`,
+ * `TRADE_ITEM`) siguen en `evolveRecruit` con el inventario. Wurmple ya se resolvió por semilla al subir de nivel y Shedinja no es una
+ * evolución del miembro.
+ */
+const LEAGUE_FREE_EVOLUTIONS = new Set(['LEVEL', 'LEVEL_NINJASK', 'LEVEL_ATK_LT_DEF', 'LEVEL_ATK_GT_DEF', 'LEVEL_ATK_EQ_DEF',
+  'FRIENDSHIP', 'FRIENDSHIP_DAY', 'FRIENDSHIP_NIGHT', 'TRADE', 'BEAUTY'])
+
+/** Caminos de evolución sin objeto desde una especie hasta cada forma final (la propia especie si no evoluciona así). */
+function leaguePaths(definition: CampaignDefinition, species: string, seen: ReadonlySet<string> = new Set([species])): string[][] {
+  const next = definition.species[species]?.evolutions.filter(rule =>
+    LEAGUE_FREE_EVOLUTIONS.has(rule.method) && Object.hasOwn(definition.species, rule.target) && !seen.has(rule.target)) ?? []
+  if (!next.length) return [[species]]
+  const targets = [...new Set(next.map(rule => rule.target))]
+  return targets.flatMap(target => leaguePaths(definition, target, new Set([...seen, target])).map(path => [species, ...path]))
+}
+
+/** Formas finales a las que puede llegar un miembro en la Liga sin objeto; con más de una, elige el jugador. */
+export function leagueEvolutionTargets(definition: CampaignDefinition, species: string): string[] {
+  return [...new Set(leaguePaths(definition, species).map(path => path[path.length - 1]))].sort()
+}
+
+/**
+ * Evoluciona a la forma final cada miembro vivo de la caja al preparar la Liga (una sola vez). `choices` da la forma elegida para los que
+ * tienen varias (id del miembro → especie). Cada forma intermedia queda en el historial al nivel actual, así que sus movimientos de nivel
+ * hasta ese nivel siguen disponibles.
+ */
+export function evolveForLeague(definition: CampaignDefinition, state: CampaignState, choices: Readonly<Record<string, string>> = {}): CampaignState {
+  if (state.phase !== 'prepare' || encounterAt(definition, state).kind === 'gym' || state.leagueRoster) {
+    throw new DataError('Las evoluciones de la Liga se aplican al preparar la Liga, antes de fijar la plantilla.')
+  }
+  if (state.leagueEvolved) return state
+  const members = state.members.map(member => {
+    if (member.fainted) return member
+    const paths = leaguePaths(definition, member.species)
+    const finals = [...new Set(paths.map(path => path[path.length - 1]))]
+    const target = finals.length === 1 ? finals[0] : choices[member.id]
+    if (!target || !finals.includes(target)) throw new DataError(`Elige la evolución de ${member.species} para la Liga.`)
+    if (target === member.species) return member
+    const path = paths.find(candidate => candidate[candidate.length - 1] === target)!
+    const stages = path.slice(0, -1).map(species => ({ species, evolvedAt: member.level }))
+    return { ...member, species: target, history: [...member.history, ...stages] }
+  })
+  return { ...state, members, leagueEvolved: true }
+}
+
 /** Fija las identidades antes de evolucionar y preparar el primer combate de Liga. */
 export function lockLeagueRoster(definition: CampaignDefinition, state: CampaignState, selected: readonly string[]): CampaignState {
   if (state.phase !== 'prepare' || encounterAt(definition, state).kind === 'gym') {
@@ -226,6 +275,7 @@ export function lockLeagueRoster(definition: CampaignDefinition, state: Campaign
   if (!selected.length || selected.length > 6 || new Set(selected).size !== selected.length || selected.some(id => !alive.has(id))) {
     throw new DataError('La plantilla de Liga debe tener entre uno y seis miembros vivos distintos.')
   }
+  if (isEmeraldCampaign(definition) && !state.leagueEvolved) throw new DataError('Aplica antes las evoluciones de la Liga.')
   return { ...state, leagueRoster: [...selected] }
 }
 

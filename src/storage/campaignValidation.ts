@@ -16,7 +16,8 @@ function state(v: unknown): boolean {
       Array.isArray(m.history) && m.history.every(h => object(h) && text(h.species) && count(h.evolvedAt)) &&
       (m.recruitmentHistoryLength === undefined || (count(m.recruitmentHistoryLength) && m.recruitmentHistoryLength <= m.history.length))) &&
     (v.scannerChoice === undefined || v.scannerChoice === 'deepseatooth' || v.scannerChoice === 'deepseascale') &&
-    (v.draftTypeCovered === undefined || typeof v.draftTypeCovered === 'boolean')
+    (v.draftTypeCovered === undefined || typeof v.draftTypeCovered === 'boolean') &&
+    (v.leagueEvolved === undefined || typeof v.leagueEvolved === 'boolean')
 }
 
 function set(v: unknown): boolean {
