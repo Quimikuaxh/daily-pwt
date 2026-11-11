@@ -15,11 +15,12 @@ const table = (headers, rows) => `| ${headers.join(' | ')} |\n| ${headers.map(()
 /** Tablas derivadas exclusivamente de los datos; no toma decisiones de producto. */
 export function renderDraftTables(result, sourceHash) {
   if (result.schemaVersion !== 2) throw new Error('Se necesita JSON de simulación con schemaVersion 2')
-  const { seeds, scenarios, margins: percentages, absoluteWindows = [] } = result.options
-  const margins = [...percentages, ...absoluteWindows]
-  const label = margin => typeof margin === 'number' ? `±${margin} %` : `−${margin.below}/+${margin.above}`
-  const matchesWindow = (row, margin) => typeof margin === 'number' ? row.marginPercent === margin :
-    row.marginPercent === null && row.absoluteWindow?.below === margin.below && row.absoluteWindow?.above === margin.above
+  const { seeds, scenarios, margins: percentages, absoluteWindows = [], relativeWindows = [] } = result.options
+  const margins = [...percentages, ...absoluteWindows, ...relativeWindows.map(w => ({ ...w, relative: true }))]
+  const label = margin => typeof margin === 'number' ? `±${margin} %` : margin.relative ? `−${margin.below} %/+${margin.above} %` : `−${margin.below}/+${margin.above}`
+  const matchesWindow = (row, margin) => typeof margin === 'number' ? row.marginPercent === margin : margin.relative
+    ? row.marginPercent === null && row.relativeWindow?.below === margin.below && row.relativeWindow?.above === margin.above
+    : row.marginPercent === null && row.absoluteWindow?.below === margin.below && row.absoluteWindow?.above === margin.above
   const find = (scenario, margin, id, guarantee) => {
     const matches = result.rows.filter(row => row.scenario === scenario && matchesWindow(row, margin) && row.encounterId === id && row.guarantee === guarantee)
     if (matches.length !== 1) throw new Error(`Falta una fila única: ${scenario}/${margin}/${id}/${guarantee}`)
@@ -71,8 +72,8 @@ export function renderDraftTables(result, sourceHash) {
   const insufficient = selected.filter(r => r.poolBeforeExclusions < 4 || (r.poolAfterExclusions && r.poolAfterExclusions.min < 4))
   const noCounter = selected.filter(r => r.encounterId !== 'sixto' && r.counterPoolBeforeExclusions === 0)
   text += '\n### Escasez y cobertura\n\n'
-  text += insufficient.length ? `Pools con menos de cuatro especies: ${insufficient.map(r => `${r.scenario}/${label(r.absoluteWindow ?? r.marginPercent)}/${names[r.encounterId]}`).join(', ')}.\n` : 'Ninguna combinación presenta un pool menor de cuatro, antes ni después de exclusiones, en los hitos observados.\n'
-  text += noCounter.length ? `Tramos sin candidatos de tipo propio válido en el pool inicial: ${noCounter.map(r => `${r.scenario}/${label(r.absoluteWindow ?? r.marginPercent)}/${names[r.encounterId]}`).join(', ')}.\n` : 'Todos los gimnasios tienen candidatos de tipo propio válido en el pool inicial.\n'
+  text += insufficient.length ? `Pools con menos de cuatro especies: ${insufficient.map(r => `${r.scenario}/${label(r.relativeWindow ? { ...r.relativeWindow, relative: true } : r.absoluteWindow ?? r.marginPercent)}/${names[r.encounterId]}`).join(', ')}.\n` : 'Ninguna combinación presenta un pool menor de cuatro, antes ni después de exclusiones, en los hitos observados.\n'
+  text += noCounter.length ? `Tramos sin candidatos de tipo propio válido en el pool inicial: ${noCounter.map(r => `${r.scenario}/${label(r.relativeWindow ? { ...r.relativeWindow, relative: true } : r.absoluteWindow ?? r.marginPercent)}/${names[r.encounterId]}`).join(', ')}.\n` : 'Todos los gimnasios tienen candidatos de tipo propio válido en el pool inicial.\n'
   text += `Repeticiones con la oferta inmediatamente anterior: **${sum(selected, 'repeatedSlotsInPreviousOffer')}**. Fallos con garantía: **${sum(selected, 'failedOffers')}**.\n`
   return text.trimEnd()
 }
@@ -92,11 +93,11 @@ if (isMain(import.meta.url)) {
     report: { type: 'string', default: fromRoot('docs/nuzlocke/SIMULACION-DRAFT.md') },
     check: { type: 'boolean', default: false },
   } })
-  if (!['percent', 'absolute'].includes(values.section)) throw new Error('--section debe ser percent o absolute')
-  const absolute = values.section === 'absolute'
-  const bytes = await readFile(values.input ?? fromRoot(`docs/nuzlocke/draft-results-${absolute ? 'absolute-' : ''}100.json`))
+  if (!['percent', 'absolute', 'relative'].includes(values.section)) throw new Error('--section debe ser percent, absolute o relative')
+  const section = values.section
+  const bytes = await readFile(values.input ?? fromRoot(`docs/nuzlocke/draft-results-${section === 'percent' ? '' : `${section}-`}100.json`))
   const doc = await readFile(values.report, 'utf8')
-  const next = replaceDraftTables(doc, renderDraftTables(JSON.parse(bytes), createHash('sha256').update(bytes).digest('hex')), absolute ? { start: '<!-- draft-absolute:start -->', end: '<!-- draft-absolute:end -->' } : {})
+  const next = replaceDraftTables(doc, renderDraftTables(JSON.parse(bytes), createHash('sha256').update(bytes).digest('hex')), section === 'percent' ? {} : { start: `<!-- draft-${section}:start -->`, end: `<!-- draft-${section}:end -->` })
   if (values.check) {
     if (next !== doc) throw new Error('Las tablas no coinciden con el JSON; regenerarlas antes de entregar')
     console.log('Tablas del draft reproducidas sin diferencias')

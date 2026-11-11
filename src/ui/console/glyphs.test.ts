@@ -30,6 +30,24 @@ describe('glifos de la fuente del juego', () => {
     warn.mockRestore()
   })
 
+  it('UT-167: los símbolos sin etiqueta accesible desaparecen sin alterar el texto restante', () => {
+    expect(accessibleText('  A {SIN_ETIQUETA}   B {LV_2}20 {NO}7  ')).toBe('A B Nv20 Nº7')
+    expect(accessibleText('{SIN_ETIQUETA}{SPACER}')).toBe('')
+    expect(accessibleText('')).toBe('')
+  })
+
+  it('UT-167: trata un símbolo desconocido como un único glifo y admite texto vacío', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    try {
+      expect(glyphCodes(emerald, '{DESCONOCIDO}')).toEqual([font.charmap['?']])
+      expect(warn).toHaveBeenCalledOnce()
+      expect(glyphCodes(emerald, '')).toEqual([])
+      expect(textWidth(emerald, '', 'normal', 3)).toBe(0)
+    } finally {
+      warn.mockRestore()
+    }
+  })
+
   it('el ancho suma los glifos y el espaciado entre ellos, no tras el último (GetStringWidth)', () => {
     const a = font.fonts.normal[font.charmap.A]
     const b = font.fonts.normal[font.charmap.B]

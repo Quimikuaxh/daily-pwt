@@ -85,6 +85,15 @@ export function buildEmeraldItems(sources, encounters) {
   for (const [, token] of sources['src/data/pokemon/evolution.h'].matchAll(/EVO_(?:ITEM|TRADE_ITEM),\s*ITEM_(\w+)/g)) {
     definitions[`ITEM_${token}`] = { id: id(token) }
   }
+  // Objetos equipables (Jose, 11/11/2026): los que tienen efecto al llevarlos en src/data/items.h, bayas de combate incluidas.
+  const heldEffects = {}
+  for (const [, token, body] of sources['src/data/items.h'].matchAll(/\[(ITEM_\w+)\]\s*=\s*\{([\s\S]*?)\n    \},/g)) {
+    const effect = body.match(/holdEffect = (HOLD_EFFECT_\w+)/)?.[1]
+    if (!effect || effect === 'HOLD_EFFECT_NONE') continue
+    heldEffects[token] = effect
+    definitions[token] ??= { id: id(token.slice(5)) }
+    definitions[token].held = token.endsWith('_BERRY') ? 'berry' : 'held'
+  }
   const resourceTokens = ['RED', 'BLUE', 'YELLOW', 'GREEN'].map(color => `ITEM_${color}_SHARD`)
   for (const token of resourceTokens) definitions[token] = { id: id(token.slice(5)) }
   const blocks = scriptBlocks(sources)
@@ -149,6 +158,29 @@ export function buildEmeraldItems(sources, encounters) {
       })
     }
   }
+  // Árboles de bayas con baya plantada al empezar (include/constants/berry.h: BERRY_TREE_<RUTA>_<BAYA>[_n]; «SOIL» es tierra vacía).
+  const treeNames = new Map([...sources['include/constants/berry.h'].matchAll(/#define (BERRY_TREE_\w+)\s+(\d+)/g)].map(([, name, value]) => [value, name]))
+  for (const map of maps) {
+    for (const [index, event] of (map.object_events ?? []).entries()) {
+      if (!String(event.graphics_id).includes('BERRY_TREE')) continue
+      const raw = String(event.trainer_sight_or_berry_tree_id)
+      const tree = raw.startsWith('BERRY_TREE_') ? raw : treeNames.get(raw)
+      const berry = tree?.match(/^BERRY_TREE_ROUTE_\d+_([A-Z]+)(?:_\d+)?$/)?.[1]
+      if (!berry || berry === 'SOIL') continue
+      add(`ITEM_${berry}_BERRY`, { map: map.name, event: `object_events[${index}]` }, 'árbol', itemRoute(map.name, '', `ITEM_${berry}_BERRY`), {
+        source: { path: map.path, event: { ...event }, tree }, eventSources: [], controlEvidence: [], flagEvidence: [],
+      })
+    }
+  }
+  // Canje del Frente Batalla (objetos equipables y su precio en PB): catálogo para la tienda de Puntos Batalla de la campaña.
+  const exchangeList = sources['src/data/battle_frontier/battle_frontier_exchange_corner.h'].match(/sFrontierExchangeCorner_HoldItems\[\]\s*=\s*\{([^}]+)\}/)?.[1]
+  const exchangeScript = sources['data/maps/BattleFrontier_ExchangeServiceCorner/scripts.inc']
+  const exchange = [...(exchangeList ?? '').matchAll(/ITEM_\w+/g)].map(([token]) => token).filter(token => token !== 'ITEM_LIST_END').map(token => {
+    const price = exchangeScript.match(new RegExp(`setvar VAR_0x8008, (\\d+)\\n\\s*setvar VAR_0x8009, ${token}\\b`))?.[1]
+    if (!price || !definitions[token]) throw new Error(`Canje sin precio: ${token}`)
+    return { item: definitions[token].id, token, price: Number(price) }
+  })
+  if (exchange.length !== 9) throw new Error('Canje de objetos equipables inválido')
   const pickupPath = 'src/battle_script_commands.c'
   const pickup = sources[pickupPath].match(/sRarePickupItems\[\]\s*=\s*\{([^}]+)\}/)?.[1]
   if (!pickup) throw new Error('Tabla de Recogida ausente')
@@ -209,7 +241,7 @@ export function buildEmeraldItems(sources, encounters) {
   const result = {
     schemaVersion: 1, source: { revision: EMERALD_REVISION, lock: 'emerald-item-source-lock.json' },
     scope: 'Evidencia de obtención con combates en orden y exploración opcional sin glitches. No autoriza desbloqueos de campaña.',
-    milestones: encounters.map(encounter => encounter.id), items, resources,
+    milestones: encounters.map(encounter => encounter.id), items, resources, exchange,
     geographyEvidence: ['data/layouts/Route124/map.bin', 'data/layouts/Route126/map.bin', 'data/layouts/Underwater_Route124/map.bin', 'data/layouts/Underwater_Route126/map.bin'],
   }
   validateEmeraldItems(result)
@@ -218,14 +250,15 @@ export function buildEmeraldItems(sources, encounters) {
 
 export function validateEmeraldItems(catalog) {
   if (catalog?.schemaVersion !== 1 || catalog.source?.revision !== EMERALD_REVISION ||
-    catalog.milestones?.length !== 13 || !catalog.items || Object.keys(catalog.items).length !== 70) throw new Error('Cabecera de objetos inválida')
+    catalog.milestones?.length !== 13 || !catalog.items || Object.keys(catalog.items).length !== 134 ||
+    Object.values(catalog.items).filter(item => item.held).length !== 70 || catalog.exchange?.length !== 9) throw new Error(`Cabecera de objetos inválida (${Object.keys(catalog.items ?? {}).length} objetos, ${Object.values(catalog.items ?? {}).filter(item => item.held).length} equipables, ${catalog.exchange?.length} de canje)`)
   const validMilestone = value => value === null || catalog.milestones.includes(value)
   for (const [key, item] of Object.entries({ ...catalog.items, ...catalog.resources })) {
     if (item.id !== key || !/^ITEM_\w+$/.test(item.token) || !validMilestone(item.earliestBefore) || !Array.isArray(item.sources)) throw new Error(`${key}: objeto inválido`)
     if (item.move && !gen3.moves.get(item.move)) throw new Error(`${key}: movimiento inválido`)
     for (const source of item.sources) {
       if (source.item !== key || source.token !== item.token || !validMilestone(source.earliestBefore) ||
-        !['suelo', 'regalo', 'tienda', 'premio aleatorio', 'excluyente', 'posliga'].includes(source.type) ||
+        !['suelo', 'regalo', 'tienda', 'árbol', 'premio aleatorio', 'excluyente', 'posliga'].includes(source.type) ||
         !source.event || !source.source?.path || !Array.isArray(source.requirements) ||
         (source.decision && !decisionTypes.has(source.decision))) throw new Error(`${key}: adquisición inválida`)
       if (source.resource && (!catalog.resources?.[source.resource]?.earliestBefore ||

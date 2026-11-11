@@ -1,17 +1,92 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { ConsoleStage } from './ConsoleStage'
 import { GameText } from './GameText'
 import { GameWindow } from './GameWindow'
 import { emeraldTheme } from './themes/emerald'
 import { n2b2Theme } from './themes/n2b2'
 import { textWidth } from './glyphs'
+import * as glyphSheets from './glyphSheets'
 
 // DEC-95: lienzo, texto y ventanas de un tema de consola (Esmeralda), sin pantallas de campaña.
 describe('lienzo de consola de un tema', () => {
   beforeEach(() => {
     // jsdom no pinta canvas: el texto se comprueba por su caja y su nombre accesible.
     vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+    vi.unstubAllGlobals()
+  })
+
+  it.each([
+    { text: 'GROVYLE', hidden: true },
+    { text: '{SPACER}', hidden: false },
+    { text: '', hidden: false },
+  ])('UT-168: oculta del lector el texto decorativo o sin etiqueta: $text', ({ text, hidden }) => {
+    const { container } = render(<ConsoleStage theme={emeraldTheme} scale={2}
+      screens={[<GameText key="t" text={text} hidden={hidden} />]} />)
+    const canvas = container.querySelector('canvas')!
+    expect(canvas).toHaveAttribute('aria-hidden', 'true')
+    expect(canvas).not.toHaveAttribute('aria-label')
+    expect(canvas).not.toHaveAttribute('role')
+    expect(screen.queryByRole('img')).not.toBeInTheDocument()
+    expect(canvas.width).toBeGreaterThanOrEqual(1)
+  })
+
+  it('UT-168: un símbolo pintable sin etiqueta queda oculto al lector de pantalla', () => {
+    if (emeraldTheme.font.kind !== 'bitmap') throw new Error('La prueba necesita la fuente bitmap')
+    const theme = { ...emeraldTheme, font: { ...emeraldTheme.font,
+      charmap: { ...emeraldTheme.font.charmap, '{SIMBOLO}': emeraldTheme.font.charmap.A } } }
+    const { container } = render(<ConsoleStage theme={theme} scale={2}
+      screens={[<GameText key="t" text="{SIMBOLO}" />]} />)
+    const canvas = container.querySelector('canvas')!
+    expect(canvas.width).toBeGreaterThan(1)
+    expect(canvas).toHaveAttribute('aria-hidden', 'true')
+    expect(canvas).not.toHaveAttribute('aria-label')
+  })
+
+  it('UT-169: un color inexistente pinta tinta y sombra con el color de ventana', async () => {
+    const context = { clearRect: vi.fn(), drawImage: vi.fn() }
+    vi.mocked(HTMLCanvasElement.prototype.getContext).mockReturnValue(context as unknown as CanvasRenderingContext2D)
+    const mask = document.createElement('img')
+    const sheet = document.createElement('canvas')
+    vi.spyOn(glyphSheets, 'loadImage').mockResolvedValue(mask)
+    const tint = vi.spyOn(glyphSheets, 'tint').mockReturnValue(sheet)
+    render(<ConsoleStage theme={emeraldTheme} scale={2}
+      screens={[<GameText key="t" text="AB" color="color-inexistente" />]} />)
+    await waitFor(() => expect(context.drawImage).toHaveBeenCalledTimes(4))
+    expect(tint).toHaveBeenCalledTimes(2)
+    expect(tint).toHaveBeenCalledWith(mask, `emerald:normal:ink:${emeraldTheme.colors.ventana[0]}`, emeraldTheme.colors.ventana[0])
+    expect(tint).toHaveBeenCalledWith(mask, `emerald:normal:shadow:${emeraldTheme.colors.ventana[1]}`, emeraldTheme.colors.ventana[1])
+  })
+
+  it('UT-170: sin escala fija ajusta las dos pantallas al contenedor y al alto libre, también al redimensionar', () => {
+    vi.stubGlobal('innerHeight', 1000)
+    const host = document.createElement('div')
+    document.body.appendChild(host)
+    let width = 960
+    Object.defineProperty(host, 'clientWidth', { get: () => width })
+    const { container, rerender, unmount } = render(<ConsoleStage theme={emeraldTheme} reservedHeight={360} screens={['a', 'b']} />, { container: host })
+    const stage = container.querySelector('.console-stage')!
+    try {
+      expect(stage).toHaveAttribute('data-scale', '2')
+      width = 360
+      fireEvent(window, new Event('resize'))
+      expect(stage).toHaveAttribute('data-scale', '1.5')
+      expect((stage as HTMLElement).style.getPropertyValue('--k')).toBe('1.5')
+      width = 960
+      rerender(<ConsoleStage theme={emeraldTheme} reservedHeight={0} screens={['a', 'b']} />)
+      expect(stage).toHaveAttribute('data-scale', '3')
+      rerender(<ConsoleStage theme={emeraldTheme} scale={4} screens={['a', 'b']} />)
+      width = 240
+      fireEvent(window, new Event('resize'))
+      expect(stage).toHaveAttribute('data-scale', '4')
+    } finally {
+      unmount()
+      host.remove()
+    }
   })
 
   it('apila las pantallas del tema en píxeles del juego, a la escala dada', () => {

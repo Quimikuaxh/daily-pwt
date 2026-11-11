@@ -1,8 +1,9 @@
 import { DataError } from '../errors'
-import { draftOffer, EMERALD_DRAFT_WINDOW, type DraftRequest } from './draft'
+import { draftOffer, EMERALD_DRAFT_RATIO, relativeDraftWindow, type DraftRequest } from './draft'
 import { availableDraftForms } from './draftAvailability'
 import emeraldCalendar from '../../../data/nuzlocke/hoenn-emerald-calendar.json'
 import { gymCounterSpecies } from './gymDraft'
+import { battlePointsFor } from './heldItems'
 import type { StatsTable } from '../types'
 import { advanceLevel, type CampaignMember, type ProgressionDex } from './progression'
 import { campaignEvolutionItems, consumedEvolutionItems, emeraldReached, EMERALD_BEAUTY_BEFORE,
@@ -23,6 +24,8 @@ type Recruit = CampaignMember & {
   id: string; fainted: boolean; victories: number; hiddenPowerIvs?: StatsTable
   /** Transiciones anteriores al reclutamiento: justifican movimientos, no consumen inventario. */
   recruitmentHistoryLength?: number
+  /** Objeto equipado (heldItems.ts). */
+  item?: string
 }
 
 export type CampaignState = {
@@ -39,6 +42,11 @@ export type CampaignState = {
   scannerChoice?: ScannerChoice
   /** Alguna oferta del tramo ya incluyó un tipo propio supereficaz. */
   draftTypeCovered?: boolean
+  /** Ya se aplicaron las evoluciones de la Liga (`evolveForLeague`). */
+  leagueEvolved?: boolean
+  /** Puntos Batalla por gastar y objetos comprados en el canje (heldItems.ts). */
+  battlePoints?: number
+  purchases?: readonly string[]
 }
 
 export function createCampaign(seed: string): CampaignState {
@@ -79,6 +87,15 @@ export function campaignDraftRequest(
   }
 }
 
+/**
+ * Elecciones del draft en cada hito: cuatro antes del primer gimnasio, tres al entrar en la Liga (Jose, 11/11/2026: un recluta más para
+ * los cinco combates seguidos) y dos antes de cada gimnasio.
+ */
+export function draftPicks(definition: CampaignDefinition, encounterIndex: number): number {
+  if (encounterIndex === 0) return 4
+  return definition.encounters[encounterIndex]?.kind === 'gym' ? 2 : 3
+}
+
 export function openDraft(
   definition: CampaignDefinition, state: CampaignState, eligibleSpecies?: readonly string[], window?: DraftRequest['window'],
 ): CampaignState {
@@ -87,7 +104,8 @@ export function openDraft(
   if (isEmeraldCampaign(definition)) {
     // El llamador no puede ampliar el margen ni introducir formas no viables.
     eligibleSpecies = availableDraftForms(definition, emeraldCalendar, state.encounterIndex, 'A').map(form => form.species)
-    window = EMERALD_DRAFT_WINDOW
+    const { rivalAverage } = campaignDraftRequest(definition, state, eligibleSpecies, { below: 0, above: 0 })
+    window = relativeDraftWindow(rivalAverage, EMERALD_DRAFT_RATIO)
   }
   if (!eligibleSpecies || !window) throw new DataError('La campaña necesita sus reglas de draft.')
   const request = campaignDraftRequest(definition, state, eligibleSpecies, window)
@@ -95,7 +113,7 @@ export function openDraft(
   const counters = isEmeraldCampaign(definition) && encounter.kind === 'gym'
     ? gymCounterSpecies(definition, encounter.id, eligibleSpecies) : []
   const covered = state.draftTypeCovered === true || (state.pick > 0 && state.previousOffer.some(id => counters.includes(id)))
-  const lastPick = state.pick === (state.encounterIndex === 0 ? 3 : 1)
+  const lastPick = state.pick === draftPicks(definition, state.encounterIndex) - 1
   const needsCounter = isEmeraldCampaign(definition) && encounter.kind === 'gym' && !covered && lastPick
   const offer = draftOffer({
     ...request,
@@ -120,7 +138,7 @@ export function chooseRecruit(definition: CampaignDefinition, state: CampaignSta
     }
   }
   const pick = state.pick + 1
-  const required = state.encounterIndex === 0 ? 4 : 2
+  const required = draftPicks(definition, state.encounterIndex)
   return {
     ...state, pick, phase: pick === required ? 'prepare' : 'draft',
     previousOffer: state.offer, offer: [], members: [...state.members, member],
@@ -200,6 +218,53 @@ export function evolveRecruit(
   }
 }
 
+/**
+ * Vías de evolución que no necesitan objeto (Jose, 11/11/2026): al entrar en la Liga se aplican sin esperar nivel ni condición, para que
+ * se puedan usar Pokémon que tardan demasiado en evolucionar (Tyranitar, Salamence). Las de piedra u objeto evolutivo (`ITEM`,
+ * `TRADE_ITEM`) siguen en `evolveRecruit` con el inventario. Wurmple ya se resolvió por semilla al subir de nivel y Shedinja no es una
+ * evolución del miembro.
+ */
+const LEAGUE_FREE_EVOLUTIONS = new Set(['LEVEL', 'LEVEL_NINJASK', 'LEVEL_ATK_LT_DEF', 'LEVEL_ATK_GT_DEF', 'LEVEL_ATK_EQ_DEF',
+  'FRIENDSHIP', 'FRIENDSHIP_DAY', 'FRIENDSHIP_NIGHT', 'TRADE', 'BEAUTY'])
+
+/** Caminos de evolución sin objeto desde una especie hasta cada forma final (la propia especie si no evoluciona así). */
+function leaguePaths(definition: CampaignDefinition, species: string, seen: ReadonlySet<string> = new Set([species])): string[][] {
+  const next = definition.species[species]?.evolutions.filter(rule =>
+    LEAGUE_FREE_EVOLUTIONS.has(rule.method) && Object.hasOwn(definition.species, rule.target) && !seen.has(rule.target)) ?? []
+  if (!next.length) return [[species]]
+  const targets = [...new Set(next.map(rule => rule.target))]
+  return targets.flatMap(target => leaguePaths(definition, target, new Set([...seen, target])).map(path => [species, ...path]))
+}
+
+/** Formas finales a las que puede llegar un miembro en la Liga sin objeto; con más de una, elige el jugador. */
+export function leagueEvolutionTargets(definition: CampaignDefinition, species: string): string[] {
+  return [...new Set(leaguePaths(definition, species).map(path => path[path.length - 1]))].sort()
+}
+
+/**
+ * Evoluciona a la forma final cada miembro vivo de la caja al preparar la Liga (una sola vez). `choices` da la forma elegida para los que
+ * tienen varias (id del miembro → especie). Cada forma intermedia queda en el historial al nivel actual, así que sus movimientos de nivel
+ * hasta ese nivel siguen disponibles.
+ */
+export function evolveForLeague(definition: CampaignDefinition, state: CampaignState, choices: Readonly<Record<string, string>> = {}): CampaignState {
+  if (state.phase !== 'prepare' || encounterAt(definition, state).kind === 'gym' || state.leagueRoster) {
+    throw new DataError('Las evoluciones de la Liga se aplican al preparar la Liga, antes de fijar la plantilla.')
+  }
+  if (state.leagueEvolved) return state
+  const members = state.members.map(member => {
+    if (member.fainted) return member
+    const paths = leaguePaths(definition, member.species)
+    const finals = [...new Set(paths.map(path => path[path.length - 1]))]
+    const target = finals.length === 1 ? finals[0] : choices[member.id]
+    if (!target || !finals.includes(target)) throw new DataError(`Elige la evolución de ${member.species} para la Liga.`)
+    if (target === member.species) return member
+    const path = paths.find(candidate => candidate[candidate.length - 1] === target)!
+    const stages = path.slice(0, -1).map(species => ({ species, evolvedAt: member.level }))
+    return { ...member, species: target, history: [...member.history, ...stages] }
+  })
+  return { ...state, members, leagueEvolved: true }
+}
+
 /** Fija las identidades antes de evolucionar y preparar el primer combate de Liga. */
 export function lockLeagueRoster(definition: CampaignDefinition, state: CampaignState, selected: readonly string[]): CampaignState {
   if (state.phase !== 'prepare' || encounterAt(definition, state).kind === 'gym') {
@@ -216,6 +281,7 @@ export function lockLeagueRoster(definition: CampaignDefinition, state: Campaign
   if (!selected.length || selected.length > 6 || new Set(selected).size !== selected.length || selected.some(id => !alive.has(id))) {
     throw new DataError('La plantilla de Liga debe tener entre uno y seis miembros vivos distintos.')
   }
+  if (isEmeraldCampaign(definition) && !state.leagueEvolved) throw new DataError('Aplica antes las evoluciones de la Liga.')
   return { ...state, leagueRoster: [...selected] }
 }
 
@@ -254,7 +320,9 @@ export function finishEncounter(
     if (won && knockedOut === false) return { ...member, victories: member.victories + 1 }
     return member
   })
-  const finished = { ...state, members, battleTeam: [], battleSeed: undefined }
+  const gymWin = won && isEmeraldCampaign(definition) && encounterAt(definition, state).kind === 'gym'
+  const earned = gymWin ? battlePointsFor(fainted) : 0
+  const finished = { ...state, members, battleTeam: [], battleSeed: undefined, ...(earned ? { battlePoints: (state.battlePoints ?? 0) + earned } : {}) }
   if (!won) return { ...finished, phase: 'lost' }
 
   const nextIndex = state.encounterIndex + 1
