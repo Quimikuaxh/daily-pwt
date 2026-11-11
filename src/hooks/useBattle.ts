@@ -123,7 +123,7 @@ export type BattleController = {
 type Step = { line: string | null; text: string | null; phase?: IntroPhase; wait?: number }
 
 function introSteps(params: BattleParams): Step[] {
-  const [challenge, rivalSends, playerSends] = introLines({ trainer: params.translateContext.trainer, ...params.intro })
+  const [challenge, rivalSends, playerSends] = introLines({ trainer: params.translateContext.trainer, log: params.translateContext.log, ...params.intro })
   const D = params.introDurations ?? INTRO_DURATIONS_MS
   return [
     // Pancarta VS del PWT (RF-137): antes del iris, como en N2/B2.

@@ -3,14 +3,28 @@ import { es } from '../i18n/es'
 import { parseBattleIdentity } from './identity'
 import { toId } from '../core/id'
 
+/** Frases de los mensajes del combate: las del reto diario (N2/B2) o las de otro juego (la campaña de Hoenn, Esmeralda). */
+export type BattleLog = Widen<typeof es.log>
+/** `es` es `as const`: sus textos son tipos literales; otras frases del mismo papel solo tienen que ser cadenas. */
+type Widen<T> = T extends string ? string : T extends (...args: infer A) => infer R ? (...args: A) => Widen<R> : { [K in keyof T]: Widen<T[K]> }
+
 export type TranslateContext = {
   names: NamesEs
   trainer: { nameEs: string; category: 'leader' | 'champion'; gender: TrainerGender }
+  /** Frases del juego del combate; por defecto, las del reto diario. */
+  log?: BattleLog
 }
 
 type Fields = { type: string; args: string[]; tags: Map<string, string> }
 
-const log = es.log
+// Frases en uso. Las funciones de entrada (translateLine, translateLines, introLines) las fijan a las del contexto durante la llamada,
+// que es síncrona, y las restauran al salir; así el resto del traductor no tiene que pasarlas de mano en mano.
+let log: BattleLog = es.log
+function withLog<T>(chosen: BattleLog | undefined, run: () => T): T {
+  const previous = log
+  log = chosen ?? es.log
+  try { return run() } finally { log = previous }
+}
 
 // Tipos de línea del simulador que no se muestran (protocolo, cabeceras y mensajes del propio sim en inglés).
 const SILENT_TYPES = new Set([
@@ -370,10 +384,12 @@ function withArticles(text: string): string {
 }
 
 export function translateLine(line: string, ctx: TranslateContext): string | null {
-  const fields = parseLine(line)
-  if (SILENT_TYPES.has(fields.type)) return null
-  const known = translateKnownLine(fields, ctx)
-  return known === undefined ? log.generic : known === null ? null : withArticles(known)
+  return withLog(ctx.log, () => {
+    const fields = parseLine(line)
+    if (SILENT_TYPES.has(fields.type)) return null
+    const known = translateKnownLine(fields, ctx)
+    return known === undefined ? log.generic : known === null ? null : withArticles(known)
+  })
 }
 
 export function translateLines(lines: string[], ctx: TranslateContext): string[] {
@@ -388,12 +404,15 @@ export function introLines(options: {
   trainer: TranslateContext['trainer']
   rivalLead: string
   playerLead: string
+  log?: BattleLog
 }): string[] {
-  const { trainer } = options
-  const title = log.trainerTitle[trainer.category][trainer.gender]
-  return [
-    log.challenge(title, trainer.nameEs),
-    log.trainerSends(trainer.nameEs, options.rivalLead),
-    log.playerSends(options.playerLead),
-  ]
+  return withLog(options.log, () => {
+    const { trainer } = options
+    const title = log.trainerTitle[trainer.category][trainer.gender]
+    return [
+      log.challenge(title, trainer.nameEs),
+      log.trainerSends(trainer.nameEs, options.rivalLead),
+      log.playerSends(options.playerLead),
+    ]
+  })
 }

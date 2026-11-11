@@ -19,6 +19,7 @@ import type { EngineEnd } from '../../battle/protocol'
 import type { GameData } from '../../core/types'
 import { toId } from '../../core/id'
 import { emeraldBattleNames, emeraldMoveName } from './emeraldNames'
+import { emeraldLog } from '../../i18n/esEmeraldLog'
 import { PartySlot } from './PartySlot'
 import { slotBox } from './partySlotModel'
 import { EMERALD_INTRO, sessionBattleClient, UNUSED_INIT, type StartBattle } from './campaignBattle'
@@ -56,7 +57,7 @@ export function EmeraldBattle({ session, start, data, trainer, intro, rivalLevel
   const battle = useBattle({
     client,
     init: UNUSED_INIT,
-    translateContext: { names: battleNames, trainer },
+    translateContext: { names: battleNames, trainer, log: emeraldLog },
     intro,
     onFinish: onEnded,
     introDurations: EMERALD_INTRO,
