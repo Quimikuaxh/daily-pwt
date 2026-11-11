@@ -77,6 +77,24 @@ export const esCampaign = {
     noLabel: 'No, conservar el objeto',
     holding: (name: string, item: string | null) => item ? `${name} lleva ${item}.` : `${name} no lleva ningún objeto.`,
   },
+  // Canje de Puntos Batalla (mostrador del Frente Batalla, field_specials.c: lista con precios, icono y descripción).
+  exchange: {
+    screen: 'Canje de Puntos Batalla',
+    open: 'Canje',
+    openLabel: (points: number) => `Canje de Puntos Batalla: tienes ${points} PB`,
+    points: 'PB',
+    price: (n: number) => `${n} PB`,
+    exit: 'SALIR',
+    exitLabel: 'Salir del canje y volver a la ruta',
+    choose: '¿Qué te gustaría canjear?',
+    confirm: (item: string, price: number) => `¿Canjear ${item} por ${price} PB?`,
+    bought: (item: string) => `¡Has obtenido ${item}! Está en la MOCHILA.`,
+    notEnough: 'No tienes suficientes Puntos Batalla.',
+    itemLabel: (name: string, price: number, affordable: boolean) => `${name}, ${price} PB${affordable ? '' : ', no te alcanza'}`,
+    yesLabel: 'Sí, canjear',
+    noLabel: 'No, volver a la lista',
+    status: (points: number) => `Tienes ${points} Puntos Batalla.`,
+  },
   // Resultado (scripts de medalla de cada gimnasio, sText_PlayerWhiteout, Ficha de Entrenador y gText_WelcomeToHOF).
   result: {
     screen: 'Resultado',

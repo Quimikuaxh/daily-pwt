@@ -30,7 +30,8 @@ import { ResultScreen } from './ResultScreen'
 import { EvolutionScene } from './EvolutionScene'
 import { BagScreen } from './BagScreen'
 import { bagContents, itemName as emeraldItemName } from './bagModel'
-import { equipItem } from '../../core/nuzlocke/heldItems'
+import { buyExchangeItem, equipItem, exchangeItems } from '../../core/nuzlocke/heldItems'
+import { ExchangeScreen } from './ExchangeScreen'
 import { leagueEvolutions } from './evolutionModel'
 import { LeagueScreen } from './LeagueScreen'
 import { leagueBeaten } from './leagueModel'
@@ -81,7 +82,7 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
     return record?.battle ? { before: record.state, lineup: record.battle.source.selected ?? record.state.leagueRoster ?? [] } : null
   })
   // Con un combate guardado (recarga a mitad), se vuelve a él.
-  const [view, setView] = useState(() => (store.read()?.battle ? 'battle' : 'route') as 'route' | 'draft' | 'team' | 'moves' | 'battle' | 'result' | 'evolution' | 'league' | 'bag')
+  const [view, setView] = useState(() => (store.read()?.battle ? 'battle' : 'route') as 'route' | 'draft' | 'team' | 'moves' | 'battle' | 'result' | 'evolution' | 'league' | 'bag' | 'exchange')
   // El worker de combate (y su sesión) solo se crea al entrar en combate: Ruta, Draft y Equipo no lo necesitan.
   const [session, setSession] = useState(() => (store.read()?.battle ? new LocalCampaignSession(createBattleClient(), store) : null))
   const enterBattle = (lineup: readonly string[]) => {
@@ -268,6 +269,19 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
     )
   }
 
+  const exchangeScreen = () => {
+    if (view !== 'exchange' || state?.phase !== 'prepare') return null
+    return (
+      <ExchangeScreen
+        points={state.battlePoints ?? 0}
+        offers={exchangeItems()}
+        onBuy={(item) => { save(buyExchangeItem(state, item)) }}
+        onExit={() => setView('route')}
+        reservedHeight={150}
+      />
+    )
+  }
+
   const bagScreen = () => {
     const member = view === 'bag' && state?.phase === 'prepare' ? state.members.find((candidate) => { return candidate.id === movesFor && !candidate.fainted }) : undefined
     if (!state || !member) return null
@@ -316,7 +330,7 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
       </header>
       <main id="main" tabIndex={-1} className="campaign-main">
         <h2 className="visually-hidden">{t.screen}</h2>
-        {resultScreen() ?? battleScreen() ?? evolutionScreen() ?? leagueScreen() ?? teamScreen() ?? bagScreen() ?? movesScreen() ?? (view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
+        {resultScreen() ?? battleScreen() ?? evolutionScreen() ?? leagueScreen() ?? teamScreen() ?? exchangeScreen() ?? bagScreen() ?? movesScreen() ?? (view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
           <DraftScreen
             candidates={state.offer.map((id) => candidateOf(id, Math.max(...encounters[state.encounterIndex].team.map((member) => member.level)), definition, data))}
             pick={state.pick}
@@ -351,6 +365,11 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
             <button type="button" className="campaign-action" onClick={start}>{esCampaign.newCampaign}</button>
           )}
         </div>
+        {state?.phase === 'prepare' && view === 'route' && (
+          <button type="button" className="campaign-restart" aria-label={esCampaign.exchange.openLabel(state.battlePoints ?? 0)} onClick={() => setView('exchange')}>
+            {esCampaign.exchange.open}
+          </button>
+        )}
         {state && <button type="button" className="campaign-restart" onClick={start}>{esCampaign.newCampaign}</button>}
         {!store.persistent && <p className="fight-hint" role="status">{esCampaign.notSaved}</p>}
       </main>

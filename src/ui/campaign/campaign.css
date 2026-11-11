@@ -298,3 +298,14 @@
 
 /* Listas con cursor ▶ (Mochila): el cursor ya marca la fila con el foco, sin el contorno de los botones. */
 .bag-screen .console-screen .moves-row:focus-visible { outline: 0; }
+
+/* Canje: envoltura a todo el ancho; el fondo de la Fábrica, atenuado, como el mostrador del Frente. */
+.exchange-screen {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.console-screen .exchange-bg { filter: brightness(0.55); }
+.exchange-screen .console-screen .moves-row:focus-visible { outline: 0; }
