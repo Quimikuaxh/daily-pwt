@@ -13,6 +13,7 @@ import { dismissWelcomeForever, markWelcomeShown, welcomeDue } from '../../stora
 
 // Las ventanas solo hacen falta al abrirlas: fuera de la ruta crítica (E2E-21).
 const StatsDialog = lazy(() => import('../stats/StatsDialog').then((module) => ({ default: module.StatsDialog })))
+const ModesDialog = lazy(() => import('./ModesDialog').then((module) => ({ default: module.ModesDialog })))
 const HelpDialog = lazy(() => import('./HelpDialog').then((module) => ({ default: module.HelpDialog })))
 const SettingsDialog = lazy(() => import('./SettingsDialog').then((module) => ({ default: module.SettingsDialog })))
 const AccountDialog = lazy(() => import('../account/AccountSection').then((module) => ({ default: module.AccountDialog })))
@@ -36,10 +37,12 @@ function StatsIcon() {
   )
 }
 
-function HelpIcon() {
+/** Mando en píxel para Modos de juego. */
+function ModesIcon() {
   return (
-    <svg className="header-icon" viewBox="0 0 7 10" width="14" height="20" aria-hidden="true" shapeRendering="crispEdges">
-      <path d="M1 0h5v1H1zM0 1h2v2H0zM5 1h2v3H5zM4 4h2v1H4zM3 5h2v2H3zM3 8h2v2H3z" fill="currentColor" />
+    <svg className="header-icon" viewBox="0 0 12 8" width="24" height="16" aria-hidden="true" shapeRendering="crispEdges">
+      <path d="M2 0h8v1h1v1h1v5h-1v1H8V7H4v1H1V7H0V2h1V1h1z" fill="currentColor" />
+      <path d="M3 2h1v1h1v1H4v1H3V4H2V3h1zM8 2h1v1H8zM9 3h1v1H9zM7 3h1v1H7zM8 4h1v1H8z" fill="var(--icon-hole, #383838)" />
     </svg>
   )
 }
@@ -78,6 +81,8 @@ export type AppMenuProps = {
   historyArt?: (item: HistoryItem) => HistoryArt | null
   /** Abrir una repetición del historial de un amigo (desde Estadísticas › Amigos). */
   onWatchFriendReplay?: (nickname: string, date: string) => void
+  /** Otros modos de juego del menú Modos (de momento, la campaña Nuzlocke de Hoenn). Sin él, Modos solo enseña el reto diario. */
+  modes?: readonly { id: string; label: string; hint: string; onOpen: () => void }[]
   /** Directo (RF-111c): ver el oficial en curso de un amigo. */
   onWatchLive?: (nickname: string) => void
   /** Solo en Hoy: aviso para elegir nombre e iniciar sesión (RF-94b), como mucho una vez al día. */
@@ -87,13 +92,13 @@ export type AppMenuProps = {
 /** Lo que el menú necesita de App; la fecha la pone cada pantalla. */
 export type MenuContext = Omit<AppMenuProps, 'today'>
 
-type Open = 'account' | 'history' | 'stats' | 'help' | 'settings' | 'welcome' | null
+type Open = 'account' | 'history' | 'stats' | 'help' | 'modes' | 'settings' | 'welcome' | null
 
 /**
  * Accesos de la cabecera de Hoy y de Resultado: Cuenta (con Supabase configurado; RF-93, decisión de Jose del 28/10/2026), Estadísticas,
  * Ayuda y Ajustes, con sus ventanas.
  */
-export function AppMenu({ store, today, settings, onSettingsChange, onClearData, account, accountState, trainerName, onWatchReplay, historyArt, onWatchFriendReplay, onWatchLive, welcome = false }: AppMenuProps) {
+export function AppMenu({ store, today, settings, onSettingsChange, onClearData, account, accountState, trainerName, onWatchReplay, historyArt, onWatchFriendReplay, onWatchLive, welcome = false, modes = [] }: AppMenuProps) {
   // RF-115: al volver de conectar Discord (`?discord=`), Cuenta se abre con el resultado y el parámetro se quita de la dirección.
   const [discordResult] = useState(() => discordResultFrom(window.location.search))
   const [open, setOpen] = useState((discordResult ? 'account' : null) as Open)
@@ -139,7 +144,7 @@ export function AppMenu({ store, today, settings, onSettingsChange, onClearData,
     ...(withHistory ? [{ id: 'history' as const, label: es.history.open, icon: <HistoryIcon />, wideOnly: true }] : []),
     // Con solicitudes pendientes, un puntito rojo sin número (decisión de Jose, 29/10/2026): el número lo dice el nombre del botón.
     { id: 'stats' as const, label: pending ? es.stats.openPending(pending) : es.stats.open, icon: <StatsIcon /> },
-    { id: 'help' as const, label: es.help.open, icon: <HelpIcon /> },
+    { id: 'modes' as const, label: es.modes.open, icon: <ModesIcon /> },
     { id: 'settings' as const, label: es.settings.open, icon: <SettingsIcon /> },
   ]
 
@@ -205,8 +210,9 @@ export function AppMenu({ store, today, settings, onSettingsChange, onClearData,
           }
         />
       )}
-      {open === 'help' && <HelpDialog onClose={close} />}
-      {open === 'settings' && <SettingsDialog settings={settings} onChange={onSettingsChange} onClearData={onClearData} onClose={close} accountState={accountState} />}
+      {open === 'help' && <HelpDialog onClose={() => setOpen('settings')} />}
+      {open === 'modes' && <ModesDialog modes={modes} onClose={close} />}
+      {open === 'settings' && <SettingsDialog settings={settings} onChange={onSettingsChange} onClearData={onClearData} onClose={close} accountState={accountState} onOpenHelp={() => setOpen('help')} />}
       </Suspense>
     </>
   )

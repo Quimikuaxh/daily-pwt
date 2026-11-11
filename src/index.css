@@ -1462,3 +1462,27 @@ img.sprite,
 .rival-section {
   scroll-margin-top: 88px;
 }
+
+/* Modos de juego (menú de la cabecera). */
+.modes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.modes-option {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.modes-current {
+  font-size: 0.8em;
+  opacity: 0.8;
+}
+
+.settings-help {
+  width: 100%;
+}

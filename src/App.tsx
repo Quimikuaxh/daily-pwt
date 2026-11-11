@@ -10,6 +10,7 @@ import type { Challenge, GameData } from './core/types'
 import type { ReplayPlan } from './hooks/useBattle'
 import { useChallengeDay } from './hooks/useToday'
 import { es } from './i18n/es'
+import { esCampaign } from './i18n/esCampaign'
 import { LocalStorageStore } from './storage/localStorageStore'
 import { clearSettings, DEFAULT_SETTINGS, loadSettings, saveSettings, type Settings } from './storage/settings'
 import { browserStorage } from './storage/browserStorage'
@@ -30,6 +31,8 @@ import { REPLAY_PARAM, replayIdFrom, replayLink } from './ui/replay/replayLink'
 // F5: el visor de repeticiones solo hace falta al abrir una (fuera de la ruta crítica, E2E-21).
 const ReplayScreen = lazy(() => import('./ui/replay/replayModule').then((module) => ({ default: module.ReplayScreen })))
 const LiveScreen = lazy(() => import('./ui/replay/replayModule').then((module) => ({ default: module.LiveScreen })))
+// Campaña Nuzlocke de Hoenn (D7): aparte, fuera de la ruta crítica del reto diario.
+const CampaignScreen = lazy(() => import('./ui/campaign/CampaignScreen'))
 
 type AppProps = {
   data: GameData | null
@@ -53,6 +56,8 @@ type Screen =
   | { name: 'replay'; source: ReplaySource; back?: Screen }
   // Directo (RF-111c): el oficial en curso de un amigo que ha aceptado.
   | { name: 'live'; nickname: string }
+  // Campaña Nuzlocke de Hoenn (D7).
+  | { name: 'campaign' }
 
 const noSubscription = () => () => {}
 
@@ -162,6 +167,7 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
   const menu: MenuContext = {
     trainerName: (trainerId) => data?.trainers.find((trainer) => trainer.id === trainerId)?.nameEs ?? trainerId,
     onWatchReplay: (date) => setScreen({ name: 'replay', source: { kind: 'mine', date } }),
+    modes: [{ id: 'nuzlocke-hoenn', label: esCampaign.entry, hint: esCampaign.entryHint, onOpen: () => setScreen({ name: 'campaign' }) }],
     onWatchFriendReplay: (nickname, date) => setScreen({ name: 'replay', source: { kind: 'friend', nickname, date } }),
     onWatchLive: (nickname) => setScreen({ name: 'live', nickname }),
     historyArt: (item) => historyArtFor(item, data),
@@ -237,6 +243,14 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
       name: 'battle',
       battle: { challenge, leadIndex: saved.leadIndex, seed: saved.seed, ai: saved.ai, mode: 'official', ...battleClient('official'), replay: { decisions: saved.decisions, expected } },
     })
+  }
+
+  if (screen.name === 'campaign' && data) {
+    return (
+      <Suspense fallback={null}>
+        <CampaignScreen data={data} onExit={() => setScreen({ name: 'today' })} />
+      </Suspense>
+    )
   }
 
   if (screen.name === 'live' && data && account?.api) {

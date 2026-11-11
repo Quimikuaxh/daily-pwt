@@ -416,9 +416,19 @@ export const es = {
     open: 'Ayuda',
   },
 
+  // Modos de juego (Jose, 11/11/2026): botón de la cabecera en el hueco de Ayuda, que pasa a Ajustes.
+  modes: {
+    open: 'Modos de juego',
+    title: 'Modos de juego',
+    daily: 'Reto diario',
+    dailyHint: 'Un combate al día contra un entrenador del PWT.',
+    current: 'Estás aquí',
+  },
+
   settings: {
     title: 'Ajustes',
     open: 'Ajustes',
+    help: 'Cómo se juega',
     speedTitle: 'Velocidad del combate',
     speedHint: 'También se cambia con el botón Velocidad durante el combate.',
     speedOption: (speed: number) => `x${speed}`,

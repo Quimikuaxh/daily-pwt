@@ -28,6 +28,12 @@
   image-rendering: pixelated;
 }
 
+/* Las imágenes van a su tamaño nativo en píxeles del juego, aunque su contenedor posicionado mida 0 (la regla global de img no aplica). */
+.console-screen img {
+  max-width: none;
+  height: auto;
+}
+
 /* Lo pintado nunca recibe clics: van al botón de debajo. */
 .console-screen canvas.game-text,
 .console-screen img {

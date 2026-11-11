@@ -1,0 +1,126 @@
+/* Modo campaña (D7): el portal Daily PWT alrededor del lienzo del juego, como en las maquetas aprobadas. */
+.campaign-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 0 16px;
+}
+
+.campaign-mode {
+  margin: 0 auto 0 12px;
+  color: #d8d8d8;
+}
+
+.visually-hidden,
+.console-screen .sr-only,
+.console-screen .sr-only * {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Barra del portal bajo la consola: medallas y acción principal, con el estilo del botón COMBATIR del reto diario. */
+.campaign-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: calc(240px * var(--campaign-k, 2));
+  max-width: calc(100% - 16px);
+  margin-top: 6px;
+}
+
+.campaign-medals {
+  display: flex;
+  gap: 2px;
+  margin: 0;
+  padding: 4px 6px;
+  list-style: none;
+  background: #181818;
+  border: 2px solid #484848;
+}
+
+.campaign-medals img {
+  display: block;
+  width: 24px;
+  height: 24px;
+  image-rendering: pixelated;
+}
+
+.campaign-medal-off {
+  opacity: 0.2;
+  filter: brightness(0.5);
+}
+
+.campaign-action,
+.campaign-restart {
+  font: inherit;
+  color: #f8f8f8;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.campaign-action {
+  flex: 1;
+  min-height: 40px;
+  font-size: 24px;
+  text-shadow: 2px 2px #681028;
+  background: #b81840;
+  border: 3px solid #f8f8f8;
+}
+
+.campaign-action:hover:not(:disabled) {
+  background: #d02050;
+}
+
+.campaign-action:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.campaign-action:focus-visible,
+.campaign-restart:focus-visible {
+  outline: 3px solid #f8f8f8;
+  outline-offset: 2px;
+}
+
+.campaign-restart {
+  margin-top: 8px;
+  padding: 4px 12px;
+  background: #2a2a2a;
+  border: 2px solid #d8d8d8;
+}
+
+/* Cursor del mapa: dos fotogramas alternos (el del juego parpadea), quietos con animaciones reducidas. */
+@keyframes campaign-blink {
+  50% { opacity: 0; }
+}
+
+.console-screen .blink-a { animation: campaign-blink 0.53s steps(1) infinite; }
+.console-screen .blink-b { animation: campaign-blink 0.53s steps(1) infinite reverse; }
+
+@media (prefers-reduced-motion: reduce) {
+  .console-screen .blink-a { animation: none; }
+  .console-screen .blink-b { animation: none; opacity: 0; }
+}
+
+/* Iconos de Pokémon: hoja de 2 fotogramas de 32 x 32; se ve el primero. */
+.console-screen .mon-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  object-position: 0 0;
+}
+
+.dome-card {
+  background-repeat: no-repeat;
+}
+
+@media (max-width: 400px) {
+  .campaign-bar { padding: 0 8px; }
+  .campaign-medals img { width: 18px; height: 18px; }
+  .campaign-action { font-size: 20px; }
+}

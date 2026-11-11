@@ -17,10 +17,12 @@ type SettingsDialogProps = {
   onClearData: () => void
   onClose: () => void
   accountState?: AccountState
+  /** Abre la Ayuda, que vive dentro de Ajustes desde que su hueco de la cabecera es el de Modos (Jose, 11/11/2026). */
+  onOpenHelp?: () => void
 }
 
 /** Ajustes (PRD §10.6, decisiones del 22 y 23/10/2026): velocidad del combate, animaciones de movimientos, sonido y volumen, y «Borrar datos locales»; sin tema claro/oscuro. */
-export function SettingsDialog({ settings, onChange, onClearData, onClose, accountState }: SettingsDialogProps) {
+export function SettingsDialog({ settings, onChange, onClearData, onClose, accountState, onOpenHelp }: SettingsDialogProps) {
   const [confirming, setConfirming] = useState(false)
   const signedIn = accountState?.status === 'signedIn'
   const [cleared, setCleared] = useState(false)
@@ -28,6 +30,11 @@ export function SettingsDialog({ settings, onChange, onClearData, onClose, accou
   return (
     <>
       <Modal title={text.title} onClose={onClose} className="settings-dialog">
+        {onOpenHelp && (
+          <section className="settings-section">
+            <button type="button" className="btn btn-small settings-help" onClick={onOpenHelp}>{text.help}</button>
+          </section>
+        )}
         <section className="settings-section">
           <h3 className="help-title" id="settings-speed">{text.speedTitle}</h3>
           <div className="settings-options" role="group" aria-labelledby="settings-speed">
