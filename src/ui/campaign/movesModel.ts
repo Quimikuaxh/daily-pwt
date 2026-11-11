@@ -9,6 +9,7 @@ import type { GameData } from '../../core/types'
 import moveData from '../../generated/emerald/moves.json'
 import descriptions from '../../../data/nuzlocke/emerald-move-descriptions-es.json'
 import progression from '../../../data/nuzlocke/hoenn-emerald-progression.json'
+import { emeraldMoveName } from './emeraldNames'
 
 export const MAX_MOVES = 4
 
@@ -36,7 +37,7 @@ export function moveInfo(id: string, data: GameData, source: MoveInfo['source'])
   const row = rows[id]
   return {
     id,
-    name: (data.names.moves[id] ?? id).toUpperCase(),
+    name: emeraldMoveName(id, data.names),
     type: row.type.toLowerCase(),
     typeName: (data.names.types[row.type] ?? row.type).toUpperCase(),
     category: row.category as MoveInfo['category'],

@@ -199,7 +199,7 @@ export function TeamScreen({ mons, initial, limit, rivalName, itemName, onAccept
               <button key={i} type="button" className="team-cell" data-place={placeKey(place)} style={{ left: r.x, top: r.y, width: r.w, height: r.h }}
                 aria-label={slotLabel(place, id)} aria-disabled={i >= limit || undefined} {...drag.handlers(place)}
                 onPointerEnter={() => setHover(place)} onFocus={() => setHover(place)}>
-                <PartySlot i={i} mon={mon && { ...mon, maxHp: mon.hp }} state={active ? 'activa' : 'normal'} held={samePlace(held, place) || id === draggingId} />
+                <PartySlot i={i} mon={mon && { ...mon, maxHp: mon.hp }} state={active ? 'activa' : 'normal'} held={samePlace(held, place) || id === draggingId} bounce={active} />
               </button>
             )
           })}

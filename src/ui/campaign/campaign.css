@@ -181,8 +181,17 @@
 
 .console-screen .mon-icon-anim { animation: mon-icon-frames 0.53s steps(1) infinite; }
 
+/* Seleccionado: rebota con los fotogramas, +1 px con el 0 y −3 px con el 1 (SpriteCB_BouncePartyMonIcon de party_menu.c). */
+@keyframes mon-icon-bounce {
+  0% { object-position: 0 0; translate: 0 1px; }
+  50% { object-position: 0 -32px; translate: 0 -3px; }
+}
+
+.console-screen .mon-icon-bounce { animation: mon-icon-bounce 0.53s steps(1) infinite; }
+
 @media (prefers-reduced-motion: reduce) {
-  .console-screen .mon-icon-anim { animation: none; }
+  .console-screen .mon-icon-anim,
+  .console-screen .mon-icon-bounce { animation: none; }
 }
 
 .console-screen .party-hp-bar { height: 3px; }
@@ -240,3 +249,20 @@
 .console-screen .team-menu-item:focus-visible canvas:first-child,
 .console-screen .team-menu-item:focus canvas:first-child { visibility: visible; }
 .console-screen .team-menu-item:focus-visible { outline: 0; }
+
+/* Combate de Esmeralda: envoltura a todo el ancho, espalda del Pokémon (64 x 64), hueco gris de la barra de PS y cursor ▶ de las
+   opciones solo en la que tiene el puntero o el foco, como el del juego. */
+.emerald-battle {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.console-screen .mon-back { width: 64px; height: 64px; }
+.console-screen .battle-hp-empty { background: #393939; }
+.console-screen .battle-option > canvas:first-child { visibility: hidden; }
+.console-screen .battle-option:hover > canvas:first-child,
+.console-screen .battle-option:focus > canvas:first-child { visibility: visible; }
+.console-screen .battle-option:focus-visible { outline: 0; }
+.console-screen .battle-option:disabled { cursor: default; }

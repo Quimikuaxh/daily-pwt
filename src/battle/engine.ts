@@ -66,6 +66,26 @@ function describeChoice(choice: Choice): string {
   return `${choice.type} ${choice.slot}`
 }
 
+/**
+ * Gen 3 (campaña de Hoenn): los PP de la generación, sin Más PP. El simulador pone siempre 3 a cada movimiento (LÁTIGO salía con 48 en
+ * vez de 30; Jose, 11/11/2026: «los movimientos tal cual estaban en su generación»). La batalla ya ha empezado al añadir el segundo
+ * jugador, así que también se rehace la petición del primer turno. Determinista: se aplica igual al reanudar.
+ */
+function withoutPpUps(battle: Battle): void {
+  for (const side of battle.sides) {
+    for (const pokemon of side.pokemon) {
+      pokemon.baseMoveSlots.forEach((slot, i) => {
+        if (!pokemon.ppUps[i]) return
+        const pp = battle.calculatePP(battle.dex.moves.get(slot.id), 0)
+        slot.pp = pp
+        slot.maxpp = pp
+        pokemon.ppUps[i] = 0
+      })
+    }
+  }
+  if (battle.requestState) battle.makeRequest(battle.requestState)
+}
+
 /** Motor de combate síncrono sobre el `Battle` de @pkmn/sim. Funciona igual en el worker y en Node. */
 export function createBattleEngine(init: EngineInit): BattleEngine {
   const playerLead = init.playerLead ?? 0
@@ -91,6 +111,7 @@ export function createBattleEngine(init: EngineInit): BattleEngine {
   const playerIndexes = withLeadFirst(init.player.map((_, index) => index), playerLead)
   battle.setPlayer('p1', { name: PLAYER_NAME, team: simTeam(playerTeam, 'p1', playerIndexes) })
   battle.setPlayer('p2', { name: RIVAL_NAME, team: simTeam(init.rival, 'p2', init.rival.map((_, index) => index)) })
+  if (init.generation === 3) withoutPpUps(battle)
 
   function externalIdent(text: string): string {
     return text.replace(/p([12])([a-c]?): (member\d+)\b/g, (ref, side: string, position: string, name: string) => {

@@ -52,7 +52,13 @@ export const emeraldTheme: ConsoleTheme = {
     'pc-macho': ['#7bbdff', '#007bff'],
     'pc-hembra': ['#ff8383', '#ac1818'],
     equipo: ['#ffffff', '#737373'],
-    'etiqueta-ps': ['#ffd552', '#ffb441'], // letras de la etiqueta de la barra (paleta 3, índices 14 y 15)
+    'etiqueta-ps': ['#ffd552', '#ffb441'],
+    // PP del menú de movimientos según los que quedan (gPPTextPalette, text_pp.pal; GetCurrentPPToMaxPPState): 0 amarillo, 1 naranja,
+    // 2 rojo y 3 normal. Se rellenan en la paleta 5 al elegir; leer la paleta sin ellos daba una sombra oscura (Jose: «PP en negrita»).
+    'pp-0': ['#d5c500', '#fff68b'],
+    'pp-1': ['#ff8300', '#ffee73'],
+    'pp-2': ['#e61800', '#f6de9c'],
+    'pp-3': ['#4a4a4a', '#dedede'], // letras de la etiqueta de la barra (paleta 3, índices 14 y 15)
   },
   asset: ui,
 }

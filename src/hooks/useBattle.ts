@@ -79,6 +79,8 @@ export type BattleParams = {
   playSfx?: (id: SfxId) => void
   /** Grito de un Pokémon (id de especie) al salir o, con `faint`, al debilitarse (Jose, 31/10/2026). Por defecto, el motor de la página. */
   playCry?: (species: string, faint: boolean) => void
+  /** Duraciones de la intro (por defecto, las del PWT). La campaña de Hoenn no tiene pancarta ni iris: los pone a 0. */
+  introDurations?: Readonly<Record<keyof typeof INTRO_DURATIONS_MS, number>>
 }
 
 /** Especie del Pokémon que entra en `|switch|p1a: X|Garchomp, L50, M|…` (id). */
@@ -122,7 +124,7 @@ type Step = { line: string | null; text: string | null; phase?: IntroPhase; wait
 
 function introSteps(params: BattleParams): Step[] {
   const [challenge, rivalSends, playerSends] = introLines({ trainer: params.translateContext.trainer, ...params.intro })
-  const D = INTRO_DURATIONS_MS
+  const D = params.introDurations ?? INTRO_DURATIONS_MS
   return [
     // Pancarta VS del PWT (RF-137): antes del iris, como en N2/B2.
     { line: null, text: null, phase: 'vs', wait: D.vs },

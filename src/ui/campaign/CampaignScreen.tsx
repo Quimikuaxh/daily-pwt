@@ -3,7 +3,7 @@
  * Ruta) y debajo la barra del portal con las medallas y la acción principal (maqueta aprobada: nada de eso tapa el mapa). Sin campaña
  * guardada, la barra ofrece empezarla; empezar otra sobre una en curso pide confirmación. Se carga aparte (lazy) desde App.
  */
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { chooseRecruit, createCampaign, draftPicks, openDraft, type CampaignDefinition, type CampaignState } from '../../core/nuzlocke/campaign'
 import type { GameData } from '../../core/types'
 import { LocalCampaignStore } from '../../storage/campaignStore'
@@ -21,6 +21,11 @@ import { initialLayout, teamMonOf, type TeamLayout } from './teamModel'
 import { MovesScreen } from './MovesScreen'
 import { equippedMoves, legalMoves } from './movesModel'
 import { setCampaignMemberMoves } from '../../core/nuzlocke/progression'
+import type { CampaignBattleDefinition } from '../../core/nuzlocke/battle'
+import { LocalCampaignSession } from '../../battle/campaignSession'
+import { createCampaignWorkerClient, type CampaignBattleClient } from '../../battle/client'
+import { battleInput } from './campaignBattle'
+import { EmeraldBattle } from './EmeraldBattle'
 import { TeamScreen } from './TeamScreen'
 import './campaign.css'
 
@@ -35,17 +40,37 @@ type CampaignScreenProps = {
   store?: LocalCampaignStore
   /** Semilla de una campaña nueva (por defecto, aleatoria). */
   newSeed?: () => string
+  /** Cliente del worker de combate (por defecto, el real); los tests pasan un doble. */
+  createBattleClient?: () => CampaignBattleClient
 }
 
 /** Plazas del equipo: las del líder en los gimnasios; seis en la Liga. */
 const teamLimit = (state: CampaignState) => encounters[state.encounterIndex].kind === 'gym' ? encounters[state.encounterIndex].team.length : 6
 
+const battleDefinition = definition as unknown as CampaignBattleDefinition
+/** Género del rival para «la LÍDER» / «el LÍDER» (Esmeralda); el Alto Mando habla como líder y Plubio como campeón. */
+const FEMALE = new Set(['petra', 'candela', 'alana', 'fatima', 'nivea'])
+const trainerOf = (encounter: CampaignEncounter) => ({
+  nameEs: encounter.nameEs, category: encounter.kind === 'champion' ? 'champion' as const : 'leader' as const, gender: FEMALE.has(encounter.id) ? 'F' as const : 'M' as const,
+})
+
 const randomSeed = () => `hoenn-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
 
-export default function CampaignScreen({ data, onExit, store: givenStore, newSeed = randomSeed }: CampaignScreenProps) {
+export default function CampaignScreen({ data, onExit, store: givenStore, newSeed = randomSeed, createBattleClient = createCampaignWorkerClient }: CampaignScreenProps) {
   const store = useMemo(() => givenStore ?? new LocalCampaignStore(browserStorage()), [givenStore])
   const [state, setState] = useState(() => store.read()?.state ?? null as CampaignState | null)
-  const [view, setView] = useState('route' as 'route' | 'draft' | 'team' | 'moves')
+  // Con un combate guardado (recarga a mitad), se vuelve a él.
+  const [view, setView] = useState(() => (store.read()?.battle ? 'battle' : 'route') as 'route' | 'draft' | 'team' | 'moves' | 'battle')
+  // El worker de combate (y su sesión) solo se crea al entrar en combate: Ruta, Draft y Equipo no lo necesitan.
+  const [session, setSession] = useState(() => (store.read()?.battle ? new LocalCampaignSession(createBattleClient(), store) : null))
+  const enterBattle = () => {
+    if (!session) setSession(new LocalCampaignSession(createBattleClient(), store))
+    setView('battle')
+  }
+  useEffect(() => () => session?.stop(), [session])
+  useEffect(() => session?.subscribe((message) => {
+    if (message.type === 'campaign-finished') { setState(store.read()?.state ?? null); setView('route') }
+  }), [session, store])
   // Alineación aceptada en Equipo y PC; la usan Movimientos y el combate.
   const [team, setTeam] = useState(null as string[] | null)
   // Colocación de Equipo y PC mientras se va a Movimientos y se vuelve; se rehace al entrar desde la Ruta.
@@ -90,12 +115,40 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
       limit={teamLimit(state)}
       rivalName={encounters[state.encounterIndex].nameEs}
       itemName={(id) => data.names.items[id] ?? id}
-      onAccept={(chosen) => { setTeam(chosen); setView('route') }}
+      onAccept={(chosen) => { setTeam(chosen); enterBattle() }}
       onCancel={() => setView('route')}
       onMoves={(id) => { setMovesFor(id); setView('moves') }}
       onLayoutChange={setTeamLayout}
       reservedHeight={150}
     />
+    )
+  }
+
+  const startBattle = useCallback(() => {
+    if (!session) return
+    const record = store.read()
+    if (record?.battle) return session.resume(battleDefinition)
+    if (!record || !team) return
+    return session.prepare(battleInput(battleDefinition, record.state, team))
+  }, [session, store, team])
+
+  const battleScreen = () => {
+    if (view !== 'battle' || !state || !session) return null
+    const encounter = encounters[state.encounterIndex]
+    const record = store.read()
+    const leadId = record?.battle?.source.preparation.leadId ?? team?.[0]
+    const lead = state.members.find((member) => { return member.id === leadId })
+    return (
+      <EmeraldBattle
+        session={session}
+        start={startBattle}
+        data={data}
+        trainer={trainerOf(encounter)}
+        intro={{ rivalLead: speciesName(encounter.team[0].species), playerLead: lead ? speciesName(lead.species) : '' }}
+        rivalLevels={encounter.team.map((member) => member.level)}
+        onEnded={() => { session.finish(battleDefinition) }}
+        reservedHeight={150}
+      />
     )
   }
 
@@ -131,7 +184,7 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
       </header>
       <main id="main" tabIndex={-1} className="campaign-main">
         <h2 className="visually-hidden">{t.screen}</h2>
-        {teamScreen() ?? movesScreen() ?? (view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
+        {battleScreen() ?? teamScreen() ?? movesScreen() ?? (view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
           <DraftScreen
             candidates={state.offer.map((id) => candidateOf(id, Math.max(...encounters[state.encounterIndex].team.map((member) => member.level)), definition, data))}
             pick={state.pick}

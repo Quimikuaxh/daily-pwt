@@ -17,9 +17,11 @@ type PartySlotProps = {
   state: SlotState
   /** El Pokémon está en la mano (se ve la placa vacía de debajo). */
   held?: boolean
+  /** Seleccionado: su icono rebota con la animación (SpriteCB_BouncePartyMonIcon: −3 px con el fotograma 1 y +1 con el 0). */
+  bounce?: boolean
 }
 
-export function PartySlot({ i, mon, state, held = false }: PartySlotProps) {
+export function PartySlot({ i, mon, state, held = false, bounce = false }: PartySlotProps) {
   const r = slotRect(i)
   const font = emeraldTheme.font as BitmapFont
   const ratio = mon ? mon.hp / mon.maxHp : 0
@@ -29,7 +31,7 @@ export function PartySlot({ i, mon, state, held = false }: PartySlotProps) {
       <img src={emeraldTheme.asset(slotImage(i, !!mon, state))} alt="" style={{ left: 0, top: 0 }} />
       {mon && !held && (
         <>
-          <img className={mon.hp ? 'mon-icon mon-icon-anim' : 'mon-icon'} src={emeraldSprite('icon', mon.species)} alt="" style={{ left: -8, top: r.icon }} />
+          <img className={!mon.hp ? 'mon-icon' : bounce ? 'mon-icon mon-icon-anim mon-icon-bounce' : 'mon-icon mon-icon-anim'} src={emeraldSprite('icon', mon.species)} alt="" style={{ left: -8, top: r.icon }} />
           <GameText text={mon.name} x={r.name[0]} y={r.name[1]} width={40} face="small" color="equipo" hidden />
           <GameText text={`{LV}${mon.level}`} x={r.lv[0]} y={r.lv[1]} face="small" color="equipo" hidden />
           <GameText text={padNumber(font, mon.hp, 3)} x={r.hp[0]} y={r.hp[1]} face="small" color="equipo" hidden />
