@@ -52,7 +52,7 @@ npm install
 | `npm run gen:smogon` | Descarga los sets de Smogon Gen 5 (individuales) a `data/smogon/` (requiere red; el resultado se versiona). |
 | `npm run gen:player-sets` | Genera `data/player-sets.json` (pool del jugador) desde `data/smogon/` y `data/trainers.json`, y `data/smogon/discarded.json`. Sin red. |
 | `npm run gen:ui-index` | Genera `src/generated/battle-ui-images.json` (gráficos de interfaz que se precargan desde Hoy). |
-| `npm run gen:emerald -- RUTA_POKEEMERALD [--comprobar]` | Recursos de Pokémon Esmeralda desde el decompilado de pret (ver «Recursos de Esmeralda»). Necesita Python 3.10 y Pillow 10. |
+| `npm run gen:emerald-ui -- RUTA_POKEEMERALD [--comprobar]` | Recursos de Pokémon Esmeralda desde el decompilado de pret (ver «Recursos de Esmeralda»). Necesita Python 3.10 y Pillow 10. |
 | `npm run gen:vs-logo` | Dibuja el logo «VS.» de la pancarta en pixel art (`public/ui/battle/vs-logo.png`); sin dependencias. |
 | `npm run gen:trainer-vs` | Retratos de la pancarta VS: último fotograma de cada gif de entrenador (y del sprite de frente de Nate y Rosa) recortado por arriba, en `<sprite>-vs.png`. Necesita `ffmpeg`/`ffprobe`. |
 | `npm run validate:data` | Valida `data/*.json`, `src/generated/` y los sprites (PRD §8.3; ver [Validación de datos](#validación-de-datos-y-ci)). Sin red ni `scripts/.cache`; sale con código 1 si hay algún problema. |
@@ -249,6 +249,8 @@ Los tests eligen el escenario por id, no por fecha (DEC-35 en [ARQUITECTURA.md](
 
 `npm run gen:emerald-items -- --source-dir /ruta/a/pokeemerald` extrae la evidencia de MT/MO y objetos, con SHA-256; `--check` exige igualdad byte a byte sin escribir. `npm run gen:emerald-calendar` compila sin red el calendario de campaña con las decisiones de Jose del 11/11/2026; `npm run gen:emerald-calendar -- --check` comprueba su reproducción. `validate:data` valida también estos dos catálogos y la correspondencia del calendario aplicado con la evidencia. Las fechas, exclusiones y operaciones de preparación están en [CALENDARIO-MT.md](docs/nuzlocke/CALENDARIO-MT.md).
 
+`npm run gen:emerald-moves -- --source-dir /ruta/a/pokeemerald` genera `src/generated/emerald/moves.json`: los 347 movimientos que aprende algún Pokémon de la campaña, con tipo, potencia, precisión y PP de Gen 3 y la descripción inglesa del juego (`move_descriptions.h`); `--check` comprueba su reproducción. Las descripciones en español de la pantalla Movimientos están en `data/nuzlocke/emerald-move-descriptions-es.json`, redactadas a partir de las inglesas porque ninguna fuente recoge las de la edición española; UT-174 comprueba que hay una por movimiento y que caben en los huecos del juego.
+
 
 ### Guardado local del combate de campaña
 
@@ -294,7 +296,7 @@ Traducciones manuales que prevalecen sobre las de PokeAPI.
 
 ### Recursos de Esmeralda (`public/ui/emerald/`, `public/sprites/emerald/`)
 
-- Para la campaña de Hoenn (DEC-95). Salen del decompilado **pret/pokeemerald** en la revisión fijada `731ad5bfd6e6f265508d0efcca0ba42f9dcf5881` (la receta la comprueba con `git rev-parse` o por el nombre de la carpeta `pokeemerald-<SHA>`): `npm run gen:emerald -- RUTA_POKEEMERALD`. Con `--comprobar` extrae a una carpeta temporal y compara byte a byte con lo versionado sin tocarlo; `scripts/decomp/esmeralda.test.ts` lo hace en `npx vitest run` si se define `EMERALD_SRC` con la ruta del decompilado.
+- Para la campaña de Hoenn (DEC-95). Salen del decompilado **pret/pokeemerald** en la revisión fijada `731ad5bfd6e6f265508d0efcca0ba42f9dcf5881` (la receta la comprueba con `git rev-parse` o por el nombre de la carpeta `pokeemerald-<SHA>`): `npm run gen:emerald-ui -- RUTA_POKEEMERALD`. Con `--comprobar` extrae a una carpeta temporal y compara byte a byte con lo versionado sin tocarlo; `scripts/decomp/esmeralda.test.ts` lo hace en `npx vitest run` si se define `EMERALD_SRC` con la ruta del decompilado.
 - Salida: `public/ui/emerald/` (fondos, ventanas, marcos, placas, medallas, retratos, iconos de tipo y máscaras de la fuente, ya compuestos en RGBA), `public/sprites/emerald/{front,back,icon}/<id>.png` (las 386 especies: frente animado de 2 fotogramas, espalda e icono de 2 fotogramas, en PNG indexado con el índice 0 transparente; ~0,8 MB) y `src/generated/emerald/` (fuente: tabla de caracteres y anchos; colores del combate; número, posición y animación de cada sprite; rótulos de tipo reconstruidos). Los ids son los de `@pkmn` (`nidoranf`, `mrmime`, `hooh`).
 - Rótulos ingleses: se borran de las plantillas y la interfaz los pinta en español. Los símbolos Nv y Nº de la fuente y los rótulos de tipo en español se reconstruyen sobre la rejilla de la edición inglesa (`scripts/decomp/rotulos_es.py`, datos en `scripts/decomp/datos/`): no son rips de la edición española. Las láminas para revisarlos van a `/tmp/decomp-revision-esmeralda/`.
 - Para otro juego de pret (FireRed, Ruby…): utilidades comunes en `scripts/decomp/comun.py`, una receta como `esmeralda.py` y un tema en `src/ui/console/themes/`.
@@ -377,7 +379,7 @@ npm run vis
 
 ## Créditos
 
-- **pret/pokeemerald** (decompilado de Pokémon Esmeralda, revisión `731ad5b`): gráficos, fuente y datos de sprites de la campaña de Hoenn (`public/ui/emerald/`, `public/sprites/emerald/`, `src/generated/emerald/`; `npm run gen:emerald`).
+- **pret/pokeemerald** (decompilado de Pokémon Esmeralda, revisión `731ad5b`): gráficos, fuente y datos de sprites de la campaña de Hoenn (`public/ui/emerald/`, `public/sprites/emerald/`, `src/generated/emerald/`; `npm run gen:emerald-ui`).
 - **Smogon University**: sets de Gen 5 en individuales del pool del jugador (`data/smogon/`).
 - **Pokémon Showdown**: sprites Gen 5 animados (`gen5ani`, `gen5ani-back`). Las dependencias `@pkmn/sim`, `@pkmn/dex` y `@pkmn/data` (paquetes de Pokémon Showdown) implementan el motor de combate y los datos.
 - **Smogon**: `@smogon/calc`, cálculo de daño.

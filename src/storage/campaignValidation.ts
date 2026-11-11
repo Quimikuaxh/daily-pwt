@@ -15,7 +15,8 @@ function state(v: unknown): boolean {
       typeof m.fainted === 'boolean' && count(m.victories) && (m.hiddenPowerIvs === undefined || stats(m.hiddenPowerIvs)) &&
       Array.isArray(m.history) && m.history.every(h => object(h) && text(h.species) && count(h.evolvedAt)) &&
       (m.recruitmentHistoryLength === undefined || (count(m.recruitmentHistoryLength) && m.recruitmentHistoryLength <= m.history.length)) &&
-      (m.item === undefined || text(m.item))) &&
+      (m.item === undefined || text(m.item)) &&
+      (m.moves === undefined || (list(m.moves) && m.moves.length >= 1 && m.moves.length <= 4))) &&
     (v.battlePoints === undefined || count(v.battlePoints)) && (v.purchases === undefined || list(v.purchases)) &&
     (v.scannerChoice === undefined || v.scannerChoice === 'deepseatooth' || v.scannerChoice === 'deepseascale') &&
     (v.draftTypeCovered === undefined || typeof v.draftTypeCovered === 'boolean') &&

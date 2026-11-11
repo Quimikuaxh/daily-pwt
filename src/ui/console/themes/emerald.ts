@@ -1,5 +1,5 @@
 /**
- * Pokémon Esmeralda (pret/pokeemerald 731ad5b), para la campaña de Hoenn. Recursos de `npm run gen:emerald` (scripts/decomp/esmeralda.py):
+ * Pokémon Esmeralda (pret/pokeemerald 731ad5b), para la campaña de Hoenn. Recursos de `npm run gen:emerald-ui` (scripts/decomp/esmeralda.py):
  * interfaz en public/ui/emerald/, sprites en public/sprites/emerald/ y datos en src/generated/emerald/. Colores con su origen en el
  * decompilado, los mismos que las maquetas aprobadas (entrega-hoenn, 11/11/2026).
  */

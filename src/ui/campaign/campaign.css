@@ -172,3 +172,71 @@
   object-fit: cover;
   object-position: 0 0;
 }
+
+/* Equipo y PC: iconos con sus dos fotogramas alternos (como en el juego, solo con PS), barra de PS de 3 px y el Pokémon en la mano al
+   arrastrar, fuera del lienzo y a su escala para poder pasar de la caja (arriba) al equipo (abajo). */
+@keyframes mon-icon-frames {
+  50% { object-position: 0 -32px; }
+}
+
+.console-screen .mon-icon-anim { animation: mon-icon-frames 0.53s steps(1) infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .console-screen .mon-icon-anim { animation: none; }
+}
+
+.console-screen .party-hp-bar { height: 3px; }
+
+.console-screen .team-cell { touch-action: none; }
+
+.team-drag {
+  position: fixed;
+  z-index: 50;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  transform: scale(var(--k, 2));
+  transform-origin: 0 0;
+}
+
+.team-drag img {
+  position: absolute;
+  max-width: none;
+  image-rendering: pixelated;
+}
+
+.team-drag .mon-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  object-position: 0 0;
+}
+
+/* La envoltura de Equipo y PC (recoge el teclado) ocupa todo el ancho: ConsoleStage escala según el ancho de su padre, y encogida al
+   contenido se quedaba en x2 y se salía en el móvil. */
+.team-screen {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Movimientos: fondo negro detrás de las ventanas del Recordador y envoltura a todo el ancho (la escala sale del ancho del padre). */
+.moves-screen {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.console-screen .moves-black {
+  inset: 0;
+  background: #000;
+}
+
+/* Menú del PC: el cursor ▶ solo en la opción con el puntero o el foco, como el del juego. */
+.console-screen .team-menu-item canvas:first-child { visibility: hidden; }
+.console-screen .team-menu-item:hover canvas:first-child,
+.console-screen .team-menu-item:focus-visible canvas:first-child,
+.console-screen .team-menu-item:focus canvas:first-child { visibility: visible; }
+.console-screen .team-menu-item:focus-visible { outline: 0; }

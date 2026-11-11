@@ -5,7 +5,7 @@ import { accessibleText, glyphCodes, padNumber, textWidth } from './glyphs'
 import type { BitmapFont } from './theme'
 import { consoleScale } from '../battle/useStageScale'
 
-// DEC-95: temas de consola por juego. Fuente de Esmeralda (src/fonts.c y charmap.txt de pret/pokeemerald 731ad5b, `gen:emerald`).
+// DEC-95: temas de consola por juego. Fuente de Esmeralda (src/fonts.c y charmap.txt de pret/pokeemerald 731ad5b, `gen:emerald-ui`).
 const emerald: BitmapFont = {
   kind: 'bitmap',
   charmap: font.charmap,

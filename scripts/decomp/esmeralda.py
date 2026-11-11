@@ -2,8 +2,8 @@
 """Receta de Pokémon Esmeralda (pret/pokeemerald): recursos de la interfaz de la campaña de Hoenn (D5, DEC-95).
 
 Uso (desde la raíz del repo; ver README, «Recursos de Esmeralda»):
-  npm run gen:emerald -- RUTA_POKEEMERALD               regenera lo versionado
-  npm run gen:emerald -- RUTA_POKEEMERALD --comprobar   compara con lo versionado sin tocarlo
+  npm run gen:emerald-ui -- RUTA_POKEEMERALD               regenera lo versionado
+  npm run gen:emerald-ui -- RUTA_POKEEMERALD --comprobar   compara con lo versionado sin tocarlo
 Salida: public/ui/emerald/ (interfaz), public/sprites/emerald/ (frente animado, espalda e icono de las 386 especies)
 y src/generated/emerald/ (fuente, colores y datos de sprites). Utilidades comunes en comun.py; para otro juego,
 escribe su receta igual que esta. Las piezas son las de las maquetas aprobadas (entrega-hoenn, 11/11/2026).
@@ -310,12 +310,16 @@ def storage():
             box.paste(patch, (8 * x, 8 * y))
     im.alpha_composite(box, (80, 16))
     save(im.convert('RGB'), 'pc-fondo.png')
-    arrow = Image.open(p / 'arrow.png')  # flechas de cambio de caja junto al título
-    ap = jasc(p / 'interface.pal')
+    # Flechas de cambio de caja junto al título (CreateBoxScrollArrows: animación 0 a la izquierda, la 1 volteada a la derecha). arrow.png
+    # está en escala de grises (modo L): el gris v es el índice 15 - v/17, así que el blanco del fondo es el 0 (transparente). Paleta
+    # PALTAG_MISC_2, la de waveform.png, como la mano. Antes se leía el gris como índice (v % 16), el fondo salía cian y opaco, el borde
+    # transparente y las flechas cambiadas de lado.
+    arrow = Image.open(p / 'arrow.png')
+    ap = pngpal(Image.open(p / 'waveform.png'))
     o = Image.new('RGBA', (8, 16))
-    o.putdata([ap[c % 16] + (255 if c % 16 else 0,) for c in arrow.crop((0, 0, 8, 16)).getdata()])
-    save(o, 'pc-flecha-dcha.png')
-    save(o.transpose(Image.Transpose.FLIP_LEFT_RIGHT), 'pc-flecha-izda.png')
+    o.putdata([ap[15 - v // 17] + (255 if 15 - v // 17 else 0,) for v in arrow.convert('L').crop((0, 0, 8, 16)).getdata()])
+    save(o, 'pc-flecha-izda.png')
+    save(o.transpose(Image.Transpose.FLIP_LEFT_RIGHT), 'pc-flecha-dcha.png')
     hand = Image.open(p / 'hand_cursor.png')
     hp = pngpal(Image.open(p / 'waveform.png'))  # PALTAG_MISC_2: mano blanca normal y sombra
     for i, name in ((0, 'abierta'), (1, 'rebote'), (2, 'abriendo'), (3, 'cogiendo')):

@@ -30,7 +30,7 @@
     "gen:ui-index": "node scripts/build-battle-ui-index.mjs",
     "gen:trainer-vs": "node scripts/build-trainer-vs.mjs",
     "gen:vs-logo": "node scripts/build-vs-logo.mjs",
-    "gen:emerald": "python3 scripts/decomp/esmeralda.py",
+    "gen:emerald-ui": "python3 scripts/decomp/esmeralda.py",
     "gen:ui": "node scripts/fetch-ui-assets.mjs",
     "gen:pwt-raw": "node scripts/import-pwt.mjs",
     "gen:pwt": "node scripts/merge-pwt.mjs",
@@ -43,7 +43,8 @@
     "gen:cries": "node scripts/fetch-cries.mjs",
     "gen:item-icons": "node scripts/fetch-item-icons.mjs",
     "gen:emerald-items": "node scripts/import-emerald-items.mjs",
-    "gen:emerald-calendar": "node scripts/build-emerald-calendar.mjs"
+    "gen:emerald-calendar": "node scripts/build-emerald-calendar.mjs",
+    "gen:emerald-moves": "node scripts/build-emerald-moves.mjs"
   },
   "dependencies": {
     "@pkmn/sim": "0.10.11",

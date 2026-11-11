@@ -60,11 +60,41 @@ export function availableCampaignMoves(
   return availableMoves(definition.species, member, campaignMachineMoves(definition, state))
 }
 
+/** Movimientos con los que combate: los elegidos si siguen siendo legales; si no, los de por defecto. */
+export function campaignMemberMoves(definition: CampaignDefinition, state: CampaignState, member: CampaignMember & { moves?: readonly string[] }): string[] {
+  const legal = new Set(availableCampaignMoves(definition, state, member))
+  return member.moves?.length && member.moves.every((move) => legal.has(move)) ? [...member.moves] : defaultMoves(definition.species, member)
+}
+
+/** Guarda los movimientos elegidos para un miembro vivo; comprueba que son legales. */
+export function setCampaignMemberMoves(definition: CampaignDefinition, state: CampaignState, id: string, moves: readonly string[]): CampaignState {
+  const member = state.members.find((candidate) => candidate.id === id && !candidate.fainted)
+  if (!member) throw new DataError(`Miembro de campaña no disponible: ${id}.`)
+  const chosen = validateCampaignMoveSelection(definition, state, member, moves)
+  return { ...state, members: state.members.map((candidate) => candidate.id === id ? { ...candidate, moves: chosen } : candidate) }
+}
+
 export function validateCampaignMoveSelection(
   definition: CampaignDefinition, state: CampaignState, member: CampaignMember,
   selected: readonly string[], fallback: ReadonlySet<string> = new Set(),
 ): string[] {
   return validateMoveSelection(definition.species, member, campaignMachineMoves(definition, state, fallback), selected)
+}
+
+/**
+ * Movimientos por defecto, como en el juego: los cuatro últimos aprendidos por nivel en las formas recorridas. Sin MT/MO: esas se
+ * eligen en la pantalla Movimientos.
+ */
+export function defaultMoves(dex: ProgressionDex, member: CampaignMember): string[] {
+  // En orden de aprendizaje: forma a forma y, dentro de cada una, por nivel. Lo ya sabido no se vuelve a aprender.
+  const learned: string[] = []
+  for (const stage of [...member.history, { species: member.species, evolvedAt: member.level }]) {
+    const entries = speciesProgression(dex, stage.species).levelUp.filter((entry) => entry.level <= stage.evolvedAt)
+    for (const entry of [...entries].sort((a, b) => a.level - b.level)) {
+      if (!learned.includes(entry.move)) learned.push(entry.move)
+    }
+  }
+  return learned.slice(-4)
 }
 
 /** Une el aprendizaje de las formas recorridas y las máquinas compatibles desbloqueadas. */

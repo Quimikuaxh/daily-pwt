@@ -26,6 +26,8 @@ type Recruit = CampaignMember & {
   recruitmentHistoryLength?: number
   /** Objeto equipado (heldItems.ts). */
   item?: string
+  /** Movimientos elegidos en la pantalla Movimientos (1 a 4); sin ellos, los de `defaultCampaignMoves`. */
+  moves?: readonly string[]
 }
 
 export type CampaignState = {

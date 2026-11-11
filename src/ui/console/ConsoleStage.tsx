@@ -49,7 +49,8 @@ export function ConsoleStage({ theme, screens, reservedHeight = 0, scale: fixedS
     '--screen-h': `${h}px`,
     '--screens': theme.screens,
     '--k': scale,
-    ...(theme.frame && { '--frame': `url("${theme.frame.image}")`, '--frame-px': `${theme.frame.tile}px`, '--frame-slice': theme.frame.slice }),
+    // URL absoluta: con `base: './'`, una relativa en una variable CSS se resuelve contra la hoja de estilos (assets/) y el marco no carga.
+    ...(theme.frame && { '--frame': `url("${new URL(theme.frame.image, document.baseURI).href}")`, '--frame-px': `${theme.frame.tile}px`, '--frame-slice': theme.frame.slice }),
   } as CSSProperties
 
   return (

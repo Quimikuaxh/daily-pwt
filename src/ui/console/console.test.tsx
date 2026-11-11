@@ -20,6 +20,12 @@ describe('lienzo de consola de un tema', () => {
     vi.unstubAllGlobals()
   })
 
+  it('UT-172: el marco de las ventanas va con URL absoluta (con base relativa, en una variable CSS se resolvería contra assets/)', () => {
+    const { container } = render(<ConsoleStage theme={emeraldTheme} scale={2} screens={[<GameWindow key="w" x={1} y={1} width={2} height={2} />]} />)
+    const frame = (container.querySelector('.console-stage') as HTMLElement).style.getPropertyValue('--frame')
+    expect(frame).toMatch(/^url\("https?:\/\/[^"]+\/ui\/emerald\/marco-1\.png"\)$/)
+  })
+
   it.each([
     { text: 'GROVYLE', hidden: true },
     { text: '{SPACER}', hidden: false },

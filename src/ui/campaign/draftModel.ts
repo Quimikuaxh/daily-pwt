@@ -22,6 +22,9 @@ export type Candidate = {
   evolution: { target: string; level: number } | null
 }
 
+/** Número de la Pokédex nacional (sprites de Esmeralda). */
+export const emeraldDex = (id: string): number => (emeraldSprites as Record<string, { dex: number }>)[id]?.dex ?? 0
+
 const STAT_KEYS = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'] as const
 const IV = 20
 
@@ -38,7 +41,7 @@ export function candidateOf(id: string, level: number, definition: CampaignDefin
   return {
     id,
     name: (data.names.species[id] ?? id).toUpperCase(),
-    dex: (emeraldSprites as Record<string, { dex: number }>)[id]?.dex ?? 0,
+    dex: emeraldDex(id),
     types,
     typeNames: rawTypes.map((type) => data.names.types[type] ?? type),
     total: species?.baseStatTotal ?? 0,

@@ -13,10 +13,15 @@ import { esCampaign } from '../../i18n/esCampaign'
 import { emeraldTheme } from '../console/themes/emerald'
 import catalog from '../../../data/nuzlocke/hoenn-emerald.json'
 import progression from '../../../data/nuzlocke/hoenn-emerald-progression.json'
-import { candidateOf } from './draftModel'
+import { candidateOf, emeraldDex } from './draftModel'
 import { DraftScreen } from './DraftScreen'
 import { badgeCount, routePlaces, type CampaignEncounter } from './hoennRoute'
 import { RouteScreen } from './RouteScreen'
+import { initialLayout, teamMonOf, type TeamLayout } from './teamModel'
+import { MovesScreen } from './MovesScreen'
+import { equippedMoves, legalMoves } from './movesModel'
+import { setCampaignMemberMoves } from '../../core/nuzlocke/progression'
+import { TeamScreen } from './TeamScreen'
 import './campaign.css'
 
 const t = esCampaign.route
@@ -32,12 +37,20 @@ type CampaignScreenProps = {
   newSeed?: () => string
 }
 
+/** Plazas del equipo: las del líder en los gimnasios; seis en la Liga. */
+const teamLimit = (state: CampaignState) => encounters[state.encounterIndex].kind === 'gym' ? encounters[state.encounterIndex].team.length : 6
+
 const randomSeed = () => `hoenn-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
 
 export default function CampaignScreen({ data, onExit, store: givenStore, newSeed = randomSeed }: CampaignScreenProps) {
   const store = useMemo(() => givenStore ?? new LocalCampaignStore(browserStorage()), [givenStore])
   const [state, setState] = useState(() => store.read()?.state ?? null as CampaignState | null)
-  const [view, setView] = useState('route' as 'route' | 'draft')
+  const [view, setView] = useState('route' as 'route' | 'draft' | 'team' | 'moves')
+  // Alineación aceptada en Equipo y PC; la usan Movimientos y el combate.
+  const [team, setTeam] = useState(null as string[] | null)
+  // Colocación de Equipo y PC mientras se va a Movimientos y se vuelve; se rehace al entrar desde la Ruta.
+  const [teamLayout, setTeamLayout] = useState(null as TeamLayout | null)
+  const [movesFor, setMovesFor] = useState(null as string | null)
   const save = (next: CampaignState) => {
     const record = store.write(next, null, store.read()?.revision ?? 0)
     if (!(record instanceof Promise)) setState(record.state)
@@ -45,6 +58,7 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
   }
   const openNext = (current: CampaignState) => save(current.offer.length ? current : openDraft(definition, current))
   const continueCampaign = () => {
+    if (state?.phase === 'prepare') { setTeamLayout(null); setView('team'); return }
     if (state?.phase !== 'draft') return
     openNext(state)
     setView('draft')
@@ -67,6 +81,41 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
     if (!(record instanceof Promise)) setState(record.state)
   }
 
+  const teamScreen = () => {
+    if (view !== 'team' || state?.phase !== 'prepare') return null
+    return (
+    <TeamScreen
+      mons={Object.fromEntries(state.members.map((member) => [member.id, teamMonOf(member, data)]))}
+      initial={teamLayout ?? initialLayout(state, teamLimit(state), team ?? [])}
+      limit={teamLimit(state)}
+      rivalName={encounters[state.encounterIndex].nameEs}
+      itemName={(id) => data.names.items[id] ?? id}
+      onAccept={(chosen) => { setTeam(chosen); setView('route') }}
+      onCancel={() => setView('route')}
+      onMoves={(id) => { setMovesFor(id); setView('moves') }}
+      onLayoutChange={setTeamLayout}
+      reservedHeight={150}
+    />
+    )
+  }
+
+  const movesScreen = () => {
+    const member = view === 'moves' && state?.phase === 'prepare' ? state.members.find((candidate) => { return candidate.id === movesFor && !candidate.fainted }) : undefined
+    if (!state || !member) return null
+    const mon = teamMonOf(member, data)
+    return (
+      <MovesScreen
+        key={member.id}
+        mon={{ species: member.species, name: mon.name, level: member.level, dex: emeraldDex(member.species) }}
+        legal={legalMoves(definition, state, member, data)}
+        equipped={equippedMoves(definition, state, member)}
+        onChange={(moves) => save(setCampaignMemberMoves(definition, state, member.id, moves))}
+        onExit={() => setView('team')}
+        reservedHeight={150}
+      />
+    )
+  }
+
   return (
     <div className="page campaign-page">
       <a href="#main" className="skip-link">{es.app.skipToContent}</a>
@@ -82,7 +131,7 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
       </header>
       <main id="main" tabIndex={-1} className="campaign-main">
         <h2 className="visually-hidden">{t.screen}</h2>
-        {view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
+        {teamScreen() ?? movesScreen() ?? (view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
           <DraftScreen
             candidates={state.offer.map((id) => candidateOf(id, Math.max(...encounters[state.encounterIndex].team.map((member) => member.level)), definition, data))}
             pick={state.pick}
@@ -94,7 +143,7 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
           />
         ) : (
           <RouteScreen places={places} badges={badges} speciesName={speciesName} reservedHeight={150} />
-        )}
+        ))}
         <div className="campaign-bar">
           <ul className="campaign-medals" aria-label={t.medals(badges)}>
             {places.filter((place) => place.gym !== null).map((place) => (
@@ -105,10 +154,10 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
             ))}
           </ul>
           {state ? (
-            view === 'draft' ? (
+            view !== 'route' ? (
               <button type="button" className="campaign-action" onClick={() => setView('route')}>{esCampaign.draft.back}</button>
             ) : (
-              <button type="button" className="campaign-action" disabled={state.phase !== 'draft'} onClick={continueCampaign}
+              <button type="button" className="campaign-action" disabled={state.phase !== 'draft' && state.phase !== 'prepare'} onClick={continueCampaign}
                 aria-label={next.gym === null ? t.continueLeague : t.continueLabel(next.gym)}>
                 {t.continue}
               </button>

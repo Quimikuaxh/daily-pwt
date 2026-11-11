@@ -104,6 +104,7 @@ describe('Campaña de Hoenn', () => {
     expect(store.read()?.state).toMatchObject({ phase: 'prepare', offer: [], pick: 4 })
     expect(screen.queryByRole('button', { name: /^Candidato/ })).not.toBeInTheDocument()
     expect(screen.getByRole('region', { name: 'Ficha de Petra' })).toHaveTextContent('LÍDER PETRA')
-    expect(screen.getByRole('button', { name: /^Continuar/ })).toBeDisabled()
+    // Cambio de requisito (D7, Equipo y PC, 11/11/2026): en preparación, Continuar abre Equipo y PC (antes, desactivado).
+    expect(screen.getByRole('button', { name: /^Continuar/ })).toBeEnabled()
   })
 })

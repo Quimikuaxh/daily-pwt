@@ -31,9 +31,16 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 - Muestra a Jose las maquetas de escritorio y móvil antes de implementar las pantallas de campaña y el tema de combate.
 
 
+## Pantallas de la campaña (D7)
+
+- **Hecho:** Ruta, Modos, Draft y **Equipo y PC** (11/11/2026): PC «Mover POKéMON» con CAJA 1 y BAJAS y pantalla de equipo con el límite del rival; arrastrar, tocar origen y destino o teclado. En preparación, Continuar abre el Equipo; ACEPTAR guarda la alineación (de momento, solo en la pantalla) y vuelve a la Ruta.
+- **Hecho (11/11/2026):** **Movimientos**, desde el menú del PC de Equipo y PC (MOVER / MOVIMIENTOS / CANCELAR): Recordador arriba y página de movimientos de Datos abajo; los elegidos se guardan por Pokémon en la campaña (DEC-96). Descripciones españolas redactadas en `data/nuzlocke/emerald-move-descriptions-es.json`, **pendientes de que Jose las revise**.
+- **Siguiente:** Combate (usa la alineación de ACEPTAR y los movimientos guardados), Liga (con la elección de evoluciones y el canje de PB) y Resultado.
+- **D6, nombres de la época:** guiasnintendo.com (Esmeralda, «Ataques») trae los nombres de los movimientos de la edición española; usar sus nombres, no sus resúmenes de efecto.
+
 ## Temas de consola y recursos de Esmeralda (D5, 11/11/2026)
 
-- **Hecho (D5 de la Nuzlocke, DEC-95):** canal de recursos de los decompilados de pret (`scripts/decomp/`, `npm run gen:emerald`) con la receta de Esmeralda (interfaz de las maquetas aprobadas y sprites de las 386 especies) y temas de consola en `src/ui/console/` (`ConsoleStage`, `GameText`, `GameWindow`; Esmeralda y N2/B2). Sin pantallas de campaña ni cambios visibles en el reto diario.
+- **Hecho (D5 de la Nuzlocke, DEC-95):** canal de recursos de los decompilados de pret (`scripts/decomp/`, `npm run gen:emerald-ui`) con la receta de Esmeralda (interfaz de las maquetas aprobadas y sprites de las 386 especies) y temas de consola en `src/ui/console/` (`ConsoleStage`, `GameText`, `GameWindow`; Esmeralda y N2/B2). Sin pantallas de campaña ni cambios visibles en el reto diario.
 - **Unida a `feature/nuzlocke-hoenn` el 11/11/2026** (sin push: a `main` no va nada de la Nuzlocke hasta que esté completa). D7 hace las pantallas encima.
 ## Ambiente del estadio y pancarta VS (11/11/2026, en `main`)
 

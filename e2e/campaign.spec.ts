@@ -24,13 +24,20 @@ test('T3 Hoy → Modos → Ruta → cuatro elecciones de Petra → Ruta → Hoy'
   }
   await expect(petra).toContainText('LÍDER PETRA')
   await expect(page.getByRole('button', { name: /^Candidato/ })).toHaveCount(0)
-  await expect(page.getByRole('button', { name: /^Continuar/ })).toBeDisabled()
+  // Cambio de requisito (D7, 11/11/2026): en preparación, Continuar abre Equipo y PC; ACEPTAR vuelve a la Ruta.
+  await page.getByRole('button', { name: /^Continuar/ }).click()
+  await page.getByRole('button', { name: /^Equipo, puesto 1: / }).click()
+  await page.getByRole('menuitem', { name: /^Movimientos de / }).click()
+  await expect(page.getByRole('region', { name: 'Movimientos' })).toBeVisible()
+  await page.getByRole('button', { name: 'Volver al equipo' }).click()
+  await page.getByRole('button', { name: 'Aceptar el equipo y preparar los movimientos' }).click()
+  await expect(petra).toContainText('LÍDER PETRA')
   // La preparación y las cuatro elecciones sobreviven a la recarga.
   await page.reload()
   await today.challengeNumber.waitFor()
   await page.getByRole('button', { name: 'Modos de juego' }).click()
   await page.getByRole('button', { name: 'Nuzlocke de Hoenn' }).click()
-  await expect(page.getByRole('button', { name: /^Continuar/ })).toBeDisabled()
+  await expect(page.getByRole('button', { name: /^Continuar/ })).toBeEnabled()
   await page.getByRole('button', { name: 'Volver a Hoy' }).click()
   await expect(today.challengeNumber).toBeVisible()
   await expect(today.fightButton).toBeVisible()

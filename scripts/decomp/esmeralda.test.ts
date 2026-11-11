@@ -19,7 +19,7 @@ const fingerprints = () => Object.fromEntries(managed.flatMap(dir =>
       return [path, createHash('sha256').update(readFileSync(path)).digest('hex')]
     })))
 
-describe('recursos de Esmeralda (gen:emerald)', () => {
+describe('recursos de Esmeralda (gen:emerald-ui)', () => {
   it.skipIf(!SOURCE)('UT-171: la extracción coincide byte a byte y --comprobar conserva los recursos versionados', async () => {
     const before = fingerprints()
     expect(Object.keys(before).length).toBeGreaterThan(1000)
