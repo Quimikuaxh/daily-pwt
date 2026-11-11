@@ -8,6 +8,7 @@ import emeraldSprites from '../../generated/emerald/sprites.json'
 import { esCampaign } from '../../i18n/esCampaign'
 import { textWidth } from '../console/glyphs'
 import { emeraldTheme } from '../console/themes/emerald'
+import { emeraldAbilityName } from './emeraldNames'
 import type { BitmapFont } from '../console/theme'
 
 export type Candidate = {
@@ -47,7 +48,8 @@ export function candidateOf(id: string, level: number, definition: CampaignDefin
     total: species?.baseStatTotal ?? 0,
     // Shedinja tiene siempre 1 PS (Gen 3), sea cual sea el nivel.
     stats: dex ? STAT_KEYS.map((key, i) => (i === 0 && id === 'shedinja' ? 1 : statAt(dex.baseStats[key], level, i === 0))) : [0, 0, 0, 0, 0, 0],
-    ability: (data.names.abilities[dex?.abilities[0] ?? ''] ?? dex?.abilities[0] ?? '').toUpperCase(),
+    // La primera habilidad de los datos coincide con la de Gen 3 en las 386 especies (comprobado el 12/11/2026); el nombre, el de la época.
+    ability: dex?.abilities[0] ? emeraldAbilityName(dex.abilities[0], data.names) : '',
     evolution: evolution ? { target: (data.names.species[evolution.target] ?? evolution.target).toUpperCase(), level: Number(evolution.parameter) } : null,
   }
 }
