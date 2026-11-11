@@ -4,6 +4,11 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 **Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). El sonido va en `feature/f3-sonido` (desde `main`): los audios ya están descargados y versionados (se descargaron en local, desde la nube las fuentes están bloqueadas); falta implementarlo según «Sonido: plan de implementación».
 
+
+## Rama `feature/temas-juego` (11/11/2026, desde `main`)
+
+- **Hecho (D5 de la Nuzlocke, DEC-95):** canal de recursos de los decompilados de pret (`scripts/decomp/`, `npm run gen:emerald`) con la receta de Esmeralda (interfaz de las maquetas aprobadas y sprites de las 386 especies) y temas de consola en `src/ui/console/` (`ConsoleStage`, `GameText`, `GameWindow`; Esmeralda y N2/B2). Sin pantallas de campaña ni cambios visibles en el reto diario.
+- **Siguiente:** unir esta rama a `feature/nuzlocke-hoenn` para que Codex haga las pantallas (D7) encima. Falta el visto bueno de Jose para el commit.
 ## Ambiente del estadio y pancarta VS (11/11/2026, en `main`)
 
 - **Hecho:** focos del suelo, haces del techo, sombras, destello con chispas, cámara de la intro y de los ataques, estallido al abrirse la Poké Ball (RF-136; giro por JS a 12 fps, DEC-87) y pancarta VS (RF-137): franja fina que entra sobre el estadio y choca, retratos del último fotograma del gif (`gen:trainer-vs`), logo en pixel art (`gen:vs-logo`), fogonazo que descubre la rejilla. Aprobado por Jose. También en repeticiones y directo.

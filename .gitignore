@@ -17,3 +17,4 @@ e2e-artifacts/
 # Registros de servidores y scripts locales
 *.log
 dist-anim
+__pycache__/

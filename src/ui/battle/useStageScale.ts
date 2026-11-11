@@ -37,10 +37,17 @@ export const CONSOLE_FRAME_Y = 32
 export type StageLayout = 'stacked' | 'wide' | 'panels'
 export type StageScale = { scale: number; wide: boolean; frame: boolean; layout: StageLayout; sideZoom: number }
 
-const fitScale = (availableWidth: number, availableHeight: number): number => {
-  const fits = Math.min(availableWidth / SCREEN_WIDTH, availableHeight / STAGE_HEIGHT)
+/**
+ * Escala de un lienzo lógico de `width` x `height` en el hueco disponible, con la regla del reto diario (RNF-06): entera desde x2 y hasta
+ * MAX_SCALE; por debajo, la fraccionaria que quepa (con dos decimales), nunca menos de 1. La usan también los temas de consola de otros juegos
+ * (src/ui/console, DEC-95).
+ */
+export function consoleScale(availableWidth: number, availableHeight: number, width: number, height: number): number {
+  const fits = Math.min(availableWidth / width, availableHeight / height)
   return fits >= INTEGER_FROM_SCALE ? Math.min(MAX_SCALE, Math.floor(fits)) : Math.max(1, Math.floor(fits * SCALE_PRECISION) / SCALE_PRECISION)
 }
+
+const fitScale = (availableWidth: number, availableHeight: number): number => consoleScale(availableWidth, availableHeight, SCREEN_WIDTH, STAGE_HEIGHT)
 
 /** Cuánto crecen los paneles con la consola a `scale` (con su marco si lo lleva): lo que quepa a lo ancho y a lo alto, entre 1 y x1,3. */
 export function sideZoomFor(containerWidth: number, viewportHeight: number, scale: number, frame: boolean): number {
