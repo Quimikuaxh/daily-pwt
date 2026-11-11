@@ -55,6 +55,7 @@ export const emeraldTheme: ConsoleTheme = {
     'etiqueta-ps': ['#ffd552', '#ffb441'],
     // PP del menú de movimientos según los que quedan (gPPTextPalette, text_pp.pal; GetCurrentPPToMaxPPState): 0 amarillo, 1 naranja,
     // 2 rojo y 3 normal. Se rellenan en la paleta 5 al elegir; leer la paleta sin ellos daba una sombra oscura (Jose: «PP en negrita»).
+    'mochila-bolsillo': ['#000000', '#d5d5cd'], // nombre del bolsillo de la Mochila: negro, como el juego (Jose, 11/11/2026)
     'pp-0': ['#d5c500', '#fff68b'],
     'pp-1': ['#ff8300', '#ffee73'],
     'pp-2': ['#e61800', '#f6de9c'],

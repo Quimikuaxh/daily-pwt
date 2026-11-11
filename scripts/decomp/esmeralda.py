@@ -523,5 +523,48 @@ def final_screens():
     save(card.convert('RGB'), 'resultado-tarjeta.png')
 
 
+def item_icons():
+    # Iconos de 24 x 24 de los objetos equipables y del canje de la campaña (Equipo y PC, canje de Puntos Batalla): los de
+    # data/nuzlocke/hoenn-emerald-calendar.json (held y exchange). item_icon_table.h da icono y paleta de cada ITEM_X;
+    # src/data/graphics/items.h, sus ficheros. El id es la constante sin ITEM_ en minúsculas y sin guiones bajos (kingsrock).
+    calendar = json.loads((comun.ROOT / 'data/nuzlocke/hoenn-emerald-calendar.json').read_text())
+    wanted = set(calendar['held']) | {entry['item'] for entry in calendar['exchange']}
+    table = {name: pair for name, pair in re.findall(r'\[ITEM_(\w+)\]\s*=\s*\{(gItemIcon_\w+, gItemIconPalette_\w+)\}', (SRC / 'src/data/item_icon_table.h').read_text())}
+    files = dict(re.findall(r'const u\d+ (gItemIcon(?:Palette)?_\w+)\[\] = INCGFX_U\d+\("([^"]+?)\.(?:png|pal)"', (SRC / 'src/data/graphics/items.h').read_text()))
+    found = set()
+    for name, pair in table.items():
+        item = name.lower().replace('_', '')
+        if item not in wanted:
+            continue
+        icon, palette = pair.split(', ')
+        im = Image.open(SRC / (files[icon] + '.png'))
+        colors = jasc(SRC / (files[palette] + '.pal'))
+        out = Image.new('RGBA', im.size)
+        out.putdata([colors[c % 16] + (255 if c % 16 else 0,) for c in im.getdata()])
+        save(out, f'objeto-{item}.png')
+        found.add(item)
+    missing = wanted - found
+    if missing:
+        raise SystemExit(f'Sin icono en item_icon_table.h: {sorted(missing)}')
+
+
+def bag():
+    # Mochila (item_menu.c): fondo de menu.png/menu.bin con la paleta del protagonista (menu_male/female.pal) y la mochila
+    # (bag_male/female.png, un fotograma de 64 x 64 por bolsillo en vertical: 0 cerrada, 1 objetos, 2 objetos clave,
+    # 3 Poké Balls, 4 MT/MO, 5 bayas) con bag.pal. Se pinta en (68,66) de centro; el icono del objeto, en (24,88).
+    p = G / 'bag'
+    tiles = Image.open(p / 'menu.png')
+    for who, sex in (('brendan', 'male'), ('may', 'female')):
+        colors = jasc(p / f'menu_{sex}.pal')
+        back = Image.new('RGBA', (240, 160), colors[0] + (255,))
+        back.alpha_composite(tilemap(tiles, u16(p / 'menu.bin'), 30, 20, 32, colors))
+        save(back.convert('RGB'), f'mochila-fondo-{who}.png')
+        sheet = Image.open(p / f'bag_{sex}.png')
+        pal = jasc(p / 'bag.pal')
+        out = Image.new('RGBA', sheet.size)
+        out.putdata([pal[c % 16] + (255 if c % 16 else 0,) for c in sheet.getdata()])
+        save(out, f'mochila-{who}.png')
+
+
 comun.terminar((fonts, window_frames, region_map, dome_card, badges, portraits, species, factory, summary_pages, ball_display,
-                storage, party_screen, moves_page, type_icons, list_arrows, battle_screen, final_screens))
+                storage, party_screen, moves_page, type_icons, list_arrows, battle_screen, final_screens, item_icons, bag))

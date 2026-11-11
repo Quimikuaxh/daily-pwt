@@ -39,7 +39,7 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 - **Hecho (11/11/2026):** **Combate** con el motor real (DEC-97): pantalla de Esmeralda, acciones, movimientos (nombres de la época, PP de Gen 3 con su color), cambio con SÍ/NO y cambio forzado; se reanuda tras recargar.
 - **Falta en Combate:** animaciones de entrada, KO y bajada de PS al ritmo del juego, música y efectos de Esmeralda, 
 - **Hecho (11/11/2026):** **Resultado**: medalla y Ficha de Entrenador (Puntos Batalla en DINERO, especies reclutadas en POKéDEX, tiempo desde el inicio en TIEMPO; Jose), «Has vencido» tras el Alto Mando, Salón de la Fama y derrota. Nombre: nickname o BRUNO/AURA por semilla. Las campañas empezadas antes no tienen `startedAt` y marcan 0:00.
-- **Siguiente:** Liga (elección de evoluciones antes de entrar, plantilla de 3 elecciones, canje de PB y combates del Alto Mando y el campeón).
+- **Siguiente:** Liga: ficha del rival y elección de 1 a 6 participantes (maqueta aprobada), escena de evolución (A), Mochila para dar objetos y canje de PB (maquetas aprobadas el 11/11/2026, `maquetas.html?v=evo-a|mochila|canje`); iconos de objeto y Mochila ya extraídos (`gen:emerald-ui`). Faltan descripciones españolas de los objetos (redactarlas como las de los movimientos).
 - **D6, nombres de la época:** hechos los de los movimientos de la campaña (`data/nuzlocke/emerald-move-names-es.json`, de guiasnintendo.com; aeroblast, followme y jumpkick no están en la guía y conservan el actual). Faltan los de habilidades y objetos de Esmeralda. Regla (PRD §0): cada campaña, con nombres y datos de su generación; revisarlo al hacer otras generaciones.
 
 ## Temas de consola y recursos de Esmeralda (D5, 11/11/2026)
