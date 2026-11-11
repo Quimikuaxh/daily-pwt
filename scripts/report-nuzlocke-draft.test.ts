@@ -1,13 +1,46 @@
 import { createHash } from 'node:crypto'
-import { readFileSync } from 'node:fs'
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { execFile } from 'node:child_process'
+import { promisify } from 'node:util'
 import { describe, expect, it } from 'vitest'
 import { fromRoot, importScript } from '../src/test-utils/paths'
 
+const runNode = promisify(execFile)
 const { renderDraftTables, replaceDraftTables, REPORT_START, REPORT_END } = await importScript('scripts/report-nuzlocke-draft.mjs')
 const bytes = readFileSync(fromRoot('docs/nuzlocke/draft-results-100.json'))
 const results = JSON.parse(bytes.toString('utf8'))
 
 describe('informe reproducible del draft', () => {
+  it('UT-166: reproduce la sección relativa y --check detecta tablas desactualizadas sin escribir', async () => {
+    const bytes = readFileSync(fromRoot('docs/nuzlocke/draft-results-relative-100.json'))
+    const result = JSON.parse(bytes.toString('utf8'))
+    const tables = renderDraftTables(result, createHash('sha256').update(bytes).digest('hex'))
+    expect(tables).toContain('−6 %/+8 %')
+    expect(tables).not.toContain('±null')
+    expect(tables).not.toContain('undefined')
+    const doc = readFileSync(fromRoot('docs/nuzlocke/SIMULACION-DRAFT.md'), 'utf8')
+    const markers = { start: '<!-- draft-relative:start -->', end: '<!-- draft-relative:end -->' }
+    expect(replaceDraftTables(doc, tables, markers)).toBe(doc)
+    const dir = mkdtempSync(join(tmpdir(), 'draft-report-'))
+    const report = join(dir, 'report.md')
+    const cli = (check: boolean) => runNode(process.execPath, [fromRoot('scripts/report-nuzlocke-draft.mjs'),
+      '--section', 'relative', '--report', report, ...(check ? ['--check'] : [])], { encoding: 'utf8' })
+    try {
+      const stale = replaceDraftTables(doc, 'tablas desactualizadas', markers)
+      writeFileSync(report, stale)
+      await expect(cli(true)).rejects.toMatchObject({ code: 1, stderr: expect.stringContaining('Las tablas no coinciden') })
+      expect(readFileSync(report, 'utf8')).toBe(stale)
+      await cli(false)
+      expect(readFileSync(report, 'utf8')).toBe(doc)
+      await cli(true)
+      expect(readFileSync(report, 'utf8')).toBe(doc)
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
+
   it('conserva fuentes verificables y todos los escenarios, márgenes, hitos y comparaciones', () => {
     expect(results.schemaVersion).toBe(2)
     expect(results.rows).toHaveLength(216)

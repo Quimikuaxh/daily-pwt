@@ -2,30 +2,87 @@ import { describe, expect, it } from 'vitest'
 import { campaignInput } from '../../test-utils/campaign'
 import { readJson } from '../../test-utils/paths'
 import calendar from '../../../data/nuzlocke/hoenn-emerald-calendar.json'
-import { BST_WINDOW_1 } from '../team'
 import { availableMoves } from './progression'
-import { campaignDraftRequest, chooseRecruit, createCampaign, openDraft } from './campaign'
+import { campaignDraftRequest, chooseRecruit, createCampaign, draftPicks, openDraft } from './campaign'
 import { availableDraftForms } from './draftAvailability'
-import { draftPool, EMERALD_DRAFT_WINDOW } from './draft'
+import { draftOffer, draftPool, EMERALD_DRAFT_RATIO, relativeDraftWindow } from './draft'
 import { gymCounterSpecies } from './gymDraft'
 import { consumedEvolutionItems } from './calendar'
 
 const { definition } = campaignInput()
-const requestAt = (index: number) => campaignDraftRequest(definition, { ...createCampaign(''), encounterIndex: index },
-  availableDraftForms(definition, calendar, index, 'A').map(form => form.species), EMERALD_DRAFT_WINDOW)
+const requestAt = (index: number) => {
+  const raw = campaignDraftRequest(definition, { ...createCampaign(''), encounterIndex: index },
+    availableDraftForms(definition, calendar, index, 'A').map(form => form.species), { below: 0, above: 0 })
+  return { ...raw, window: { below: raw.rivalAverage * 0.06, above: raw.rivalAverage * 0.08 } }
+}
 
 describe('política de draft de Esmeralda aprobada por Jose el 11/11/2026', () => {
-  it('fija −30/+40 por Pokémon, como RF-13d anterior dividido entre seis', () => {
-    expect(EMERALD_DRAFT_WINDOW).toEqual({ below: 30, above: 40 })
-    expect(EMERALD_DRAFT_WINDOW).toEqual({ below: BST_WINDOW_1.below / 6, above: BST_WINDOW_1.above / 6 })
-    const request = requestAt(0)
-    const candidates = [294, 295, 325, 365, 366].map(baseStatTotal => ({ species: String(baseStatTotal), baseStatTotal }))
-    expect(draftPool({ ...request, candidates })).toEqual(['295', '325', '365'])
+  it('UT-162: fija −6 %/+8 % y conserva decimales al convertir la ventana', () => {
+    expect(EMERALD_DRAFT_RATIO).toEqual({ below: 0.06, above: 0.08 })
+    expect(relativeDraftWindow(325, EMERALD_DRAFT_RATIO)).toEqual({ below: 19.5, above: 26 })
+    expect(relativeDraftWindow(500.5, EMERALD_DRAFT_RATIO).below).toBeCloseTo(30.03, 10)
+    expect(relativeDraftWindow(500.5, EMERALD_DRAFT_RATIO).above).toBeCloseTo(40.04, 10)
+    expect(relativeDraftWindow(400, { below: 0.1, above: 0.2 })).toEqual({ below: 40, above: 80 })
+    expect(relativeDraftWindow(0, EMERALD_DRAFT_RATIO)).toEqual({ below: 0, above: 0 })
+  })
+
+  it.each([0, 8])('UT-162: incluye ambos límites proporcionales y excluye sus vecinos en el hito %i', index => {
+    const request = requestAt(index)
+    const min = request.rivalAverage - request.window.below
+    const max = request.rivalAverage + request.window.above
+    const candidates = [min - 0.001, min, request.rivalAverage, max, max + 0.001]
+      .map((baseStatTotal, i) => ({ species: String(i), baseStatTotal }))
+    expect(draftPool({ ...request, candidates })).toEqual(['1', '2', '3'])
+  })
+
+  it.each([0, 8])('UT-163: openDraft aplica la media y ventana del hito %i', encounterIndex => {
+    const state = { ...createCampaign('ventana-proporcional'), encounterIndex, draftTypeCovered: true }
+    const request = { ...requestAt(encounterIndex), seed: state.seed }
+    expect(openDraft(definition, state).offer).toEqual(draftOffer(request))
+    const pool = new Set(draftPool(request))
+    for (let seed = 0; seed < 25; seed++) {
+      const offer = openDraft(definition, { ...state, seed: String(seed) }).offer
+      expect(offer.every(id => pool.has(id))).toBe(true)
+    }
+  })
+
+  it.each([0, 8])('UT-163: openDraft incluye los extremos y excluye los vecinos en el hito %i', encounterIndex => {
+    const fixture = structuredClone(definition)
+    const request = requestAt(encounterIndex)
+    const rivals = new Set(definition.encounters.flatMap(encounter => encounter.team.map(mon => mon.species)))
+    const candidates = request.candidates.map(mon => mon.species).filter(id => !rivals.has(id)).slice(0, 6)
+    expect(candidates).toHaveLength(6)
+    // Aísla el margen sin alterar la media rival ni la disponibilidad de formas.
+    for (const id of Object.keys(fixture.species)) {
+      if (!rivals.has(id)) fixture.species[id].baseStatTotal = 9999
+    }
+    const min = request.rivalAverage - request.window.below
+    const max = request.rivalAverage + request.window.above
+    const totals = [min, min + 0.5, max - 0.5, max, min - 0.001, max + 0.001]
+    candidates.forEach((id, i) => { fixture.species[id].baseStatTotal = totals[i] })
+    // Excluye rivales viables del pool sin cambiar sus estadísticas.
+    const state = { ...createCampaign('limites'), encounterIndex, previousOffer: [...rivals], draftTypeCovered: true }
+    expect([...openDraft(fixture, state).offer].sort()).toEqual(candidates.slice(0, 4).sort())
+  })
+
+  it('UT-164: exige cuatro elecciones iniciales, dos por gimnasio y tres en la Liga', () => {
+    expect(Array.from({ length: 9 }, (_, i) => draftPicks(definition, i))).toEqual([4, 2, 2, 2, 2, 2, 2, 2, 3])
+    let state = { ...createCampaign('tres-en-liga'), encounterIndex: 8 }
+    for (let pick = 1; pick <= 3; pick++) {
+      const opened = openDraft(definition, state)
+      state = chooseRecruit(definition, opened, opened.offer[0])
+      expect(state.pick).toBe(pick)
+      expect(state.members).toHaveLength(pick)
+      expect(state.phase).toBe(pick === 3 ? 'prepare' : 'draft')
+      expect(state.offer).toEqual([])
+    }
+    expect(state.members.map(member => member.id)).toEqual(['sixto:0', 'sixto:1', 'sixto:2'])
+    expect(() => openDraft(definition, state)).toThrow(/fase/)
   })
 
   it('no permite que un llamador sustituya A ni amplíe o estreche la ventana', () => {
     const state = createCampaign('regla-aprobada:0')
-    const expected = ['shellder', 'natu', 'smoochum', 'teddiursa']
+    const expected = draftOffer({ ...requestAt(0), seed: state.seed })
     expect(openDraft(definition, state).offer).toEqual(expected)
     expect(openDraft(definition, state, ['mewtwo'], { below: 9999, above: 9999 }).offer).toEqual(expected)
     expect(openDraft(definition, state, [], { below: 0, above: 0 }).offer).toEqual(expected)
@@ -50,8 +107,8 @@ describe('política de draft de Esmeralda aprobada por Jose el 11/11/2026', () =
             counts[encounterIndex][id] = (counts[encounterIndex][id] ?? 0) + 1
             expect(viable.has(id)).toBe(true)
             const bst = definition.species[id].baseStatTotal
-            expect(bst).toBeGreaterThanOrEqual(request.rivalAverage - 30)
-            expect(bst).toBeLessThanOrEqual(request.rivalAverage + 40)
+            expect(bst).toBeGreaterThanOrEqual(request.rivalAverage * 0.94)
+            expect(bst).toBeLessThanOrEqual(request.rivalAverage * 1.08)
           }
           covered ||= gymCounterSpecies(definition, definition.encounters[encounterIndex].id, opened.offer).length > 0
           state = chooseRecruit(definition, opened, opened.offer[0])
@@ -60,7 +117,7 @@ describe('política de draft de Esmeralda aprobada por Jose el 11/11/2026', () =
         previousOffer = state.previousOffer
       }
     }
-    const saved = readJson('docs/nuzlocke/draft-results-absolute-100.json')
+    const saved = readJson('docs/nuzlocke/draft-results-relative-100.json')
     for (let index = 0; index < 9; index++) {
       const reference = saved.rows.find((row: { guarantee: boolean; encounterId: string }) => row.guarantee && row.encounterId === definition.encounters[index].id)
       expect(counts[index]).toEqual(reference.speciesCounts)

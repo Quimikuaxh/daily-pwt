@@ -10,10 +10,12 @@ import { realChallenge, realData } from '../ui/battle/party/partyFixtures'
 import { filler } from '../test-utils/teams'
 import { settle } from '../test-utils/ui'
 import { DEFAULT_SETTINGS } from '../storage/settings'
+import { INTRO_DURATIONS_MS } from '../hooks/useBattle'
 import SummaryScreen from '../ui/battle/party/SummaryScreen'
 
 // Importar la ficha evita que la carga lazy dependa de la carga de la tanda.
 void SummaryScreen
+const INTRO_TOTAL_MS = Object.values(INTRO_DURATIONS_MS).reduce((sum, ms) => sum + ms, 0)
 const player = [filler('ditto'), filler('ditto')]
 const rival = [filler('geodude'), filler('geodude')]
 const initial = createBattleEngine({ battleSeed: 'visible-identities', player, rival, ai: 'trivial', maxTurns: 30 }).start()
@@ -49,7 +51,8 @@ describe('identidades fuera de la presentación', () => {
     } else {
       render(<ReplayViewer replay={replay} data={realData} settings={DEFAULT_SETTINGS} own={false}
         onSoundChange={vi.fn()} onExit={vi.fn()} />)
-      await settle(8000)
+      // Espera a que acabe la intro (con la pancarta VS, RF-137, dura 6,9 s a x1) antes de pedir el turno siguiente.
+      await settle(INTRO_TOTAL_MS + 4000)
       await user.click(screen.getByRole('button', { name: 'Turno siguiente' }))
     }
     await settle(30000)

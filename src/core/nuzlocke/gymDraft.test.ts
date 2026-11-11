@@ -3,15 +3,18 @@ import { Dex } from '@pkmn/sim'
 import { campaignInput } from '../../test-utils/campaign'
 import { campaignDraftRequest, chooseRecruit, createCampaign, finishEncounter, openDraft, startEncounter } from './campaign'
 import { EMERALD_GYM_TYPES, gymCounterSpecies } from './gymDraft'
-import { draftOffer, EMERALD_DRAFT_WINDOW } from './draft'
+import { draftOffer } from './draft'
 import { availableDraftForms } from './draftAvailability'
 import calendar from '../../../data/nuzlocke/hoenn-emerald-calendar.json'
 
 const { definition } = campaignInput()
 const ids = Object.keys(definition.species)
-const window = EMERALD_DRAFT_WINDOW
-const requestAt = (state: ReturnType<typeof createCampaign>) => campaignDraftRequest(definition, state,
-  availableDraftForms(definition, calendar, state.encounterIndex, 'A').map(form => form.species), window)
+const window = { below: 9999, above: 9999 }
+const requestAt = (state: ReturnType<typeof createCampaign>) => {
+  const raw = campaignDraftRequest(definition, state,
+    availableDraftForms(definition, calendar, state.encounterIndex, 'A').map(form => form.species), window)
+  return { ...raw, window: { below: raw.rivalAverage * 0.06, above: raw.rivalAverage * 0.08 } }
+}
 
 describe('tipo propio supereficaz por tramo de gimnasio (Jose, 11/11/2026)', () => {
   it('coincide con la tabla de tipos Gen 3 para los ocho gimnasios y ambos tipos propios', () => {
@@ -65,6 +68,13 @@ describe('tipo propio supereficaz por tramo de gimnasio (Jose, 11/11/2026)', () 
     const ready = chooseRecruit(definition, opened, opened.offer[0])
     const playing = startEncounter(definition, ready, [ready.members[0].id])
     expect(finishEncounter(definition, playing, true, [false]).draftTypeCovered).toBe(false)
+  })
+
+  it.each([0, 1, 2])('UT-164: no fuerza cobertura de tipo en la oferta %i de Liga', pick => {
+    const state = { ...createCampaign('liga-sin-garantia'), encounterIndex: 8, pick, draftTypeCovered: false }
+    const opened = openDraft(definition, state)
+    expect(opened.offer).toEqual(draftOffer(requestAt(state)))
+    expect(opened.draftTypeCovered).toBe(false)
   })
 
   it('no exige un tipo en la Liga ni vuelve a sortear una oferta guardada anterior a la regla', () => {

@@ -1,6 +1,6 @@
 # Simulación y regla del draft de Hoenn
 
-**Regla aprobada por Jose el 11/11/2026: escenario A y ventana absoluta −30/+40 por Pokémon.** Las tablas porcentuales se conservan como comparación de las alternativas descartadas; no son la configuración del juego.
+**Regla aprobada por Jose el 11/11/2026: escenario A y ventana proporcional −6 %/+8 % de la media rival de cada hito** (`EMERALD_DRAFT_RATIO`). Corrige el mismo día la ventana absoluta −30/+40: Jose aclaró que «como en el PWT» se refería al tamaño del margen, no a que fuese fijo, y −30/+40 era demasiado margen al principio (con Petra, ±10-13 %). Las tablas absolutas y porcentuales se conservan como comparación de alternativas descartadas; no son la configuración del juego.
 
 Ejecuta la simulación sin red y sin modificar partidas ni datos:
 
@@ -8,7 +8,10 @@ Ejecuta la simulación sin red y sin modificar partidas ni datos:
 node scripts/simulate-nuzlocke-draft.mjs --seeds 100 --margins 10,15,20,25 --scenarios A,B,C --prefix calibracion-draft:v1 --out docs/nuzlocke/draft-results-100.json
 node scripts/report-nuzlocke-draft.mjs
 node scripts/report-nuzlocke-draft.mjs --check
-# Regla aprobada: 100 semillas, A, ventana absoluta y control sin garantía.
+# Regla aprobada: 100 semillas, A, ventana proporcional −6 %/+8 % y control sin garantía.
+node scripts/simulate-nuzlocke-draft.mjs --seeds 100 --scenarios A --margins '' --relative 6,8 --out docs/nuzlocke/draft-results-relative-100.json
+node scripts/report-nuzlocke-draft.mjs --section relative
+# Descartada (11/11/2026): ventana absoluta −30/+40.
 node scripts/simulate-nuzlocke-draft.mjs --seeds 100 --scenarios A --margins '' --absolute 30,40 --out docs/nuzlocke/draft-results-absolute-100.json
 node scripts/report-nuzlocke-draft.mjs --section absolute
 node scripts/report-nuzlocke-draft.mjs --section absolute --check
@@ -30,7 +33,7 @@ En A, disponibilidad significa posibilidad de alcanzar una forma, no que cualqui
 
 Para cada escenario y ventana (porcentual simétrica o absoluta), ejecuta los mismos N identificadores de semilla con la garantía activada y desactivada. La media de estadísticas base rival procede de `campaignDraftRequest`, compartido con `openDraft`: media por Pokémon en gimnasios y media de las cinco medias de equipos para la Liga. Hay nueve hitos de draft: ocho gimnasios y una entrada a la Liga al nivel de Sixto. No añade ofertas entre los cinco combates de Liga.
 
-Cada semilla recorre cuatro ofertas iniciales y dos por hito posterior, conserva la última oferta entre hitos y no simula combates ni elecciones. Al fallar un sorteo, detiene esa trayectoria; consulta `reachedSeeds` antes de comparar hitos posteriores. Los pools anteriores a exclusiones se calculan para todos los hitos, aunque ninguna trayectoria llegue a ellos.
+Cada semilla recorre cuatro ofertas iniciales, dos por gimnasio posterior y tres al entrar en la Liga (`draftPicks`; Jose, 11/11/2026), conserva la última oferta entre hitos y no simula combates ni elecciones. Al fallar un sorteo, detiene esa trayectoria; consulta `reachedSeeds` antes de comparar hitos posteriores. Los pools anteriores a exclusiones se calculan para todos los hitos, aunque ninguna trayectoria llegue a ellos.
 
 - `poolBeforeExclusions`, `poolAfterExclusions`: especies dentro del margen antes y después de excluir la oferta anterior; el segundo da mínimo, mediana, media y máximo observados. La mediana es exacta sobre las observaciones de todos los sorteos del hito; si hay un número par de observaciones, usa la media de los dos valores centrales.
 - `counterPoolBeforeExclusions`, `counterPoolAfterExclusions`: especies de esos pools con tipo propio supereficaz. No son filtros que reduzcan todos los candidatos a ese subconjunto: los otros tres candidatos pueden tener cualquier tipo.
@@ -63,7 +66,78 @@ La pasada exploratoria de 100 semillas por combinación, prefijo `calibracion-dr
 Verificación de esta entrega: 44 tests focalizados pasan en seis ficheros (17 nuevos), con `--pool=threads --maxWorkers=1`; la regeneración local del catálogo de progresión y `git diff --check` pasan. La CLI se ha ejecutado también con WebSocket desactivado, sin abrir puertos. D3(a) se verificó solo con tests focalizados por la restricción de carga; las comprobaciones completas se acreditan en D3(c), sin atribuirlas a esa tanda focalizada.
 
 
-## Regla aprobada D3(c) · Jose, 11/11/2026
+## Regla aprobada · ventana proporcional −6 %/+8 % (Jose, 11/11/2026)
+
+Cada candidato, entre la media rival × 0,94 y la media rival × 1,08 (límites inclusivos), escenario A. Tamaño de `BST_WINDOW_1` del PWT (−180/+240 sobre la suma de seis) respecto a la mediana de las sumas de los 99 equipos de seis del PWT, 2983 (`data/trainers.json`, estadísticas base Gen 5 de `@pkmn/dex`): −6,0 % / +8,0 %. Proporcional para que el margen crezca con el nivel del rival en lugar de ser ancho al principio y estrecho al final.
+
+Resultado con 100 semillas (tablas abajo): ningún fallo; pool mínimo tras exclusiones **18 en Marcial** (mediana 20) y 35 o más en el resto. **Erico** solo tiene **dos** candidatos de tipo propio supereficaz en su pool (antes de exclusiones), así que la garantía se fuerza en 77 de 100 tramos: casi siempre sale uno de esos dos. No es un fallo, pero sí el tramo más concentrado; si se quiere más variedad ahí, la opción sería ampliar solo la cobertura de tipo de ese hito (no decidido).
+
+<!-- draft-relative:start -->
+JSON fuente: SHA-256 `5a90ab369881d3b52f5d17db820bbf830db8575f88eb4785f9bc2296bcaf1a23`. Muestra: **100 semillas por combinación**; ventanas **−6 %/+8 %**; escenarios **A**.
+
+Lectura común de las tablas por hito: «Otras ofertas» cuenta sorteos con más de un cuarteto legal posible; «Familias ≥2 / 4» cuenta ofertas con al menos dos familias y con cuatro familias distintas. «Rep.» son plazas de especies vistas en ofertas anteriores de la misma semilla / plazas del hito. «BST/rival» es la media ofrecida relativa a la referencia rival. «Tipos» muestra los dos más presentes por plaza, contando ambos tipos propios. Todas estas columnas describen el brazo con garantía.
+
+En las tablas de garantía, «Sin/con» compara los tramos cubiertos con la regla desactivada/activada. «Forzada» indica la fracción de tramos alcanzados en que se condicionó la última oferta; «Cuartetos retirados» es la reducción media solo en esas ofertas. «Supereficaces mín.» cuenta candidatos de tipo válido al forzar: basta uno, no cuatro. «—» indica que no se forzó o que no hay observaciones, según la columna. La Liga no tiene garantía.
+
+### Comparación global con garantía
+
+Pool mínimo tras exclusiones; alternativas y repeticiones agregadas sobre todas las ofertas o plazas de los nueve hitos, según la columna. Familias ≥2/4 muestra dos recuentos: ofertas con al menos dos familias y ofertas con cuatro familias distintas.
+
+| Escenario | Margen | Pool mín. | Ofertas válidas / intentos | Con otros cuartetos | Familias ≥2 / 4 | Reapariciones / plazas | Fallos |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| A | −6 %/+8 % | 18 | 2100 / 2100 | 2100 | 2100 / 2087 | 9.2 % | 0 |
+
+### Escenario A: pool por hito
+
+Cada celda es **mínimo / mediana** de especies tras excluir la oferta anterior, con garantía. Se agregan todas las ofertas y semillas del hito, no las medianas de subgrupos.
+
+| Hito | −6 %/+8 % |
+| --- | --- |
+| Petra | 41 / 41 |
+| Marcial | 18 / 20 |
+| Erico | 41 / 43 |
+| Candela | 35 / 35 |
+| Norman | 56 / 58 |
+| Alana | 62 / 62 |
+| Vito y Leti | 80 / 80 |
+| Galano | 67 / 67 |
+| Liga (Sixto) | 93 / 93 |
+
+#### A · −6 %/+8 %: elecciones, repetición y estadísticas
+
+| Hito | Válidas | Otras ofertas | Familias ≥2 / 4 | Rep. | BST/rival | Tipos más presentes |
+| --- | --- | --- | --- | --- | --- | --- |
+| Petra | 400 | 400 | 400 / 400 | 7.3 % | 99.8 % | Agua 33.5 %; Planta 17.0 % |
+| Marcial | 200 | 200 | 200 / 200 | 0.0 % | 102.5 % | Normal 28.0 %; Agua 24.0 % |
+| Erico | 200 | 200 | 200 / 198 | 0.0 % | 102.0 % | Bicho 25.8 %; Planta 15.1 % |
+| Candela | 200 | 200 | 200 / 198 | 6.0 % | 101.3 % | Bicho 25.4 %; Roca 20.8 % |
+| Norman | 200 | 200 | 200 / 198 | 0.0 % | 100.3 % | Normal 17.4 %; Lucha 16.6 % |
+| Alana | 200 | 200 | 200 / 199 | 6.9 % | 102.0 % | Normal 22.8 %; Volador 19.0 % |
+| Vito y Leti | 200 | 200 | 200 / 198 | 13.3 % | 100.9 % | Normal 19.6 %; Agua 18.1 % |
+| Galano | 200 | 200 | 200 / 199 | 20.5 % | 101.7 % | Normal 25.0 %; Volador 21.4 % |
+| Liga (Sixto) | 300 | 300 | 300 / 297 | 23.6 % | 100.4 % | Agua 20.8 %; Normal 15.5 % |
+
+#### A · −6 %/+8 %: efecto de la garantía por tramo
+
+| Gimnasio | Cobertura sin / con | Forzada | Cuartetos retirados | Supereficaces mín. | Tramos completados |
+| --- | --- | --- | --- | --- | --- |
+| Petra | 100.0 % / 100.0 % | 0.0 % | — | — | 100 / 100 |
+| Marcial | 93.0 % / 100.0 % | 34.0 % | 23.4 % | 5 | 100 / 100 |
+| Erico | 38.0 % / 100.0 % | 77.0 % | 81.2 % | 2 | 100 / 100 |
+| Candela | 96.0 % / 100.0 % | 27.0 % | 24.2 % | 10 | 100 / 100 |
+| Norman | 69.0 % / 100.0 % | 55.0 % | 53.0 % | 8 | 100 / 100 |
+| Alana | 70.0 % / 100.0 % | 56.0 % | 44.8 % | 11 | 100 / 100 |
+| Vito y Leti | 65.0 % / 100.0 % | 57.0 % | 51.5 % | 12 | 100 / 100 |
+| Galano | 73.0 % / 100.0 % | 57.0 % | 51.5 % | 10 | 100 / 100 |
+
+### Escasez y cobertura
+
+Ninguna combinación presenta un pool menor de cuatro, antes ni después de exclusiones, en los hitos observados.
+Todos los gimnasios tienen candidatos de tipo propio válido en el pool inicial.
+Repeticiones con la oferta inmediatamente anterior: **0**. Fallos con garantía: **0**.
+<!-- draft-relative:end -->
+
+## Regla anterior D3(c) · descartada el 11/11/2026
 
 Fija A con **cada candidato entre media rival −30 y media rival +40**, con límites inclusivos. No es un porcentaje ni una ventana sobre la suma de los cuatro candidatos. Es la ventana anterior RF-13d del PWT, `BST_WINDOW_1` (−180/+240 por equipo de seis), dividida entre seis. Usa la media por Pokémon del gimnasio y, para la Liga, la media de las cinco medias por equipo que devuelve `campaignDraftRequest`. Descarta `BST_WINDOW_2` por Pokémon (−15/+45): su centro desplazado hacia arriba compensa el sorteo de equipo del PWT; en esta campaña el jugador elige Pokémon y ataques.
 

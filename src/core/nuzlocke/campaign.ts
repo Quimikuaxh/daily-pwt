@@ -1,5 +1,5 @@
 import { DataError } from '../errors'
-import { draftOffer, EMERALD_DRAFT_WINDOW, type DraftRequest } from './draft'
+import { draftOffer, EMERALD_DRAFT_RATIO, relativeDraftWindow, type DraftRequest } from './draft'
 import { availableDraftForms } from './draftAvailability'
 import emeraldCalendar from '../../../data/nuzlocke/hoenn-emerald-calendar.json'
 import { gymCounterSpecies } from './gymDraft'
@@ -79,6 +79,15 @@ export function campaignDraftRequest(
   }
 }
 
+/**
+ * Elecciones del draft en cada hito: cuatro antes del primer gimnasio, tres al entrar en la Liga (Jose, 11/11/2026: un recluta más para
+ * los cinco combates seguidos) y dos antes de cada gimnasio.
+ */
+export function draftPicks(definition: CampaignDefinition, encounterIndex: number): number {
+  if (encounterIndex === 0) return 4
+  return definition.encounters[encounterIndex]?.kind === 'gym' ? 2 : 3
+}
+
 export function openDraft(
   definition: CampaignDefinition, state: CampaignState, eligibleSpecies?: readonly string[], window?: DraftRequest['window'],
 ): CampaignState {
@@ -87,7 +96,8 @@ export function openDraft(
   if (isEmeraldCampaign(definition)) {
     // El llamador no puede ampliar el margen ni introducir formas no viables.
     eligibleSpecies = availableDraftForms(definition, emeraldCalendar, state.encounterIndex, 'A').map(form => form.species)
-    window = EMERALD_DRAFT_WINDOW
+    const { rivalAverage } = campaignDraftRequest(definition, state, eligibleSpecies, { below: 0, above: 0 })
+    window = relativeDraftWindow(rivalAverage, EMERALD_DRAFT_RATIO)
   }
   if (!eligibleSpecies || !window) throw new DataError('La campaña necesita sus reglas de draft.')
   const request = campaignDraftRequest(definition, state, eligibleSpecies, window)
@@ -95,7 +105,7 @@ export function openDraft(
   const counters = isEmeraldCampaign(definition) && encounter.kind === 'gym'
     ? gymCounterSpecies(definition, encounter.id, eligibleSpecies) : []
   const covered = state.draftTypeCovered === true || (state.pick > 0 && state.previousOffer.some(id => counters.includes(id)))
-  const lastPick = state.pick === (state.encounterIndex === 0 ? 3 : 1)
+  const lastPick = state.pick === draftPicks(definition, state.encounterIndex) - 1
   const needsCounter = isEmeraldCampaign(definition) && encounter.kind === 'gym' && !covered && lastPick
   const offer = draftOffer({
     ...request,
@@ -120,7 +130,7 @@ export function chooseRecruit(definition: CampaignDefinition, state: CampaignSta
     }
   }
   const pick = state.pick + 1
-  const required = state.encounterIndex === 0 ? 4 : 2
+  const required = draftPicks(definition, state.encounterIndex)
   return {
     ...state, pick, phase: pick === required ? 'prepare' : 'draft',
     previousOffer: state.offer, offer: [], members: [...state.members, member],

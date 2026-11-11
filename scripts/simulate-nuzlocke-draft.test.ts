@@ -1,11 +1,63 @@
+import { execFile } from 'node:child_process'
+import { promisify } from 'node:util'
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { ROOT } from '../src/test-utils/paths'
+import { fromRoot, ROOT } from '../src/test-utils/paths'
 import { availableDraftForms, draftEvolutionFamilies, draftMetricSummary, loadSimulationInputs, simulateDraft } from './simulate-nuzlocke-draft.ts'
 
+const runNode = promisify(execFile)
 const { definition, calendar } = loadSimulationInputs(ROOT)
 const ids = (index: number, scenario: 'A' | 'B' | 'C') => availableDraftForms(definition, calendar, index, scenario).map(form => form.species)
 
 describe('simulación analítica del draft', () => {
+  it('UT-165: la CLI --relative 6,8 selecciona la ventana proporcional', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'draft-simulation-'))
+    const output = join(dir, 'result.json')
+    try {
+      await runNode(process.execPath, [fromRoot('scripts/simulate-nuzlocke-draft.mjs'),
+        '--seeds', '1', '--margins', '', '--relative', '6,8', '--scenarios', 'A', '--out', output])
+      const result = JSON.parse(readFileSync(output, 'utf8'))
+      expect(result.options.relativeWindows).toEqual([{ below: 6, above: 8 }])
+      expect(result.options.margins).toEqual([])
+      expect(result.rows).toHaveLength(18)
+      for (const row of result.rows.filter((row: { encounterId: string }) => row.encounterId === 'sixto')) {
+        expect(row.attemptedOffers).toBe(3)
+        expect(row.validFourDistinctOffers).toBe(3)
+      }
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('UT-165: reproduce ventanas relativas sin margen simétrico y recorre tres ofertas de Liga', () => {
+    const options = { seeds: 3, margins: [], relativeWindows: [{ below: 6, above: 8 }], scenarios: ['A'] as const }
+    const run = () => simulateDraft(definition, calendar, { ...options, scenarios: [...options.scenarios] })
+    const result = run()
+    expect(result).toEqual(run())
+    expect(result.rows).toHaveLength(18)
+    for (const row of result.rows) {
+      expect(row.relativeWindow).toEqual({ below: 6, above: 8 })
+      expect(row.marginPercent).toBeNull()
+      expect(row).not.toHaveProperty('absoluteWindow')
+      expect(row.failedOffers).toBe(0)
+      expect(row.reachedSeeds).toBe(3)
+      expect(row.completedSegments).toBe(3)
+      const picks = row.encounterId === 'petra' ? 4 : row.encounterId === 'sixto' ? 3 : 2
+      expect(row.attemptedOffers).toBe(3 * picks)
+      expect(row.validFourDistinctOffers).toBe(3 * picks)
+      expect(row.offeredSlots).toBe(3 * picks * 4)
+      expect(row.repeatedSlotsInPreviousOffer).toBe(0)
+      for (const species of Object.keys(row.speciesCounts)) {
+        expect(definition.species[species].baseStatTotal).toBeGreaterThanOrEqual(row.rivalAverage * 0.94)
+        expect(definition.species[species].baseStatTotal).toBeLessThanOrEqual(row.rivalAverage * 1.08)
+      }
+      if (row.encounterId === 'sixto') expect(row.forcedOffers).toBe(0)
+      else if (row.guarantee) expect(row.coveredSegments).toBe(3)
+    }
+  })
+
   it('admite −30/+40 absoluto y reproduce el mismo resultado sin porcentajes', () => {
     const options = { seeds: 3, margins: [], absoluteWindows: [{ below: 30, above: 40 }], scenarios: ['A'] as const }
     const run = () => simulateDraft(definition, calendar, { ...options, scenarios: [...options.scenarios] })

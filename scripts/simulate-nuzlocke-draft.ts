@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
-import { campaignDraftRequest, createCampaign, type CampaignDefinition, type CampaignState } from '../src/core/nuzlocke/campaign'
+import { campaignDraftRequest, createCampaign, draftPicks, type CampaignDefinition, type CampaignState } from '../src/core/nuzlocke/campaign'
 import { draftOffer, draftPool } from '../src/core/nuzlocke/draft'
 import { EMERALD_GYM_TYPES, gymCounterSpecies } from '../src/core/nuzlocke/gymDraft'
 
@@ -45,14 +45,16 @@ export function draftEvolutionFamilies(definition: CampaignDefinition): Map<stri
 }
 
 export function simulateDraft(definition: CampaignDefinition, calendar: Calendar, options: {
-  seeds: number; margins: number[]; absoluteWindows?: { below: number; above: number }[]; prefix?: string; scenarios?: Scenario[]
+  seeds: number; margins: number[]; absoluteWindows?: { below: number; above: number }[]; relativeWindows?: { below: number; above: number }[]; prefix?: string; scenarios?: Scenario[]
 }) {
   if (!Number.isSafeInteger(options.seeds) || options.seeds < 1 || options.seeds > 100_000) throw new Error('seeds debe estar entre 1 y 100000')
-  if ((!options.margins.length && !options.absoluteWindows?.length) || options.margins.some(m => !Number.isFinite(m) || m < 0 || m > 100)) throw new Error('margins debe contener porcentajes entre 0 y 100 o una ventana absoluta')
+  if ((!options.margins.length && !options.absoluteWindows?.length && !options.relativeWindows?.length) || options.margins.some(m => !Number.isFinite(m) || m < 0 || m > 100)) throw new Error('margins debe contener porcentajes entre 0 y 100 o una ventana absoluta')
   if (options.absoluteWindows?.some(w => [w.below, w.above].some(n => !Number.isFinite(n) || n < 0))) throw new Error('La ventana absoluta necesita límites finitos no negativos')
   const windows = [
-    ...options.margins.map(margin => ({ margin: margin as number | null, absolute: undefined as { below: number; above: number } | undefined })),
-    ...(options.absoluteWindows ?? []).map(absolute => ({ margin: null, absolute })),
+    ...options.margins.map(margin => ({ margin: margin as number | null, absolute: undefined as { below: number; above: number } | undefined, relative: undefined as { below: number; above: number } | undefined })),
+    ...(options.absoluteWindows ?? []).map(absolute => ({ margin: null, absolute, relative: undefined })),
+    // Ventana proporcional asimétrica (porcentajes por debajo y por encima de la media rival), como EMERALD_DRAFT_RATIO.
+    ...(options.relativeWindows ?? []).map(relative => ({ margin: null, absolute: undefined, relative })),
   ]
   const scenarios = options.scenarios ?? ['A', 'B', 'C']
   if (!scenarios.length || scenarios.some(s => !['A', 'B', 'C'].includes(s))) throw new Error('Escenario desconocido')
@@ -62,11 +64,12 @@ export function simulateDraft(definition: CampaignDefinition, calendar: Calendar
   const families = draftEvolutionFamilies(definition)
   for (const scenario of scenarios) {
     const forms = milestones.map(({ index }) => availableDraftForms(definition, calendar, index, scenario))
-    for (const { margin, absolute } of windows) for (const guarantee of [false, true]) {
+    for (const { margin, absolute, relative } of windows) for (const guarantee of [false, true]) {
       const stats = milestones.map(({ encounter, index }, i) => {
         const ids = forms[i].map(form => form.species)
         const raw = campaignDraftRequest(definition, { ...createCampaign(''), encounterIndex: index }, ids, { below: 0, above: 0 })
-        const window = absolute ?? { below: raw.rivalAverage * margin! / 100, above: raw.rivalAverage * margin! / 100 }
+        const window = absolute ?? (relative ? { below: raw.rivalAverage * relative.below / 100, above: raw.rivalAverage * relative.above / 100 }
+          : { below: raw.rivalAverage * margin! / 100, above: raw.rivalAverage * margin! / 100 })
         const pool = draftPool({ ...raw, window })
         const counters = encounter.kind === 'gym' ? gymCounterSpecies(definition, encounter.id, ids) : []
         return { encounterId: encounter.id, index, ids, window, counters, rivalAverage: raw.rivalAverage,
@@ -89,7 +92,7 @@ export function simulateDraft(definition: CampaignDefinition, calendar: Calendar
           state = { ...state, encounterIndex: row.index, pick: 0, offer: [], draftTypeCovered: false }
           let covered = false
           const seenInSegment = new Set<string>()
-          const picks = row.index === 0 ? 4 : 2
+          const picks = draftPicks(definition, row.index)
           for (let pick = 0; pick < picks; pick++) {
             state = { ...state, pick }
             const request = campaignDraftRequest(definition, state, row.ids, row.window)
@@ -146,7 +149,7 @@ export function simulateDraft(definition: CampaignDefinition, calendar: Calendar
       }
       for (const row of stats) {
         const average = mean(row.totals)
-        rows.push({ scenario, marginPercent: margin, ...(absolute ? { absoluteWindow: absolute } : {}), guarantee, encounterId: row.encounterId,
+        rows.push({ scenario, marginPercent: margin, ...(absolute ? { absoluteWindow: absolute } : {}), ...(relative ? { relativeWindow: relative } : {}), guarantee, encounterId: row.encounterId,
           rivalAverage: row.rivalAverage, availableForms: row.availability,
           poolBeforeExclusions: row.pool, counterPoolBeforeExclusions: row.counterPool,
           poolAfterExclusions: range(row.pools), counterPoolAfterExclusions: range(row.effectivePools),
