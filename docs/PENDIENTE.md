@@ -27,6 +27,11 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 - Los E2E completos de D2 los ejecuta el coordinador, según el encargo de Jose. No se han ejecutado en esta etapa.
 - Muestra a Jose las maquetas de escritorio y móvil antes de implementar las pantallas de campaña y el tema de combate.
 
+
+## Temas de consola y recursos de Esmeralda (D5, 11/11/2026)
+
+- **Hecho (D5 de la Nuzlocke, DEC-95):** canal de recursos de los decompilados de pret (`scripts/decomp/`, `npm run gen:emerald`) con la receta de Esmeralda (interfaz de las maquetas aprobadas y sprites de las 386 especies) y temas de consola en `src/ui/console/` (`ConsoleStage`, `GameText`, `GameWindow`; Esmeralda y N2/B2). Sin pantallas de campaña ni cambios visibles en el reto diario.
+- **Unida a `feature/nuzlocke-hoenn` el 11/11/2026** (sin push: a `main` no va nada de la Nuzlocke hasta que esté completa). D7 hace las pantallas encima.
 ## Ambiente del estadio y pancarta VS (11/11/2026, en `main`)
 
 - **Hecho:** focos del suelo, haces del techo, sombras, destello con chispas, cámara de la intro y de los ataques, estallido al abrirse la Poké Ball (RF-136; giro por JS a 12 fps, DEC-87) y pancarta VS (RF-137): franja fina que entra sobre el estadio y choca, retratos del último fotograma del gif (`gen:trainer-vs`), logo en pixel art (`gen:vs-logo`), fogonazo que descubre la rejilla. Aprobado por Jose. También en repeticiones y directo.

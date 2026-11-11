@@ -1,0 +1,22 @@
+{
+  "estado": "reconstruido a partir de la edición inglesa",
+  "rotulos": {
+    "normal": "NORMAL",
+    "fighting": "LUCHA",
+    "flying": "VOLAD",
+    "poison": "VENENO",
+    "ground": "TIERRA",
+    "rock": "ROCA",
+    "bug": "BICHO",
+    "ghost": "FANTAS",
+    "steel": "ACERO",
+    "fire": "FUEGO",
+    "water": "AGUA",
+    "grass": "PLANTA",
+    "electric": "ELÉCTR",
+    "psychic": "PSÍQUI",
+    "ice": "HIELO",
+    "dragon": "DRAGÓN",
+    "dark": "SINIES"
+  }
+}

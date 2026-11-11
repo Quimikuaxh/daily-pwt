@@ -1,0 +1,55 @@
+/* Lienzo de consola de un tema (ConsoleStage, DEC-95). Las pantallas miden --screen-w x --screen-h píxeles del juego y se escalan con --k. */
+.console-stage {
+  width: calc(var(--screen-w) * var(--k, 2));
+  height: calc(var(--screen-h) * var(--screens) * var(--k, 2));
+  background: #000;
+}
+
+.console-canvas {
+  width: var(--screen-w);
+  height: calc(var(--screen-h) * var(--screens));
+  transform: scale(var(--k, 2));
+  transform-origin: 0 0;
+}
+
+.console-screen {
+  position: relative;
+  display: block;
+  width: var(--screen-w);
+  height: var(--screen-h);
+  overflow: hidden;
+  background: #000;
+}
+
+.console-screen * {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  image-rendering: pixelated;
+}
+
+/* Lo pintado nunca recibe clics: van al botón de debajo. */
+.console-screen canvas.game-text,
+.console-screen img {
+  pointer-events: none;
+}
+
+.console-screen button {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.console-screen button:focus-visible {
+  outline: 1px solid #f85838;
+  outline-offset: -1px;
+}
+
+/* Ventana del juego: marco a 9 cortes de una tesela por lado (imagen y tamaño del tema). */
+.game-window {
+  border: var(--frame-px) solid transparent;
+  border-image: var(--frame) var(--frame-slice) fill / var(--frame-px);
+}
