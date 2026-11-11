@@ -115,7 +115,7 @@ export function ResultScreen({ mode, message, player, protagonist, badges, badge
             const r = slotBox(i)
             return (
               <div key={i} style={{ left: r.x, top: r.y, width: r.w, height: r.h }} aria-hidden="true">
-                <PartySlot i={i} mon={member && { ...member, maxHp: member.hp }} state={member?.fainted ? 'ko' : 'normal'} description={member?.fainted ? esCampaign.battle.fainted : undefined} />
+                <PartySlot i={i} mon={member && { ...member, maxHp: member.hp }} state={member?.fainted ? (i === 0 ? 'ko-activa' : 'ko') : i === 0 ? 'activa' : 'normal'} description={member?.fainted ? esCampaign.battle.fainted : undefined} />
               </div>
             )
           })}
