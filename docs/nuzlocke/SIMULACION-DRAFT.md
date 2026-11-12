@@ -1,5 +1,7 @@
 # Simulación y regla del draft de Hoenn
 
+> **12/11/2026:** el draft ya no ofrece especies ni líneas evolutivas que el jugador tiene (PRD §0). El simulador no recluta, así que no aplica esa exclusión: sus informes estudian la ventana del draft y ya no coinciden oferta a oferta con el núcleo (`draftPolicy.test.ts` comprueba la exclusión por su cuenta).
+
 **Regla aprobada por Jose el 11/11/2026: escenario A y ventana proporcional −6 %/+8 % de la media rival de cada hito** (`EMERALD_DRAFT_RATIO`). Corrige el mismo día la ventana absoluta −30/+40: Jose aclaró que «como en el PWT» se refería al tamaño del margen, no a que fuese fijo, y −30/+40 era demasiado margen al principio (con Petra, ±10-13 %). Las tablas absolutas y porcentuales se conservan como comparación de alternativas descartadas; no son la configuración del juego.
 
 Ejecuta la simulación sin red y sin modificar partidas ni datos:

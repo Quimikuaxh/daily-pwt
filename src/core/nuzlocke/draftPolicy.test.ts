@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { campaignInput } from '../../test-utils/campaign'
-import { readJson } from '../../test-utils/paths'
 import calendar from '../../../data/nuzlocke/hoenn-emerald-calendar.json'
 import { availableMoves } from './progression'
-import { campaignDraftRequest, chooseRecruit, createCampaign, draftPicks, openDraft } from './campaign'
+import { campaignDraftRequest, chooseRecruit, createCampaign, draftPicks, evolutionFamilies, openDraft } from './campaign'
 import { availableDraftForms } from './draftAvailability'
 import { draftOffer, draftPool, EMERALD_DRAFT_RATIO, relativeDraftWindow } from './draft'
 import { gymCounterSpecies } from './gymDraft'
@@ -89,6 +88,7 @@ describe('política de draft de Esmeralda aprobada por Jose el 11/11/2026', () =
   })
 
   it('mantiene cuatro distintos, exclusión, semilla estable y cobertura en 100 campañas de nueve tramos', () => {
+    const families = evolutionFamilies(definition)
     const counts = Array.from({ length: 9 }, () => ({} as Record<string, number>))
     for (let seed = 0; seed < 100; seed++) {
       let previousOffer: readonly string[] = []
@@ -110,6 +110,9 @@ describe('política de draft de Esmeralda aprobada por Jose el 11/11/2026', () =
             expect(bst).toBeGreaterThanOrEqual(request.rivalAverage * 0.94)
             expect(bst).toBeLessThanOrEqual(request.rivalAverage * 1.08)
           }
+          // Cambio de requisito (Jose, 12/11/2026): ni especies ni líneas evolutivas que ya se tienen.
+          const owned = new Set(state.members.map(member => families.get(member.species)))
+          expect(opened.offer.filter(id => owned.has(families.get(id)))).toEqual([])
           covered ||= gymCounterSpecies(definition, definition.encounters[encounterIndex].id, opened.offer).length > 0
           state = chooseRecruit(definition, opened, opened.offer[0])
         }
@@ -117,11 +120,9 @@ describe('política de draft de Esmeralda aprobada por Jose el 11/11/2026', () =
         previousOffer = state.previousOffer
       }
     }
-    const saved = readJson('docs/nuzlocke/draft-results-relative-100.json')
-    for (let index = 0; index < 9; index++) {
-      const reference = saved.rows.find((row: { guarantee: boolean; encounterId: string }) => row.guarantee && row.encounterId === definition.encounters[index].id)
-      expect(counts[index]).toEqual(reference.speciesCounts)
-    }
+    // Hasta el 12/11/2026 estas cuentas coincidían con la simulación guardada (`draft-results-relative-100.json`); el simulador no recluta
+    // y no aplica la exclusión de líneas que ya se tienen, así que su informe queda como estudio de la ventana. Basta con que haya variedad.
+    for (let index = 0; index < 9; index++) expect(Object.keys(counts[index]).length).toBeGreaterThan(8)
   })
 
   it('usa la media por equipo en gimnasios y las cinco medias de equipo en Liga', () => {
@@ -146,5 +147,39 @@ describe('política de draft de Esmeralda aprobada por Jose el 11/11/2026', () =
       offer: ['vileplume', 'victreebel', 'jolteon', 'vaporeon'] }, 'vileplume')
     expect(evolved.members[0].history.length).toBeGreaterThan(0)
     expect(consumedEvolutionItems(definition, evolved).size).toBe(0)
+  })
+})
+
+// Jose, 12/11/2026: cláusula de repetidos y garantía que se salta si es inviable.
+describe('draft de Esmeralda: líneas que ya se tienen y garantía inviable', () => {
+  const recruit = (species: string, i: number) => ({ id: `r${i}`, species, level: 20, history: [], fainted: i === 0, victories: 0 })
+
+  it('las líneas evolutivas son componentes conexos de las evoluciones, ramas incluidas', () => {
+    const families = evolutionFamilies(definition)
+    expect(families.get('kirlia')).toBe(families.get('ralts'))
+    expect(families.get('gardevoir')).toBe(families.get('ralts'))
+    expect(families.get('silcoon')).toBe(families.get('cascoon'))
+    expect(families.get('ralts')).not.toBe(families.get('abra'))
+  })
+
+  it('no ofrece especies ni líneas evolutivas que ya se tienen, tampoco las de los caídos', () => {
+    const families = evolutionFamilies(definition)
+    const base = { ...createCampaign('repetidos'), encounterIndex: 2 }
+    const first = openDraft(definition, base)
+    const members = first.offer.map(recruit)
+    const opened = openDraft(definition, { ...base, members, seed: 'repetidos-2' })
+    const owned = new Set(members.map(member => families.get(member.species)))
+    expect(opened.offer.filter(id => owned.has(families.get(id)))).toEqual([])
+    expect(new Set(opened.offer).size).toBe(4)
+  })
+
+  it('si no queda ningún candidato supereficaz en el último intento, la garantía se salta en vez de fallar', () => {
+    const index = definition.encounters.findIndex(encounter => encounter.id === 'erico')
+    const forms = availableDraftForms(definition, calendar, index, 'A').map(form => form.species)
+    const counters = gymCounterSpecies(definition, 'erico', forms)
+    const state = { ...createCampaign('erico'), encounterIndex: index, pick: draftPicks(definition, index) - 1, members: counters.map(recruit) }
+    const opened = openDraft(definition, state)
+    expect(new Set(opened.offer).size).toBe(4)
+    expect(opened.offer.some(id => counters.includes(id))).toBe(false)
   })
 })

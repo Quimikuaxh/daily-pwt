@@ -1,5 +1,5 @@
 import { DataError } from '../errors'
-import { draftOffer, EMERALD_DRAFT_RATIO, relativeDraftWindow, type DraftRequest } from './draft'
+import { draftOffer, draftPool, EMERALD_DRAFT_RATIO, relativeDraftWindow, type DraftRequest } from './draft'
 import { availableDraftForms } from './draftAvailability'
 import emeraldCalendar from '../../../data/nuzlocke/hoenn-emerald-calendar.json'
 import { gymCounterSpecies } from './gymDraft'
@@ -100,6 +100,33 @@ export function draftPicks(definition: CampaignDefinition, encounterIndex: numbe
   return definition.encounters[encounterIndex]?.kind === 'gym' ? 2 : 3
 }
 
+/**
+ * Línea evolutiva de cada especie (la primera de su familia por orden alfabético, como clave estable): componentes conexos de las
+ * evoluciones de la definición, así que las ramas (Wurmple → Silcoon/Cascoon, Nincada → Ninjask/Shedinja) son una sola línea.
+ */
+export function evolutionFamilies(definition: CampaignDefinition): Map<string, string> {
+  const parent = new Map<string, string>()
+  const find = (id: string): string => {
+    const up = parent.get(id) ?? id
+    if (up === id) return id
+    const root = find(up)
+    parent.set(id, root)
+    return root
+  }
+  const join = (a: string, b: string) => {
+    const [x, y] = [find(a), find(b)].sort()
+    if (x !== y) parent.set(y, x)
+  }
+  for (const [id, species] of Object.entries(definition.species)) {
+    parent.set(id, parent.get(id) ?? id)
+    for (const rule of species.evolutions ?? []) join(id, rule.target)
+  }
+  return new Map([...parent.keys()].map(id => [id, find(id)]))
+}
+
+/** Intentos de ampliar la ventana si, tras quitar las líneas que ya se tienen, no quedan cuatro candidatos: +50 % cada vez. */
+const WINDOW_ATTEMPTS = 4
+
 export function openDraft(
   definition: CampaignDefinition, state: CampaignState, eligibleSpecies?: readonly string[], window?: DraftRequest['window'],
 ): CampaignState {
@@ -110,6 +137,14 @@ export function openDraft(
     eligibleSpecies = availableDraftForms(definition, emeraldCalendar, state.encounterIndex, 'A').map(form => form.species)
     const { rivalAverage } = campaignDraftRequest(definition, state, eligibleSpecies, { below: 0, above: 0 })
     window = relativeDraftWindow(rivalAverage, EMERALD_DRAFT_RATIO)
+    // No salen especies ni líneas evolutivas que ya se tienen, también las de los caídos (Jose, 12/11/2026; cláusula de repetidos).
+    const families = evolutionFamilies(definition)
+    const owned = new Set(state.members.map(member => families.get(member.species) ?? member.species))
+    eligibleSpecies = eligibleSpecies.filter(id => !owned.has(families.get(id) ?? id))
+    // Si no quedan cuatro, se amplía la ventana (Jose, 12/11/2026: si la norma es inviable tras varios intentos, se salta).
+    for (let attempt = 1; attempt <= WINDOW_ATTEMPTS && draftPool(campaignDraftRequest(definition, state, eligibleSpecies, window)).length < 4; attempt++) {
+      window = relativeDraftWindow(rivalAverage, { below: EMERALD_DRAFT_RATIO.below * (1 + attempt / 2), above: EMERALD_DRAFT_RATIO.above * (1 + attempt / 2) })
+    }
   }
   if (!eligibleSpecies || !window) throw new DataError('La campaña necesita sus reglas de draft.')
   const request = campaignDraftRequest(definition, state, eligibleSpecies, window)
@@ -118,7 +153,11 @@ export function openDraft(
     ? gymCounterSpecies(definition, encounter.id, eligibleSpecies) : []
   const covered = state.draftTypeCovered === true || (state.pick > 0 && state.previousOffer.some(id => counters.includes(id)))
   const lastPick = state.pick === draftPicks(definition, state.encounterIndex) - 1
-  const needsCounter = isEmeraldCampaign(definition) && encounter.kind === 'gym' && !covered && lastPick
+  // Garantía de tipo propio supereficaz: si en el último intento del hito no queda ningún candidato que la cumpla (p. ej., Erico con
+  // los suyos ya reclutados), se salta (Jose, 12/11/2026).
+  const pool = new Set(draftPool(request))
+  const reachable = counters.some(id => pool.has(id))
+  const needsCounter = isEmeraldCampaign(definition) && encounter.kind === 'gym' && !covered && lastPick && reachable
   const offer = draftOffer({
     ...request,
     ...(needsCounter ? { requiredSpecies: counters } : {}),
