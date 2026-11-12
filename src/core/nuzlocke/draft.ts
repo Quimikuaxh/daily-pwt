@@ -6,9 +6,10 @@ const OFFER_SIZE = 4
 /**
  * Ventana del draft de Esmeralda, proporcional a la media del rival de cada hito (Jose, 11/11/2026: «como en el PWT» se refería al
  * tamaño del margen, no a que fuese fijo; −30/+40 absoluto era demasiado margen al principio). Tamaño de `BST_WINDOW_1` del PWT
- * (−180/+240 sobre la suma de seis) respecto a la mediana de las sumas de los 99 equipos de seis del PWT (2983): −6 % / +8 %.
+ * (−180/+240 sobre la suma de seis) respecto a la mediana de las sumas de los 99 equipos de seis del PWT (2983): −6 % / +8 %. El
+ * 12/11/2026 Jose amplió el margen por abajo a −10 % (más variedad, con Pokémon algo más flojos; por arriba sigue +8 %).
  */
-export const EMERALD_DRAFT_RATIO = Object.freeze({ below: 0.06, above: 0.08 })
+export const EMERALD_DRAFT_RATIO = Object.freeze({ below: 0.10, above: 0.08 })
 
 /** Ventana absoluta para una media del rival según una ventana proporcional. */
 export const relativeDraftWindow = (rivalAverage: number, ratio: { below: number; above: number }): DraftRequest['window'] =>

@@ -13,7 +13,7 @@ const window = { below: 9999, above: 9999 }
 const requestAt = (state: ReturnType<typeof createCampaign>) => {
   const raw = campaignDraftRequest(definition, state,
     availableDraftForms(definition, calendar, state.encounterIndex, 'A').map(form => form.species), window)
-  return { ...raw, window: { below: raw.rivalAverage * 0.06, above: raw.rivalAverage * 0.08 } }
+  return { ...raw, window: { below: raw.rivalAverage * 0.10, above: raw.rivalAverage * 0.08 } }
 }
 
 describe('tipo propio supereficaz por tramo de gimnasio (Jose, 11/11/2026)', () => {

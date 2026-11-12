@@ -124,7 +124,10 @@ export function evolutionFamilies(definition: CampaignDefinition): Map<string, s
   return new Map([...parent.keys()].map(id => [id, find(id)]))
 }
 
-/** Intentos de ampliar la ventana si, tras quitar las líneas que ya se tienen, no quedan cuatro candidatos: +50 % cada vez. */
+/**
+ * Intentos de ampliar la ventana si, tras quitar las líneas que ya se tienen, no quedan cuatro candidatos: solo por abajo (Pokémon algo
+ * más flojos, nunca más fuertes; Jose, 12/11/2026), +50 % del margen inferior cada vez.
+ */
 const WINDOW_ATTEMPTS = 4
 
 export function openDraft(
@@ -141,9 +144,9 @@ export function openDraft(
     const families = evolutionFamilies(definition)
     const owned = new Set(state.members.map(member => families.get(member.species) ?? member.species))
     eligibleSpecies = eligibleSpecies.filter(id => !owned.has(families.get(id) ?? id))
-    // Si no quedan cuatro, se amplía la ventana (Jose, 12/11/2026: si la norma es inviable tras varios intentos, se salta).
+    // Si no quedan cuatro, se amplía la ventana por abajo (Jose, 12/11/2026: si la norma es inviable tras varios intentos, se salta).
     for (let attempt = 1; attempt <= WINDOW_ATTEMPTS && draftPool(campaignDraftRequest(definition, state, eligibleSpecies, window)).length < 4; attempt++) {
-      window = relativeDraftWindow(rivalAverage, { below: EMERALD_DRAFT_RATIO.below * (1 + attempt / 2), above: EMERALD_DRAFT_RATIO.above * (1 + attempt / 2) })
+      window = relativeDraftWindow(rivalAverage, { below: EMERALD_DRAFT_RATIO.below * (1 + attempt / 2), above: EMERALD_DRAFT_RATIO.above })
     }
   }
   if (!eligibleSpecies || !window) throw new DataError('La campaña necesita sus reglas de draft.')

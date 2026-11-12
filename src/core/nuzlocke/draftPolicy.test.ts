@@ -12,14 +12,14 @@ const { definition } = campaignInput()
 const requestAt = (index: number) => {
   const raw = campaignDraftRequest(definition, { ...createCampaign(''), encounterIndex: index },
     availableDraftForms(definition, calendar, index, 'A').map(form => form.species), { below: 0, above: 0 })
-  return { ...raw, window: { below: raw.rivalAverage * 0.06, above: raw.rivalAverage * 0.08 } }
+  return { ...raw, window: { below: raw.rivalAverage * 0.10, above: raw.rivalAverage * 0.08 } }
 }
 
 describe('política de draft de Esmeralda aprobada por Jose el 11/11/2026', () => {
-  it('UT-162: fija −6 %/+8 % y conserva decimales al convertir la ventana', () => {
-    expect(EMERALD_DRAFT_RATIO).toEqual({ below: 0.06, above: 0.08 })
-    expect(relativeDraftWindow(325, EMERALD_DRAFT_RATIO)).toEqual({ below: 19.5, above: 26 })
-    expect(relativeDraftWindow(500.5, EMERALD_DRAFT_RATIO).below).toBeCloseTo(30.03, 10)
+  it('UT-162: fija −10 %/+8 % (por abajo, −6 % hasta el 12/11/2026) y conserva decimales al convertir la ventana', () => {
+    expect(EMERALD_DRAFT_RATIO).toEqual({ below: 0.10, above: 0.08 })
+    expect(relativeDraftWindow(325, EMERALD_DRAFT_RATIO)).toEqual({ below: 32.5, above: 26 })
+    expect(relativeDraftWindow(500.5, EMERALD_DRAFT_RATIO).below).toBeCloseTo(50.05, 10)
     expect(relativeDraftWindow(500.5, EMERALD_DRAFT_RATIO).above).toBeCloseTo(40.04, 10)
     expect(relativeDraftWindow(400, { below: 0.1, above: 0.2 })).toEqual({ below: 40, above: 80 })
     expect(relativeDraftWindow(0, EMERALD_DRAFT_RATIO)).toEqual({ below: 0, above: 0 })
@@ -107,7 +107,7 @@ describe('política de draft de Esmeralda aprobada por Jose el 11/11/2026', () =
             counts[encounterIndex][id] = (counts[encounterIndex][id] ?? 0) + 1
             expect(viable.has(id)).toBe(true)
             const bst = definition.species[id].baseStatTotal
-            expect(bst).toBeGreaterThanOrEqual(request.rivalAverage * 0.94)
+            expect(bst).toBeGreaterThanOrEqual(request.rivalAverage * 0.90)
             expect(bst).toBeLessThanOrEqual(request.rivalAverage * 1.08)
           }
           // Cambio de requisito (Jose, 12/11/2026): ni especies ni líneas evolutivas que ya se tienen.
@@ -171,6 +171,22 @@ describe('draft de Esmeralda: líneas que ya se tienen y garantía inviable', ()
     const owned = new Set(members.map(member => families.get(member.species)))
     expect(opened.offer.filter(id => owned.has(families.get(id)))).toEqual([])
     expect(new Set(opened.offer).size).toBe(4)
+  })
+
+  it('si faltan candidatos, la ventana se amplía solo por abajo', () => {
+    const families = evolutionFamilies(definition)
+    const index = 0
+    const forms = availableDraftForms(definition, calendar, index, 'A').map(form => form.species)
+    const request = requestAt(index)
+    // Se tienen las líneas de la ventana salvo tres: hay que ampliarla, y solo por abajo (nunca por encima de +8 %).
+    const inWindow = forms.filter(id => definition.species[id].baseStatTotal >= request.rivalAverage * 0.9 && definition.species[id].baseStatTotal <= request.rivalAverage * 1.08)
+    const keep = new Set(inWindow.slice(0, 3).map(id => families.get(id)))
+    const inWindowFamilies = new Set(inWindow.map(id => families.get(id)))
+    const members = forms.filter(id => inWindowFamilies.has(families.get(id)) && !keep.has(families.get(id))).map(recruit)
+    const opened = openDraft(definition, { ...createCampaign('ampliar'), encounterIndex: index, members })
+    expect(new Set(opened.offer).size).toBe(4)
+    expect(opened.offer.every(id => definition.species[id].baseStatTotal <= request.rivalAverage * 1.08)).toBe(true)
+    expect(opened.offer.some(id => definition.species[id].baseStatTotal < request.rivalAverage * 0.9)).toBe(true)
   })
 
   it('si no queda ningún candidato supereficaz en el último intento, la garantía se salta en vez de fallar', () => {
