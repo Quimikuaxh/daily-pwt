@@ -340,3 +340,5 @@
 .share-screen { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; align-self: stretch; }
 .share-actions { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
 .share-actions .campaign-action { white-space: nowrap; width: auto; padding-inline: 1rem; }
+/* Al perder la campaña, los del último combate salen en gris (Jose, 12/11/2026); exportScreens lo respeta. */
+.console-screen .share-fallen { filter: grayscale(1); }

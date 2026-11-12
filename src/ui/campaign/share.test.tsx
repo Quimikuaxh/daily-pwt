@@ -28,9 +28,11 @@ describe('pantalla para compartir', () => {
     expect(screen.getByRole('img', { name: /¡AURA, CAMPEONA DE HOENN!/ })).toBeTruthy()
   })
 
-  it('al perder: ante quién', () => {
+  it('al perder: ante quién, con los del último combate en gris', () => {
     render(<ShareScreen won={false} player="BRUNO" protagonist="brendan" rival="Sixto" team={team.slice(0, 3)} card={card} date="2026-11-12" scale={1} />)
     expect(screen.getByRole('img', { name: /BRUNO cayó ante SIXTO\./ })).toBeTruthy()
+    // Los caídos, en gris (Jose, 12/11/2026).
+    expect(document.querySelectorAll('.share-fallen')).toHaveLength(3)
   })
 
   it('Guardar imagen descarga las dos pantallas a 3 aumentos; Compartir usa el menú del sistema', async () => {

@@ -1,6 +1,6 @@
 /**
  * Pantalla final de la campaña para compartir (Jose, 12/11/2026, opción A de `maquetas.html?v=compartir-a`): arriba, el Salón de la
- * Fama con los que ganaron la Liga (o, si se perdió, los del último combate y ante quién); abajo, la Ficha de Entrenador con
+ * Fama con los que ganaron la Liga (o, si se perdió, los del último combate en gris y ante quién; Jose, 12/11/2026); abajo, la Ficha de Entrenador con
  * POKéDEX, BAJAS, TIEMPO y las medallas. Suena la música de los créditos. «Compartir» abre el menú del sistema con la imagen de las
  * dos pantallas (720 × 960) y «Guardar imagen» la descarga (`exportScreens`).
  */
@@ -62,7 +62,7 @@ export function ShareScreen({ won, player, protagonist, rival, team, card, date,
           {hallOfFameOrder(shown.length).map((i) => {
             const member = shown[i]
             const [x, y] = spots[i]
-            return <img key={`${member.species}-${i}`} className="mon-front" src={emeraldSprite('front', member.species)} alt="" style={{ left: x - 32, top: y - 32 }} />
+            return <img key={`${member.species}-${i}`} className={won ? 'mon-front' : 'mon-front share-fallen'} src={emeraldSprite('front', member.species)} alt="" style={{ left: x - 32, top: y - 32 }} />
           })}
           <GameText text={title} x={16} y={121} width={208} align="center" color="salon" hidden />
         </div>
