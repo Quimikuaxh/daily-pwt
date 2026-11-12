@@ -3,6 +3,9 @@
  * (medalla, «Has vencido a…» o derrota) y, tras la medalla, la Ficha de Entrenador con las medallas; tras el campeón, el Salón de la Fama
  * con los supervivientes (hall_of_fame.c). Abajo, el equipo con las bajas (party_menu.c). Tocar arriba avanza; CANCELAR vuelve a la Ruta.
  */
+import { textWidth } from '../console/glyphs'
+import type { BitmapFont } from '../console/theme'
+import { MessageArrow } from './MessageArrow'
 import { useState } from 'react'
 import { ConsoleStage } from '../console/ConsoleStage'
 import { GameText } from '../console/GameText'
@@ -16,6 +19,7 @@ import { hallOfFameOrder, hallOfFameSpots, type Protagonist, type ResultMode } f
 import { resultMusic, useCampaignMusic } from './campaignMusic'
 
 const t = esCampaign.result
+const font = emeraldTheme.font as BitmapFont
 
 export type ResultMember = { species: string; name: string; level: number; hp: number; fainted: boolean }
 
@@ -45,6 +49,7 @@ export function ResultScreen({ mode, message, player, protagonist, badges, badge
     if (mode === 'medal' && !showCard) { setShowCard(true); return }
     onDone()
   }
+  const lastLine = pages[page]?.at(-1) ?? null
   const stats: [string, string, number][] = [[t.money, t.points(card.points), 65], [t.pokedex, String(card.pokedex), 81], [t.time, t.clock(card.minutes), 97]]
   const earned = badgeNames.slice(0, badges).join(', ')
   const accessible = showCard
@@ -91,6 +96,7 @@ export function ResultScreen({ mode, message, player, protagonist, badges, badge
         <img src={emeraldTheme.asset('combate-escenario')} alt="" style={{ left: 0, top: 0 }} />
         <img src={emeraldTheme.asset('combate-caja-mensaje')} alt="" style={{ left: 0, top: 112 }} />
         {(pages[page] ?? []).map((line, i) => <GameText key={i} text={line} x={16} y={121 + 16 * i} color="combate-mensaje" hidden />)}
+        {lastLine !== null && <MessageArrow x={16 + textWidth(font, lastLine) + 1} y={120 + 16 * ((pages[page]?.length ?? 1) - 1)} />}
       </>
     )
   }

@@ -354,3 +354,13 @@
 .campaign-cloud-status, .campaign-cloud-alert { max-width: 36rem; margin: 0 auto 0.75rem; padding: 0.75rem 1rem; text-align: center; color: #f8f8f8; }
 .campaign-cloud-alert { background: #681028; border: 3px solid #f8f8f8; border-radius: 8px; display: flex; flex-direction: column; gap: 0.5rem; align-items: center; }
 .campaign-cloud-alert .campaign-action { flex: none; padding-inline: 1rem; }
+
+/* Flecha ▼ al final de un mensaje que espera un toque: 0, 1, 2 y 1 px, 8 fotogramas cada uno (MessageArrow). */
+@keyframes message-arrow {
+  0% { transform: translateY(0); }
+  25% { transform: translateY(1px); }
+  50% { transform: translateY(2px); }
+  75% { transform: translateY(1px); }
+}
+.console-screen .message-arrow img { animation: message-arrow calc(32s / 60) steps(1) infinite; }
+@media (prefers-reduced-motion: reduce) { .console-screen .message-arrow img { animation: none; } }

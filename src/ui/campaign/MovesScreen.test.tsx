@@ -60,6 +60,9 @@ describe('Movimientos', () => {
     expect(first()).toBe('1')
     fireEvent.keyDown(container.querySelector('[data-row]')!, { key: 'Escape' })
     expect(onExit).toHaveBeenCalledOnce()
+    // Y el botón SALIR fijo de la pantalla de abajo.
+    fireEvent.click(screen.getByRole('button', { name: 'Salir de Movimientos y volver al equipo' }))
+    expect(onExit).toHaveBeenCalledTimes(2)
   })
 
   it('el texto accesible lista los equipados y describe el señalado', () => {

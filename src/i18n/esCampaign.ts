@@ -155,6 +155,8 @@ export const esCampaign = {
     noRun: '¡No puedes huir de un combate contra un entrenador!',
     cantBattle: '¡Este POKéMON no puede combatir!',
     choosePokemon: 'Elige un POKéMON.',
+    // Cuando no toca elegir (Jose, 12/11/2026: «Elige un POKéMON» siempre confundía).
+    yourTeam: 'Tu equipo.',
     switchTo: (name: string) => `¿Cambiar por ${name}?`,
     pp: 'PP',
     type: 'TIPO/',
@@ -192,6 +194,7 @@ export const esCampaign = {
     swapped: (name: string, old: string, move: string) => `${name} olvidó ${old} y aprendió ${move}.`,
     known: (name: string, move: string) => `${name} ya conoce ${move}.`,
     exitLabel: 'Volver al equipo',
+    quickExitLabel: 'Salir de Movimientos y volver al equipo',
     scroll: (down: boolean) => `Desplazar movimientos hacia ${down ? 'abajo' : 'arriba'}`,
     rowLabel: (move: string, type: string, category: string, source: string, known: boolean) => `${move}, ${type}, ${category}, ${source}${known ? ', ya equipado' : ''}`,
     level: (level: number) => `nivel ${level}`,

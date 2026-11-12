@@ -4,6 +4,9 @@
  * varias y «¡Enhorabuena! ¡Tu GLOOM ha evolucionado en VILEPLUME!». Abajo, el miembro en el equipo y el progreso. Al acabar devuelve
  * la forma elegida de cada uno (`evolveForLeague`).
  */
+import { MessageArrow } from './MessageArrow'
+import { textWidth } from '../console/glyphs'
+import type { BitmapFont } from '../console/theme'
 import { useEffect, useState } from 'react'
 import { ConsoleStage } from '../console/ConsoleStage'
 import { GameText } from '../console/GameText'
@@ -125,6 +128,9 @@ export function EvolutionScene({ evolutions, nameOf, hpOf, onDone, scale, reserv
           ))}
           <img src={emeraldTheme.asset('combate-caja-mensaje')} alt="" style={{ left: 0, top: 112 }} />
           {lines.map((line, i) => <GameText key={i} text={line} x={16} y={121 + 16 * i} color="combate-mensaje" hidden />)}
+          {(step === 'evolving' || step === 'evolved') && lines.length > 0 && (
+            <MessageArrow x={16 + textWidth(emeraldTheme.font as BitmapFont, lines[lines.length - 1]) + 1} y={120 + 16 * (lines.length - 1)} />
+          )}
           {step === 'choose' ? (
             <GameWindow x={28 - windowWidth} y={13 - current.targets.length * 2} width={windowWidth} height={current.targets.length * 2}>
               <div role="menu" aria-label={message}>

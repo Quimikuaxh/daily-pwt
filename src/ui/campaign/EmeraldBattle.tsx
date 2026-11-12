@@ -295,7 +295,7 @@ export function EmeraldBattle({ session, start, data, trainer, intro, rivalLevel
             )
           })}
           <GameWindow x={1} y={17} width={21} height={2}>
-            <GameText text={menu === 'confirm' && target !== null ? t.switchTo(party[target]?.name ?? '') : t.choosePokemon} y={1} width={168} fit hidden />
+            <GameText text={menu === 'confirm' && target !== null ? t.switchTo(party[target]?.name ?? '') : forced || menu === 'party' ? t.choosePokemon : t.yourTeam} y={1} width={168} fit hidden />
           </GameWindow>
           {(menu === 'party' || menu === 'confirm') && !forced && (
             <button type="button" className="team-button" style={{ left: 184, top: 136, width: 56, height: 16 }} aria-label={t.cancelLabel} onClick={() => { setTarget(null); setMenu('actions') }}>

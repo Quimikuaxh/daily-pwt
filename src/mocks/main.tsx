@@ -13,6 +13,7 @@ import { PartySlot } from '../ui/campaign/PartySlot'
 import { slotBox } from '../ui/campaign/partySlotModel'
 import { hallOfFameSpots } from '../ui/campaign/resultModel'
 import { ShareScreen } from '../ui/campaign/ShareScreen'
+import { MovesScreen } from '../ui/campaign/MovesScreen'
 import '../index.css'
 import '../ui/campaign/campaign.css'
 
@@ -273,7 +274,15 @@ const views: Record<string, () => ReactNode[]> = { 'compartir-a': ShareA, 'compa
 const view = views[new URLSearchParams(location.search).get('v') ?? ''] ?? EvoScene
 // La pantalla real (no una maqueta), para revisar la imagen que exporta: `?v=compartir` (gana) o `?v=compartir-perdida`.
 const shareMode = new URLSearchParams(location.search).get('v')
-if (shareMode === 'compartir' || shareMode === 'compartir-perdida') {
+if (shareMode === 'movimientos') {
+  // La pantalla real de Movimientos con datos de ejemplo, para revisar SALIR y las flechas.
+  const legal = ['tackle', 'growl', 'ember', 'leer', 'bite', 'flamewheel', 'rage', 'scaryface', 'slash', 'flamethrower'].map((id, i) => ({
+    id, name: id.toUpperCase(), type: 'fire', typeName: 'FUEGO', category: 'Special' as const, power: 40, accuracy: 100, pp: 25, text: 'Línea uno\nlínea dos.', source: { level: i + 1 },
+  }))
+  createRoot(document.getElementById('root')!).render(
+    <MovesScreen mon={{ species: 'cyndaquil', name: 'CYNDAQUIL', level: 15, dex: 155 }} legal={legal} equipped={['tackle', 'ember']} onChange={() => undefined} onExit={() => undefined} scale={2} />,
+  )
+} else if (shareMode === 'compartir' || shareMode === 'compartir-perdida') {
   const won = shareMode === 'compartir'
   createRoot(document.getElementById('root')!).render(
     <ShareScreen won={won} player="BRUNO" protagonist="brendan" rival="Sixto" team={won ? champions : champions.slice(0, 3)}

@@ -190,6 +190,11 @@ export function MovesScreen({ mon, legal, equipped, onChange, onExit, scale, res
               {selected.text.split('\n').map((line, i) => <GameText key={i} text={line} x={86} y={121 + i * 16} width={148} color="datos" hidden />)}
             </div>
           )}
+          {/* SALIR fijo, sin bajar hasta el final de la lista (Jose, 12/11/2026); como ACEPTAR y CANCELAR del equipo. */}
+          <button type="button" className="team-button" style={{ left: 184, top: 0, width: 56, height: 16 }} aria-label={t.quickExitLabel} onClick={onExit}>
+            <img src={emeraldTheme.asset('boton-pildora')} alt="" style={{ left: 0, top: 0 }} />
+            <GameText text={t.exit} x={5} y={1} width={48} align="center" face="small" color="equipo" hidden />
+          </button>
           <section className="sr-only" aria-label={t.screen}>
             <h3>{t.heading(mon.name, mon.level)}</h3>
             <ol>{equipped.map((id) => <li key={id}>{byId[id]?.name ?? id}</li>)}</ol>

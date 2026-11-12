@@ -444,9 +444,10 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
           )}
         </div>
         {/* Botones secundarios en una fila (Jose, 12/11/2026: apilados no gustaban). */}
-        {state && (
+        {/* Solo en la Ruta: en el draft, el equipo o el combate era fácil pulsarlo sin querer (Jose, 12/11/2026). */}
+        {state && view === 'route' && (
           <div className="campaign-secondary">
-            {state.phase === 'prepare' && view === 'route' && (
+            {state.phase === 'prepare' && (
               <button type="button" className="campaign-restart" aria-label={esCampaign.exchange.openLabel(state.battlePoints ?? 0)} onClick={() => setView('exchange')}>
                 {esCampaign.exchange.open}
               </button>

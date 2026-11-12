@@ -595,6 +595,17 @@ def evolution_bg():
     save(sprite(G / 'misc/evo_sparkle.png', (0, 0, 8, 8)), 'evolucion-destello.png')
     # Poké Ball del envío y la retirada (balls/poke.png): tres fotogramas de 16 x 16, cerrada, abriéndose y abierta (pokeball.c).
     save(sprite(G / 'balls/poke.png'), 'combate-poke-ball.png')
+    # Flecha ▼ de «pulsa para seguir» al final de un mensaje (fonts/down_arrow.png, TextPrinterDrawDownArrow): 8 x 16 que se dibuja
+    # bajando 0, 1, 2 y 1 px cada 8 fotogramas.
+    # Con los colores del texto de la caja de mensajes del combate (tinta blanca y sombra), donde se usa.
+    ink, shade = json.loads((Path(DATA) / 'battle-colors.json').read_text())['combate-mensaje']
+    arrow = Image.open(G / 'fonts/down_arrow.png').crop((0, 0, 8, 16))
+    out = Image.new('RGBA', arrow.size)
+    out.putdata([tuple(ink) + (255,) if c == 4 else tuple(shade) + (255,) if c == 2 else (0, 0, 0, 0) for c in arrow.getdata()])
+    save(out, 'flecha-mensaje.png')
+    # Botón píldora del equipo (el de CANCELAR, en (184,144) de equipo-fondo), suelto para los botones de otras pantallas (SALIR de
+    # Movimientos), donde el fondo no lo trae.
+    save(Image.open('public/ui/emerald/equipo-fondo.png').convert('RGBA').crop((184, 144, 240, 160)), 'boton-pildora.png')
     # Chispas al abrirse (battle_anims/sprites/particles.png con la paleta de circle_impact.png, sBallParticlePalettes): los fotogramas
     # de sAnim_RegularBall, 0, 1, 2 y el 0 volteado, en una tira de 8 x 32.
     parts = Image.open(G / 'battle_anims/sprites/particles.png')
