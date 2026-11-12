@@ -5,7 +5,7 @@
  * (con PP y tipo). Abajo, la pantalla de equipo (party_menu.c) para cambiar, con SÍ/NO, y la descripción BAJA de los caídos.
  * MOCHILA y HUIR responden con los textos del juego: no hay objetos en combate ni se huye de un entrenador.
  */
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { ConsoleStage } from '../console/ConsoleStage'
 import { GameText } from '../console/GameText'
 import { GameWindow } from '../console/GameWindow'
@@ -23,7 +23,9 @@ import { emeraldLog } from '../../i18n/esEmeraldLog'
 import { PartySlot } from './PartySlot'
 import { slotBox } from './partySlotModel'
 import { EMERALD_INTRO, sessionBattleClient, UNUSED_INIT, type StartBattle } from './campaignBattle'
-import { activeOf, backSpot, barImage, frontSpot, healthbox, messagePages, partyFromRequest, ppColor } from './emeraldBattleModel'
+import { activeOf, backSpot, BALL_TINT, barHpAt, barImage, faintDrop, frontSpot, healthbox, hpPauseMs, messagePages, partyFromRequest, ppColor, recallFrame, sendOutFrame, viewHp, type SendOutState } from './emeraldBattleModel'
+import { statAt } from './draftModel'
+import type { MonView } from '../../battle/protocol'
 import moveData from '../../generated/emerald/moves.json'
 
 const t = esCampaign.battle
@@ -44,6 +46,11 @@ type EmeraldBattleProps = {
   intro: { rivalLead: string; playerLead: string }
   /** Niveles del equipo rival, en su orden (el motor no los da en la vista). */
   rivalLevels: readonly number[]
+  /**
+   * Nivel de cada especie del jugador: su caja de PS sale de la vista, no de la petición del motor, que llega al acabar de presentar
+   * el turno (sin esto, la caja no aparecía al enviarlo en la intro y enseñaba al anterior durante un cambio).
+   */
+  playerLevels: Readonly<Record<string, number>>
   onEnded: (ended: EngineEnd) => void
   reservedHeight?: number
   scale?: number
@@ -51,9 +58,14 @@ type EmeraldBattleProps = {
 
 type Menu = 'actions' | 'moves' | 'party' | 'confirm'
 
-export function EmeraldBattle({ session, start, data, trainer, intro, rivalLevels, onEnded, reservedHeight, scale }: EmeraldBattleProps) {
+export function EmeraldBattle({ session, start, data, trainer, intro, rivalLevels, playerLevels, onEnded, reservedHeight, scale }: EmeraldBattleProps) {
   const client = useMemo(() => sessionBattleClient(session, start), [session, start])
   const battleNames = useMemo(() => emeraldBattleNames(data.names), [data.names])
+  // PS máximos del rival (el motor solo da su porcentaje): los de Gen 3 a su nivel, con 20 IV, sin EV y naturaleza neutra (PRD §0).
+  const rivalMaxHp = useMemo(() => (mon: MonView) => {
+    const level = rivalLevels[mon.teamIndex ?? 0] ?? 50
+    return statAt(data.dex.species[mon.species]?.baseStats.hp ?? 50, level, true)
+  }, [data.dex.species, rivalLevels])
   const battle = useBattle({
     client,
     init: UNUSED_INIT,
@@ -61,6 +73,8 @@ export function EmeraldBattle({ session, start, data, trainer, intro, rivalLevel
     intro,
     onFinish: onEnded,
     introDurations: EMERALD_INTRO,
+    // La barra de Gen 3 baja 1 PS por fotograma: se espera a que llegue antes del siguiente mensaje.
+    hpPause: (before, after) => hpPauseMs(before, after, rivalMaxHp),
     playSfx: () => undefined,
     playCry: () => undefined,
   })
@@ -78,6 +92,27 @@ export function EmeraldBattle({ session, start, data, trainer, intro, rivalLevel
   const own = party.find((member) => member.active) ?? null
   const rival = view ? activeOf(view.rival) : null
   const player = view ? activeOf(view.player) : null
+  // Envío y retirada (sendOutFrame, recallFrame): antes de que el rival envíe no se ve nadie; el del jugador, desde su envío.
+  const beforeSend = ['loading', 'vs', 'iris', 'enter', 'challenge'].includes(battle.introPhase)
+  const rivalHidden = beforeSend
+  const playerHidden = beforeSend || battle.introPhase === 'rivalSend'
+  const switching = (side: 'rival' | 'player') => !!battle.switchAnim?.startsWith(side) && battle.switchStage !== null
+  const rivalEvent = battle.introPhase === 'rivalSend' ? 'send:intro'
+    : switching('rival') ? `${battle.switchStage}:${view?.rival.active}-${rival?.species}` : null
+  const playerEvent = battle.introPhase === 'playerSend' ? 'send:intro'
+    : switching('player') ? `${battle.switchStage}:${view?.player.active}-${player?.species}` : null
+  const rivalFrame = useFrames(rivalEvent, battle.speed)
+  const playerFrame = useFrames(playerEvent, battle.speed)
+  const rivalSend = rival && rivalEvent?.startsWith('send') ? sendOutFrame(false, rival.species, rivalFrame) : null
+  const playerSend = player && playerEvent?.startsWith('send') ? sendOutFrame(true, player.species, playerFrame) : null
+  const rivalRecall = rivalEvent?.startsWith('recall') ? recallFrame(rivalFrame) : null
+  const playerRecall = playerEvent?.startsWith('recall') ? recallFrame(playerFrame) : null
+  const rivalMotion = rivalSend?.mon ?? rivalRecall ?? null
+  const playerMotion = playerSend?.mon ?? playerRecall ?? null
+  const rivalHp = rival ? viewHp(rival, rivalMaxHp) : null
+  const playerHp = player ? viewHp(player, rivalMaxHp) : null
+  const rivalBar = useBarHp(`${view?.rival.active ?? ''}-${rival?.species ?? ''}`, rivalHp?.hp ?? 0, rivalHp?.maxHp ?? 1, battle.speed)
+  const playerBar = useBarHp(`${view?.player.active ?? ''}-${player?.species ?? ''}`, playerHp?.hp ?? 0, playerHp?.maxHp ?? 1, battle.speed)
   const rivalLevel = view?.rival.active != null ? rivalLevels[view.rival.team[view.rival.active]?.teamIndex ?? view.rival.active] ?? 0 : 0
   const requestMoves = request?.active?.[0]?.moves ?? []
   // Como en el diario: cuando se puede actuar, el menú sustituye al último mensaje; un aviso propio (MOCHILA, HUIR) va encima.
@@ -125,28 +160,38 @@ export function EmeraldBattle({ session, start, data, trainer, intro, rivalLevel
       <ConsoleStage theme={emeraldTheme} scale={scale} reservedHeight={reservedHeight} screens={[(
         <div key="field" className="battle-field">
           <img src={emeraldTheme.asset('combate-escenario')} alt="" style={{ left: 0, top: 0 }} />
-          {rival && !rival.fainted && (
-            <img className="mon-front" src={emeraldSprite('front', rival.species)} alt="" style={{ left: frontSpot(rival.species).x, top: frontSpot(rival.species).y }} />
-          )}
-          {player && !player.fainted && (
-            <img className="mon-back" src={emeraldSprite('back', player.species)} alt="" style={{ left: backSpot(player.species).x, top: backSpot(player.species).y }} />
-          )}
           {rival && (
-            <div aria-hidden="true">
+            // Recorte en el borde de abajo del sprite: al caer se borra por abajo, como SpriteCB_AnimFaintOpponent.
+            <div className="mon-clip" style={{ left: frontSpot(rival.species).x, top: 4, width: 64, height: frontSpot(rival.species).y + 60 }}>
+              <MonSprite key={`${view?.rival.active}-${rival.species}`} kind="front" species={rival.species} left={0} top={frontSpot(rival.species).y - 4}
+                hidden={rivalHidden} motion={rivalMotion} faint={rival.fainted ? faintStyle(false, rival.species, battle.speed) : undefined} />
+            </div>
+          )}
+          {player && (
+            <MonSprite key={`${view?.player.active}-${player.species}`} kind="back" species={player.species} left={backSpot(player.species).x} top={backSpot(player.species).y}
+              hidden={playerHidden} motion={playerMotion} faint={player.fainted ? faintStyle(true, player.species, battle.speed) : undefined} />
+          )}
+          {[rivalSend?.ball, playerSend?.ball].map((ball, i) => ball && (
+            <div key={i} className="battle-ball" style={{ left: ball.x - 8, top: ball.y - 8, width: 16, height: 16 }}>
+              <img src={emeraldTheme.asset('combate-poke-ball')} alt="" style={{ left: 0, top: -16 * ball.frame }} />
+            </div>
+          ))}
+          {rival && (
+            <div aria-hidden="true" style={rival.fainted ? hideAfterFaint(false, rival.species, battle.speed) : boxStyle(rivalHidden || !!rivalRecall, rivalSend)}>
               <img src={emeraldTheme.asset(hb(false).image)} alt="" style={{ left: hb(false).left, top: hb(false).top }} />
               <GameText text={nameOf(rival.species)} x={hb(false).name.x} y={hb(false).name.y} face="small" color="combate-nombre" hidden />
               {rivalLevel > 0 && <GameText text={`{LV_2}${rivalLevel}`} x={hb(false).level.x} y={hb(false).level.y} face="small" color="combate-nombre" hidden />}
-              <HpBar x={hb(false).bar.x} y={hb(false).bar.y} ratio={rival.hpPercent / 100} />
+              <HpBar x={hb(false).bar.x} y={hb(false).bar.y} ratio={rivalHp ? rivalBar / rivalHp.maxHp : 0} />
             </div>
           )}
-          {own && player && !player.fainted && (
-            <div aria-hidden="true">
+          {player && playerHp && (
+            <div aria-hidden="true" style={player.fainted ? hideAfterFaint(true, player.species, battle.speed) : boxStyle(playerHidden || !!playerRecall, playerSend)}>
               <img src={emeraldTheme.asset(hb(true).image)} alt="" style={{ left: hb(true).left, top: hb(true).top }} />
-              <GameText text={own.name} x={hb(true).name.x} y={hb(true).name.y} face="small" color="combate-nombre" hidden />
-              <GameText text={`{LV_2}${own.level}`} x={hb(true).level.x} y={hb(true).level.y} face="small" color="combate-nombre" hidden />
-              <HpBar x={hb(true).bar.x} y={hb(true).bar.y} ratio={own.maxHp ? own.hp / own.maxHp : 0} />
-              <GameText text={`${padNumber(font, own.hp, 3)}/`} x={hb(true).hp.x} y={hb(true).hp.y} face="small" color="combate-nombre" hidden />
-              <GameText text={padNumber(font, own.maxHp, 3)} x={hb(true).max.x} y={hb(true).max.y} face="small" color="combate-nombre" hidden />
+              <GameText text={nameOf(player.species)} x={hb(true).name.x} y={hb(true).name.y} face="small" color="combate-nombre" hidden />
+              <GameText text={`{LV_2}${playerLevels[player.species] ?? own?.level ?? ''}`} x={hb(true).level.x} y={hb(true).level.y} face="small" color="combate-nombre" hidden />
+              <HpBar x={hb(true).bar.x} y={hb(true).bar.y} ratio={playerBar / playerHp.maxHp} />
+              <GameText text={`${padNumber(font, playerBar, 3)}/`} x={hb(true).hp.x} y={hb(true).hp.y} face="small" color="combate-nombre" hidden />
+              <GameText text={padNumber(font, playerHp.maxHp, 3)} x={hb(true).max.x} y={hb(true).max.y} face="small" color="combate-nombre" hidden />
             </div>
           )}
           <img src={emeraldTheme.asset(`combate-caja-${box}`)} alt="" style={{ left: 0, top: 112 }} />
@@ -251,4 +296,86 @@ function HpBar({ x, y, ratio }: { x: number; y: number; ratio: number }) {
       {filled < 48 && <i className="battle-hp-empty" style={{ left: 16 + filled, top: 3, width: 48 - filled, height: 2 }} />}
     </div>
   )
+}
+
+/** Fotogramas de la consola en ms, a la velocidad del combate. */
+const frameMs = (frames: number, speed: number) => (frames * 1000) / 60 / speed
+
+/** Caída del Pokémon debilitado (`faintDrop`): a saltos de 8 px el rival, recortado por abajo, y de 5 px el del jugador. */
+function faintStyle(player: boolean, species: string, speed: number): CSSProperties {
+  const drop = faintDrop(player, species)
+  return { ['--faint-to' as string]: `${drop.distance}px`, animation: `emerald-faint ${frameMs(drop.frames, speed)}ms steps(${drop.steps}, end) forwards` }
+}
+
+/** La caja de PS del debilitado se oculta cuando su sprite ha caído (HideHealthboxAfterMonFaint, FreeMonSpriteAfterFaintAnim). */
+function hideAfterFaint(player: boolean, species: string, speed: number): CSSProperties {
+  return { animation: `emerald-hide 1ms linear ${frameMs(faintDrop(player, species).frames, speed)}ms forwards` }
+}
+
+/**
+ * PS que enseña la barra mientras baja o sube al ritmo de Gen 3 (`barHpAt`, 60 fotogramas por segundo por la velocidad del combate).
+ * Con otro Pokémon (`key`) se pone en su valor sin animar.
+ */
+function useBarHp(key: string, to: number, max: number, speed: number): number {
+  const [shown, setShown] = useState({ key, value: to })
+  const current = useRef({ key, value: to })
+  useEffect(() => {
+    const from = current.current.key === key ? current.current.value : to
+    current.current = { key, value: from }
+    if (from === to) return
+    const started = performance.now()
+    let handle = requestAnimationFrame(function tick(now) {
+      const value = barHpAt(from, to, max, Math.floor(((now - started) * 60 * speed) / 1000))
+      current.current = { key, value }
+      setShown({ key, value })
+      if (value !== to) handle = requestAnimationFrame(tick)
+    })
+    return () => cancelAnimationFrame(handle)
+  }, [key, to, max, speed])
+  return shown.key === key ? shown.value : to
+}
+
+type Motion = { visible: boolean; scale: number; dy?: number; tint: number } | null
+
+/**
+ * Sprite del Pokémon en el campo: escala y altura del envío o la retirada (`motion`), con el color de la Poké Ball encima (una capa
+ * del color recortada con la forma del sprite) y la caída si está debilitado (`faint`).
+ */
+function MonSprite({ kind, species, left, top, hidden, motion, faint }: { kind: 'front' | 'back'; species: string; left: number; top: number; hidden: boolean; motion: Motion; faint?: CSSProperties }) {
+  const src = emeraldSprite(kind, species)
+  const shape: CSSProperties = {
+    left, top, width: 64, height: 64,
+    visibility: hidden || (motion && !motion.visible) ? 'hidden' : undefined,
+    transform: motion && (motion.scale !== 1 || motion.dy) ? `translateY(${motion.dy ?? 0}px) scale(${motion.scale})` : undefined,
+  }
+  return (
+    <>
+      <img className={kind === 'front' ? 'mon-front' : 'mon-back'} src={src} alt="" style={{ ...shape, ...faint }} />
+      {motion && motion.visible && motion.tint > 0 && !hidden && (
+        <div className="mon-tint" style={{ ...shape, opacity: motion.tint, background: BALL_TINT, maskImage: `url("${src}")`, WebkitMaskImage: `url("${src}")` }} />
+      )}
+    </>
+  )
+}
+
+/** Caja de PS: oculta antes del envío o al retirarse, y entrando de lado mientras sale el Pokémon. */
+function boxStyle(hidden: boolean, send: SendOutState | null): CSSProperties | undefined {
+  if (hidden || (send && send.healthboxDx === null)) return { visibility: 'hidden' }
+  return send?.healthboxDx ? { transform: `translateX(${send.healthboxDx}px)` } : undefined
+}
+
+/** Fotogramas (60 Hz por la velocidad del combate) desde que empezó `key`; −1 sin animación. */
+function useFrames(key: string | null, speed: number): number {
+  const [state, setState] = useState({ key, frame: 0 })
+  useEffect(() => {
+    if (key === null) return
+    const started = performance.now()
+    let handle = requestAnimationFrame(function tick(now) {
+      setState({ key, frame: Math.floor(((now - started) * 60 * speed) / 1000) })
+      handle = requestAnimationFrame(tick)
+    })
+    return () => cancelAnimationFrame(handle)
+  }, [key, speed])
+  if (key === null) return -1
+  return state.key === key ? state.frame : 0
 }

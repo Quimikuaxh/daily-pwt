@@ -593,6 +593,8 @@ def evolution_bg():
     # Destello de la animación (misc/evo_sparkle.png, 8 x 8, índice 0 transparente), que evolution_graphics.c mueve en espiral, arco,
     # círculo y lluvia.
     save(sprite(G / 'misc/evo_sparkle.png', (0, 0, 8, 8)), 'evolucion-destello.png')
+    # Poké Ball del envío y la retirada (balls/poke.png): tres fotogramas de 16 x 16, cerrada, abriéndose y abierta (pokeball.c).
+    save(sprite(G / 'balls/poke.png'), 'combate-poke-ball.png')
 
 
 comun.terminar((fonts, window_frames, region_map, dome_card, badges, portraits, species, factory, summary_pages, ball_display,

@@ -221,6 +221,7 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
         trainer={trainerOf(encounter)}
         intro={{ rivalLead: speciesName(encounter.team[0].species).toUpperCase(), playerLead: lead ? speciesName(lead.species).toUpperCase() : '' }}
         rivalLevels={encounter.team.map((member) => member.level)}
+        playerLevels={Object.fromEntries(state.members.map((member) => [member.species, member.level]))}
         onEnded={() => { session.finish(battleDefinition) }}
         reservedHeight={150}
       />

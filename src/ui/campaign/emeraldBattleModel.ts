@@ -3,7 +3,7 @@
  * geometría de las cajas de PS (battle_interface.c: centros (158,88) del jugador y (44,30) del rival) y de los sprites
  * (battle_anim_mons.c: centros (72,80) y (176,40) con el desplazamiento vertical de cada especie), y mensajes en las dos líneas del juego.
  */
-import type { BattleRequest, MonView } from '../../battle/protocol'
+import type { BattleRequest, BattleView, MonView } from '../../battle/protocol'
 import emeraldSprites from '../../generated/emerald/sprites.json'
 import { textWidth } from '../console/glyphs'
 import { emeraldTheme } from '../console/themes/emerald'
@@ -79,4 +79,136 @@ export function ppColor(current: number, max: number): 'pp-0' | 'pp-1' | 'pp-2' 
   if (current <= Math.floor(max / 4)) return 'pp-1'
   if (current > Math.floor(max / 2)) return 'pp-3'
   return 'pp-0'
+}
+
+/** Píxeles de la barra de PS (B_HEALTHBAR_PIXELS de battle_interface.c). */
+const BAR_PIXELS = 48
+
+/**
+ * PS que enseña la barra de Gen 3 `frame` fotogramas después de empezar a moverse de `from` a `to` (CalcNewBarValue): con 48 PS
+ * máximos o más, 1 PS por fotograma; con menos, 1 píxel por fotograma (máximos/48 PS en Q24.8, redondeando hacia arriba al bajar).
+ */
+export function barHpAt(from: number, to: number, max: number, frame: number): number {
+  if (frame <= 0 || from === to) return from
+  const down = to < from
+  if (max >= BAR_PIXELS) return down ? Math.max(to, from - frame) : Math.min(to, from + frame)
+  const step = Math.floor((max * 256) / BAR_PIXELS)
+  const current = from * 256 + (down ? -step : step) * frame
+  if (down) {
+    const value = Math.floor(current / 256) + (current % 256 > 0 ? 1 : 0)
+    return value <= to ? to : value
+  }
+  const value = Math.floor(current / 256)
+  return value >= to ? to : value
+}
+
+/** Fotogramas que tarda la barra en ir de `from` a `to`. */
+export function barFrames(from: number, to: number, max: number): number {
+  let frame = 0
+  while (barHpAt(from, to, max, frame) !== to) frame++
+  return frame
+}
+
+/** PS de un Pokémon en la vista: los reales del jugador; del rival, el porcentaje sobre sus PS máximos (`rivalMaxHp`). */
+export function viewHp(mon: MonView, rivalMaxHp: (mon: MonView) => number): { hp: number; maxHp: number } {
+  if (mon.maxHp) return { hp: mon.hp ?? 0, maxHp: mon.maxHp }
+  const maxHp = rivalMaxHp(mon)
+  return { hp: mon.fainted ? 0 : Math.round((mon.hpPercent * maxHp) / 100), maxHp }
+}
+
+/** Espera tras un cambio de PS (ms a x1): lo que tarde la barra más lenta en llegar, más 100 ms, como la del PWT. */
+export function hpPauseMs(before: BattleView, after: BattleView, rivalMaxHp: (mon: MonView) => number): number {
+  let frames = 0
+  for (const side of ['player', 'rival'] as const) {
+    after[side].team.forEach((mon, i) => {
+      const previous = before[side].team[i]
+      if (!previous || previous.species !== mon.species) return
+      const from = viewHp(previous, rivalMaxHp)
+      const to = viewHp(mon, rivalMaxHp)
+      if (from.hp !== to.hp) frames = Math.max(frames, barFrames(from.hp, to.hp, to.maxHp))
+    })
+  }
+  return Math.round((frames * 1000) / 60) + 100
+}
+
+/**
+ * Caída al debilitarse. El rival (SpriteCB_AnimFaintOpponent) baja 8 px cada 2 fotogramas y se borra por abajo, en 8 − frontY/8 pasos;
+ * el del jugador (SpriteCB_FaintSlideAnim) baja 5 px por fotograma hasta que su centro pasa de y 160. Pasos, distancia y fotogramas.
+ */
+export function faintDrop(player: boolean, species: string): { steps: number; distance: number; frames: number } {
+  if (player) {
+    const center = backSpot(species).y + 32
+    const steps = Math.floor((160 - center) / 5) + 1
+    return { steps, distance: 5 * steps, frames: steps }
+  }
+  const steps = 8 - Math.floor((sprites[species]?.frontY ?? 0) / 8)
+  return { steps, distance: 8 * steps, frames: 2 * steps }
+}
+
+/**
+ * Envío y retirada (pokeball.c y battle_anim_throw.c), en fotogramas de 60 Hz. El rival tiene la bola en su sitio 16 fotogramas
+ * (SpriteCB_OpponentMonSendOut); la del jugador vuela 25 en arco desde (24,68) (SpriteCB_PlayerMonSendOut_1). Al abrirse (5 + 5
+ * fotogramas), el Pokémon sale: crece de 0x28 a 0x100 en 12 fotogramas (sAffineAnim_Battler_Emerge) subiendo 16 px (HandleBallAnimEnd),
+ * pasa del color de la Poké Ball al suyo en 16 (Task_FadeMon_ToNormal) y su caja de PS entra 115 px a 5 px por fotograma
+ * (StartHealthboxSlideIn). La retirada encoge 2/256 por fotograma 18 fotogramas y 16/256 después (sAffineAnim_Battler_Return) mientras
+ * toma el color de la bola.
+ */
+export const SEND_OUT = { rivalWait: 16, throwFrames: 25, ballOpen: 5, emerge: 12, tint: 16, slide: 115, slideSpeed: 5 } as const
+/** Color de apertura de la Poké Ball (gBallOpenFadeColors[BALL_POKE] = RGB(31, 22, 30)). */
+export const BALL_TINT = 'rgb(255 181 247)'
+
+/** Centro de la bola al abrirse: 24 px por debajo del centro del Pokémon (el del rival, con el mismo ajuste que su sprite). */
+export const ballTarget = (player: boolean, species: string) =>
+  player ? { x: backSpot(species).x + 32, y: backSpot(species).y + 32 + 24 } : { x: 172, y: 36 + 24 }
+
+const sineQ8 = (index: number) => Math.trunc(Math.sin(((index & 0xff) * Math.PI) / 128) * 256)
+
+export type SendOutState = {
+  ball: { x: number; y: number; frame: number } | null
+  mon: { visible: boolean; scale: number; dy: number; tint: number }
+  /** Desplazamiento de la caja de PS mientras entra (`null`: aún no se ve). */
+  healthboxDx: number | null
+}
+
+/** Lo que se ve `frame` fotogramas después de empezar a enviar al Pokémon. */
+export function sendOutFrame(player: boolean, species: string, frame: number): SendOutState {
+  const release = player ? SEND_OUT.throwFrames : SEND_OUT.rivalWait
+  const target = ballTarget(player, species)
+  const f = frame - release
+  let ball: SendOutState['ball'] = null
+  if (f < 0) {
+    if (player) {
+      // Arco de TranslateAnimHorizontalArc: recta de (24,68) al destino y medio seno de 30 px hacia arriba.
+      const t = frame / SEND_OUT.throwFrames
+      const lift = Math.floor((-30 * sineQ8(Math.floor((frame * 128) / SEND_OUT.throwFrames))) / 256)
+      ball = { x: Math.round(24 + (target.x - 24) * t), y: Math.round(68 + (target.y - 68) * t) + lift, frame: 0 }
+    } else {
+      ball = { ...target, frame: 0 }
+    }
+  } else if (f < 2 * SEND_OUT.ballOpen) {
+    ball = { ...target, frame: f < SEND_OUT.ballOpen ? 1 : 2 }
+  }
+  const emerging = f >= 0 && f < SEND_OUT.emerge
+  const slide = f < 0 ? null : Math.max(0, SEND_OUT.slide - SEND_OUT.slideSpeed * (f + 1))
+  return {
+    ball,
+    mon: {
+      visible: f >= 0,
+      scale: emerging ? (0x28 + 0x12 * f) / 256 : 1,
+      dy: emerging ? Math.floor((0x1000 - 288 * (f + 1)) / 256) : 0,
+      tint: f < 0 ? 1 : Math.max(0, 1 - f / SEND_OUT.tint),
+    },
+    healthboxDx: slide === null ? null : player ? slide : -slide || 0,
+  }
+}
+
+/** Fotogramas del envío completo (hasta que la caja de PS ha entrado). */
+export const sendOutLength = (player: boolean): number =>
+  (player ? SEND_OUT.throwFrames : SEND_OUT.rivalWait) + Math.ceil(SEND_OUT.slide / SEND_OUT.slideSpeed)
+
+/** Retirada: escala y color de la bola `frame` fotogramas después de empezar. */
+export function recallFrame(frame: number): { visible: boolean; scale: number; tint: number } {
+  const steps = frame + 1
+  const scale = (256 - 2 * Math.min(steps, 18) - 16 * Math.max(0, steps - 18)) / 256
+  return { visible: scale > 0, scale: Math.max(0, scale), tint: Math.min(1, steps / SEND_OUT.tint) }
 }

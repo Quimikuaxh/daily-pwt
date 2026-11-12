@@ -86,6 +86,11 @@ export type BattleParams = {
    * escenario salía antes que los sprites la primera vez con cada entrenador (Jose, 11/11/2026). Debe resolver siempre (con tope).
    */
   introReady?: () => Promise<void> | void
+  /**
+   * Espera tras una línea que cambia PS (ms a x1), con la vista de antes y la de después. Por defecto, la barra del PWT
+   * (`HP_BAR_PAUSE_MS`). La campaña de Hoenn la alarga con lo que tarda la barra de Gen 3 en bajar (1 PS por fotograma).
+   */
+  hpPause?: (before: BattleView, after: BattleView) => number
 }
 
 /** Especie del Pokémon que entra en `|switch|p1a: X|Garchomp, L50, M|…` (id). */
@@ -107,6 +112,8 @@ export type BattleController = {
   introPhase: IntroPhase
   /** Retirada y envío en curso (`null` si no hay cambio animándose). */
   switchAnim: SwitchAnimation | null
+  /** Parte del cambio en curso: `recall` mientras se retira el que estaba (aún en la vista) y `send` desde que sale el nuevo. */
+  switchStage: 'recall' | 'send' | null
   /** Último movimiento usado que se anima (DEC-53); cambia de `key` en cada uso. Nunca durante la reproducción de un combate guardado. */
   moveFx: MoveFxEvent | null
   /** Un toque o tecla: adelanta el mensaje actual o, durante la intro, la salta. */
@@ -175,6 +182,7 @@ export function useBattle(params: BattleParams): BattleController {
   const [message, setMessage] = useState(null as string | null)
   const [introPhase, setIntroPhase] = useState((params.replay ? 'done' : 'loading') as IntroPhase)
   const [switchAnim, setSwitchAnim] = useState(null as SwitchAnimation | null)
+  const [switchStage, setSwitchStage] = useState(null as 'recall' | 'send' | null)
   const [moveFx, setMoveFx] = useState(null as MoveFxEvent | null)
   const moveFxCount = useRef(0)
 
@@ -284,6 +292,7 @@ export function useBattle(params: BattleParams): BattleController {
         if (cancelled) return
       }
       const lines = steps.map((step) => step.line)
+      let hpBefore: BattleView | null = null
       for (const [index, step] of steps.entries()) {
         if (cancelled) return
         if (step.phase) {
@@ -299,12 +308,14 @@ export function useBattle(params: BattleParams): BattleController {
         const switching = !replaying && step.line !== null && !step.phase ? switchAnimationFor(step.line, shown) : null
         if (switching) {
           setSwitchAnim(switching)
+          setSwitchStage(switching.endsWith('-send') ? 'send' : 'recall')
           const ball = switchBallTimes(switching.endsWith('-send'))
           sfxLater('ball-throw', ball.throw, false)
           sfxLater('ball-open', ball.open, false)
           cryLater(switchSpecies(step.line as string), ball.open, false)
           if (!switching.endsWith('-send')) await pause(SWITCH_DURATIONS_MS.recall, false, false)
           if (cancelled) return
+          setSwitchStage('send')
         }
         const repeatedHit = !replaying && step.line !== null ? multiHit.next(step.line) : null
         if (repeatedHit) {
@@ -317,6 +328,7 @@ export function useBattle(params: BattleParams): BattleController {
           const hit = hitSoundAt(lines, index)
           if (hit) sfx(hit)
           const reduced = viewReducer(shown, { type: 'lines', lines: [step.line] })
+          hpBefore = shown
           shown = deferFaintUntilFaintLine(shown, reduced, step.line)
           setView(shown)
         }
@@ -352,9 +364,10 @@ export function useBattle(params: BattleParams): BattleController {
         } else if (switching) {
           await pause(SWITCH_DURATIONS_MS.send)
         } else if (step.line !== null && VISUAL_LINE_TYPES.has(lineType(step.line))) {
-          await pause(HP_LINE_TYPES.has(lineType(step.line)) ? HP_BAR_PAUSE_MS : VISUAL_PAUSE_MS)
+          const hpPause = paramsRef.current.hpPause
+          await pause(HP_LINE_TYPES.has(lineType(step.line)) ? (hpPause && hpBefore ? hpPause(hpBefore, shown) : HP_BAR_PAUSE_MS) : VISUAL_PAUSE_MS)
         }
-        if (switching) setSwitchAnim(null)
+        if (switching) { setSwitchAnim(null); setSwitchStage(null) }
       }
       if (cancelled) return
 
@@ -450,5 +463,5 @@ export function useBattle(params: BattleParams): BattleController {
     paramsRef.current.onSpeedChange?.(next)
   }, [])
 
-  return { view, log, message, introPhase, switchAnim, moveFx, advance, request, lastChoiceRequest, canAct: !locked && !failed && ended === null, failed, ended, speed, cycleSpeed, choose, forfeit }
+  return { view, log, message, introPhase, switchAnim, switchStage, moveFx, advance, request, lastChoiceRequest, canAct: !locked && !failed && ended === null, failed, ended, speed, cycleSpeed, choose, forfeit }
 }

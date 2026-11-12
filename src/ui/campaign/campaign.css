@@ -310,3 +310,28 @@
 
 .console-screen .exchange-bg { filter: brightness(0.55); }
 .exchange-screen .console-screen .moves-row:focus-visible { outline: 0; }
+
+/* Combate de Esmeralda: caída del debilitado (EmeraldBattle, faintDrop) y la caja de PS que se oculta cuando ha caído. El rival cae
+   dentro de .mon-clip, que lo recorta por abajo; el del jugador sale por debajo de la caja de mensajes. */
+.console-screen .mon-clip { overflow: hidden; }
+
+@keyframes emerald-faint {
+  to { transform: translateY(var(--faint-to)); }
+}
+
+@keyframes emerald-hide {
+  to { visibility: hidden; }
+}
+
+/* Envío: la Poké Ball (3 fotogramas de 16 x 16) y el color de la bola sobre el Pokémon, con la forma de su sprite (primer fotograma). */
+.console-screen .battle-ball { overflow: hidden; }
+.console-screen .mon-tint {
+  mask-size: 64px auto;
+  mask-position: 0 0;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 64px auto;
+  -webkit-mask-position: 0 0;
+  -webkit-mask-repeat: no-repeat;
+  transform-origin: 32px 32px;
+}
+.console-screen .mon-front, .console-screen .mon-back { transform-origin: 32px 32px; }
