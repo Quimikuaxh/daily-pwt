@@ -96,8 +96,10 @@ describe('simulación analítica del draft', () => {
     const forms = availableDraftForms(definition, calendar, 2, 'A')
     expect(forms.find(form => form.species === 'grovyle')?.history).toEqual([{ species: 'treecko', evolvedAt: 16 }])
     expect(forms.map(form => form.species)).not.toContain('treecko')
-    expect(ids(0, 'A')).not.toContain('alakazam')
-    expect(ids(1, 'A')).toContain('alakazam')
+    // Cambio de requisito (Jose, 12/11/2026): las evoluciones por intercambio, en el Nv37; Alakazam no sale hasta un hito de Nv37 o más.
+    expect(ids(5, 'A')).not.toContain('alakazam')
+    expect(ids(6, 'A')).toContain('alakazam')
+    expect(availableDraftForms(definition, calendar, 6, 'A').find(form => form.species === 'alakazam')?.history.at(-1)).toEqual({ species: 'kadabra', evolvedAt: 37 })
     expect(ids(0, 'A')).not.toContain('gengar')
   })
 

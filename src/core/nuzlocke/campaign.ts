@@ -1,6 +1,6 @@
 import { DataError } from '../errors'
 import { draftOffer, draftPool, EMERALD_DRAFT_RATIO, relativeDraftWindow, type DraftRequest } from './draft'
-import { availableDraftForms } from './draftAvailability'
+import { availableDraftForms, EMERALD_TRADE_LEVEL } from './draftAvailability'
 import emeraldCalendar from '../../../data/nuzlocke/hoenn-emerald-calendar.json'
 import { gymCounterSpecies } from './gymDraft'
 import { battlePointsFor } from './heldItems'
@@ -224,10 +224,13 @@ export function specialEvolutionOptions(
   return rules.filter(rule => {
     switch (rule.method) {
       case 'ITEM':
-      case 'TRADE_ITEM':
         return typeof rule.parameter === 'string' && unlockedItems.has(rule.parameter) && !consumed.has(rule.parameter)
+      // Intercambio: en el Nv37 (y con el objeto si lo pide; Jose, 12/11/2026). Fuera de Esmeralda, como antes.
+      case 'TRADE_ITEM':
+        return typeof rule.parameter === 'string' && unlockedItems.has(rule.parameter) && !consumed.has(rule.parameter) &&
+          (!emerald || member.level >= EMERALD_TRADE_LEVEL)
       case 'TRADE':
-        return true
+        return !emerald || member.level >= EMERALD_TRADE_LEVEL
       case 'FRIENDSHIP':
         return friendshipReady
       case 'FRIENDSHIP_DAY':

@@ -40,6 +40,9 @@ type TeamScreenProps = {
   onLayoutChange?: (layout: TeamLayout) => void
   /** Solo para mirar (desde OTROS en el draft; Jose, 12/11/2026): sin mover, sin menú y sin ACEPTAR; CANCELAR vuelve. */
   readOnly?: boolean
+  /** EVOLUCIONAR en el menú del PC: si ese Pokémon puede evolucionar ahora (objeto, intercambio, amistad o belleza). */
+  canEvolve?: (id: string) => boolean
+  onEvolve?: (id: string) => void
   scale?: number
   reservedHeight?: number
 }
@@ -50,7 +53,7 @@ const PILL_X = 5
 
 const boxCell = (i: number) => ({ x: 100 + 24 * (i % 6), y: 44 + 24 * Math.floor(i / 6) })
 
-export function TeamScreen({ readOnly = false, mons, initial, limit, rivalName, itemName, onAccept, onCancel, onMoves, onGiveItem, onTakeItem, onLayoutChange, scale, reservedHeight }: TeamScreenProps) {
+export function TeamScreen({ readOnly = false, canEvolve, onEvolve, mons, initial, limit, rivalName, itemName, onAccept, onCancel, onMoves, onGiveItem, onTakeItem, onLayoutChange, scale, reservedHeight }: TeamScreenProps) {
   const [layout, setLayout] = useState(initial)
   const [box, setBox] = useState(0)
   const [held, setHeld] = useState(null as Place | null)
@@ -183,6 +186,7 @@ export function TeamScreen({ readOnly = false, mons, initial, limit, rivalName, 
                 [m.moves, m.movesLabel(mons[menuId].name), () => { setMenu(null); onMoves(menuId) }],
                 // OBJETO: sin objeto, la Mochila directamente; con objeto, DAR / QUITAR como el menú de equipo del juego.
                 [m.item, m.itemLabel(mons[menuId].name), () => { if (mons[menuId].item) setItemMenu(true); else { setMenu(null); onGiveItem(menuId) } }],
+                ...(canEvolve?.(menuId) && onEvolve ? [[m.evolve, m.evolveLabel(mons[menuId].name), () => { setMenu(null); onEvolve(menuId) }] as const] : []),
                 [m.cancel, m.cancelLabel, () => { setMenu(null); focusPlace(menu) }],
               ]}
             />

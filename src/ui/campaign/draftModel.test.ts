@@ -60,21 +60,22 @@ describe('modelo del Draft', () => {
 // Jose, 12/11/2026: también cómo evolucionan los que no lo hacen por nivel; la ventana NOTAS tiene dos líneas.
 describe('cómo evoluciona cada candidato', () => {
   const text = (id: string) => candidateOf(id, 15, campaignDefinition, data).evolutionText
-  // Cambio de requisito (Jose, 12/11/2026): cada forma con su condición en la campaña (objeto sin intercambio, amistad por victorias).
+  // Cambio de requisito (Jose, 12/11/2026): cada forma con su condición en la campaña (intercambio en el Nv37, con objeto si lo pide;
+  // amistad por victorias).
   it('por nivel, objeto, intercambio, amistad, belleza y varias formas, con las condiciones de la campaña', () => {
     expect(text('bulbasaur')).toBe('Evoluciona a IVYSAUR en el Nv16.')
     expect(text('shellder')).toBe('Evoluciona a CLOYSTER con PIEDRA AGUA.')
-    expect(text('kadabra')).toBe('Evoluciona a ALAKAZAM cuando quieras.')
-    expect(text('onix')).toBe('Evoluciona a STEELIX con REVEST. METÁLICO.')
+    expect(text('kadabra')).toBe('Evoluciona a ALAKAZAM en el Nv37.')
+    expect(text('onix')).toBe('Evoluciona a STEELIX en el Nv37 con REVEST. METÁLICO.')
     expect(text('golbat')).toBe('Evoluciona a CROBAT tras 3 victorias.')
     expect(text('feebas')).toBe('Evoluciona a MILOTIC tras vencer a NORMAN.')
-    expect(text('slowpoke')).toBe('Evoluciona a SLOWBRO (Nv37) o SLOWKING (ROCA DEL REY).')
+    expect(text('slowpoke')).toBe('Evoluciona a SLOWBRO (Nv37) o SLOWKING (Nv37 + ROCA DEL REY).')
     expect(text('gloom')).toBe('Evoluciona a VILEPLUME (PIEDRA HOJA) o BELLOSSOM (PIEDRA SOLAR).')
     expect(text('tyrogue')).toBe('Evoluciona a HITMONCHAN, HITMONLEE o HITMONTOP (Nv20).')
     expect(text('nincada')).toBe('Evoluciona a NINJASK en el Nv20.')
     expect(text('aggron')).toBe('No evoluciona.')
     expect(text('eevee')).toMatch(/^Evoluciona (a .*\(con piedras\)|de 5 formas)/)
-    expect(text('clamperl')).toBe('Evoluciona a HUNTAIL (DIENTE MARINO) o GOREBYSS (ESCAMA MARINA).')
+    expect(text('clamperl')).toBe('Evoluciona en el Nv37 a HUNTAIL (DIENTE MARINO) o GOREBYSS (ESCAMA MARINA).')
   })
 
   it('cabe en las tres líneas de NOTAS para todas las especies de la campaña', () => {

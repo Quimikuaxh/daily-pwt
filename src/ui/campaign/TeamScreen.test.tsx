@@ -92,3 +92,29 @@ describe('Equipo y PC', () => {
     expect(onCancel).toHaveBeenCalledTimes(2)
   })
 })
+
+// Jose, 12/11/2026: EVOLUCIONAR en el menú del PC antes de la Liga, solo si puede evolucionar ahora; y el modo de solo mirar.
+describe('EVOLUCIONAR y solo mirar', () => {
+  it('EVOLUCIONAR sale en el menú solo para quien puede evolucionar y avisa con su id', () => {
+    const onEvolve = vi.fn()
+    render(<TeamScreen mons={mons} initial={layout} limit={3} rivalName="MARCIAL" itemName={(id) => id} onAccept={vi.fn()} onCancel={vi.fn()} onMoves={vi.fn()}
+      onGiveItem={vi.fn()} onTakeItem={vi.fn()} canEvolve={(id) => id === 'machop'} onEvolve={onEvolve} scale={2} />)
+    fireEvent.click(screen.getByRole('button', { name: /^Equipo, puesto 1: GROVYLE/ }))
+    expect(screen.queryByRole('menuitem', { name: 'Evolucionar a GROVYLE' })).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Cerrar el menú' }))
+    fireEvent.click(screen.getByRole('button', { name: /^Equipo, puesto 2: MACHOP/ }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Evolucionar a MACHOP' }))
+    expect(onEvolve).toHaveBeenCalledWith('machop')
+  })
+
+  it('solo para mirar: tocar no abre el menú, no hay ACEPTAR y volver avisa', () => {
+    const onCancel = vi.fn()
+    render(<TeamScreen readOnly mons={mons} initial={layout} limit={6} rivalName="MARCIAL" itemName={(id) => id} onAccept={vi.fn()} onCancel={onCancel} onMoves={vi.fn()}
+      onGiveItem={vi.fn()} onTakeItem={vi.fn()} scale={2} />)
+    fireEvent.click(screen.getByRole('button', { name: /^Equipo, puesto 1: GROVYLE/ }))
+    expect(screen.queryByRole('menuitem')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /^Aceptar/ })).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Volver al draft' }))
+    expect(onCancel).toHaveBeenCalledOnce()
+  })
+})

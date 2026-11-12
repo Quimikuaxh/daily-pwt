@@ -98,6 +98,20 @@ describe('Campaña de Hoenn', () => {
     expect(store.read()!.state.offer).toEqual(offer)
   })
 
+  // Jose, 12/11/2026: evolucionar antes de la Liga desde el PC (aquí, Kadabra, de intercambio: en la campaña, en el Nv37).
+  it('EVOLUCIONAR en el PC pasa por la escena de evolución y guarda la forma nueva', async () => {
+    const store = new LocalCampaignStore(new MemoryStorage())
+    const base = createCampaign('evolucionar')
+    store.write({ ...base, phase: 'prepare', pick: 4, offer: [], members: [{ id: 'k', species: 'kadabra', level: 37, history: [{ species: 'abra', evolvedAt: 16 }], fainted: false, victories: 0 }] }, null, 0)
+    const { user } = mount(store)
+    await user.click(screen.getByRole('button', { name: /^Continuar: preparar equipo/ }))
+    await user.click(screen.getByRole('button', { name: /^Equipo, puesto 1: KADABRA/ }))
+    await user.click(screen.getByRole('menuitem', { name: 'Evolucionar a KADABRA' }))
+    for (let tap = 0; tap < 3; tap++) await user.click(screen.getByRole('button', { name: /^Continuar: / }))
+    expect(store.read()!.state.members[0]).toMatchObject({ species: 'alakazam', history: [{ species: 'abra' }, { species: 'kadabra', evolvedAt: 37 }] })
+    expect(screen.getByRole('button', { name: /^Equipo, puesto 1: ALAKAZAM/ })).toBeInTheDocument()
+  })
+
   it('recluta las cuatro elecciones de Petra, guarda cada una y vuelve a Ruta en preparación', async () => {
     const { user, store } = mount()
     await user.click(screen.getByRole('button', { name: 'Empezar campaña' }))

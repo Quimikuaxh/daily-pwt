@@ -7,7 +7,7 @@ import { availableDraftForms } from '../../core/nuzlocke/draftAvailability'
 import emeraldCalendar from '../../../data/nuzlocke/hoenn-emerald-calendar.json'
 import { campaignSteps } from './stepsModel'
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react'
-import { chooseRecruit, createCampaign, draftPicks, evolveForLeague, lockLeagueRoster, openDraft, type CampaignDefinition, type CampaignState } from '../../core/nuzlocke/campaign'
+import { chooseRecruit, createCampaign, draftPicks, evolveForLeague, evolveRecruit, lockLeagueRoster, openDraft, specialEvolutionOptions, type CampaignDefinition, type CampaignState } from '../../core/nuzlocke/campaign'
 import type { GameData } from '../../core/types'
 import { LocalCampaignStore } from '../../storage/campaignStore'
 import type { AccountCampaign } from '../../cloud/campaign'
@@ -141,7 +141,7 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
     return record?.battle ? { before: record.state, lineup: record.battle.source.selected ?? record.state.leagueRoster ?? [] } : null
   })
   // Con un combate guardado (recarga a mitad), se vuelve a él.
-  const [view, setView] = useState(() => (store.read()?.battle ? 'battle' : 'route') as 'route' | 'draft' | 'team' | 'teamView' | 'moves' | 'battle' | 'result' | 'share' | 'evolution' | 'league' | 'bag' | 'exchange')
+  const [view, setView] = useState(() => (store.read()?.battle ? 'battle' : 'route') as 'route' | 'draft' | 'team' | 'teamView' | 'evolveOne' | 'moves' | 'battle' | 'result' | 'share' | 'evolution' | 'league' | 'bag' | 'exchange')
   // El worker de combate (y su sesión) solo se crea al entrar en combate: Ruta, Draft y Equipo no lo necesitan.
   const [session, setSession] = useState(() => (store.read()?.battle ? newSession(createBattleClient()) : null))
   const enterBattle = (lineup: readonly string[]) => {
@@ -221,6 +221,38 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
     save(created)
   }
 
+  // EVOLUCIONAR en el PC antes de la Liga (Jose, 12/11/2026): las formas a las que puede llegar ahora (de día y de noche, para Eevee).
+  const [evolvingId, setEvolvingId] = useState(null as string | null)
+  const evolveTargets = (current: CampaignState, id: string): string[] => {
+    try {
+      const member = current.members.find((candidate) => { return candidate.id === id })
+      const options = [...specialEvolutionOptions(definition, current, id, { period: 'day' }), ...specialEvolutionOptions(definition, current, id, { period: 'night' })]
+      return [...new Set(options)].filter((target) => target !== member?.species)
+    } catch {
+      return []
+    }
+  }
+  const evolveOneScreen = () => {
+    if (view !== 'evolveOne' || state?.phase !== 'prepare' || !evolvingId) return null
+    const member = state.members.find((candidate) => { return candidate.id === evolvingId })
+    if (!member) return null
+    return (
+      <EvolutionScene
+        evolutions={[{ id: member.id, species: member.species, level: member.level, targets: evolveTargets(state, member.id) }]}
+        nameOf={(species) => speciesName(species).toUpperCase()}
+        hpOf={(id, species) => teamMonOf({ ...member, species }, data).hp}
+        onDone={(choices) => {
+          const target = choices[member.id]
+          const night = !specialEvolutionOptions(definition, state, member.id, { period: 'day' }).includes(target)
+          save(evolveRecruit(definition, state, member.id, target, { period: night ? 'night' : 'day' }))
+          setEvolvingId(null)
+          setView('team')
+        }}
+        reservedHeight={150}
+      />
+    )
+  }
+
   // Desde OTROS en el draft: el equipo y la caja, solo para mirar; CANCELAR vuelve a la misma oferta.
   const teamView = () => {
     if (view !== 'teamView' || state?.phase !== 'draft') return null
@@ -256,6 +288,8 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
       onMoves={(id) => { setMovesFor(id); setView('moves') }}
       onGiveItem={(id) => { setMovesFor(id); setView('bag') }}
       onTakeItem={(id) => { save(equipItem(state, id, null)) }}
+      canEvolve={(id) => evolveTargets(state, id).length > 0}
+      onEvolve={(id) => { setEvolvingId(id); setView('evolveOne') }}
       onLayoutChange={setTeamLayout}
       reservedHeight={150}
     />
@@ -446,7 +480,7 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
       </header>
       <main id="main" tabIndex={-1} className="campaign-main">
         <h2 className="visually-hidden">{t.screen}</h2>
-        {shareScreen() ?? teamView() ?? resultScreen() ?? battleScreen() ?? evolutionScreen() ?? leagueScreen() ?? teamScreen() ?? exchangeScreen() ?? bagScreen() ?? movesScreen() ?? (view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
+        {shareScreen() ?? teamView() ?? evolveOneScreen() ?? resultScreen() ?? battleScreen() ?? evolutionScreen() ?? leagueScreen() ?? teamScreen() ?? exchangeScreen() ?? bagScreen() ?? movesScreen() ?? (view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
           <DraftScreen
             candidates={draftCandidates(state)}
             pick={state.pick}

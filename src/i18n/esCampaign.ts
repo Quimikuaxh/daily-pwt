@@ -217,6 +217,9 @@ export const esCampaign = {
     giveLabel: (name: string) => `Dar un objeto a ${name}`,
     takeLabel: (name: string) => `Quitar el objeto a ${name}`,
     cancel: 'CANCELAR',
+    // Evolucionar antes de la Liga con objeto, intercambio, amistad o belleza (Jose, 12/11/2026).
+    evolve: 'EVOLUCIONAR',
+    evolveLabel: (name: string) => `Evolucionar a ${name}`,
     label: (name: string) => `Opciones de ${name}`,
     moveLabel: (name: string) => `Mover a ${name}`,
     movesLabel: (name: string) => `Movimientos de ${name}`,
@@ -299,13 +302,14 @@ export const esCampaign = {
     evolvesBy: (target: string, how: string) => `Evoluciona a ${target} ${how}.`,
     evolvesMany: (parts: string) => `Evoluciona a ${parts}.`,
     evolvesWays: (count: number, ways: string) => `Evoluciona de ${count} formas: ${ways}.`,
+    evolvesAtLevel: (level: number, parts: string) => `Evoluciona en el Nv${level} a ${parts}.`,
     // Condición en la campaña, no en el juego (Jose, 12/11/2026): con objeto basta tenerlo; sin él, el intercambio no hace falta.
     how: {
-      level: (level: number) => `en el Nv${level}`, item: (item: string) => `con ${item}`, trade: 'cuando quieras',
+      level: (level: number) => `en el Nv${level}`, item: (item: string) => `con ${item}`, levelItem: (level: number, item: string) => `en el Nv${level} con ${item}`,
       friendship: (wins: number) => `tras ${wins} victorias`, beauty: (rival: string) => `tras vencer a ${rival.toUpperCase()}`,
     },
     short: {
-      level: (level: number) => `Nv${level}`, items: 'con piedras',
+      level: (level: number) => `Nv${level}`, levelItem: (level: number, item: string) => `Nv${level} + ${item}`, items: 'con piedras',
     },
     accessible: (rival: string, level: number, n: number, total: number) => `Rival: ${rival}, nivel ${level}. Elección ${n} de ${total}. Los demás candidatos se descartan.`,
     statsLabel: (s: readonly number[]) => `PS ${s[0]}, Ataque ${s[1]}, Defensa ${s[2]}, Ataque especial ${s[3]}, Defensa especial ${s[4]}, Velocidad ${s[5]}`,

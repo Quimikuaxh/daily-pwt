@@ -20,7 +20,8 @@ test('T3 Hoy → Modos → Ruta → cuatro elecciones de Petra → Ruta → Hoy'
     await expect(candidates.nth(1)).toHaveAttribute('aria-pressed', 'true')
     await expect(page.getByRole('region', { name: /^Datos de/ })).toContainText(`Elección ${pick} de 4`)
     await page.getByRole('button', { name: 'Datos: ver estadísticas' }).click()
-    await expect(page.getByRole('button', { name: 'Datos: ver información' })).toBeVisible()
+    // Cambio de requisito (12/11/2026): tres páginas; tras ESTADÍSTICAS, DATOS lleva a MOVIMIENTOS.
+    await expect(page.getByRole('button', { name: 'Datos: ver movimientos' })).toBeVisible()
     await page.getByRole('button', { name: /^Reclutar a/ }).click()
   }
   await expect(petra).toContainText('LÍDER PETRA')
@@ -33,7 +34,7 @@ test('T3 Hoy → Modos → Ruta → cuatro elecciones de Petra → Ruta → Hoy'
   // SALIR es la última fila de la lista: con más de cinco movimientos hay que bajar, como en el juego.
   const down = page.getByRole('button', { name: 'Desplazar movimientos hacia abajo' })
   while (!(await page.getByRole('button', { name: 'Volver al equipo' }).count()) && await down.count()) await down.click()
-  await page.getByRole('button', { name: 'Volver al equipo' }).click()
+  await page.getByRole('button', { name: 'Volver al equipo', exact: true }).click()
   // ACEPTAR empieza el combate (T4); CANCELAR vuelve a la Ruta sin combatir.
   await page.getByRole('button', { name: 'Cancelar y volver a la ruta' }).click()
   await expect(petra).toContainText('LÍDER PETRA')

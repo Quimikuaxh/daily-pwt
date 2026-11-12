@@ -11,6 +11,7 @@ import { emeraldTheme } from '../console/themes/emerald'
 import { emeraldAbilityName, emeraldAbilityText, emeraldItemName } from './emeraldNames'
 import { moveInfo, type MoveInfo } from './movesModel'
 import { defaultMoves } from '../../core/nuzlocke/progression'
+import { EMERALD_TRADE_LEVEL } from '../../core/nuzlocke/draftAvailability'
 import moveData from '../../generated/emerald/moves.json'
 import emeraldCalendar from '../../../data/nuzlocke/hoenn-emerald-calendar.json'
 import emeraldEncounters from '../../../data/nuzlocke/hoenn-emerald.json'
@@ -85,7 +86,7 @@ const d = esCampaign.draft
  * Cómo evoluciona en la campaña (Jose, 12/11/2026), por cualquier método: con una sola forma, la frase entera («Evoluciona a CLOYSTER
  * con PIEDRA AGUA.»); con varias, cada una con su condición entre paréntesis («Evoluciona a SLOWBRO (Nv37) o SLOWKING (con ROCA DEL
  * REY).»), juntando las de una misma condición. Las condiciones son las de la campaña: con objeto basta tenerlo (sin intercambio), las
- * de intercambio sin objeto se hacen cuando se quiera, la amistad llega tras `friendshipWins` victorias y la belleza, tras vencer al
+ * de intercambio, en el Nv37 (y con el objeto si lo piden), la amistad llega tras `friendshipWins` victorias y la belleza, tras vencer al
  * rival anterior a `beautyBefore`. Shedinja no es una evolución del miembro y no sale. Si no cabe en NOTAS, se resume.
  */
 export function evolutionText(rules: readonly EvolutionRule[], name: (species: string) => string, item: (id: string) => string,
@@ -94,15 +95,19 @@ export function evolutionText(rules: readonly EvolutionRule[], name: (species: s
   if (!own.length) return d.noEvolution
   const how = (rule: EvolutionRule): string => {
     if (rule.method.startsWith('LEVEL')) return d.how.level(Number(rule.parameter))
-    if (rule.method === 'ITEM' || rule.method === 'TRADE_ITEM') return d.how.item(item(String(rule.parameter)))
-    if (rule.method === 'TRADE') return d.how.trade
+    if (rule.method === 'ITEM') return d.how.item(item(String(rule.parameter)))
+    // Intercambio: en la campaña, en el Nv37 (y con el objeto si lo pide).
+    if (rule.method === 'TRADE_ITEM') return d.how.levelItem(EMERALD_TRADE_LEVEL, item(String(rule.parameter)))
+    if (rule.method === 'TRADE') return d.how.level(EMERALD_TRADE_LEVEL)
     if (rule.method.startsWith('FRIENDSHIP')) return d.how.friendship(conditions.friendshipWins)
     return d.how.beauty(conditions.beautyRival)
   }
   if (own.length === 1) return d.evolvesBy(name(own[0].target), how(own[0]))
   // Entre paréntesis, el objeto sin «con» (cabe mejor en NOTAS): «SLOWKING (ROCA DEL REY)».
   const label = (rule: EvolutionRule) => (rule.method.startsWith('LEVEL') ? d.short.level(Number(rule.parameter))
-    : rule.method === 'ITEM' || rule.method === 'TRADE_ITEM' ? item(String(rule.parameter)) : how(rule))
+    : rule.method === 'TRADE' ? d.short.level(EMERALD_TRADE_LEVEL)
+      : rule.method === 'TRADE_ITEM' ? d.short.levelItem(EMERALD_TRADE_LEVEL, item(String(rule.parameter)))
+        : rule.method === 'ITEM' ? item(String(rule.parameter)) : how(rule))
   const groups = new Map<string, string[]>()
   for (const rule of own) {
     const targets = groups.get(label(rule)) ?? []
@@ -112,6 +117,11 @@ export function evolutionText(rules: readonly EvolutionRule[], name: (species: s
   const join = (items: readonly string[]) => (items.length > 1 ? `${items.slice(0, -1).join(', ')} o ${items.at(-1)}` : items[0])
   const full = d.evolvesMany(join([...groups].map(([key, targets]) => `${join(targets)} (${key})`)))
   if (notesLines(full).length <= NOTES_LINES) return full
+  // Todas por intercambio con objeto (Clamperl): el nivel delante y cada forma con su objeto.
+  if (own.every((rule) => rule.method === 'TRADE_ITEM')) {
+    const shared = d.evolvesAtLevel(EMERALD_TRADE_LEVEL, join(own.map((rule) => `${name(rule.target)} (${item(String(rule.parameter))})`)))
+    if (notesLines(shared).length <= NOTES_LINES) return shared
+  }
   const itemKeys = new Set(own.filter((rule) => rule.method === 'ITEM').map((rule) => item(String(rule.parameter))))
   // Si no cabe (Eevee): las piedras juntas; si aun así no cabe, solo cuántas formas y de qué maneras.
   const stones = new Map<string, string[]>()
