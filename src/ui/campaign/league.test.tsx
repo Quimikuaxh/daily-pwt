@@ -5,7 +5,7 @@ import progression from '../../../data/nuzlocke/hoenn-emerald-progression.json'
 import { createCampaign, type CampaignDefinition, type CampaignState } from '../../core/nuzlocke/campaign'
 import type { CampaignEncounter } from './hoennRoute'
 import { leagueBeaten, participantText, toggleParticipant } from './leagueModel'
-import { animationFrame, backgroundRows, EVOLUTION_INTRO_FRAMES, evolutionLength, leagueEvolutions, nextStep, optionsWidth, silhouetteFrames } from './evolutionModel'
+import { animationFrame, backgroundRows, EVOLUTION_PHASES, evolutionLength, leagueEvolutions, nextStep, optionsWidth, silhouetteFrames } from './evolutionModel'
 import { LeagueScreen } from './LeagueScreen'
 import { EvolutionScene } from './EvolutionScene'
 
@@ -45,8 +45,26 @@ describe('modelo de la Liga', () => {
     expect(frames.at(-1)).toEqual([256, 16])
     expect(backgroundRows().slice(0, 20).every((row) => row === -1)).toBe(true)
     expect(animationFrame(0)).toMatchObject({ scales: null, evolved: false })
-    expect(animationFrame(EVOLUTION_INTRO_FRAMES).scales).toEqual(frames[0])
-    expect(animationFrame(evolutionLength() - 1)).toMatchObject({ scales: null, evolved: true })
+    expect(animationFrame(EVOLUTION_PHASES.cycle).scales).toEqual(frames[0])
+    expect(animationFrame(evolutionLength() - 1)).toMatchObject({ scales: null, evolved: true, flash: 0, white: 0 })
+    // Cambio de requisito (Jose, 12/11/2026): destellos y tiempos de evolution_graphics.c.
+    const { arc, cycle, circle, spray } = EVOLUTION_PHASES
+    expect([arc, cycle - arc, circle - cycle, spray - circle]).toEqual([162, 97, frames.length, 49])
+    // Espiral: cuatro destellos cada 8 fotogramas que salen de (120,88) a 48 px y suben; el Pokémon se vuelve blanco (retardo 10).
+    expect(animationFrame(0).sparkles).toHaveLength(4)
+    expect(animationFrame(0).sparkles[0]).toEqual({ x: 168, y: 88, scale: 1 })
+    expect(animationFrame(0).white).toBe(2 / 16)
+    expect(animationFrame(100).white).toBe(1)
+    expect(Math.min(...animationFrame(100).sparkles.map((sparkle) => sparkle.y))).toBeLessThan(40)
+    expect(animationFrame(150).sparkles).toHaveLength(0)
+    // Arco: nueve por fotograma durante seis, de (120,8) hacia abajo; círculo: 16 que se cierran desde 120 px sobre (120,56).
+    expect(animationFrame(arc).sparkles).toHaveLength(9)
+    expect(animationFrame(circle).sparkles).toHaveLength(16)
+    expect(animationFrame(circle).sparkles.every((sparkle) => Math.hypot(sparkle.x - 120, sparkle.y - 56) > 100)).toBe(true)
+    // Lluvia: ocho al empezar y el fondo a blanco; a los 32 fotogramas todo recupera el color, también la forma nueva.
+    expect(animationFrame(spray).sparkles).toHaveLength(8)
+    expect(animationFrame(spray + 10)).toMatchObject({ flash: 1, white: 1, evolved: true })
+    expect(animationFrame(spray + 50)).toMatchObject({ flash: 0, white: 0 })
     expect(optionsWidth(['VILEPLUME', 'BELLOSSOM'])).toBe(11)
   })
 })

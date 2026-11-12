@@ -57,6 +57,7 @@ export function EvolutionScene({ evolutions, nameOf, hpOf, onDone, scale, reserv
   const animation = step === 'animating' ? animationFrame(frame) : null
   const scales = animation?.scales ?? null
   const flash = animation?.flash ?? 0
+  const white = animation?.white ?? 0
   const row = animation?.row ?? -1
   const lines = messagePages(message)[0] ?? []
 
@@ -87,15 +88,24 @@ export function EvolutionScene({ evolutions, nameOf, hpOf, onDone, scale, reserv
         <div key="scene" className="evolution-scene">
           <div className="moves-black" />
           {row >= 0 && <div className="evolution-bg" style={{ left: 0, top: 0, width: 240, height: 112, backgroundImage: `url("${emeraldTheme.asset('evolucion-fondo')}")`, backgroundPosition: `0 ${-160 * row}px` }} />}
+          {/* El destello blanco de la lluvia funde el fondo (paletas de fondo 2–4 y 10), no la caja de mensajes. */}
+          {flash > 0 && <div className="evolution-flash" style={{ left: 0, top: 0, width: 240, height: 112, opacity: flash }} />}
           {scales ? (
             <>
               <img className="mon-front evolution-silhouette" src={emeraldSprite('front', current.species)} alt="" style={{ left: 88, top: sceneSpriteTop(current.species), transform: `scale(${scales[0] / 256})` }} />
               <img className="mon-front evolution-silhouette" src={emeraldSprite('front', chosen)} alt="" style={{ left: 88, top: sceneSpriteTop(chosen), transform: `scale(${scales[1] / 256})` }} />
             </>
           ) : (
-            <img className="mon-front" src={emeraldSprite('front', shownSpecies)} alt="" style={{ left: 88, top: sceneSpriteTop(shownSpecies) }} />
+            <>
+              <img className="mon-front" src={emeraldSprite('front', shownSpecies)} alt="" style={{ left: 88, top: sceneSpriteTop(shownSpecies) }} />
+              {white > 0 && <img className="mon-front evolution-silhouette" src={emeraldSprite('front', shownSpecies)} alt="" style={{ left: 88, top: sceneSpriteTop(shownSpecies), opacity: white }} />}
+            </>
           )}
-          {flash > 0 && <div className="evolution-flash" style={{ left: 0, top: 0, width: 240, height: 160, opacity: flash }} />}
+          {/* Destellos (evo_sparkle.png, prioridad 1: siempre delante del Pokémon, de prioridad 2); su paleta también se funde a blanco. */}
+          {animation?.sparkles.map((sparkle, i) => (
+            <img key={i} className="evolution-sparkle" src={emeraldTheme.asset('evolucion-destello')} alt=""
+              style={{ left: sparkle.x - 4, top: sparkle.y - 4, transform: sparkle.scale === 1 ? undefined : `scale(${sparkle.scale})`, filter: flash > 0 ? `brightness(${1 + 4 * flash})` : undefined }} />
+          ))}
           <img src={emeraldTheme.asset('combate-caja-mensaje')} alt="" style={{ left: 0, top: 112 }} />
           {lines.map((line, i) => <GameText key={i} text={line} x={16} y={121 + 16 * i} color="combate-mensaje" hidden />)}
           {step === 'choose' ? (

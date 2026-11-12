@@ -590,6 +590,9 @@ def evolution_bg():
             frame.alpha_composite(tilemap(tiles, u16(p / layer), 32, 32, 32, colors))
         strip.paste(frame.crop((8, 16, 248, 176)).convert('RGB'), (0, 160 * k))
     save(strip, 'evolucion-fondo.png')
+    # Destello de la animación (misc/evo_sparkle.png, 8 x 8, índice 0 transparente), que evolution_graphics.c mueve en espiral, arco,
+    # círculo y lluvia.
+    save(sprite(G / 'misc/evo_sparkle.png', (0, 0, 8, 8)), 'evolucion-destello.png')
 
 
 comun.terminar((fonts, window_frames, region_map, dome_card, badges, portraits, species, factory, summary_pages, ball_display,

@@ -285,6 +285,7 @@
 .console-screen .evolution-bg { background-repeat: no-repeat; }
 .console-screen .evolution-silhouette { filter: brightness(0) invert(1); transform-origin: 32px 32px; }
 .console-screen .evolution-flash { background: #fff; }
+.console-screen .evolution-sparkle { transform-origin: 4px 4px; }
 
 /* Mochila: envoltura a todo el ancho y la mochila del protagonista recortada a su fotograma de 64 x 64. */
 .bag-screen {
