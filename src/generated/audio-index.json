@@ -127,6 +127,10 @@
     "emerald-evolved": {
       "path": "audio/music/emerald-evolved.m4a",
       "durationSec": 6.757
+    },
+    "emerald-credits": {
+      "path": "audio/music/emerald-credits.m4a",
+      "durationSec": 174.715
     }
   },
   "sfx": {

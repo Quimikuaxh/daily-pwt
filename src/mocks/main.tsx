@@ -11,6 +11,8 @@ import { GameWindow } from '../ui/console/GameWindow'
 import { emeraldSprite, emeraldTheme } from '../ui/console/themes/emerald'
 import { PartySlot } from '../ui/campaign/PartySlot'
 import { slotBox } from '../ui/campaign/partySlotModel'
+import { hallOfFameSpots } from '../ui/campaign/resultModel'
+import { ShareScreen } from '../ui/campaign/ShareScreen'
 import '../index.css'
 import '../ui/campaign/campaign.css'
 
@@ -206,10 +208,78 @@ function Bag() {
   ]
 }
 
-const views: Record<string, () => ReactNode[]> = { mochila: Bag, 'evo-a': EvoScene, 'evo-b': EvoData, 'evo-c': EvoPc, 'objetos-pc': ItemsPc, canje: Exchange }
-const view = views[new URLSearchParams(location.search).get('v') ?? ''] ?? EvoScene
 
-createRoot(document.getElementById('root')!).render(
+/** Pantalla final para compartir (12/11/2026): los seis que ganaron la Liga y el resumen; la imagen que se exporta son las dos pantallas. */
+const champions = [
+  { species: 'sceptile', name: 'SCEPTILE', level: 52, hp: 150, maxHp: 150 },
+  { species: 'gardevoir', name: 'GARDEVOIR', level: 51, hp: 140, maxHp: 140 },
+  { species: 'swampert', name: 'SWAMPERT', level: 51, hp: 170, maxHp: 170 },
+  { species: 'manectric', name: 'MANECTRIC', level: 50, hp: 128, maxHp: 128 },
+  { species: 'altaria', name: 'ALTARIA', level: 50, hp: 135, maxHp: 135 },
+  { species: 'aggron', name: 'AGGRON', level: 50, hp: 132, maxHp: 132 },
+]
+
+function Hall({ text }: { text: string }) {
+  return (
+    <>
+      <img src={emeraldTheme.asset('resultado-salon')} alt="" style={{ left: 0, top: 0 }} />
+      {[...champions].reverse().map((member, k) => {
+        const i = champions.length - 1 - k
+        const [x, y] = hallOfFameSpots(6)[i]
+        return <img key={member.species} className="mon-front" src={emeraldSprite('front', member.species)} alt="" style={{ left: x - 32, top: y - 32 }} />
+      })}
+      <GameText text={text} x={16} y={121} width={208} align="center" color="salon" />
+    </>
+  )
+}
+
+/** A · Salón de la Fama arriba y Ficha de Entrenador abajo, con BAJAS en lugar de DINERO y las ocho medallas. */
+function ShareA() {
+  const stats: [string, string, number][] = [['POKéDEX', '41', 65], ['BAJAS', '3', 81], ['TIEMPO', '4:12', 97]]
+  return [
+    <div key="t"><Hall text="¡BRUNO, CAMPEÓN DE HOENN!" /></div>,
+    <div key="b">
+      <img src={emeraldTheme.asset('resultado-tarjeta')} alt="" style={{ left: 0, top: 0 }} />
+      <GameText text="NOMBRE: BRUNO" x={24} y={41} />
+      <GameText text="Nº ID 40213" x={128} y={17} width={96} align="center" />
+      {stats.map(([label, value, y]) => (
+        <span key={label}>
+          <GameText text={label} x={24} y={y} />
+          <GameText text={value} x={24} y={y} width={112} align="right" />
+        </span>
+      ))}
+      <img src={emeraldTheme.asset('entrenador-brendan')} alt="" style={{ left: 153, top: 40 }} />
+      {Array.from({ length: 8 }, (_, i) => <img key={i} src={emeraldTheme.asset(`medalla-${i + 1}`)} alt="" style={{ left: 32 + 24 * i, top: 120 }} />)}
+    </div>,
+  ]
+}
+
+/** B · Salón de la Fama con el resumen en una línea y, abajo, los seis en la pantalla de equipo con nombre y nivel. */
+function ShareB() {
+  return [
+    <div key="t"><Hall text="BRUNO · 4:12 · 3 BAJAS · 12/11/2026" /></div>,
+    <div key="b">
+      <img src={emeraldTheme.asset('equipo-fondo')} alt="" style={{ left: 0, top: 0 }} />
+      {champions.map((member, i) => {
+        const r = slotBox(i)
+        return <div key={i} style={{ left: r.x, top: r.y, width: r.w, height: r.h }}><PartySlot i={i} mon={member} state={i === 0 ? 'activa' : 'normal'} /></div>
+      })}
+      <GameWindow x={1} y={17} width={28} height={2}><GameText text="Campeón de Hoenn: Nuzlocke completada." y={1} width={224} fit /></GameWindow>
+    </div>,
+  ]
+}
+
+const views: Record<string, () => ReactNode[]> = { 'compartir-a': ShareA, 'compartir-b': ShareB, mochila: Bag, 'evo-a': EvoScene, 'evo-b': EvoData, 'evo-c': EvoPc, 'objetos-pc': ItemsPc, canje: Exchange }
+const view = views[new URLSearchParams(location.search).get('v') ?? ''] ?? EvoScene
+// La pantalla real (no una maqueta), para revisar la imagen que exporta: `?v=compartir` (gana) o `?v=compartir-perdida`.
+const shareMode = new URLSearchParams(location.search).get('v')
+if (shareMode === 'compartir' || shareMode === 'compartir-perdida') {
+  const won = shareMode === 'compartir'
+  createRoot(document.getElementById('root')!).render(
+    <ShareScreen won={won} player="BRUNO" protagonist="brendan" rival="Sixto" team={won ? champions : champions.slice(0, 3)}
+      card={{ id: '40213', pokedex: 41, fainted: 3, minutes: 252, badges: won ? 8 : 5 }} date="2026-11-12" reservedHeight={120} />,
+  )
+} else createRoot(document.getElementById('root')!).render(
   <div style={{ display: 'flex', justifyContent: 'center', padding: 8 }}>
     <ConsoleStage theme={emeraldTheme} scale={2} screens={view()} />
   </div>,

@@ -16,6 +16,8 @@ export const resultMusic = (mode: ResultMode): string | null =>
   mode === 'medal' ? 'emerald-gym-victory' : mode === 'beaten' ? 'emerald-league-victory' : mode === 'hallOfFame' ? 'emerald-hall-of-fame' : null
 
 export const EVOLUTION_MUSIC = 'emerald-evolution'
+/** Créditos de Esmeralda, en la pantalla final para compartir (Jose, 12/11/2026); una vez. */
+export const CREDITS_MUSIC = 'emerald-credits'
 /** Fanfarria de «¡Enhorabuena! … ha evolucionado» (MUS_EVOLVED), una vez. */
 export const EVOLVED_MUSIC = 'emerald-evolved'
 

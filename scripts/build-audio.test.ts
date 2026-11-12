@@ -12,7 +12,7 @@ describe('scripts/build-audio.mjs', () => {
     const { planAudio } = await importScript('scripts/build-audio.mjs')
     const plans = planAudio(manifest())
     // Cambio de requisito (Jose, 12/11/2026): siete pistas de Esmeralda para la campaña de Hoenn, de vídeos de YouTube.
-    expect(plans.filter((plan: { kind: string }) => plan.kind === 'music')).toHaveLength(23)
+    expect(plans.filter((plan: { kind: string }) => plan.kind === 'music')).toHaveLength(24)
     expect(plans.find((plan: { id: string }) => plan.id === 'emerald-gym')).toMatchObject({ video: 'https://www.youtube.com/watch?v=0j4sfjIXTA0', cacheName: 'emerald-gym.yt' })
     // Sin el pitido de vida baja: lo sustituye la música (decisión de Jose, 30/10/2026).
     expect(plans.filter((plan: { kind: string }) => plan.kind === 'sfx')).toHaveLength(32)
@@ -40,7 +40,7 @@ describe('scripts/build-audio.mjs', () => {
     const index = readJson<Index>('src', 'generated', 'audio-index.json')
     for (const [id, entry] of Object.entries(index.music)) {
       // Jingles que suenan una vez: el del PWT y, en la campaña de Hoenn, las victorias y el Salón de la Fama (12/11/2026).
-      if (['victory-pwt', 'emerald-gym-victory', 'emerald-league-victory', 'emerald-hall-of-fame', 'emerald-evolved'].includes(id)) {
+      if (['victory-pwt', 'emerald-gym-victory', 'emerald-league-victory', 'emerald-hall-of-fame', 'emerald-evolved', 'emerald-credits'].includes(id)) {
         expect(entry.loopStartSec, id).toBeUndefined()
         continue
       }

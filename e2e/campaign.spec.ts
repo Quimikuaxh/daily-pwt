@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises'
 import { expect, test } from '@playwright/test'
 import { TodayPage } from './pages/TodayPage'
 
@@ -100,6 +101,15 @@ test('T4 combate de campaña contra Petra con el motor: se reanuda tras recargar
   // Resultado (medalla y Ficha, o derrota): se toca hasta volver a la Ruta.
   await expect(page.locator('.result-screen')).toBeVisible()
   while (await page.locator('.result-continue').count()) await page.locator('.result-continue').click()
+  // Cambio de requisito (Jose, 12/11/2026): si se pierde la campaña, antes de la Ruta va la pantalla final para compartir, que descarga
+  // la imagen de las dos pantallas (720 × 960).
+  if (await page.locator('.share-screen').count()) {
+    const [download] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Guardar la imagen del resultado' }).click()])
+    expect(download.suggestedFilename()).toMatch(/^nuzlocke-hoenn-\d{4}-\d{2}-\d{2}\.png$/)
+    const png = await readFile(await download.path())
+    expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([720, 960])
+    await page.getByRole('button', { name: 'Volver a la ruta' }).click()
+  }
   await expect(page.getByRole('heading', { name: 'Ruta' })).toBeAttached()
   await expect(page.getByRole('button', { name: /^CIUDAD FÉRRICA, gimnasio 1, (superado|próximo)$/ })).toBeVisible()
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('daily-pwt:nuzlocke:v1') ?? 'null'))

@@ -91,6 +91,13 @@
       "video": "https://www.youtube.com/watch?v=jdVNPAFnF64",
       "credit": "Fanfarria de evolución de Pokémon Esmeralda © Nintendo / Creatures Inc. / GAME FREAK inc., del vídeo «Congratulations on Your Evolution! - Pokemon Ruby/Sapphire/Emerald Soundtrack» en YouTube",
       "license": "Música propiedad de sus titulares, usada como fan project no oficial (mismo riesgo asumido que con el resto de la música, PRD §0)."
+    },
+    "yt-emerald-credits": {
+      "name": "Pokémon Emerald Version - Credits, en YouTube",
+      "page": "https://www.youtube.com/watch?v=7tEelG9FjXM",
+      "video": "https://www.youtube.com/watch?v=7tEelG9FjXM",
+      "credit": "Música de los créditos de Pokémon Esmeralda © Nintendo / Creatures Inc. / GAME FREAK inc., del vídeo «Pokémon Emerald Version - Credits» en YouTube (elegido por Jose, 12/11/2026)",
+      "license": "Música propiedad de sus titulares, usada como fan project no oficial (mismo riesgo asumido que con el resto de la música, PRD §0)."
     }
   },
   "music": [
@@ -258,6 +265,12 @@
       "source": "yt-emerald-evolved",
       "trimLeadingSilence": true,
       "_nota": "Campaña de Hoenn (Esmeralda). Fanfarria de «¡Enhorabuena! … ha evolucionado» (MUS_EVOLVED): suena una vez con el mensaje."
+    },
+    {
+      "id": "emerald-credits",
+      "source": "yt-emerald-credits",
+      "trimLeadingSilence": true,
+      "_nota": "Campaña de Hoenn (Esmeralda). Créditos: suena en la pantalla final para compartir (Jose, 12/11/2026)."
     }
   ],
   "sfx": [

@@ -122,6 +122,24 @@ export const esCampaign = {
     memberLabel: (name: string, level: number, fainted: boolean, hp: number) => `${name}, nivel ${level}, ${fainted ? 'baja permanente' : `${hp} PS`}`,
     protagonist: { brendan: 'BRUNO', may: 'AURA' } as Record<string, string>,
   },
+  // Pantalla final para compartir (Jose, 12/11/2026, opción A): Salón de la Fama y Ficha de Entrenador, en imagen.
+  share: {
+    screen: 'Compartir el resultado',
+    champion: (player: string, female: boolean) => `¡${player}, ${female ? 'CAMPEONA' : 'CAMPEÓN'} DE HOENN!`,
+    fell: (player: string, rival: string) => `${player} cayó ante ${rival.toUpperCase()}.`,
+    fainted: 'BAJAS',
+    share: 'Compartir',
+    save: 'Guardar imagen',
+    shareLabel: 'Compartir la imagen del resultado',
+    saveLabel: 'Guardar la imagen del resultado',
+    saved: 'Imagen guardada.',
+    failed: 'No se pudo crear la imagen.',
+    text: (player: string, won: boolean, rival: string) =>
+      won ? `¡${player} ha completado la Nuzlocke de Hoenn en Daily PWT!` : `${player} cayó ante ${rival} en la Nuzlocke de Hoenn de Daily PWT.`,
+    fileName: (date: string) => `nuzlocke-hoenn-${date}.png`,
+    cardText: (player: string, id: string, pokedex: number, fainted: number, time: string, badges: number) =>
+      `Ficha de Entrenador. ${player}. Nº de ID ${id}. POKéDEX: ${pokedex} especies reclutadas. Bajas: ${fainted}. Tiempo: ${time}. Medallas: ${badges}.`,
+  },
   // Combate (battle_message.c y battle_controller_player.c: textos del juego en castellano).
   battle: {
     fight: 'LUCHAR',

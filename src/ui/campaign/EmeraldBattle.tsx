@@ -192,11 +192,14 @@ export function EmeraldBattle({ session, start, data, trainer, intro, rivalLevel
             <MonSprite key={`${view?.player.active}-${player.species}`} kind="back" species={player.species} left={backSpot(player.species).x} top={backSpot(player.species).y}
               hidden={playerHidden} motion={playerMotion} faint={player.fainted ? faintStyle(true, player.species, battle.speed) : undefined} />
           )}
-          {[rivalSend?.ball, playerSend?.ball].map((ball, i) => ball && (
-            <div key={i} className="battle-ball" style={{ left: ball.x - 8, top: ball.y - 8, width: 16, height: 16 }}>
-              <img src={emeraldTheme.asset('combate-poke-ball')} alt="" style={{ left: 0, top: -16 * ball.frame }} />
-            </div>
-          ))}
+          {[rivalSend?.ball, playerSend?.ball].map((ball, i) => {
+            if (!ball) return null
+            return (
+              <div key={i} className="battle-ball" style={{ left: ball.x - 8, top: ball.y - 8, width: 16, height: 16 }}>
+                <img src={emeraldTheme.asset('combate-poke-ball')} alt="" style={{ left: 0, top: -16 * ball.frame }} />
+              </div>
+            )
+          })}
           {rival && (
             <div aria-hidden="true" style={rival.fainted ? hideAfterFaint(false, rival.species, battle.speed) : boxStyle(rivalHidden || !!rivalRecall, rivalSend)}>
               <img src={emeraldTheme.asset(hb(false).image)} alt="" style={{ left: hb(false).left, top: hb(false).top }} />
@@ -369,11 +372,12 @@ function MonSprite({ kind, species, left, top, hidden, motion, faint }: { kind: 
     visibility: hidden || (motion && !motion.visible) ? 'hidden' : undefined,
     transform: motion && (motion.scale !== 1 || motion.dy) ? `translateY(${motion.dy ?? 0}px) scale(${motion.scale})` : undefined,
   }
+  const tinted = !!motion && motion.visible && motion.tint !== 0 && !hidden
   return (
     <>
       <img className={kind === 'front' ? 'mon-front' : 'mon-back'} src={src} alt="" style={{ ...shape, ...faint }} />
-      {motion && motion.visible && motion.tint > 0 && !hidden && (
-        <div className="mon-tint" style={{ ...shape, opacity: motion.tint, background: BALL_TINT, maskImage: `url("${src}")`, WebkitMaskImage: `url("${src}")` }} />
+      {tinted && (
+        <div className="mon-tint" style={{ ...shape, opacity: motion?.tint, background: BALL_TINT, maskImage: `url("${src}")`, WebkitMaskImage: `url("${src}")` }} />
       )}
     </>
   )

@@ -12,7 +12,7 @@ import { esCampaign } from '../../i18n/esCampaign'
 import { PartySlot } from './PartySlot'
 import { slotBox } from './partySlotModel'
 import { messagePages } from './emeraldBattleModel'
-import { hallOfFameSpots, type Protagonist, type ResultMode } from './resultModel'
+import { hallOfFameOrder, hallOfFameSpots, type Protagonist, type ResultMode } from './resultModel'
 import { resultMusic, useCampaignMusic } from './campaignMusic'
 
 const t = esCampaign.result
@@ -56,9 +56,9 @@ export function ResultScreen({ mode, message, player, protagonist, badges, badge
     return (
       <>
         <img src={emeraldTheme.asset('resultado-salon')} alt="" style={{ left: 0, top: 0 }} />
-        {/* El orden de los sprites del juego deja a los últimos detrás de los primeros. */}
-        {[...survivors].reverse().map((member, k) => {
-          const i = survivors.length - 1 - k
+        {/* De arriba abajo: la fila de abajo queda delante (hallOfFameOrder). */}
+        {hallOfFameOrder(survivors.length).map((i) => {
+          const member = survivors[i]
           const [x, y] = hallOfFameSpots(survivors.length)[i]
           return <img key={`${member.species}-${i}`} className="mon-front" src={emeraldSprite('front', member.species)} alt="" style={{ left: x - 32, top: y - 32 }} />
         })}

@@ -40,5 +40,12 @@ export const minutesSince = (startedAt: number | undefined, now: number): number
 export const recruitedSpecies = (state: CampaignState): number => new Set(state.members.map((member) => member.history[0]?.species ?? member.species)).size
 
 /** Posiciones del Salón de la Fama (hall_of_fame.c, sHallOfFame_MonFullTeamPositions): hasta tres en fila, más en dos filas. */
+/**
+ * Orden de pintado del Salón de la Fama: de arriba abajo, para que la fila de abajo quede delante y no aparezca pisada (Jose,
+ * 12/11/2026). El juego pinta al primero delante de todos; aquí se descarta porque los de abajo quedaban tapados por los de arriba.
+ */
+export const hallOfFameOrder = (count: number): number[] =>
+  hallOfFameSpots(count).slice(0, count).map((spot, i) => [spot[1], i]).sort((a, b) => a[0] - b[0] || a[1] - b[1]).map(([, i]) => i)
+
 export const hallOfFameSpots = (count: number): [number, number][] =>
   count <= 3 ? [[120, 64], [56, 64], [184, 64]] : [[120, 40], [56, 40], [184, 40], [120, 88], [200, 88], [40, 88]]

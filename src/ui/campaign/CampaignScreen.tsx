@@ -38,6 +38,7 @@ import { leagueBeaten } from './leagueModel'
 import { type CampaignResult, minutesSince, playerNameOf, protagonistOf, recruitedSpecies, resultOf, trainerId } from './resultModel'
 import { TeamScreen } from './TeamScreen'
 import { battleMusic } from './campaignMusic'
+import { ShareScreen } from './ShareScreen'
 import './campaign.css'
 
 const t = esCampaign.route
@@ -83,7 +84,7 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
     return record?.battle ? { before: record.state, lineup: record.battle.source.selected ?? record.state.leagueRoster ?? [] } : null
   })
   // Con un combate guardado (recarga a mitad), se vuelve a él.
-  const [view, setView] = useState(() => (store.read()?.battle ? 'battle' : 'route') as 'route' | 'draft' | 'team' | 'moves' | 'battle' | 'result' | 'evolution' | 'league' | 'bag' | 'exchange')
+  const [view, setView] = useState(() => (store.read()?.battle ? 'battle' : 'route') as 'route' | 'draft' | 'team' | 'moves' | 'battle' | 'result' | 'share' | 'evolution' | 'league' | 'bag' | 'exchange')
   // El worker de combate (y su sesión) solo se crea al entrar en combate: Ruta, Draft y Equipo no lo necesitan.
   const [session, setSession] = useState(() => (store.read()?.battle ? new LocalCampaignSession(createBattleClient(), store) : null))
   const enterBattle = (lineup: readonly string[]) => {
@@ -202,8 +203,28 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
         badges={badges} badgeNames={badgeNames}
         card={{ id: trainerId(after.seed), points: after.battlePoints ?? 0, pokedex: recruitedSpecies(after), minutes: result.minutes }}
         team={team}
-        onDone={() => { setResult(null); setView('route') }}
+        // Al ganar al campeón o al perder la campaña, la pantalla final para compartir; si no, a la Ruta.
+        onDone={() => { if (mode === 'hallOfFame' || mode === 'whiteout') { setView('share'); return } setResult(null); setView('route') }}
         reservedHeight={150}
+      />
+    )
+  }
+
+  const shareScreen = () => {
+    if (view !== 'share' || !result) return null
+    const { mode, encounter, after, lineup } = result
+    const won = mode === 'hallOfFame'
+    const team = lineup.flatMap((id) => {
+      const member = after.members.find((candidate) => { return candidate.id === id })
+      // Al ganar, los que siguen en pie (como el Salón de la Fama); al perder, todos los del último combate.
+      return member && (!won || !member.fainted) ? [{ species: member.species, name: speciesName(member.species).toUpperCase() }] : []
+    })
+    return (
+      <ShareScreen
+        won={won} player={playerNameOf(after.seed, playerName)} protagonist={protagonistOf(after.seed)} rival={encounter.nameEs} team={team}
+        card={{ id: trainerId(after.seed), pokedex: recruitedSpecies(after), fainted: after.members.filter((member) => member.fainted).length, minutes: result.minutes, badges: badgeCount(after, encounters) }}
+        date={new Date().toISOString().slice(0, 10)}
+        reservedHeight={200}
       />
     )
   }
@@ -333,7 +354,7 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
       </header>
       <main id="main" tabIndex={-1} className="campaign-main">
         <h2 className="visually-hidden">{t.screen}</h2>
-        {resultScreen() ?? battleScreen() ?? evolutionScreen() ?? leagueScreen() ?? teamScreen() ?? exchangeScreen() ?? bagScreen() ?? movesScreen() ?? (view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
+        {shareScreen() ?? resultScreen() ?? battleScreen() ?? evolutionScreen() ?? leagueScreen() ?? teamScreen() ?? exchangeScreen() ?? bagScreen() ?? movesScreen() ?? (view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
           <DraftScreen
             candidates={state.offer.map((id) => candidateOf(id, Math.max(...encounters[state.encounterIndex].team.map((member) => member.level)), definition, data))}
             pick={state.pick}
@@ -357,7 +378,7 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
           </ul>
           {state ? (
             view !== 'route' ? (
-              <button type="button" className="campaign-action" onClick={() => setView('route')}>{esCampaign.draft.back}</button>
+              <button type="button" className="campaign-action" onClick={() => { if (view === 'share') setResult(null); setView('route') }}>{esCampaign.draft.back}</button>
             ) : (
               <button type="button" className="campaign-action" disabled={state.phase !== 'draft' && state.phase !== 'prepare'} onClick={continueCampaign}
                 aria-label={next.gym === null ? t.continueLeague : t.continueLabel(next.gym)}>
