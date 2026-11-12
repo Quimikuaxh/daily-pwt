@@ -90,6 +90,7 @@ export function DraftScreen({ candidates, pick, picks, level, rivalName, onRecru
               <GameText text={t.type} x={88} y={49} color="datos" hidden />
               {mon.types.map((type, i) => <img key={type} src={emeraldTheme.asset(`tipo-${type}`)} alt="" style={{ left: 120 + 40 * i, top: 48 }} />)}
               <GameText text={mon.ability} x={88} y={73} width={144} color="datos-rotulo" hidden />
+              <GameText text={mon.abilityText} x={88} y={89} width={144} color="datos" hidden />
               {notes.map((line, i) => <GameText key={i} text={line} x={88} y={113 + i * 16} width={144} color="datos" hidden />)}
             </>
           ) : (
@@ -122,7 +123,7 @@ export function DraftScreen({ candidates, pick, picks, level, rivalName, onRecru
           <ul>
             <li>{mon.typeNames.join(' y ')}</li>
             <li>{t.statsLabel(mon.stats)}</li>
-            <li>{mon.ability}</li>
+            <li>{`${mon.ability}. ${mon.abilityText}`}</li>
             <li>{mon.evolution ? t.evolves(mon.evolution.target, mon.evolution.level) : t.noEvolution}</li>
           </ul>
         </section>

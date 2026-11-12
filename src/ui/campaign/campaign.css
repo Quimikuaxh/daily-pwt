@@ -63,9 +63,12 @@
   border-radius: 8px;
 }
 
+/* La fuente de píxel pinta sus mayúsculas bajas en la caja (descent-override 0 %): el relleno de abajo las sube. Medido con
+   armonia-visual el 12/11/2026 (mayúsculas: +0,75 px en escritorio y 0 en móvil, regla «exacto o hasta 1 px más abajo»); antes, +3,75. */
 .campaign-action {
   flex: 1;
   min-height: 40px;
+  padding: 0 0 6px;
   font-size: 24px;
   text-shadow: 2px 2px #681028;
   background: #b81840;
@@ -89,7 +92,8 @@
 
 .campaign-restart {
   margin-top: 8px;
-  padding: 4px 12px;
+  /* Igual que .campaign-action: mayúsculas a +0,25 px del centro (antes, +2,25). */
+  padding: 2px 12px 6px;
   background: #2a2a2a;
   border: 2px solid #d8d8d8;
 }

@@ -7,6 +7,7 @@ import type { NamesEs } from '../../core/types'
 import eraMoves from '../../../data/nuzlocke/emerald-move-names-es.json'
 import eraAbilities from '../../../data/nuzlocke/emerald-ability-names-es.json'
 import eraItems from '../../../data/nuzlocke/emerald-item-names-es.json'
+import abilityTexts from '../../../data/nuzlocke/emerald-ability-descriptions-es.json'
 
 const moves = eraMoves.moves as Record<string, string>
 const abilities = eraAbilities.abilities as Record<string, string>
@@ -17,6 +18,12 @@ export const emeraldMoveName = (id: string, names: NamesEs): string => moves[id]
 
 /** Nombre de la habilidad en Esmeralda (las 76 de Gen 3); si no es de Gen 3, el actual en mayúsculas. */
 export const emeraldAbilityName = (id: string, names: NamesEs): string => abilities[id] ?? (names.abilities[id] ?? id).toUpperCase()
+
+/** Nombre del objeto en Esmeralda (los 39 de la campaña); si no está, el actual en mayúsculas (piedras evolutivas y demás). */
+export const emeraldItemName = (id: string, names: NamesEs): string => items[id] ?? (names.items[id] ?? id).toUpperCase()
+
+/** Descripción de la habilidad en la campaña (redactada desde la del juego en inglés); vacía si no es de Gen 3. */
+export const emeraldAbilityText = (id: string): string => (abilityTexts.abilities as Record<string, string>)[id] ?? ''
 
 /** Nombres para el traductor de mensajes del combate de campaña: movimientos, habilidades y objetos de la época y Pokémon en mayúsculas. */
 export function emeraldBattleNames(names: NamesEs): NamesEs {

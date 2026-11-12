@@ -279,7 +279,20 @@ export const esCampaign = {
     expPoints: 'PUNTOS EXP.',
     nextLevel: 'SIG. NIVEL',
     evolves: (target: string, level: number) => `Evoluciona a ${target} en el Nv${level}.`,
-    noEvolution: 'No evoluciona por nivel.',
+    noEvolution: 'No evoluciona.',
+    // Cómo evoluciona (Jose, 12/11/2026: también los que no lo hacen por nivel).
+    evolvesBy: (target: string, how: string) => `Evoluciona a ${target} ${how}.`,
+    evolvesMany: (parts: string) => `Evoluciona a ${parts}.`,
+    evolvesWays: (count: number, ways: string) => `Evoluciona de ${count} formas: ${ways}.`,
+    how: {
+      level: (level: number) => `en el Nv${level}`, item: (item: string) => `con ${item}`, trade: 'por intercambio',
+      tradeItem: (item: string) => `por intercambio con ${item}`, friendship: 'por amistad', friendshipDay: 'por amistad de día',
+      friendshipNight: 'por amistad de noche', beauty: 'por belleza',
+    },
+    short: {
+      level: (level: number) => `Nv${level}`, item: (item: string) => item, items: 'piedras', trade: 'intercambio',
+      tradeItem: (item: string) => `intercambio con ${item}`, friendship: 'amistad', beauty: 'belleza',
+    },
     accessible: (rival: string, level: number, n: number, total: number) => `Rival: ${rival}, nivel ${level}. Elección ${n} de ${total}. Los demás candidatos se descartan.`,
     statsLabel: (s: readonly number[]) => `PS ${s[0]}, Ataque ${s[1]}, Defensa ${s[2]}, Ataque especial ${s[3]}, Defensa especial ${s[4]}, Velocidad ${s[5]}`,
     dataOf: (name: string) => `Datos de ${name}`,

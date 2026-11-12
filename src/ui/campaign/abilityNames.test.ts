@@ -1,6 +1,10 @@
 import { Dex } from '@pkmn/sim'
 import { describe, expect, it } from 'vitest'
 import names from '../../../data/nuzlocke/emerald-ability-names-es.json'
+import descriptions from '../../../data/nuzlocke/emerald-ability-descriptions-es.json'
+import { textWidth } from '../console/glyphs'
+import { emeraldTheme } from '../console/themes/emerald'
+import type { BitmapFont } from '../console/theme'
 import { emeraldAbilityName, emeraldBattleNames } from './emeraldNames'
 import type { NamesEs } from '../../core/types'
 
@@ -29,5 +33,16 @@ describe('nombres de las habilidades de Esmeralda', () => {
     const battle = emeraldBattleNames({ ...current, moves: {}, species: {}, types: {} })
     expect(battle.abilities.trace).toBe('RASTRO')
     expect(battle.items.leftovers).toBe('RESTOS')
+  })
+})
+
+// Jose, 12/11/2026: las habilidades del draft llevan descripción.
+describe('descripciones de las habilidades de Esmeralda', () => {
+  it('hay una para cada habilidad de Gen 3, y ninguna de más', () => {
+    expect(Object.keys(descriptions.abilities).sort()).toEqual(gen3)
+  })
+
+  it.each(Object.entries(descriptions.abilities))('%s: cabe en una línea de 144 px de la ventana HABILIDAD', (_, text) => {
+    expect(textWidth(emeraldTheme.font as BitmapFont, text)).toBeLessThanOrEqual(144)
   })
 })
