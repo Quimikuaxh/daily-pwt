@@ -6,6 +6,8 @@ export const esCampaign = {
   invalid: 'El guardado de campaña tiene un formato incompatible o está dañado. Se ha conservado sin cambios.',
   closed: 'Inicia sesión para continuar la campaña.',
   busy: 'Espera a que termine el guardado de la campaña.',
+  retry: 'Reintentar',
+  loading: 'Cargando la campaña de tu cuenta…',
   notReady: 'La campaña no está lista para otra decisión.',
   noBattle: 'No hay un combate de campaña activo.',
   staleSession: 'La campaña ha cambiado en otra sesión; reanúdala antes de decidir.',

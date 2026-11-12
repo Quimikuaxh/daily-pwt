@@ -3,10 +3,11 @@
  * Ruta) y debajo la barra del portal con las medallas y la acción principal (maqueta aprobada: nada de eso tapa el mapa). Sin campaña
  * guardada, la barra ofrece empezarla; empezar otra sobre una en curso pide confirmación. Se carga aparte (lazy) desde App.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 import { chooseRecruit, createCampaign, draftPicks, evolveForLeague, lockLeagueRoster, openDraft, type CampaignDefinition, type CampaignState } from '../../core/nuzlocke/campaign'
 import type { GameData } from '../../core/types'
 import { LocalCampaignStore } from '../../storage/campaignStore'
+import type { AccountCampaign } from '../../cloud/campaign'
 import { browserStorage } from '../../storage/browserStorage'
 import { es } from '../../i18n/es'
 import { esCampaign } from '../../i18n/esCampaign'
@@ -56,6 +57,17 @@ type CampaignScreenProps = {
   playerName?: string
   /** Cliente del worker de combate (por defecto, el real); los tests pasan un doble. */
   createBattleClient?: () => CampaignBattleClient
+  /**
+   * Guardado de la cuenta (D4, DEC-90; con sesión de Google): la campaña se lee y se guarda en ella en vez de en el navegador, y la
+   * pantalla avisa de los conflictos («Recargar campaña») y de los fallos de conexión («Reintentar»). Sin él, el almacén local.
+   */
+  cloud?: AccountCampaign
+}
+
+type CampaignViewProps = Omit<CampaignScreenProps, 'store' | 'cloud'> & {
+  store: LocalCampaignStore | AccountCampaign
+  /** Sesión de combate sobre el almacén (la cuenta registra las suyas para pararlas al cerrar sesión o en un conflicto). */
+  newSession: (client: CampaignBattleClient) => LocalCampaignSession
 }
 
 /** Plazas del equipo: las del líder en los gimnasios; seis en la Liga. */
@@ -73,8 +85,50 @@ const trainerOf = (encounter: CampaignEncounter) => ({
 
 const randomSeed = () => `hoenn-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
 
-export default function CampaignScreen({ data, onExit, store: givenStore, newSeed = randomSeed, createBattleClient = createCampaignWorkerClient, playerName }: CampaignScreenProps) {
-  const store = useMemo(() => givenStore ?? new LocalCampaignStore(browserStorage()), [givenStore])
+export default function CampaignScreen({ store: givenStore, cloud, ...props }: CampaignScreenProps) {
+  const local = useMemo(() => givenStore ?? new LocalCampaignStore(browserStorage()), [givenStore])
+  if (cloud) return <CloudCampaign cloud={cloud} {...props} />
+  return <CampaignView {...props} store={local} newSession={(client) => { return new LocalCampaignSession(client, local) }} />
+}
+
+/**
+ * Campaña guardada en la cuenta (GUARDADO.md): carga el registro al abrir y, mientras guarda o si algo falla, bloquea la pantalla.
+ * En conflicto, el aviso y «Recargar campaña» (nunca automático ni sobrescribiendo el remoto, PRD §0); sin conexión, «Reintentar» con
+ * la misma operación. Tras recargar o recuperarse, la pantalla se vuelve a montar desde el registro (y reanuda el combate guardado).
+ */
+function CloudCampaign({ cloud, ...props }: Omit<CampaignScreenProps, 'store'> & { cloud: AccountCampaign }) {
+  const cloudState = useSyncExternalStore(cloud.subscribe, cloud.getState)
+  const [generation, setGeneration] = useState(0)
+  useEffect(() => { void cloud.load().catch(() => undefined) }, [cloud])
+  const { status, message } = cloudState
+  const remount = () => { setGeneration((value) => value + 1) }
+  if (status === 'closed' || (status === 'loading' && generation === 0 && !cloudState.record)) {
+    return <p className="campaign-cloud-status" role="status">{status === 'closed' ? esCampaign.closed : esCampaign.loading}</p>
+  }
+  const blocked = status !== 'ready'
+  return (
+    <>
+      {status === 'conflict' && (
+        <div className="campaign-cloud-alert" role="alert">
+          <p>{message ?? esCampaign.conflict}</p>
+          <button type="button" className="campaign-action" onClick={() => { void cloud.reload().then(remount, () => undefined) }}>{esCampaign.reload}</button>
+        </div>
+      )}
+      {status === 'offline' && (
+        <div className="campaign-cloud-alert" role="alert">
+          <p>{message ?? esCampaign.offline}</p>
+          <button type="button" className="campaign-action" onClick={() => { void cloud.retry().then(remount, () => undefined) }}>{esCampaign.retry}</button>
+        </div>
+      )}
+      {status === 'error' && <p className="campaign-cloud-alert" role="alert">{message ?? esCampaign.invalid}</p>}
+      <div className="campaign-cloud" inert={blocked} aria-busy={status === 'saving' || status === 'loading'}>
+        <CampaignView key={generation} {...props} store={cloud} newSession={(client) => { return cloud.createSession(client) }} />
+      </div>
+    </>
+  )
+}
+
+function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, createBattleClient = createCampaignWorkerClient, playerName }: CampaignViewProps) {
   const [state, setState] = useState(() => store.read()?.state ?? null as CampaignState | null)
   // Resultado del último combate: el encuentro jugado, la alineación (para enseñar sus bajas), el estado al cerrarlo y los minutos.
   const [result, setResult] = useState(null as CampaignResult | null)
@@ -86,10 +140,10 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
   // Con un combate guardado (recarga a mitad), se vuelve a él.
   const [view, setView] = useState(() => (store.read()?.battle ? 'battle' : 'route') as 'route' | 'draft' | 'team' | 'moves' | 'battle' | 'result' | 'share' | 'evolution' | 'league' | 'bag' | 'exchange')
   // El worker de combate (y su sesión) solo se crea al entrar en combate: Ruta, Draft y Equipo no lo necesitan.
-  const [session, setSession] = useState(() => (store.read()?.battle ? new LocalCampaignSession(createBattleClient(), store) : null))
+  const [session, setSession] = useState(() => (store.read()?.battle ? newSession(createBattleClient()) : null))
   const enterBattle = (lineup: readonly string[]) => {
     if (state) setBattleContext({ before: state, lineup })
-    if (!session) setSession(new LocalCampaignSession(createBattleClient(), store))
+    if (!session) setSession(newSession(createBattleClient()))
     setView('battle')
   }
   useEffect(() => () => session?.stop(), [session])
@@ -108,9 +162,10 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
   const [teamLayout, setTeamLayout] = useState(null as TeamLayout | null)
   const [movesFor, setMovesFor] = useState(null as string | null)
 
+  // En la cuenta el guardado es asíncrono: se enseña ya y, si falla, la pantalla queda bloqueada con su aviso (CloudCampaign).
   const save = (next: CampaignState) => {
     const record = store.write(next, null, store.read()?.revision ?? 0)
-    if (!(record instanceof Promise)) setState(record.state)
+    if (record instanceof Promise) { setState(next); record.catch(() => undefined) } else setState(record.state)
     return next
   }
   const openNext = (current: CampaignState) => save(current.offer.length ? current : openDraft(definition, current))
@@ -146,8 +201,7 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
     if (state && !window.confirm(esCampaign.newCampaignConfirm)) return
     // Cuándo empezó: el TIEMPO de la Ficha de Entrenador.
     const created = { ...createCampaign(newSeed()), startedAt: Date.now() }
-    const record = store.write(created, null, store.read()?.revision ?? 0)
-    if (!(record instanceof Promise)) setState(record.state)
+    save(created)
   }
 
   const teamScreen = () => {
@@ -395,7 +449,7 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
           </button>
         )}
         {state && <button type="button" className="campaign-restart" onClick={start}>{esCampaign.newCampaign}</button>}
-        {!store.persistent && <p className="fight-hint" role="status">{esCampaign.notSaved}</p>}
+        {store instanceof LocalCampaignStore && !store.persistent && <p className="fight-hint" role="status">{esCampaign.notSaved}</p>}
       </main>
     </div>
   )

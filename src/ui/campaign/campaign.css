@@ -342,3 +342,9 @@
 .share-actions .campaign-action { white-space: nowrap; width: auto; padding-inline: 1rem; }
 /* Al perder la campaña, los del último combate salen en gris (Jose, 12/11/2026); exportScreens lo respeta. */
 .console-screen .share-fallen { filter: grayscale(1); }
+
+/* Guardado en la cuenta: aviso de conflicto o sin conexión encima de la campaña, que queda bloqueada (inert) hasta resolverlo. */
+.campaign-cloud { display: contents; }
+.campaign-cloud-status, .campaign-cloud-alert { max-width: 36rem; margin: 0 auto 0.75rem; padding: 0.75rem 1rem; text-align: center; color: #f8f8f8; }
+.campaign-cloud-alert { background: #681028; border: 3px solid #f8f8f8; border-radius: 8px; display: flex; flex-direction: column; gap: 0.5rem; align-items: center; }
+.campaign-cloud-alert .campaign-action { flex: none; padding-inline: 1rem; }
