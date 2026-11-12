@@ -90,8 +90,9 @@
   outline-offset: 2px;
 }
 
+.campaign-secondary { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+
 .campaign-restart {
-  margin-top: 8px;
   /* Igual que .campaign-action: mayúsculas a +0,25 px del centro (antes, +2,25). */
   padding: 2px 12px 6px;
   background: #2a2a2a;
@@ -164,9 +165,10 @@
 }
 
 /* Resalte del menú de alquiler detrás de la opción con el puntero o el foco. */
+/* Siempre hay una opción marcada en rojo, como en el juego (Jose, 12/11/2026: sin marca, el texto no se apreciaba bien); el puntero y
+   el foco la mueven. */
 .console-screen .draft-highlight { visibility: hidden; }
-.console-screen .draft-option:hover .draft-highlight,
-.console-screen .draft-option:focus-visible .draft-highlight { visibility: visible; }
+.console-screen .draft-option[aria-current="true"] .draft-highlight { visibility: visible; }
 .console-screen .draft-option:focus-visible { outline: 0; }
 
 /* Frente del Pokémon: hoja de 2 fotogramas de 64 x 64; se ve el primero. */

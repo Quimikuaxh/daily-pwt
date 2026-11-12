@@ -43,6 +43,19 @@ describe('Draft', () => {
     expect(background()).toHaveAttribute('src', emeraldTheme.asset('datos-info'))
   })
 
+  // Jose, 12/11/2026: una opción del menú siempre marcada y los puntitos de las páginas también cambian de vista.
+  it('el menú abre con DATOS marcado y los puntitos de la página cambian de vista', async () => {
+    const { user, container } = mount()
+    const background = () => container.querySelector('.draft-summary > img')
+    await user.click(ball('BULBASAUR'))
+    expect(screen.getByRole('button', { name: 'Datos: ver estadísticas' })).toHaveAttribute('aria-current', 'true')
+    expect(screen.getByRole('button', { name: /^Reclutar a/ })).toHaveAttribute('aria-current', 'false')
+    await user.click(screen.getByRole('button', { name: 'Página siguiente: estadísticas' }))
+    expect(background()).toHaveAttribute('src', emeraldTheme.asset('datos-habilidades'))
+    await user.click(screen.getByRole('button', { name: 'Página anterior: información' }))
+    expect(background()).toHaveAttribute('src', emeraldTheme.asset('datos-info'))
+  })
+
   it.each(['Otros candidatos', 'Escape'])('%s cierra el menú sin reclutar', async (action) => {
     const { user, onRecruit } = mount()
     await user.click(ball('SQUIRTLE'))

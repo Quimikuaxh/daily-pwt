@@ -4,6 +4,7 @@
  * (1,1), la lista con precios en la ventana (13,1), que se desplaza con sus flechas y termina en SALIR, el icono del objeto en la ventana
  * (1,5) y la descripción en dos líneas en la ventana (1,15). Elegir pide confirmación (SÍ/NO); lo canjeado va a la Mochila. Abajo, el equipo.
  */
+import { scrollList, wheelRows } from './listScroll'
 import { useState, type KeyboardEvent } from 'react'
 import { ConsoleStage } from '../console/ConsoleStage'
 import { GameText } from '../console/GameText'
@@ -46,6 +47,12 @@ export function ExchangeScreen({ points, offers, onBuy, onExit, scale, reservedH
     setNote(null)
     if (focus) requestAnimationFrame(() => (document.querySelector(`[data-exchange-row="${next}"]`) as HTMLElement | null)?.focus())
   }
+  const scrollBy = (by: number) => {
+    const next = scrollList(scroll, cursor, rows, EXCHANGE_ROWS, by)
+    setScroll(next.scroll)
+    setCursor(next.cursor)
+    setNote(null)
+  }
   const pick = (i: number) => {
     if (i === offers.length) { onExit(); return }
     point(i)
@@ -67,7 +74,7 @@ export function ExchangeScreen({ points, offers, onBuy, onExit, scale, reservedH
   return (
     <div className="exchange-screen" onKeyDown={onKeyDown}>
       <ConsoleStage theme={emeraldTheme} scale={scale} reservedHeight={reservedHeight} screens={[(
-        <div key="exchange" className="exchange-top">
+        <div key="exchange" className="exchange-top" onWheel={(event) => { if (!asking) scrollBy(wheelRows(event.deltaY)) }}>
           <img className="exchange-bg" src={emeraldTheme.asset('fabrica-fondo')} alt="" style={{ left: 0, top: 0 }} />
           <GameWindow x={1} y={1} width={8} height={2}>
             <GameText text={t.points} y={1} hidden />
@@ -95,13 +102,13 @@ export function ExchangeScreen({ points, offers, onBuy, onExit, scale, reservedH
             })}
           </GameWindow>
           {scroll > 0 && (
-            <button type="button" className="moves-scroll" style={{ left: 160, top: 0, width: 24, height: 8 }} aria-label={esCampaign.bag.scroll(false)} onClick={() => point(scroll - 1)}>
-              <img className="blink-a" src={emeraldTheme.asset('lista-arriba')} alt="" style={{ left: 4, top: -6 }} />
+            <button type="button" className="moves-scroll" style={{ left: 104, top: 0, width: 136, height: 8 }} aria-label={esCampaign.bag.scroll(false)} onClick={() => scrollBy(-EXCHANGE_ROWS)}>
+              <img className="blink-a" src={emeraldTheme.asset('lista-arriba')} alt="" style={{ left: 60, top: -6 }} />
             </button>
           )}
           {scroll + EXCHANGE_ROWS < rows && (
-            <button type="button" className="moves-scroll" style={{ left: 160, top: 104, width: 24, height: 8 }} aria-label={esCampaign.bag.scroll(true)} onClick={() => point(scroll + EXCHANGE_ROWS)}>
-              <img className="blink-a" src={emeraldTheme.asset('lista-abajo')} alt="" style={{ left: 4, top: -2 }} />
+            <button type="button" className="moves-scroll" style={{ left: 104, top: 104, width: 136, height: 8 }} aria-label={esCampaign.bag.scroll(true)} onClick={() => scrollBy(EXCHANGE_ROWS)}>
+              <img className="blink-a" src={emeraldTheme.asset('lista-abajo')} alt="" style={{ left: 60, top: -2 }} />
             </button>
           )}
           <GameWindow x={1} y={15} width={28} height={4}>

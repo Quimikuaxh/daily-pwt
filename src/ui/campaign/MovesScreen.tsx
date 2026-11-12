@@ -6,6 +6,7 @@
  * con tipo, nombre y PP; EFECTO y DESCRIPCIÓN del señalado. Elegir uno de la lista con los cuatro huecos llenos pide cuál olvidar.
  * La categoría y el origen (nivel o MT/MO) no tienen sitio en el juego: van en el texto accesible.
  */
+import { scrollList, wheelRows } from './listScroll'
 import { useState, type KeyboardEvent } from 'react'
 import { ConsoleStage } from '../console/ConsoleStage'
 import { GameText } from '../console/GameText'
@@ -67,8 +68,16 @@ export function MovesScreen({ mon, legal, equipped, onChange, onExit, scale, res
     if (next) { onChange(next); setNote(t.swapped(mon.name, byId[equipped[i]]?.name ?? equipped[i], byId[learning].name)) }
     setLearning(null)
   }
+  const scrollBy = (rows: number) => {
+    const next = scrollList(scroll, cursor, items, VISIBLE, rows)
+    setScroll(next.scroll)
+    setCursor(next.cursor)
+    setSlot(null)
+  }
   const onKeyDown = (event: KeyboardEvent) => {
     if (event.key === 'Escape' && learning) { event.preventDefault(); setLearning(null); return }
+    // Salida rápida sin bajar hasta SALIR (Jose, 12/11/2026).
+    if (event.key === 'Escape') { event.preventDefault(); onExit(); return }
     const row = (event.target as HTMLElement).dataset.row
     if (row === undefined || learning || (event.key !== 'ArrowUp' && event.key !== 'ArrowDown')) return
     event.preventDefault()
@@ -106,6 +115,7 @@ export function MovesScreen({ mon, legal, equipped, onChange, onExit, scale, res
             </div>
           </GameWindow>
           <GameWindow x={19} y={1} width={10} height={12}>
+            <div className="moves-list" style={{ left: 0, top: 0, width: 80, height: 96 }} onWheel={(event) => { if (!learning) scrollBy(wheelRows(event.deltaY)) }}>
             {Array.from({ length: Math.min(VISIBLE, items - scroll) }, (_, k) => {
               const i = scroll + k
               const move = legal[i]
@@ -119,15 +129,17 @@ export function MovesScreen({ mon, legal, equipped, onChange, onExit, scale, res
                 </button>
               )
             })}
+            </div>
           </GameWindow>
+          {/* Flechas con más superficie (todo el ancho de la lista) y que pasan una página (Jose, 12/11/2026: costaba acertar). */}
           {scroll > 0 && (
-            <button type="button" className="moves-scroll" style={{ left: 180, top: 0, width: 24, height: 16 }} aria-label={t.scroll(false)} onClick={() => moveCursor(scroll - 1)}>
-              <img className="blink-a" src={emeraldTheme.asset('lista-arriba')} alt="" style={{ left: 4, top: 0 }} />
+            <button type="button" className="moves-scroll" style={{ left: 152, top: 0, width: 88, height: 12 }} aria-label={t.scroll(false)} onClick={() => scrollBy(-VISIBLE)}>
+              <img className="blink-a" src={emeraldTheme.asset('lista-arriba')} alt="" style={{ left: 32, top: 0 }} />
             </button>
           )}
           {scroll + VISIBLE < items && (
-            <button type="button" className="moves-scroll" style={{ left: 180, top: 100, width: 24, height: 16 }} aria-label={t.scroll(true)} onClick={() => moveCursor(scroll + VISIBLE)}>
-              <img className="blink-a" src={emeraldTheme.asset('lista-abajo')} alt="" style={{ left: 4, top: -4 }} />
+            <button type="button" className="moves-scroll" style={{ left: 152, top: 100, width: 88, height: 16 }} aria-label={t.scroll(true)} onClick={() => scrollBy(VISIBLE)}>
+              <img className="blink-a" src={emeraldTheme.asset('lista-abajo')} alt="" style={{ left: 32, top: -4 }} />
             </button>
           )}
           <GameWindow x={4} y={15} width={22} height={4}>

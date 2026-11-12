@@ -30,6 +30,7 @@ export function DraftScreen({ candidates, pick, picks, level, rivalName, onRecru
   const [cursor, setCursor] = useState(0)
   const [menu, setMenu] = useState(false)
   const [info, setInfo] = useState(true)
+  const [option, setOption] = useState(0)
   const mon = candidates[cursor] ?? candidates[0]
   const recruit = () => { setMenu(false); setCursor(0); setInfo(true); onRecruit(mon.id) }
   const options = [
@@ -44,6 +45,7 @@ export function DraftScreen({ candidates, pick, picks, level, rivalName, onRecru
     setCursor((cursor + (event.key === 'ArrowRight' ? 1 : candidates.length - 1)) % candidates.length)
   }
   const notes = candidateNotes(mon)
+  const selectedOption = option
 
   return (
     <ConsoleStage theme={emeraldTheme} scale={scale} reservedHeight={reservedHeight} screens={[(
@@ -55,7 +57,7 @@ export function DraftScreen({ candidates, pick, picks, level, rivalName, onRecru
           <button key={candidate.id} type="button" className="draft-ball" style={{ left: ballX(i) - 16, top: 48, width: 32, height: 32 }}
             aria-pressed={i === cursor} aria-haspopup="menu"
             aria-label={t.candidateLabel(i + 1, candidate.name, candidate.typeNames.join(' y '), candidate.total)}
-            onClick={() => { setCursor(i); setMenu(true) }}>
+            onClick={() => { setCursor(i); setMenu(true); setOption(0) }}>
             <span className={i === cursor ? 'draft-ball-sprite draft-ball-active' : 'draft-ball-sprite'}
               style={{ width: 32, height: 32, backgroundImage: `url("${emeraldTheme.asset(i === cursor ? 'fabrica-ball-activa' : 'fabrica-ball-gris')}")` }} />
           </button>
@@ -64,7 +66,8 @@ export function DraftScreen({ candidates, pick, picks, level, rivalName, onRecru
         <GameText text={t.choose(pick)} x={2} y={125} width={156} color="fabrica" />
         {menu && options.map((option, i) => (
           <button key={option.label} type="button" className="draft-option" style={{ left: 176, top: 112 + i * 16, width: 64, height: 16 }}
-            aria-label={option.name} onClick={option.action}>
+            aria-label={option.name} aria-current={i === selectedOption} onClick={option.action}
+            onPointerEnter={() => setOption(i)} onFocus={() => setOption(i)}>
             <img className="draft-highlight" src={emeraldTheme.asset('fabrica-resalte-izda')} alt="" style={{ left: 0, top: 0 }} />
             <img className="draft-highlight" src={emeraldTheme.asset('fabrica-resalte-dcha')} alt="" style={{ left: 32, top: 0 }} />
             <GameText text={option.label} x={7} y={1} color="fabrica-menu" hidden />
@@ -74,6 +77,8 @@ export function DraftScreen({ candidates, pick, picks, level, rivalName, onRecru
     ), (
       <div key="summary" className="draft-summary">
         <img src={emeraldTheme.asset(info ? 'datos-info' : 'datos-habilidades')} alt="" style={{ left: 0, top: 0 }} />
+        {/* Los puntitos de las páginas también cambian de vista (Jose, 12/11/2026), como DATOS en el menú. */}
+        <button type="button" className="team-button" style={{ left: 96, top: 0, width: 40, height: 16 }} aria-label={t.pageLabel(info)} onClick={() => setInfo(!info)} />
         <div aria-hidden="true">
           <GameText text={info ? t.infoTitle : t.statsTitle} x={2} y={1} width={88} color="datos-rotulo" hidden />
           <GameText text={`{NO}${String(mon.dex).padStart(3, '0')}`} x={8} y={17} color="datos-rotulo" hidden />

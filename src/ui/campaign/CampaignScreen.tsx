@@ -443,12 +443,17 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
             <button type="button" className="campaign-action" onClick={start}>{esCampaign.newCampaign}</button>
           )}
         </div>
-        {state?.phase === 'prepare' && view === 'route' && (
-          <button type="button" className="campaign-restart" aria-label={esCampaign.exchange.openLabel(state.battlePoints ?? 0)} onClick={() => setView('exchange')}>
-            {esCampaign.exchange.open}
-          </button>
+        {/* Botones secundarios en una fila (Jose, 12/11/2026: apilados no gustaban). */}
+        {state && (
+          <div className="campaign-secondary">
+            {state.phase === 'prepare' && view === 'route' && (
+              <button type="button" className="campaign-restart" aria-label={esCampaign.exchange.openLabel(state.battlePoints ?? 0)} onClick={() => setView('exchange')}>
+                {esCampaign.exchange.open}
+              </button>
+            )}
+            <button type="button" className="campaign-restart" onClick={start}>{esCampaign.newCampaign}</button>
+          </div>
         )}
-        {state && <button type="button" className="campaign-restart" onClick={start}>{esCampaign.newCampaign}</button>}
         {store instanceof LocalCampaignStore && !store.persistent && <p className="fight-hint" role="status">{esCampaign.notSaved}</p>}
       </main>
     </div>

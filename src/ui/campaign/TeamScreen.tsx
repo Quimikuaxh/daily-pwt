@@ -80,7 +80,8 @@ export function TeamScreen({ mons, initial, limit, rivalName, itemName, onAccept
   }
   const drag = useMonDrag({ box, canDrag: (place) => !!monAt(layout, place) && !(place.area === 'box' && layout.boxes[place.box].ko) && !(place.area === 'party' && place.i >= limit), onDrop: tryMove, onTap: act })
 
-  const shown = (held && monAt(layout, held)) || (hover && monAt(layout, hover)) || layout.party[0]
+  // Con el menú abierto, los datos son los del Pokémon del menú: pasar el puntero por otro no los cambia (Jose, 12/11/2026).
+  const shown = (held && monAt(layout, held)) || (menu && monAt(layout, menu)) || (hover && monAt(layout, hover)) || layout.party[0]
   const info = shown ? mons[shown] : null
   const noteText = note === 'limit' ? t.notes.limit(rivalName, limit) : note ? t.notes[note] : null
   const menuId = menu ? monAt(layout, menu) : null
@@ -155,7 +156,7 @@ export function TeamScreen({ mons, initial, limit, rivalName, itemName, onAccept
             return (
               <button key={i} type="button" className="team-cell" data-place={placeKey(place)} style={{ left: cell.x - 12, top: cell.y - 12, width: 24, height: 24 }}
                 aria-label={slotLabel(place, id)} {...drag.handlers(place)}
-                onPointerEnter={() => setHover(place)} onFocus={() => setHover(place)}>
+                onPointerEnter={() => { if (!menu) setHover(place) }} onFocus={() => { if (!menu) setHover(place) }}>
                 {id && !hidden && <img className="mon-icon" src={emeraldSprite('icon', mons[id].species)} alt="" style={{ left: -4, top: -4 }} />}
               </button>
             )
@@ -205,7 +206,7 @@ export function TeamScreen({ mons, initial, limit, rivalName, itemName, onAccept
             return (
               <button key={i} type="button" className="team-cell" data-place={placeKey(place)} style={{ left: r.x, top: r.y, width: r.w, height: r.h }}
                 aria-label={slotLabel(place, id)} aria-disabled={i >= limit || undefined} {...drag.handlers(place)}
-                onPointerEnter={() => setHover(place)} onFocus={() => setHover(place)}>
+                onPointerEnter={() => { if (!menu) setHover(place) }} onFocus={() => { if (!menu) setHover(place) }}>
                 <PartySlot i={i} mon={mon && { ...mon, maxHp: mon.hp }} state={active ? 'activa' : 'normal'} held={samePlace(held, place) || id === draggingId} bounce={active} />
               </button>
             )

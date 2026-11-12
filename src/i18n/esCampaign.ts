@@ -82,8 +82,9 @@ export const esCampaign = {
   // Canje de Puntos Batalla (mostrador del Frente Batalla, field_specials.c: lista con precios, icono y descripción).
   exchange: {
     screen: 'Canje de Puntos Batalla',
-    open: 'Canje',
-    openLabel: (points: number) => `Canje de Puntos Batalla: tienes ${points} PB`,
+    // «Tienda» en vez de «Canje» (Jose, 12/11/2026): se entiende mejor qué es.
+    open: 'Tienda',
+    openLabel: (points: number) => `Tienda: canjea Puntos Batalla por objetos; tienes ${points} PB`,
     points: 'PB',
     price: (n: number) => `${n} PB`,
     exit: 'SALIR',
@@ -259,6 +260,7 @@ export const esCampaign = {
     recruit: 'RECLUTAR',
     others: 'OTROS',
     summaryLabel: (info: boolean) => info ? 'Datos: ver estadísticas' : 'Datos: ver información',
+    pageLabel: (info: boolean) => info ? 'Página siguiente: estadísticas' : 'Página anterior: información',
     recruitLabel: (name: string) => `Reclutar a ${name}`,
     othersLabel: 'Otros candidatos',
     candidateLabel: (i: number, name: string, types: string, total: number) => `Candidato ${i}: ${name}, ${types}, suma base ${total}`,

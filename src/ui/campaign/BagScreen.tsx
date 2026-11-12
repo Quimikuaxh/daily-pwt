@@ -4,6 +4,7 @@
  * filas que se desplazan con sus flechas y terminan en CERRAR MOCHILA, icono del objeto en (8,72) y descripción en la ventana (0,13).
  * Abajo, el miembro que recibe el objeto. Elegir uno se lo da; si ya llevaba otro, pregunta si cambiarlo (SÍ/NO).
  */
+import { scrollList, wheelRows } from './listScroll'
 import { useState, type KeyboardEvent } from 'react'
 import { ConsoleStage } from '../console/ConsoleStage'
 import { GameText } from '../console/GameText'
@@ -46,6 +47,11 @@ export function BagScreen({ protagonist, member, contents, onGive, onClose, scal
     // Con el teclado el foco sigue al cursor (la fila puede no estar montada hasta desplazar la lista).
     if (focus) requestAnimationFrame(() => (document.querySelector(`[data-bag-row="${next}"]`) as HTMLElement | null)?.focus())
   }
+  const scrollBy = (by: number) => {
+    const next = scrollList(scroll, cursor, rows, VISIBLE_ROWS, by)
+    setScroll(next.scroll)
+    setCursor(next.cursor)
+  }
   const changePocket = (step: number) => {
     setPocket(POCKETS[(POCKETS.indexOf(pocket) + step + POCKETS.length) % POCKETS.length])
     setCursor(0)
@@ -73,7 +79,7 @@ export function BagScreen({ protagonist, member, contents, onGive, onClose, scal
   return (
     <div className="bag-screen" onKeyDown={onKeyDown}>
       <ConsoleStage theme={emeraldTheme} scale={scale} reservedHeight={reservedHeight} screens={[(
-        <div key="bag" className="bag-top">
+        <div key="bag" className="bag-top" onWheel={(event) => { if (!asking) scrollBy(wheelRows(event.deltaY)) }}>
           <img src={emeraldTheme.asset(`mochila-fondo-${protagonist}`)} alt="" style={{ left: 0, top: 0 }} />
           <div className="bag-sprite" style={{ left: 36, top: 34, width: 64, height: 64 }}>
             <img src={emeraldTheme.asset(`mochila-${protagonist}`)} alt="" style={{ left: 0, top: -64 * BAG_FRAME[pocket] }} />
@@ -100,14 +106,14 @@ export function BagScreen({ protagonist, member, contents, onGive, onClose, scal
             )
           })}
           {scroll > 0 && (
-            <button type="button" className="moves-scroll" style={{ left: 160, top: 6, width: 24, height: 12 }} aria-label={t.scroll(false)} onClick={() => point(scroll - 1)}>
+            <button type="button" className="moves-scroll" style={{ left: 112, top: 4, width: 120, height: 12 }} aria-label={t.scroll(false)} onClick={() => scrollBy(-VISIBLE_ROWS)}>
               {/* Flechas de la lista centradas en (172,12) y (172,148), como AddScrollIndicatorArrowPair de item_menu.c. */}
-              <img className="blink-a" src={emeraldTheme.asset('lista-arriba')} alt="" style={{ left: 4, top: -2 }} />
+              <img className="blink-a" src={emeraldTheme.asset('lista-arriba')} alt="" style={{ left: 52, top: 0 }} />
             </button>
           )}
           {scroll + VISIBLE_ROWS < rows && (
-            <button type="button" className="moves-scroll" style={{ left: 160, top: 145, width: 24, height: 12 }} aria-label={t.scroll(true)} onClick={() => point(scroll + VISIBLE_ROWS)}>
-              <img className="blink-a" src={emeraldTheme.asset('lista-abajo')} alt="" style={{ left: 4, top: -5 }} />
+            <button type="button" className="moves-scroll" style={{ left: 112, top: 145, width: 120, height: 12 }} aria-label={t.scroll(true)} onClick={() => scrollBy(VISIBLE_ROWS)}>
+              <img className="blink-a" src={emeraldTheme.asset('lista-abajo')} alt="" style={{ left: 52, top: -5 }} />
             </button>
           )}
           {/* Icono: sprite de 32 x 32 centrado en (24,88) con el dibujo de 24 x 24 arriba a la izquierda (AddBagItemIconSprite), así que el

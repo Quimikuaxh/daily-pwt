@@ -46,6 +46,22 @@ describe('Movimientos', () => {
     expect(onExit).toHaveBeenCalled()
   })
 
+  // Jose, 12/11/2026: salida rápida, rueda del ratón y flechas que pasan una página.
+  it('Esc sale sin bajar hasta SALIR, la rueda mueve la lista y las flechas pasan una página', () => {
+    const many = Array.from({ length: 14 }, (_, i) => move(`m${i}`, `MOV${i}`, i + 1))
+    const onExit = vi.fn()
+    const { container } = render(<MovesScreen mon={{ species: 'totodile', name: 'TOTODILE', level: 15, dex: 158 }} legal={many} equipped={['m0']} onChange={vi.fn()} onExit={onExit} scale={2} />)
+    const first = () => container.querySelector('[data-row]')?.getAttribute('data-row')
+    fireEvent.wheel(container.querySelector('.moves-list')!, { deltaY: 100 })
+    expect(first()).toBe('1')
+    fireEvent.click(screen.getByRole('button', { name: /abajo/i }))
+    expect(first()).toBe('7')
+    fireEvent.click(screen.getByRole('button', { name: /arriba/i }))
+    expect(first()).toBe('1')
+    fireEvent.keyDown(container.querySelector('[data-row]')!, { key: 'Escape' })
+    expect(onExit).toHaveBeenCalledOnce()
+  })
+
   it('el texto accesible lista los equipados y describe el señalado', () => {
     mount(['tackle', 'bite'])
     const region = screen.getByRole('region', { name: 'Movimientos' })
