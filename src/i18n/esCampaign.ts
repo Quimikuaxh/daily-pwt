@@ -309,6 +309,14 @@ export const esCampaign = {
     continue: 'Continuar',
     continueLabel: (gym: number) => `Continuar: preparar el gimnasio ${gym}`,
     continueLeague: 'Continuar: preparar la Liga',
+    // El botón dice lo que viene y la línea de pasos, dónde se está (Jose, 12/11/2026).
+    actions: {
+      recruit: (n: number, total: number) => `Reclutar (${n} de ${total})`,
+      evolve: 'Evolucionar', team: 'Preparar equipo', roster: 'Elegir participantes', battle: (rival: string) => `Combatir contra ${rival.toUpperCase()}`,
+    },
+    actionLabel: (action: string, target: string) => `Continuar: ${action.charAt(0).toLowerCase()}${action.slice(1)} · ${target}`,
+    steps: { recruit: 'Reclutar', evolve: 'Evolución', team: 'Equipo', roster: 'Participantes', battle: 'Combate' } as Record<string, string>,
+    stepsLabel: (current: string) => `Pasos de este tramo; ahora: ${current}`,
     medals: (count: number) => `Medallas: ${count} de 8`,
     medal: (name: string, won: boolean) => `Medalla ${name}${won ? '' : ' (sin conseguir)'}`,
     placeLabel: (city: string, gym: number | null, state: string) => `${city}, ${gym === null ? 'Liga' : `gimnasio ${gym}`}, ${state}`,

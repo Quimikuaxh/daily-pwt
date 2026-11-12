@@ -154,7 +154,8 @@ export function MovesScreen({ mon, legal, equipped, onChange, onExit, scale, res
             <GameText text={t.page} x={2} y={1} width={88} color="datos-rotulo" hidden />
             <GameText text={`{NO}${String(mon.dex).padStart(3, '0')}`} x={8} y={17} color="datos-rotulo" hidden />
             <img className="mon-front" src={emeraldSprite('front', mon.species)} alt="" style={{ left: 8, top: 32 }} />
-            <GameText text={mon.name} x={8} y={97} color="datos-rotulo" hidden />
+            {/* 2 px más arriba que en las otras páginas: aquí el recuadro acaba en y 109 y el nombre tocaba el borde (medido, Jose 12/11/2026). */}
+            <GameText text={mon.name} x={8} y={95} color="datos-rotulo" hidden />
             <GameText text={t.page} x={98} y={20} face="small" color="tira" hidden />
             <GameText text={t.effect} x={18} y={108} face="small" color="tira" hidden />
             <GameText text={t.description} x={98} y={108} face="small" color="tira" hidden />

@@ -23,7 +23,9 @@ describe('Campaña de Hoenn', () => {
     expect(screen.queryByRole('button', { name: /^Continuar/ })).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Empezar campaña' }))
     expect(store.read()?.state).toEqual({ ...createCampaign('t3-petra'), startedAt: expect.any(Number) })
-    expect(screen.getByRole('button', { name: 'Continuar: preparar el gimnasio 1' })).toBeEnabled()
+    // Cambio de requisito (Jose, 12/11/2026): el botón dice lo que viene y una línea marca el paso del tramo.
+    expect(screen.getByRole('button', { name: 'Continuar: reclutar (1 de 4) · preparar el gimnasio 1' })).toHaveTextContent('Reclutar (1 de 4)')
+    expect(screen.getByRole('list', { name: 'Pasos de este tramo; ahora: Reclutar' })).toHaveTextContent('Reclutar 1/4')
     await user.click(screen.getByRole('button', { name: 'Volver a Hoy' }))
     expect(onExit).toHaveBeenCalledOnce()
   })

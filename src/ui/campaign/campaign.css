@@ -364,3 +364,19 @@
 }
 .console-screen .message-arrow img { animation: message-arrow calc(32s / 60) steps(1) infinite; }
 @media (prefers-reduced-motion: reduce) { .console-screen .message-arrow img { animation: none; } }
+
+/* Pasos del tramo en curso, con el actual marcado (Jose, 12/11/2026: con solo «Continuar» no se sabía qué venía). */
+.campaign-steps {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 18px;
+  color: #a8a8a8;
+}
+.campaign-steps span { display: inline-block; padding: 0 6px 3px; border-radius: 6px; }
+.campaign-steps li + li::before { content: '→'; margin-right: 4px; color: #6a6a6a; }
+.campaign-steps li[aria-current="step"] span { color: #f8f8f8; background: #b81840; }

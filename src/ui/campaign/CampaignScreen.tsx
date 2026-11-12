@@ -3,6 +3,7 @@
  * Ruta) y debajo la barra del portal con las medallas y la acción principal (maqueta aprobada: nada de eso tapa el mapa). Sin campaña
  * guardada, la barra ofrece empezarla; empezar otra sobre una en curso pide confirmación. Se carga aparte (lazy) desde App.
  */
+import { campaignSteps } from './stepsModel'
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 import { chooseRecruit, createCampaign, draftPicks, evolveForLeague, lockLeagueRoster, openDraft, type CampaignDefinition, type CampaignState } from '../../core/nuzlocke/campaign'
 import type { GameData } from '../../core/types'
@@ -195,6 +196,14 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
   const places = useMemo(() => routePlaces(encounters), [])
   const badges = state ? badgeCount(state, encounters) : 0
   const next = places[Math.min(badges, places.length - 1)]
+  // Qué viene: pasos del tramo y lo que hace el botón principal (stepsModel).
+  const steps = state ? campaignSteps(state, draftPicks(definition, state.encounterIndex), inLeague(state),
+    inLeague(state) && !state.leagueEvolved && leagueEvolutions(definition, state).length > 0) : null
+  const rivalNow = state ? encounters[state.encounterIndex] : null
+  const action = !steps || !rivalNow ? t.continue
+    : steps.current === 'recruit' && steps.pick ? t.actions.recruit(steps.pick.n, steps.pick.total)
+      : steps.current === 'battle' ? t.actions.battle(rivalNow.nameEs)
+        : t.actions[steps.current] as string
   const speciesName = (id: string) => data.names.species[id] ?? id
 
   const start = () => {
@@ -421,6 +430,15 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
         ) : (
           <RouteScreen places={places} badges={badges} speciesName={speciesName} reservedHeight={150} />
         ))}
+        {steps && view === 'route' && (
+          <ol className="campaign-steps" aria-label={t.stepsLabel(t.steps[steps.current])}>
+            {steps.steps.map((id) => (
+              <li key={id} aria-current={id === steps.current ? 'step' : undefined}>
+                <span>{id === 'recruit' && steps.pick && id === steps.current ? `${t.steps[id]} ${steps.pick.n}/${steps.pick.total}` : t.steps[id]}</span>
+              </li>
+            ))}
+          </ol>
+        )}
         <div className="campaign-bar">
           <ul className="campaign-medals" aria-label={t.medals(badges)}>
             {places.filter((place) => place.gym !== null).map((place) => (
@@ -435,8 +453,8 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
               <button type="button" className="campaign-action" onClick={() => { if (view === 'share') setResult(null); setView('route') }}>{esCampaign.draft.back}</button>
             ) : (
               <button type="button" className="campaign-action" disabled={state.phase !== 'draft' && state.phase !== 'prepare'} onClick={continueCampaign}
-                aria-label={next.gym === null ? t.continueLeague : t.continueLabel(next.gym)}>
-                {t.continue}
+                aria-label={t.actionLabel(action, next.gym === null ? t.continueLeague.replace('Continuar: ', '') : t.continueLabel(next.gym).replace('Continuar: ', ''))}>
+                {action}
               </button>
             )
           ) : (

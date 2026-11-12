@@ -29,12 +29,12 @@ describe('campaña en la cuenta', () => {
     await user.click(await screen.findByRole('button', { name: 'Empezar campaña' }))
     await waitFor(() => expect(api.saveCampaign).toHaveBeenCalledOnce())
     expect(api.saveCampaign.mock.calls[0][0]).toMatchObject({ expectedRevision: 0, record: { revision: 1, state: { seed: 'cuenta' } } })
-    expect(await screen.findByRole('button', { name: 'Continuar: preparar el gimnasio 1' })).toBeEnabled()
+    expect(await screen.findByRole('button', { name: 'Continuar: reclutar (1 de 4) · preparar el gimnasio 1' })).toBeEnabled()
   })
 
   it('abre la campaña guardada en la cuenta', async () => {
     mount(fakeApi({ getCampaign: vi.fn(async () => remote('remota', 3)) }))
-    expect(await screen.findByRole('button', { name: 'Continuar: preparar el gimnasio 1' })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: 'Continuar: reclutar (1 de 4) · preparar el gimnasio 1' })).toBeInTheDocument()
   })
 
   it('en conflicto bloquea, avisa y solo recarga al pulsar «Recargar campaña»', async () => {
@@ -47,7 +47,7 @@ describe('campaña en la cuenta', () => {
     await user.click(screen.getByRole('button', { name: 'Recargar campaña' }))
     await waitFor(() => expect(screen.queryByRole('alert')).not.toBeInTheDocument())
     expect(api.getCampaign).toHaveBeenCalledTimes(2)
-    expect(await screen.findByRole('button', { name: 'Continuar: preparar el gimnasio 1' })).toBeEnabled()
+    expect(await screen.findByRole('button', { name: 'Continuar: reclutar (1 de 4) · preparar el gimnasio 1' })).toBeEnabled()
   })
 
   it('sin conexión avisa y «Reintentar» reenvía la misma operación', async () => {
