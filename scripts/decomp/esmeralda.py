@@ -217,7 +217,8 @@ def factory():
 
 def summary_pages():
     # Datos del Pokémon (pokemon_summary_screen.c), páginas INFO (page_info) y HABILIDADES (page_skills sobre page_info).
-    # Los puntos de la cabecera siguen DrawPagination con dos páginas disponibles (las otras dos, apagadas). Se borran los
+    # Los puntos de la cabecera siguen DrawPagination con tres páginas disponibles (INFO, HABILIDADES y MOVIMIENTOS en el draft, Jose
+    # 12/11/2026; la cuarta, apagada). Se borran los
     # rótulos ingleses dibujados en la página (PROFILE, ABILITY, TRAINER MEMO, ITEM, RIBBON, STATS, EXP.; la maqueta los
     # pinta en español). Conserva la caja y la barra originales de EXP.; no reutilices esa zona para evolución.
     p = G / 'summary_screen'
@@ -252,12 +253,12 @@ def summary_pages():
                         fill = px[x, y]
 
     im = Image.new('RGBA', (240, 160), (0, 0, 0, 255))
-    im.alpha_composite(tilemap(t, dots(base[:], 0), 30, 20, 32, c))
+    im.alpha_composite(tilemap(t, dots(base[:], 0, 2), 30, 20, 32, c))
     erase_labels(im.load(), (23, 63, 103))
     save(im.convert('RGB'), 'datos-info.png')
 
     im = Image.new('RGBA', (240, 160), (0, 0, 0, 255))
-    im.alpha_composite(tilemap(t, dots(base[:], 1), 30, 20, 32, c))
+    im.alpha_composite(tilemap(t, dots(base[:], 1, 2), 30, 20, 32, c))
     im.alpha_composite(tilemap(t, skills, 30, 20, 32, c))
     px = im.load()
     erase_labels(px, (23, 47, 103))

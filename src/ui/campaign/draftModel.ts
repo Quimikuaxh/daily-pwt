@@ -9,6 +9,11 @@ import { esCampaign } from '../../i18n/esCampaign'
 import { textWidth } from '../console/glyphs'
 import { emeraldTheme } from '../console/themes/emerald'
 import { emeraldAbilityName, emeraldAbilityText, emeraldItemName } from './emeraldNames'
+import { moveInfo, type MoveInfo } from './movesModel'
+import { defaultMoves } from '../../core/nuzlocke/progression'
+import moveData from '../../generated/emerald/moves.json'
+
+const moveRows = moveData as Record<string, unknown>
 import type { BitmapFont } from '../console/theme'
 
 export type Candidate = {
@@ -25,6 +30,8 @@ export type Candidate = {
   evolution: { target: string; level: number } | null
   /** Cómo evoluciona, por cualquier método (`evolutionText`). */
   evolutionText: string
+  /** Los movimientos con que llegaría: los cuatro últimos aprendidos por nivel en sus formas (Jose, 12/11/2026). */
+  moves: MoveInfo[]
 }
 
 /** Número de la Pokédex nacional (sprites de Esmeralda). */
@@ -37,7 +44,7 @@ const IV = 20
 export const statAt = (base: number, level: number, hp: boolean): number =>
   Math.floor(((2 * base + IV) * level) / 100) + (hp ? level + 10 : 5)
 
-export function candidateOf(id: string, level: number, definition: CampaignDefinition, data: GameData): Candidate {
+export function candidateOf(id: string, level: number, definition: CampaignDefinition, data: GameData, history: readonly { species: string; evolvedAt: number }[] = []): Candidate {
   const species = definition.species[id]
   const dex = data.dex.species[id]
   const rawTypes = species?.types ?? dex?.types ?? []
@@ -58,6 +65,8 @@ export function candidateOf(id: string, level: number, definition: CampaignDefin
     evolution: evolution ? { target: (data.names.species[evolution.target] ?? evolution.target).toUpperCase(), level: Number(evolution.parameter) } : null,
     evolutionText: evolutionText(species?.evolutions ?? [], (target) => (data.names.species[target] ?? target).toUpperCase(),
       (item) => emeraldItemName(item, data.names)),
+    moves: species ? defaultMoves(definition.species, { id, species: id, level, history: [...history], fainted: false, victories: 0 } as never)
+      .filter((move) => moveRows[move]).map((move) => moveInfo(move, data, { level: 0 })) : [],
   }
 }
 

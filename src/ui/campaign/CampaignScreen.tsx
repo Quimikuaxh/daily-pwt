@@ -3,6 +3,8 @@
  * Ruta) y debajo la barra del portal con las medallas y la acción principal (maqueta aprobada: nada de eso tapa el mapa). Sin campaña
  * guardada, la barra ofrece empezarla; empezar otra sobre una en curso pide confirmación. Se carga aparte (lazy) desde App.
  */
+import { availableDraftForms } from '../../core/nuzlocke/draftAvailability'
+import emeraldCalendar from '../../../data/nuzlocke/hoenn-emerald-calendar.json'
 import { campaignSteps } from './stepsModel'
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 import { chooseRecruit, createCampaign, draftPicks, evolveForLeague, lockLeagueRoster, openDraft, type CampaignDefinition, type CampaignState } from '../../core/nuzlocke/campaign'
@@ -194,6 +196,12 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
     else { save(next); setView('route') }
   }
   const places = useMemo(() => routePlaces(encounters), [])
+  // Candidatos del draft con la trayectoria de su forma (para los movimientos con que llegarían).
+  const draftCandidates = (current: CampaignState) => {
+    const level = Math.max(...encounters[current.encounterIndex].team.map((member) => member.level))
+    const forms = availableDraftForms(definition, emeraldCalendar, current.encounterIndex, 'A')
+    return current.offer.map((id) => candidateOf(id, level, definition, data, forms.find((form) => form.species === id)?.history))
+  }
   const badges = state ? badgeCount(state, encounters) : 0
   const next = places[Math.min(badges, places.length - 1)]
   // Qué viene: pasos del tramo y lo que hace el botón principal (stepsModel).
@@ -419,7 +427,7 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
         <h2 className="visually-hidden">{t.screen}</h2>
         {shareScreen() ?? resultScreen() ?? battleScreen() ?? evolutionScreen() ?? leagueScreen() ?? teamScreen() ?? exchangeScreen() ?? bagScreen() ?? movesScreen() ?? (view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
           <DraftScreen
-            candidates={state.offer.map((id) => candidateOf(id, Math.max(...encounters[state.encounterIndex].team.map((member) => member.level)), definition, data))}
+            candidates={draftCandidates(state)}
             pick={state.pick}
             picks={draftPicks(definition, state.encounterIndex)}
             level={Math.max(...encounters[state.encounterIndex].team.map((member) => member.level))}

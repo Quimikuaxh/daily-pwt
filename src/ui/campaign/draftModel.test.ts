@@ -26,7 +26,10 @@ describe('modelo del Draft', () => {
       total: 318, stats: [41, 22, 22, 27, 27, 21], ability: 'ESPESURA', evolution: { target: 'IVYSAUR', level: 16 },
       // Cambio de requisito (Jose, 12/11/2026): descripción de la habilidad y cómo evoluciona por cualquier método.
       abilityText: 'Potencia PLANTA en apuros.', evolutionText: 'Evoluciona a IVYSAUR en el Nv16.',
+      moves: expect.any(Array),
     })
+    // Los cuatro con que llegaría: los últimos aprendidos por nivel (Jose, 12/11/2026).
+    expect(candidateOf('bulbasaur', 15, campaignDefinition, data).moves.map((move) => move.id)).toEqual(['leechseed', 'vinewhip', 'poisonpowder', 'sleeppowder'])
     expect(candidateOf('pikachu', 15, campaignDefinition, data).evolution).toBeNull()
     expect(candidateOf('venusaur', 50, campaignDefinition, data).evolution).toBeNull()
   })
