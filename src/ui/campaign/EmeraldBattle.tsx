@@ -23,7 +23,7 @@ import { emeraldLog } from '../../i18n/esEmeraldLog'
 import { PartySlot } from './PartySlot'
 import { slotBox } from './partySlotModel'
 import { EMERALD_INTRO, EMERALD_SWITCH, sessionBattleClient, UNUSED_INIT, type StartBattle } from './campaignBattle'
-import { activeOf, backSpot, BALL_TINT, barHpAt, barImage, faintDrop, frontSpot, healthbox, hpPauseMs, messagePages, partyFromRequest, ppColor, recallFrame, releaseFrame, sendOutFrame, viewHp, type SendOutState } from './emeraldBattleModel'
+import { type PartyMember, activeOf, backSpot, BALL_TINT, barHpAt, barImage, faintDrop, frontSpot, healthbox, hpPauseMs, messagePages, partyFromRequest, ppColor, recallFrame, releaseFrame, sendOutFrame, viewHp, type SendOutState } from './emeraldBattleModel'
 import { statAt } from './draftModel'
 import { BATTLE_SFX_IDS, emeraldSfxFor, LOW_HEALTH_PERIOD_MS, LOW_HEALTH_SFX, playCry, playSfx, preloadCries, preloadSfx, useCampaignMusic } from './campaignMusic'
 import type { MonView } from '../../battle/protocol'
@@ -54,6 +54,11 @@ type EmeraldBattleProps = {
   playerLevels: Readonly<Record<string, number>>
   /** Tema del combate (`battleMusic`): suena desde la intro hasta que acaba. */
   music: string
+  /**
+   * El equipo con que se entra, para la pantalla de abajo mientras el motor carga (Jose, 12/11/2026: hasta que llegaba la primera
+   * petición se veía el equipo vacío).
+   */
+  lineup?: readonly PartyMember[]
   onEnded: (ended: EngineEnd) => void
   reservedHeight?: number
   scale?: number
@@ -61,7 +66,7 @@ type EmeraldBattleProps = {
 
 type Menu = 'actions' | 'moves' | 'party' | 'confirm'
 
-export function EmeraldBattle({ session, start, data, trainer, intro, rivalLevels, playerLevels, music, onEnded, reservedHeight, scale }: EmeraldBattleProps) {
+export function EmeraldBattle({ session, start, data, trainer, intro, rivalLevels, playerLevels, music, lineup = [], onEnded, reservedHeight, scale }: EmeraldBattleProps) {
   const client = useMemo(() => sessionBattleClient(session, start), [session, start])
   const battleNames = useMemo(() => emeraldBattleNames(data.names), [data.names])
   // PS máximos del rival (el motor solo da su porcentaje): los de Gen 3 a su nivel, con 20 IV, sin EV y naturaleza neutra (PRD §0).
@@ -95,7 +100,8 @@ export function EmeraldBattle({ session, start, data, trainer, intro, rivalLevel
   const nameOf = (species: string) => (data.names.species[species] ?? species).toUpperCase()
   const view = battle.view
   const request = battle.canAct ? battle.request : null
-  const party = partyFromRequest(battle.request ?? battle.lastChoiceRequest, (i) => toId(((battle.request ?? battle.lastChoiceRequest)?.side.pokemon[i]?.details ?? '').split(',')[0]), nameOf)
+  const requested = partyFromRequest(battle.request ?? battle.lastChoiceRequest, (i) => toId(((battle.request ?? battle.lastChoiceRequest)?.side.pokemon[i]?.details ?? '').split(',')[0]), nameOf)
+  const party = requested.length ? requested : lineup
   const forced = !!request?.forceSwitch?.[0]
   const own = party.find((member) => member.active) ?? null
   const rival = view ? activeOf(view.rival) : null

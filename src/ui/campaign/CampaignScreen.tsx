@@ -371,6 +371,12 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
         rivalLevels={encounter.team.map((member) => member.level)}
         playerLevels={Object.fromEntries(state.members.map((member) => [member.species, member.level]))}
         music={battleMusic(encounter.kind)}
+        lineup={(battleContext?.lineup ?? []).flatMap((id, i) => {
+          const member = state.members.find((candidate) => { return candidate.id === id })
+          if (!member) return []
+          const mon = teamMonOf(member, data)
+          return [{ species: member.species, name: mon.name, level: member.level, hp: mon.hp, maxHp: mon.hp, fainted: member.fainted, active: i === 0 }]
+        })}
         onEnded={() => { session.finish(battleDefinition) }}
         reservedHeight={150}
       />
