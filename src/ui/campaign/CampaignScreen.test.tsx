@@ -81,6 +81,23 @@ describe('Campaña de Hoenn', () => {
     expect(candidates()).toHaveLength(saved.offer.length)
   })
 
+  // Jose, 12/11/2026: desde OTROS se ve lo que ya se tiene, sin cambiar nada, y se vuelve a la misma oferta.
+  it('OTROS en el draft enseña el equipo y la caja solo para mirar y CANCELAR vuelve a la oferta', async () => {
+    const { user, store } = mount()
+    await user.click(screen.getByRole('button', { name: 'Empezar campaña' }))
+    await user.click(screen.getByRole('button', { name: /^Continuar/ }))
+    await user.click(candidates()[0])
+    await user.click(screen.getByRole('button', { name: /^Reclutar a/ }))
+    const offer = store.read()!.state.offer
+    await user.click(candidates()[0])
+    await user.click(screen.getByRole('button', { name: 'Otros: ver tu equipo y la caja' }))
+    expect(screen.getByRole('status')).toHaveTextContent('Lo que tienes. CANCELAR vuelve al draft.')
+    expect(screen.queryByRole('button', { name: /^Aceptar/ })).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Volver al draft' }))
+    expect(candidates()).toHaveLength(4)
+    expect(store.read()!.state.offer).toEqual(offer)
+  })
+
   it('recluta las cuatro elecciones de Petra, guarda cada una y vuelve a Ruta en preparación', async () => {
     const { user, store } = mount()
     await user.click(screen.getByRole('button', { name: 'Empezar campaña' }))

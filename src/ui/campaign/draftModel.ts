@@ -12,6 +12,8 @@ import { emeraldAbilityName, emeraldAbilityText, emeraldItemName } from './emera
 import { moveInfo, type MoveInfo } from './movesModel'
 import { defaultMoves } from '../../core/nuzlocke/progression'
 import moveData from '../../generated/emerald/moves.json'
+import emeraldCalendar from '../../../data/nuzlocke/hoenn-emerald-calendar.json'
+import emeraldEncounters from '../../../data/nuzlocke/hoenn-emerald.json'
 
 const moveRows = moveData as Record<string, unknown>
 import type { BitmapFont } from '../console/theme'
@@ -71,51 +73,54 @@ export function candidateOf(id: string, level: number, definition: CampaignDefin
 }
 
 type EvolutionRule = { method: string; parameter: string | number; target: string }
+/** Condiciones de la campaña de Hoenn (calendario aprobado): victorias para la amistad y rival tras el que llega la belleza. */
+const EVOLUTION_CONDITIONS = (() => {
+  const index = emeraldCalendar.milestones.indexOf(emeraldCalendar.beautyBefore)
+  const rival = (emeraldEncounters.encounters as readonly { id: string; nameEs: string }[]).find((encounter) => encounter.id === emeraldCalendar.milestones[index - 1])
+  return { friendshipWins: emeraldCalendar.friendshipWins, beautyRival: rival?.nameEs ?? '' }
+})()
 const d = esCampaign.draft
 
 /**
- * Cómo evoluciona, por cualquier método (Jose, 12/11/2026): con una sola forma, la frase entera («Evoluciona a CLOYSTER con PIEDRA
- * AGUA.»); con varias, cada forma con su método entre paréntesis, agrupando las de un mismo método («… VAPOREON, JOLTEON o FLAREON
- * (piedras), ESPEON (amistad de día)…»). Shedinja no es una evolución del miembro y no sale.
+ * Cómo evoluciona en la campaña (Jose, 12/11/2026), por cualquier método: con una sola forma, la frase entera («Evoluciona a CLOYSTER
+ * con PIEDRA AGUA.»); con varias, cada una con su condición entre paréntesis («Evoluciona a SLOWBRO (Nv37) o SLOWKING (con ROCA DEL
+ * REY).»), juntando las de una misma condición. Las condiciones son las de la campaña: con objeto basta tenerlo (sin intercambio), las
+ * de intercambio sin objeto se hacen cuando se quiera, la amistad llega tras `friendshipWins` victorias y la belleza, tras vencer al
+ * rival anterior a `beautyBefore`. Shedinja no es una evolución del miembro y no sale. Si no cabe en NOTAS, se resume.
  */
-export function evolutionText(rules: readonly EvolutionRule[], name: (species: string) => string, item: (id: string) => string): string {
+export function evolutionText(rules: readonly EvolutionRule[], name: (species: string) => string, item: (id: string) => string,
+  conditions: { friendshipWins: number; beautyRival: string } = EVOLUTION_CONDITIONS): string {
   const own = rules.filter((rule) => rule.method !== 'LEVEL_SHEDINJA')
   if (!own.length) return d.noEvolution
   const how = (rule: EvolutionRule): string => {
     if (rule.method.startsWith('LEVEL')) return d.how.level(Number(rule.parameter))
-    if (rule.method === 'ITEM') return d.how.item(item(String(rule.parameter)))
-    if (rule.method === 'TRADE_ITEM') return d.how.tradeItem(item(String(rule.parameter)))
+    if (rule.method === 'ITEM' || rule.method === 'TRADE_ITEM') return d.how.item(item(String(rule.parameter)))
     if (rule.method === 'TRADE') return d.how.trade
-    if (rule.method === 'FRIENDSHIP_DAY') return d.how.friendshipDay
-    if (rule.method === 'FRIENDSHIP_NIGHT') return d.how.friendshipNight
-    if (rule.method.startsWith('FRIENDSHIP')) return d.how.friendship
-    return d.how.beauty
+    if (rule.method.startsWith('FRIENDSHIP')) return d.how.friendship(conditions.friendshipWins)
+    return d.how.beauty(conditions.beautyRival)
   }
   if (own.length === 1) return d.evolvesBy(name(own[0].target), how(own[0]))
-  // Varias: por método; las piedras distintas, juntas.
+  // Entre paréntesis, el objeto sin «con» (cabe mejor en NOTAS): «SLOWKING (ROCA DEL REY)».
+  const label = (rule: EvolutionRule) => (rule.method.startsWith('LEVEL') ? d.short.level(Number(rule.parameter))
+    : rule.method === 'ITEM' || rule.method === 'TRADE_ITEM' ? item(String(rule.parameter)) : how(rule))
   const groups = new Map<string, string[]>()
-  const label = (rule: EvolutionRule): string => {
-    if (rule.method.startsWith('LEVEL')) return d.short.level(Number(rule.parameter))
-    if (rule.method === 'ITEM') return own.filter((other) => other.method === 'ITEM').length > 2 ? d.short.items : d.short.item(item(String(rule.parameter)))
-    if (rule.method === 'TRADE_ITEM') return d.short.tradeItem(item(String(rule.parameter)))
-    if (rule.method === 'TRADE') return d.short.trade
-    if (rule.method.startsWith('FRIENDSHIP')) return how(rule).replace(/^por /, '')
-    return d.short.beauty
-  }
   for (const rule of own) {
-    const key = label(rule)
-    const targets = groups.get(key) ?? []
+    const targets = groups.get(label(rule)) ?? []
     if (!targets.includes(name(rule.target))) targets.push(name(rule.target))
-    groups.set(key, targets)
+    groups.set(label(rule), targets)
   }
   const join = (items: readonly string[]) => (items.length > 1 ? `${items.slice(0, -1).join(', ')} o ${items.at(-1)}` : items[0])
   const full = d.evolvesMany(join([...groups].map(([key, targets]) => `${join(targets)} (${key})`)))
   if (notesLines(full).length <= NOTES_LINES) return full
-  // Si no cabe en NOTAS: todas las formas y los métodos sin su objeto (Clamperl, Eevee); si tampoco, solo los métodos.
-  const methods = [...new Set([...groups.keys()].map((key) => key.replace(/ con .*$/, '').replace(/ de (día|noche)$/, '')))]
-  const all = [...new Set([...groups.values()].flat())]
-  const compact = d.evolvesMany(`${join(all)} (${join(methods)})`)
-  return notesLines(compact).length <= NOTES_LINES ? compact : d.evolvesWays(all.length, join(methods))
+  const itemKeys = new Set(own.filter((rule) => rule.method === 'ITEM').map((rule) => item(String(rule.parameter))))
+  // Si no cabe (Eevee): las piedras juntas; si aun así no cabe, solo cuántas formas y de qué maneras.
+  const stones = new Map<string, string[]>()
+  for (const [key, targets] of groups) {
+    const k = itemKeys.has(key) ? d.short.items : key
+    stones.set(k, [...(stones.get(k) ?? []), ...targets])
+  }
+  const compact = d.evolvesMany(join([...stones].map(([key, targets]) => `${join(targets)} (${key})`)))
+  return notesLines(compact).length <= NOTES_LINES ? compact : d.evolvesWays(own.length, join([...stones.keys()]))
 }
 
 /** Líneas de la ventana NOTAS (la tercera queda justo encima del borde inferior). */

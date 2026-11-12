@@ -22,11 +22,13 @@ type DraftScreenProps = {
   level: number
   rivalName: string
   onRecruit: (id: string) => void
+  /** OTROS: ver el equipo y la caja sin cambiar nada (Jose, 12/11/2026). */
+  onShowTeam?: () => void
   scale?: number
   reservedHeight?: number
 }
 
-export function DraftScreen({ candidates, pick, picks, level, rivalName, onRecruit, scale, reservedHeight }: DraftScreenProps) {
+export function DraftScreen({ candidates, pick, picks, level, rivalName, onRecruit, onShowTeam, scale, reservedHeight }: DraftScreenProps) {
   const [cursor, setCursor] = useState(0)
   const [menu, setMenu] = useState(false)
   // Páginas de Datos: 0 INFO, 1 ESTADÍSTICAS, 2 MOVIMIENTOS (Jose, 12/11/2026: los cuatro con que llegaría).
@@ -39,7 +41,7 @@ export function DraftScreen({ candidates, pick, picks, level, rivalName, onRecru
   const options = [
     { label: t.summary, name: t.summaryLabel(page), action: () => setPage((page + 1) % 3) },
     { label: t.recruit, name: t.recruitLabel(mon.name), action: recruit },
-    { label: t.others, name: t.othersLabel, action: () => setMenu(false) },
+    { label: t.others, name: t.othersLabel, action: () => { setMenu(false); onShowTeam?.() } },
   ]
   const onKeyDown = (event: KeyboardEvent) => {
     if (event.key === 'Escape' && menu) { event.preventDefault(); setMenu(false); return }

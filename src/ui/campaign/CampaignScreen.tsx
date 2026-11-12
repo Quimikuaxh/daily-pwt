@@ -141,7 +141,7 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
     return record?.battle ? { before: record.state, lineup: record.battle.source.selected ?? record.state.leagueRoster ?? [] } : null
   })
   // Con un combate guardado (recarga a mitad), se vuelve a él.
-  const [view, setView] = useState(() => (store.read()?.battle ? 'battle' : 'route') as 'route' | 'draft' | 'team' | 'moves' | 'battle' | 'result' | 'share' | 'evolution' | 'league' | 'bag' | 'exchange')
+  const [view, setView] = useState(() => (store.read()?.battle ? 'battle' : 'route') as 'route' | 'draft' | 'team' | 'teamView' | 'moves' | 'battle' | 'result' | 'share' | 'evolution' | 'league' | 'bag' | 'exchange')
   // El worker de combate (y su sesión) solo se crea al entrar en combate: Ruta, Draft y Equipo no lo necesitan.
   const [session, setSession] = useState(() => (store.read()?.battle ? newSession(createBattleClient()) : null))
   const enterBattle = (lineup: readonly string[]) => {
@@ -219,6 +219,27 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
     // Cuándo empezó: el TIEMPO de la Ficha de Entrenador.
     const created = { ...createCampaign(newSeed()), startedAt: Date.now() }
     save(created)
+  }
+
+  // Desde OTROS en el draft: el equipo y la caja, solo para mirar; CANCELAR vuelve a la misma oferta.
+  const teamView = () => {
+    if (view !== 'teamView' || state?.phase !== 'draft') return null
+    return (
+      <TeamScreen
+        readOnly
+        mons={Object.fromEntries(state.members.map((member) => [member.id, teamMonOf(member, data)]))}
+        initial={initialLayout(state, 6, [])}
+        limit={6}
+        rivalName={encounters[state.encounterIndex].nameEs}
+        itemName={emeraldItemName}
+        onAccept={() => setView('draft')}
+        onCancel={() => setView('draft')}
+        onMoves={() => undefined}
+        onGiveItem={() => undefined}
+        onTakeItem={() => undefined}
+        reservedHeight={150}
+      />
+    )
   }
 
   const teamScreen = () => {
@@ -425,7 +446,7 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
       </header>
       <main id="main" tabIndex={-1} className="campaign-main">
         <h2 className="visually-hidden">{t.screen}</h2>
-        {shareScreen() ?? resultScreen() ?? battleScreen() ?? evolutionScreen() ?? leagueScreen() ?? teamScreen() ?? exchangeScreen() ?? bagScreen() ?? movesScreen() ?? (view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
+        {shareScreen() ?? teamView() ?? resultScreen() ?? battleScreen() ?? evolutionScreen() ?? leagueScreen() ?? teamScreen() ?? exchangeScreen() ?? bagScreen() ?? movesScreen() ?? (view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
           <DraftScreen
             candidates={draftCandidates(state)}
             pick={state.pick}
@@ -433,6 +454,7 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
             level={Math.max(...encounters[state.encounterIndex].team.map((member) => member.level))}
             rivalName={encounters[state.encounterIndex].nameEs}
             onRecruit={recruit}
+            onShowTeam={() => setView('teamView')}
             reservedHeight={150}
           />
         ) : (

@@ -29,7 +29,7 @@ describe('Draft', () => {
     expect(screen.getByRole('region', { name: 'Datos de CHARMANDER' })).toHaveTextContent('Elección 1 de 4')
     expect(screen.getByRole('button', { name: 'Datos: ver estadísticas' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Reclutar a CHARMANDER' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Otros candidatos' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Otros: ver tu equipo y la caja' })).toBeInTheDocument()
   })
 
   it('DATOS alterna INFO y ESTADÍSTICAS', async () => {
@@ -61,11 +61,11 @@ describe('Draft', () => {
     expect(background()).toHaveAttribute('src', emeraldTheme.asset('datos-info'))
   })
 
-  it.each(['Otros candidatos', 'Escape'])('%s cierra el menú sin reclutar', async (action) => {
+  // Cambio de requisito (Jose, 12/11/2026): OTROS abre el equipo y la caja (CampaignScreen.test.tsx); Esc sigue cerrando el menú.
+  it.each(['Escape'])('%s cierra el menú sin reclutar', async () => {
     const { user, onRecruit } = mount()
     await user.click(ball('SQUIRTLE'))
-    if (action === 'Escape') await user.keyboard('{Escape}')
-    else await user.click(screen.getByRole('button', { name: action }))
+    await user.keyboard('{Escape}')
     expect(screen.queryByRole('button', { name: /Reclutar/ })).not.toBeInTheDocument()
     expect(ball('SQUIRTLE')).toHaveAttribute('aria-pressed', 'true')
     expect(onRecruit).not.toHaveBeenCalled()

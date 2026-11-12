@@ -38,6 +38,8 @@ type TeamScreenProps = {
   onTakeItem: (id: string) => void
   /** Cada cambio de colocación, para conservarla al ir a Movimientos y volver. */
   onLayoutChange?: (layout: TeamLayout) => void
+  /** Solo para mirar (desde OTROS en el draft; Jose, 12/11/2026): sin mover, sin menú y sin ACEPTAR; CANCELAR vuelve. */
+  readOnly?: boolean
   scale?: number
   reservedHeight?: number
 }
@@ -48,7 +50,7 @@ const PILL_X = 5
 
 const boxCell = (i: number) => ({ x: 100 + 24 * (i % 6), y: 44 + 24 * Math.floor(i / 6) })
 
-export function TeamScreen({ mons, initial, limit, rivalName, itemName, onAccept, onCancel, onMoves, onGiveItem, onTakeItem, onLayoutChange, scale, reservedHeight }: TeamScreenProps) {
+export function TeamScreen({ readOnly = false, mons, initial, limit, rivalName, itemName, onAccept, onCancel, onMoves, onGiveItem, onTakeItem, onLayoutChange, scale, reservedHeight }: TeamScreenProps) {
   const [layout, setLayout] = useState(initial)
   const [box, setBox] = useState(0)
   const [held, setHeld] = useState(null as Place | null)
@@ -68,6 +70,7 @@ export function TeamScreen({ mons, initial, limit, rivalName, itemName, onAccept
     focusPlace(result.note ? from : to)
   }
   const act = (place: Place) => {
+    if (readOnly) return
     if (place.area === 'box' && layout.boxes[place.box].ko) { setNote('fainted'); return }
     if (place.area === 'party' && place.i >= limit) { setNote('limit'); return }
     if (!held) {
@@ -78,14 +81,14 @@ export function TeamScreen({ mons, initial, limit, rivalName, itemName, onAccept
     }
     tryMove(held, place)
   }
-  const drag = useMonDrag({ box, canDrag: (place) => !!monAt(layout, place) && !(place.area === 'box' && layout.boxes[place.box].ko) && !(place.area === 'party' && place.i >= limit), onDrop: tryMove, onTap: act })
+  const drag = useMonDrag({ box, canDrag: (place) => !readOnly && !!monAt(layout, place) && !(place.area === 'box' && layout.boxes[place.box].ko) && !(place.area === 'party' && place.i >= limit), onDrop: tryMove, onTap: act })
 
   // Con el menú abierto, los datos son los del Pokémon del menú: pasar el puntero por otro no los cambia (Jose, 12/11/2026).
   const shown = (held && monAt(layout, held)) || (menu && monAt(layout, menu)) || (hover && monAt(layout, hover)) || layout.party[0]
   const info = shown ? mons[shown] : null
   const noteText = note === 'limit' ? t.notes.limit(rivalName, limit) : note ? t.notes[note] : null
   const menuId = menu ? monAt(layout, menu) : null
-  const message = held ? t.where : menuId ? m.prompt(mons[menuId].name) : t.choose
+  const message = readOnly ? t.viewOnly : held ? t.where : menuId ? m.prompt(mons[menuId].name) : t.choose
   const heldId = held ? monAt(layout, held) : null
   const cursorAt = hover?.area === 'box' && hover.box === box ? hover : held?.area === 'box' && held.box === box ? held : null
   const lossNames = layout.boxes[1].mons.filter((id): id is string => !!id).map((id) => mons[id]?.name ?? id).join(', ')
@@ -214,11 +217,13 @@ export function TeamScreen({ mons, initial, limit, rivalName, itemName, onAccept
           <GameWindow x={1} y={17} width={21} height={2}>
             <GameText text={message} y={1} width={168} fit hidden />
           </GameWindow>
-          <button type="button" className="team-button" style={{ left: 184, top: 128, width: 56, height: 16 }} aria-label={t.acceptLabel}
-            onClick={() => onAccept(lineup(layout))}>
-            <GameText text={t.accept} x={PILL_X} y={1} width={48} align="center" face="small" color="equipo" hidden />
-          </button>
-          <button type="button" className="team-button" style={{ left: 184, top: 144, width: 56, height: 16 }} aria-label={t.cancelLabel} onClick={onCancel}>
+          {!readOnly && (
+            <button type="button" className="team-button" style={{ left: 184, top: 128, width: 56, height: 16 }} aria-label={t.acceptLabel}
+              onClick={() => onAccept(lineup(layout))}>
+              <GameText text={t.accept} x={PILL_X} y={1} width={48} align="center" face="small" color="equipo" hidden />
+            </button>
+          )}
+          <button type="button" className="team-button" style={{ left: 184, top: 144, width: 56, height: 16 }} aria-label={readOnly ? t.backToDraft : t.cancelLabel} onClick={onCancel}>
             <GameText text={t.cancel} x={PILL_X} y={1} width={48} align="center" face="small" color="equipo" hidden />
           </button>
           <section className="sr-only" aria-label={t.screen}>
