@@ -44,10 +44,31 @@ function visibleMon(mon: AiMon, pokemon: Pokemon, pool: readonly string[] | unde
   }
 }
 
+/**
+ * Lo que amenaza al activo del rival aunque no le peguen (para decidir si le conviene cambiar): turnos que le quedan de Canto Mortal,
+ * cuánto ha avanzado Tóxico, si tiene Drenadoras y si está atado a un movimiento (Otra Vez, Anulación, Tormento, Mofa u objeto Elección).
+ */
+export type ActiveDanger = { perish: number | null; toxicStage: number; leechSeed: boolean; locked: boolean }
+export type LookaheadState = AiState & { danger: ActiveDanger }
+
+function dangerOf(pokemon: Pokemon | undefined): ActiveDanger {
+  const volatiles = (pokemon?.volatiles ?? {}) as Record<string, { duration?: number } | undefined>
+  return {
+    perish: volatiles.perishsong?.duration ?? null,
+    toxicStage: pokemon?.status === 'tox' ? Number((pokemon.statusState as { stage?: number }).stage ?? 0) : 0,
+    leechSeed: !!volatiles.leechseed,
+    locked: ['encore', 'disable', 'torment', 'taunt', 'choicelock'].some((id) => !!volatiles[id]),
+  }
+}
+
 /** Estado de la IA sin los movimientos exactos ni los objetos del jugador (`pools`: lo que cada especie suya puede llevar). */
-export function buildVisibleAiState(battle: Battle, pools?: Readonly<Record<string, readonly string[]>>): AiState {
+export function buildVisibleAiState(battle: Battle, pools?: Readonly<Record<string, readonly string[]>>): LookaheadState {
   const full = buildAiState(battle)
   const foe = battle.sides[0].pokemon
   const generation = full.generation ?? 5
-  return { ...full, foe: { ...full.foe, pokemon: full.foe.pokemon.map((mon, i) => visibleMon(mon, foe[i], pools?.[foe[i].species.id], generation)) } }
+  return {
+    ...full,
+    foe: { ...full.foe, pokemon: full.foe.pokemon.map((mon, i) => visibleMon(mon, foe[i], pools?.[foe[i].species.id], generation)) },
+    danger: dangerOf(battle.sides[1].pokemon[0]),
+  }
 }

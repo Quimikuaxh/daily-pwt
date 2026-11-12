@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { Prng } from '../../core/prng'
 import { aiSeed, chooseRivalAction } from './heuristic'
-import { chooseLookaheadAction } from './lookahead'
+import { chooseLookaheadAction, importance, turnScore } from './lookahead'
 import { buildVisibleAiState, BASIC_ATTACKS } from './visible'
 import { mkMon, mkState, rs, slotOf } from '../../test-utils/ai'
 import { newBattle } from '../../test-utils/sim'
@@ -36,6 +36,61 @@ describe('mirar un turno por delante', () => {
     const blissey = rs('blissey', 'leftovers', 'naturalcure', ['softboiled', 'seismictoss', 'toxic', 'protect'])
     const forced = mkState([mkMon(garchomp, { hp: 0, fainted: true }), mkMon(blissey)], [mkMon(blissey)], { mustSwitch: true })
     expect(choose(forced, 'x')).toEqual(chooseRivalAction(forced as never, new Prng(aiSeed('x'))))
+  })
+})
+
+describe('cuándo cambia (Jose, 12/11/2026)', () => {
+  const noDanger = { perish: null, toxicStage: 0, leechSeed: false, locked: false }
+  const garchomp = rs('garchomp', 'choiceband', 'roughskin', ['earthquake', 'outrage', 'firefang', 'stoneedge'])
+  const skarmory = rs('skarmory', 'leftovers', 'sturdy', ['bravebird', 'roost', 'spikes', 'whirlwind'])
+  const heatran = rs('heatran', 'leftovers', 'flashfire', ['fireblast', 'flashcannon', 'earthpower', 'lavaplume'])
+  const blissey = rs('blissey', 'leftovers', 'naturalcure', ['softboiled', 'seismictoss', 'toxic', 'encore'])
+  const only = (mon: ReturnType<typeof mkMon>, id: string) => ({ ...mon, moves: mon.moves.map((move) => ({ ...move, disabled: move.id !== id })) })
+
+  it('atada con un objeto Elección a un ataque que no hace nada, cambia', () => {
+    const state = { ...mkState([only(mkMon(garchomp), 'earthquake'), mkMon(heatran)], [mkMon(skarmory)]), danger: { ...noDanger, locked: true } }
+    expect(SEEDS.map((seed) => choose(state, seed))).toEqual(SEEDS.map(() => ({ type: 'switch', slot: 2 })))
+  })
+
+  it('con Otra Vez en un movimiento de estado, cambia aunque la heurística quiera usarlo', () => {
+    const state = { ...mkState([only(mkMon(blissey), 'softboiled'), mkMon(heatran)], [mkMon(skarmory)]), danger: { ...noDanger, locked: true } }
+    expect(choose(state, 'x')).toEqual({ type: 'switch', slot: 2 })
+  })
+
+  it('con Canto Mortal a punto de acabar, cambia', () => {
+    const state = { ...mkState([mkMon(heatran), mkMon(blissey)], [mkMon(skarmory)]), danger: { ...noDanger, perish: 1 } }
+    expect(choose(state, 'x')).toEqual({ type: 'switch', slot: 2 })
+    // Sin la amenaza, Heatran le pega fuerte a Skarmory y se queda.
+    expect(choose({ ...state, danger: noDanger }, 'x').type).toBe('move')
+    // Tóxico avanzado o Drenadoras con poca vida, también.
+    const hurt = mkState([mkMon(heatran, { hpFraction: 0.3 }), mkMon(blissey)], [mkMon(skarmory)])
+    expect(choose({ ...hurt, danger: { ...noDanger, toxicStage: 4 } }, 'x')).toEqual({ type: 'switch', slot: 2 })
+    expect(choose({ ...hurt, danger: { ...noDanger, leechSeed: true } }, 'x')).toEqual({ type: 'switch', slot: 2 })
+  })
+
+  it('si no hace casi nada y otro de su equipo planta cara, cambia a ese', () => {
+    const snorlax = rs('snorlax', 'leftovers', 'thickfat', ['bodyslam', 'return', 'crunch', 'rest'])
+    const foe = mkMon(skarmory, { moves: [{ id: 'bravebird', pp: 10, disabled: false }] })
+    const state = { ...mkState([mkMon(snorlax), mkMon(heatran)], [foe]), danger: noDanger }
+    expect(choose(state, 'x')).toEqual({ type: 'switch', slot: 2 })
+  })
+
+  it('el único que gana a un Pokémon del jugador es más importante, y que reciba daño pesa más', () => {
+    const snorlax = rs('snorlax', 'leftovers', 'thickfat', ['bodyslam', 'return', 'crunch', 'rest'])
+    const team = [mkMon(snorlax), mkMon(heatran)]
+    const weights = importance(team, [mkMon(skarmory)], {})
+    expect(weights.get(team[1])!).toBeGreaterThan(weights.get(team[0])!)
+    const foe = mkMon(garchomp, { moves: [{ id: 'earthquake', pp: 10, disabled: false }] })
+    const action = { kind: 'switch' as const, mon: team[1] }
+    expect(turnScore(team[0], action, foe, 'earthquake', {}, () => 1.5)).toBeLessThan(turnScore(team[0], action, foe, 'earthquake', {}, () => 0.5))
+  })
+
+  it('decide rápido con dos equipos de seis', () => {
+    const six = [garchomp, skarmory, heatran, blissey, rs('snorlax', 'leftovers', 'thickfat', ['bodyslam', 'return', 'crunch', 'rest']), rs('starmie', 'leftovers', 'naturalcure', ['surf', 'icebeam', 'thunderbolt', 'recover'])]
+    const state = { ...mkState(six.map((set) => mkMon(set)), six.map((set) => mkMon(set))), danger: noDanger }
+    const started = performance.now()
+    choose(state, 'x')
+    expect(performance.now() - started).toBeLessThan(1000)
   })
 })
 
