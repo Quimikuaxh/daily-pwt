@@ -70,7 +70,14 @@ async function playCampaignBattle(page: import('@playwright/test').Page, { reloa
     else if (await next.count()) await tap(next)
     else if (await fight.count()) {
       await tap(fight)
+      // Espera a la lista de movimientos antes de elegir: con prisa, el clic caía otra vez en LUCHAR.
+      await battle.getByRole('button', { name: / de \d+ PP$/ }).first().waitFor({ timeout: 1500 }).catch(() => undefined)
       await tap(battle.locator('.battle-option:not([disabled])').first())
+    } else if (await battle.getByRole('button', { name: / de \d+ PP$/ }).count()) {
+      // En la lista de movimientos (el clic anterior pudo caer en LUCHAR antes de que se pintara): el primero con PP. Sin esto, en
+      // WebKit, más lento, el combate se quedaba en esa lista hasta el tiempo límite.
+      const moves = battle.getByRole('button', { name: / de \d+ PP$/ })
+      for (let i = 0; i < await moves.count(); i++) if (await moves.nth(i).isEnabled()) { await tap(moves.nth(i)); break }
     } else {
       const members = battle.locator('.battle-party .team-cell:not([disabled])')
       for (let i = 0; i < await members.count(); i++) {
