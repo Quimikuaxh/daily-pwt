@@ -204,3 +204,12 @@ export function animationFrame(frame: number): { row: number; scales: [number, n
  */
 export const sceneSpriteTop = (species: string): number =>
   32 - Math.round(((emeraldSprites as Record<string, { frontY: number }>)[species]?.frontY ?? 0) / 2)
+
+/** Efecto de la fase de destellos en curso (se oye al cambiar): espiral, arco, círculo y lluvia; `null` durante las siluetas. */
+export function evolutionSound(frame: number): string | null {
+  const { arc, cycle, circle, spray } = EVOLUTION_PHASES
+  if (frame < arc) return 'emerald-evo-spiral'
+  if (frame < cycle) return 'emerald-evo-arc'
+  if (frame < circle) return null
+  return frame < spray ? 'emerald-evo-circle' : 'emerald-evo-spray'
+}

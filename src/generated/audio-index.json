@@ -193,6 +193,62 @@
     "stat-down": {
       "path": "audio/sfx/stat-down.m4a",
       "durationSec": 1.284
+    },
+    "emerald-hit-super": {
+      "path": "audio/sfx/emerald-hit-super.m4a",
+      "durationSec": 1.509
+    },
+    "emerald-hit-neutral": {
+      "path": "audio/sfx/emerald-hit-neutral.m4a",
+      "durationSec": 0.714
+    },
+    "emerald-hit-weak": {
+      "path": "audio/sfx/emerald-hit-weak.m4a",
+      "durationSec": 0.486
+    },
+    "emerald-ball-throw": {
+      "path": "audio/sfx/emerald-ball-throw.m4a",
+      "durationSec": 0.617
+    },
+    "emerald-ball-open": {
+      "path": "audio/sfx/emerald-ball-open.m4a",
+      "durationSec": 0.602
+    },
+    "emerald-faint": {
+      "path": "audio/sfx/emerald-faint.m4a",
+      "durationSec": 0.789
+    },
+    "emerald-select": {
+      "path": "audio/sfx/emerald-select.m4a",
+      "durationSec": 0.229
+    },
+    "emerald-stat-up": {
+      "path": "audio/sfx/emerald-stat-up.m4a",
+      "durationSec": 1.318
+    },
+    "emerald-stat-down": {
+      "path": "audio/sfx/emerald-stat-down.m4a",
+      "durationSec": 1.325
+    },
+    "emerald-evo-spiral": {
+      "path": "audio/sfx/emerald-evo-spiral.m4a",
+      "durationSec": 1.267
+    },
+    "emerald-evo-arc": {
+      "path": "audio/sfx/emerald-evo-arc.m4a",
+      "durationSec": 0.719
+    },
+    "emerald-evo-circle": {
+      "path": "audio/sfx/emerald-evo-circle.m4a",
+      "durationSec": 0.768
+    },
+    "emerald-evo-spray": {
+      "path": "audio/sfx/emerald-evo-spray.m4a",
+      "durationSec": 2.465
+    },
+    "emerald-evo-done": {
+      "path": "audio/sfx/emerald-evo-done.m4a",
+      "durationSec": 1.642
     }
   },
   "trainers": {

@@ -23,9 +23,9 @@ import { emeraldLog } from '../../i18n/esEmeraldLog'
 import { PartySlot } from './PartySlot'
 import { slotBox } from './partySlotModel'
 import { EMERALD_INTRO, sessionBattleClient, UNUSED_INIT, type StartBattle } from './campaignBattle'
-import { activeOf, backSpot, BALL_TINT, barHpAt, barImage, faintDrop, frontSpot, healthbox, hpPauseMs, messagePages, partyFromRequest, ppColor, recallFrame, sendOutFrame, viewHp, type SendOutState } from './emeraldBattleModel'
+import { activeOf, backSpot, BALL_TINT, barHpAt, barImage, faintDrop, frontSpot, healthbox, hpPauseMs, messagePages, partyFromRequest, ppColor, recallFrame, SEND_OUT, sendOutFrame, viewHp, type SendOutState } from './emeraldBattleModel'
 import { statAt } from './draftModel'
-import { useCampaignMusic } from './campaignMusic'
+import { BATTLE_SFX_IDS, emeraldSfxFor, playSfx, preloadSfx, useCampaignMusic } from './campaignMusic'
 import type { MonView } from '../../battle/protocol'
 import moveData from '../../generated/emerald/moves.json'
 
@@ -78,10 +78,12 @@ export function EmeraldBattle({ session, start, data, trainer, intro, rivalLevel
     introDurations: EMERALD_INTRO,
     // La barra de Gen 3 baja 1 PS por fotograma: se espera a que llegue antes del siguiente mensaje.
     hpPause: (before, after) => hpPauseMs(before, after, rivalMaxHp),
-    playSfx: () => undefined,
+    // Efectos de Esmeralda; los de la bola, al ritmo del envío (abajo).
+    playSfx: (id) => { const sound = emeraldSfxFor(id); if (sound) playSfx(sound) },
     playCry: () => undefined,
   })
   useCampaignMusic(battle.introPhase !== 'loading' && !battle.ended ? music : null)
+  useEffect(() => preloadSfx(BATTLE_SFX_IDS), [])
   const [menu, setMenu] = useState('actions' as Menu)
   const [moveCursor, setMoveCursor] = useState(0)
   const [target, setTarget] = useState(null as number | null)
@@ -105,6 +107,8 @@ export function EmeraldBattle({ session, start, data, trainer, intro, rivalLevel
     : switching('rival') ? `${battle.switchStage}:${view?.rival.active}-${rival?.species}` : null
   const playerEvent = battle.introPhase === 'playerSend' ? 'send:intro'
     : switching('player') ? `${battle.switchStage}:${view?.player.active}-${player?.species}` : null
+  useBallSounds(rivalEvent, false, battle.speed)
+  useBallSounds(playerEvent, true, battle.speed)
   const rivalFrame = useFrames(rivalEvent, battle.speed)
   const playerFrame = useFrames(playerEvent, battle.speed)
   const rivalSend = rival && rivalEvent?.startsWith('send') ? sendOutFrame(false, rival.species, rivalFrame) : null
@@ -132,6 +136,7 @@ export function EmeraldBattle({ session, start, data, trainer, intro, rivalLevel
     battle.advance()
   }
   const chooseMove = (i: number) => {
+    playSfx('emerald-select')
     setMenu('actions')
     battle.choose({ type: 'move', slot: i + 1 })
   }
@@ -150,7 +155,7 @@ export function EmeraldBattle({ session, start, data, trainer, intro, rivalLevel
   }
 
   const actions = [
-    [t.fight, () => { setMenu('moves') }],
+    [t.fight, () => { playSfx('emerald-select'); setMenu('moves') }],
     [t.bag, () => { setNote(t.noBag) }],
     [t.pokemon, () => { setMenu('party') }],
     [t.run, () => { setNote(t.noRun) }],
@@ -382,4 +387,14 @@ function useFrames(key: string | null, speed: number): number {
   }, [key, speed])
   if (key === null) return -1
   return state.key === key ? state.frame : 0
+}
+
+/** Sonidos de la Poké Ball en el envío: lanzarla (solo la del jugador, que vuela) y abrirse cuando sale el Pokémon. */
+function useBallSounds(event: string | null, player: boolean, speed: number): void {
+  useEffect(() => {
+    if (!event?.startsWith('send')) return
+    if (player) playSfx('emerald-ball-throw')
+    const timer = setTimeout(() => playSfx('emerald-ball-open'), frameMs(player ? SEND_OUT.throwFrames : SEND_OUT.rivalWait, speed))
+    return () => clearTimeout(timer)
+  }, [event, player, speed])
 }

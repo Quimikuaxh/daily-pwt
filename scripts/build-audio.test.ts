@@ -15,7 +15,9 @@ describe('scripts/build-audio.mjs', () => {
     expect(plans.filter((plan: { kind: string }) => plan.kind === 'music')).toHaveLength(22)
     expect(plans.find((plan: { id: string }) => plan.id === 'emerald-gym')).toMatchObject({ video: 'https://www.youtube.com/watch?v=0j4sfjIXTA0', cacheName: 'emerald-gym.yt' })
     // Sin el pitido de vida baja: lo sustituye la música (decisión de Jose, 30/10/2026).
-    expect(plans.filter((plan: { kind: string }) => plan.kind === 'sfx')).toHaveLength(17)
+    expect(plans.filter((plan: { kind: string }) => plan.kind === 'sfx')).toHaveLength(31)
+    // Cambio de requisito (12/11/2026): 14 efectos de Esmeralda para la campaña, del ZIP de The Sounds Resource (nombre = número de songs.h).
+    expect(plans.find((plan: { id: string }) => plan.id === 'emerald-faint')).toMatchObject({ zip: 'Game Boy Advance - Pokemon Emerald - Miscellaneous - Sound Effects.zip', entry: 'emerald_0010.wav' })
     expect(plans.find((plan: { id: string }) => plan.id === 'critical-health')).toMatchObject({ video: 'https://www.youtube.com/watch?v=aLVr0VfeLmk', cacheName: 'critical-health.yt' })
     expect(() => planAudio({ ...manifest(), sources: { ...manifest().sources, 'yt-critical-health': { video: 'http://inseguro' } } })).toThrow(/Vídeo mal definido/)
     const kanto = plans.find((plan: { id: string }) => plan.id === 'gym-kanto')

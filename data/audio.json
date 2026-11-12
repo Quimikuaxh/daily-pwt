@@ -77,6 +77,13 @@
       "video": "https://www.youtube.com/watch?v=W4U7fILcdf4",
       "credit": "Música de la evolución de Pokémon Esmeralda © Nintendo / Creatures Inc. / GAME FREAK inc., del vídeo «Evolution - Pokémon Ruby/Sapphire/Emerald Soundtrack» en YouTube (elegido por Jose, 12/11/2026)",
       "license": "Música propiedad de sus titulares, usada como fan project no oficial (mismo riesgo asumido que con el resto de la música, PRD §0)."
+    },
+    "tsr-sfx-emerald": {
+      "name": "The Sounds Resource - Pokémon Emerald - Miscellaneous - Sound Effects",
+      "page": "https://sounds.spriters-resource.com/",
+      "zip": "Game Boy Advance - Pokemon Emerald - Miscellaneous - Sound Effects.zip",
+      "credit": "Efectos de sonido de Pokémon Esmeralda © Nintendo / Creatures Inc. / GAME FREAK inc., ripeados en The Sounds Resource",
+      "license": "Sonidos propiedad de sus titulares; sin licencia abierta."
     }
   },
   "music": [
@@ -342,6 +349,90 @@
       "source": "tsr-sfx-b2w2",
       "entry": "Sound Effects/SEQ_SE_BE/SEQ_SE_BE_SE_13.wav",
       "_nota": "Bajar una característica"
+    },
+    {
+      "id": "emerald-hit-super",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_000E.wav",
+      "_nota": "Campaña de Hoenn: SE_SUPER_EFFECTIVE, golpe supereficaz (sonido 14 de songs.h)."
+    },
+    {
+      "id": "emerald-hit-neutral",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_000D.wav",
+      "_nota": "Campaña de Hoenn: SE_EFFECTIVE, golpe neutro (sonido 13 de songs.h)."
+    },
+    {
+      "id": "emerald-hit-weak",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_000C.wav",
+      "_nota": "Campaña de Hoenn: SE_NOT_EFFECTIVE, golpe poco eficaz (sonido 12 de songs.h)."
+    },
+    {
+      "id": "emerald-ball-throw",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_003D.wav",
+      "_nota": "Campaña de Hoenn: SE_BALL_THROW, lanzar la Poké Ball (sonido 61 de songs.h)."
+    },
+    {
+      "id": "emerald-ball-open",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_000F.wav",
+      "_nota": "Campaña de Hoenn: SE_BALL_OPEN, abrirse la Poké Ball (sonido 15 de songs.h)."
+    },
+    {
+      "id": "emerald-faint",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0010.wav",
+      "_nota": "Campaña de Hoenn: SE_FAINT, debilitado (sonido 16 de songs.h)."
+    },
+    {
+      "id": "emerald-select",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0005.wav",
+      "_nota": "Campaña de Hoenn: SE_SELECT, elegir en los menús (también cancelar, como el juego) (sonido 5 de songs.h)."
+    },
+    {
+      "id": "emerald-stat-up",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00EF.wav",
+      "_nota": "Campaña de Hoenn: SE_M_STAT_INCREASE, subir una característica (sonido 239 de songs.h)."
+    },
+    {
+      "id": "emerald-stat-down",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00F5.wav",
+      "_nota": "Campaña de Hoenn: SE_M_STAT_DECREASE, bajar una característica (sonido 245 de songs.h)."
+    },
+    {
+      "id": "emerald-evo-spiral",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_008C.wav",
+      "_nota": "Campaña de Hoenn: SE_M_MEGA_KICK, espiral de destellos de la evolución (sonido 140 de songs.h)."
+    },
+    {
+      "id": "emerald-evo-arc",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00B7.wav",
+      "_nota": "Campaña de Hoenn: SE_M_BUBBLE_BEAM2, arco de destellos (sonido 183 de songs.h)."
+    },
+    {
+      "id": "emerald-evo-circle",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0066.wav",
+      "_nota": "Campaña de Hoenn: SE_SHINY, círculo de destellos (sonido 102 de songs.h)."
+    },
+    {
+      "id": "emerald-evo-spray",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00CA.wav",
+      "_nota": "Campaña de Hoenn: SE_M_PETAL_DANCE, lluvia de destellos (sonido 202 de songs.h)."
+    },
+    {
+      "id": "emerald-evo-done",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0021.wav",
+      "_nota": "Campaña de Hoenn: SE_EXP, final de la animación de evolución (sonido 33 de songs.h)."
     }
   ],
   "trainers": {
