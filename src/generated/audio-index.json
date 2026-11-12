@@ -131,6 +131,60 @@
     "emerald-credits": {
       "path": "audio/music/emerald-credits.m4a",
       "durationSec": 174.715
+    },
+    "emerald-town-rustboro": {
+      "path": "audio/music/emerald-town-rustboro.m4a",
+      "durationSec": 101.769,
+      "loopStartSec": 15.38,
+      "loopEndSec": 75.6275
+    },
+    "emerald-town-dewford": {
+      "path": "audio/music/emerald-town-dewford.m4a",
+      "durationSec": 110.838,
+      "loopStartSec": 8.15,
+      "loopEndSec": 92.7488
+    },
+    "emerald-town-verdanturf": {
+      "path": "audio/music/emerald-town-verdanturf.m4a",
+      "durationSec": 75.573,
+      "loopStartSec": 8.85,
+      "loopEndSec": 54.7478
+    },
+    "emerald-town-chimney": {
+      "path": "audio/music/emerald-town-chimney.m4a",
+      "durationSec": 110.396,
+      "loopStartSec": 31.35,
+      "loopEndSec": 75.07
+    },
+    "emerald-town-petalburg": {
+      "path": "audio/music/emerald-town-petalburg.m4a",
+      "durationSec": 64.255,
+      "loopStartSec": 3.97,
+      "loopEndSec": 34.5795
+    },
+    "emerald-town-fortree": {
+      "path": "audio/music/emerald-town-fortree.m4a",
+      "durationSec": 55.258,
+      "loopStartSec": 6.75,
+      "loopEndSec": 36.8828
+    },
+    "emerald-town-lilycove": {
+      "path": "audio/music/emerald-town-lilycove.m4a",
+      "durationSec": 86.921,
+      "loopStartSec": 11.6,
+      "loopEndSec": 67.7482
+    },
+    "emerald-town-sootopolis": {
+      "path": "audio/music/emerald-town-sootopolis.m4a",
+      "durationSec": 92.462,
+      "loopStartSec": 4.37,
+      "loopEndSec": 58.8613
+    },
+    "emerald-town-evergrande": {
+      "path": "audio/music/emerald-town-evergrande.m4a",
+      "durationSec": 94.717,
+      "loopStartSec": 5.4,
+      "loopEndSec": 76.0013
     }
   },
   "sfx": {

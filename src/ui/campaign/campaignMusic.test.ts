@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import audioIndex from '../../generated/audio-index.json'
 import emeraldCries from '../../generated/emerald/cries.json'
 import emeraldSprites from '../../generated/emerald/sprites.json'
-import { BATTLE_SFX_IDS, battleMusic, emeraldSfxFor, EVOLUTION_MUSIC, EVOLUTION_SFX_IDS, EVOLVED_MUSIC, LOW_HEALTH_SFX, resultMusic } from './campaignMusic'
+import { townMusic, BATTLE_SFX_IDS, battleMusic, emeraldSfxFor, EVOLUTION_MUSIC, EVOLUTION_SFX_IDS, EVOLVED_MUSIC, LOW_HEALTH_SFX, resultMusic } from './campaignMusic'
 import { EVOLUTION_PHASES, evolutionSound } from './evolutionModel'
 
 // UT-190 · Música y efectos de la campaña de Hoenn: tema por rival, por resultado y de la evolución, efectos de Esmeralda, todos en el índice de audio.
@@ -52,5 +52,14 @@ describe('fanfarria, pitido de vida baja y gritos de la tercera generación', ()
   it('hay un grito de Esmeralda para cada una de las 386 especies', () => {
     expect(Object.keys(emeraldCries).sort()).toEqual(Object.keys(emeraldSprites).sort())
     expect(Object.keys(emeraldCries)).toHaveLength(386)
+  })
+})
+
+describe('música de los menús por tramo (Jose, 12/11/2026)', () => {
+  it('la ciudad del gimnasio que toca, con pistas de la zona donde el juego repite, y Colosalia en la Liga; todas con bucle', () => {
+    expect(['petra', 'erico', 'candela', 'vito-y-leti', 'sixto', 'plubio'].map(townMusic)).toEqual(['emerald-town-rustboro', 'emerald-town-verdanturf',
+      'emerald-town-chimney', 'emerald-town-lilycove', 'emerald-town-evergrande', 'emerald-town-evergrande'])
+    for (const id of Object.keys(music).filter((key) => key.startsWith('emerald-town-'))) expect(music[id]?.loopStartSec, id).toBeGreaterThan(0)
+    expect(Object.keys(music).filter((key) => key.startsWith('emerald-town-'))).toHaveLength(9)
   })
 })

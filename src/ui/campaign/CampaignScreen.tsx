@@ -41,7 +41,7 @@ import { LeagueScreen } from './LeagueScreen'
 import { leagueBeaten } from './leagueModel'
 import { type CampaignResult, minutesSince, playerNameOf, protagonistOf, recruitedSpecies, resultOf, trainerId } from './resultModel'
 import { TeamScreen } from './TeamScreen'
-import { battleMusic } from './campaignMusic'
+import { battleMusic, townMusic, useCampaignMusic } from './campaignMusic'
 import { ShareScreen } from './ShareScreen'
 import './campaign.css'
 
@@ -196,6 +196,10 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
     else { save(next); setView('route') }
   }
   const places = useMemo(() => routePlaces(encounters), [])
+  // En los menús (Ruta, draft, equipo, movimientos, Mochila, Tienda, Liga) suena el tema de la ciudad del tramo; el combate, el
+  // resultado, la evolución y el final llevan la suya.
+  const menuView = !['battle', 'result', 'share', 'evolution', 'evolveOne'].includes(view)
+  useCampaignMusic(menuView ? townMusic(encounters[state?.encounterIndex ?? 0].id) : null)
   // Candidatos del draft con la trayectoria de su forma (para los movimientos con que llegarían).
   const draftCandidates = (current: CampaignState) => {
     const level = Math.max(...encounters[current.encounterIndex].team.map((member) => member.level))

@@ -11,8 +11,9 @@ describe('scripts/build-audio.mjs', () => {
   it('el manifiesto es válido: música por https desde el OST (la de vida baja, de un vídeo) y efectos desde el ZIP', async () => {
     const { planAudio } = await importScript('scripts/build-audio.mjs')
     const plans = planAudio(manifest())
-    // Cambio de requisito (Jose, 12/11/2026): siete pistas de Esmeralda para la campaña de Hoenn, de vídeos de YouTube.
-    expect(plans.filter((plan: { kind: string }) => plan.kind === 'music')).toHaveLength(24)
+    // Cambio de requisito (Jose, 12/11/2026): pistas de Esmeralda para la campaña de Hoenn (combate, resultado, evolución, créditos y
+    // los nueve temas de ciudad de los menús), de vídeos de YouTube.
+    expect(plans.filter((plan: { kind: string }) => plan.kind === 'music')).toHaveLength(33)
     expect(plans.find((plan: { id: string }) => plan.id === 'emerald-gym')).toMatchObject({ video: 'https://www.youtube.com/watch?v=0j4sfjIXTA0', cacheName: 'emerald-gym.yt' })
     // Sin el pitido de vida baja: lo sustituye la música (decisión de Jose, 30/10/2026).
     expect(plans.filter((plan: { kind: string }) => plan.kind === 'sfx')).toHaveLength(32)
@@ -42,6 +43,13 @@ describe('scripts/build-audio.mjs', () => {
       // Jingles que suenan una vez: el del PWT y, en la campaña de Hoenn, las victorias y el Salón de la Fama (12/11/2026).
       if (['victory-pwt', 'emerald-gym-victory', 'emerald-league-victory', 'emerald-hall-of-fame', 'emerald-evolved', 'emerald-credits'].includes(id)) {
         expect(entry.loopStartSec, id).toBeUndefined()
+        continue
+      }
+      if (id.startsWith('emerald-town-')) {
+        // Música de los menús de la campaña (12/11/2026): pistas cortas; el bucle empieza pronto y acaba antes del fundido.
+        expect(entry.loopStartSec, id).toBeGreaterThan(0)
+        expect(entry.loopEndSec! - entry.loopStartSec!, id).toBeGreaterThan(25)
+        expect(entry.loopEndSec, id).toBeLessThan(entry.durationSec - 5)
         continue
       }
       if (id === 'emerald-evolution') {

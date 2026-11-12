@@ -15,6 +15,17 @@ export const battleMusic = (kind: 'gym' | 'elite' | 'champion'): string =>
 export const resultMusic = (mode: ResultMode): string | null =>
   mode === 'medal' ? 'emerald-gym-victory' : mode === 'beaten' ? 'emerald-league-victory' : mode === 'hallOfFame' ? 'emerald-hall-of-fame' : null
 
+/**
+ * Música de los menús de cada tramo (Jose, 12/11/2026): el tema de la ciudad del gimnasio que toca; donde el juego repite el de otra
+ * ciudad (Malvalona y Algaria usan el de Férrica; Lavacalda, el de Villa Raíz), una pista de la zona: Pueblo Verdegal, Monte Cenizo y
+ * Ciudad Calagua. En la Liga, Ciudad Colosalia.
+ */
+const TOWN_MUSIC: Record<string, string> = {
+  petra: 'emerald-town-rustboro', marcial: 'emerald-town-dewford', erico: 'emerald-town-verdanturf', candela: 'emerald-town-chimney',
+  norman: 'emerald-town-petalburg', alana: 'emerald-town-fortree', 'vito-y-leti': 'emerald-town-lilycove', galano: 'emerald-town-sootopolis',
+}
+export const townMusic = (encounterId: string): string => TOWN_MUSIC[encounterId] ?? 'emerald-town-evergrande'
+
 export const EVOLUTION_MUSIC = 'emerald-evolution'
 /** Créditos de Esmeralda, en la pantalla final para compartir (Jose, 12/11/2026); una vez. */
 export const CREDITS_MUSIC = 'emerald-credits'
