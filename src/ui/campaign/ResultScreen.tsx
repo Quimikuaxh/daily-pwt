@@ -13,6 +13,7 @@ import { PartySlot } from './PartySlot'
 import { slotBox } from './partySlotModel'
 import { messagePages } from './emeraldBattleModel'
 import { hallOfFameSpots, type Protagonist, type ResultMode } from './resultModel'
+import { resultMusic, useCampaignMusic } from './campaignMusic'
 
 const t = esCampaign.result
 
@@ -34,6 +35,7 @@ type ResultScreenProps = {
 }
 
 export function ResultScreen({ mode, message, player, protagonist, badges, badgeNames, card, team, onDone, reservedHeight, scale }: ResultScreenProps) {
+  useCampaignMusic(resultMusic(mode))
   const [showCard, setShowCard] = useState(false)
   const [page, setPage] = useState(0)
   const pages = messagePages(message)

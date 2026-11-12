@@ -37,6 +37,7 @@ import { LeagueScreen } from './LeagueScreen'
 import { leagueBeaten } from './leagueModel'
 import { type CampaignResult, minutesSince, playerNameOf, protagonistOf, recruitedSpecies, resultOf, trainerId } from './resultModel'
 import { TeamScreen } from './TeamScreen'
+import { battleMusic } from './campaignMusic'
 import './campaign.css'
 
 const t = esCampaign.route
@@ -222,6 +223,7 @@ export default function CampaignScreen({ data, onExit, store: givenStore, newSee
         intro={{ rivalLead: speciesName(encounter.team[0].species).toUpperCase(), playerLead: lead ? speciesName(lead.species).toUpperCase() : '' }}
         rivalLevels={encounter.team.map((member) => member.level)}
         playerLevels={Object.fromEntries(state.members.map((member) => [member.species, member.level]))}
+        music={battleMusic(encounter.kind)}
         onEnded={() => { session.finish(battleDefinition) }}
         reservedHeight={150}
       />

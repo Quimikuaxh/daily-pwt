@@ -28,6 +28,55 @@
       "video": "https://www.youtube.com/watch?v=aLVr0VfeLmk",
       "credit": "Música de vida baja de Pokémon Negro / Blanco © Nintendo / Creatures Inc. / GAME FREAK inc., del vídeo de Pokeli en YouTube (no está en el Super Music Collection)",
       "license": "Música propiedad de sus titulares, usada como fan project no oficial (mismo riesgo asumido que con el resto de la música, PRD §0)."
+    },
+    "yt-emerald-gym": {
+      "name": "Pokémon Ruby, Sapphire & Emerald - Gym Leader Battle Music (HQ), en YouTube",
+      "page": "https://www.youtube.com/watch?v=0j4sfjIXTA0",
+      "video": "https://www.youtube.com/watch?v=0j4sfjIXTA0",
+      "credit": "Música de combate contra líder de gimnasio de Pokémon Esmeralda © Nintendo / Creatures Inc. / GAME FREAK inc., del vídeo «Pokémon Ruby, Sapphire & Emerald - Gym Leader Battle Music (HQ)» en YouTube (elegido por Jose, 12/11/2026)",
+      "license": "Música propiedad de sus titulares, usada como fan project no oficial (mismo riesgo asumido que con el resto de la música, PRD §0)."
+    },
+    "yt-emerald-gym-victory": {
+      "name": "Victory! (Gym Leader) - Pokémon Ruby/Sapphire/Emerald Soundtrack, en YouTube",
+      "page": "https://www.youtube.com/watch?v=DylOzhSOD2U",
+      "video": "https://www.youtube.com/watch?v=DylOzhSOD2U",
+      "credit": "Música de victoria contra líder de gimnasio de Pokémon Esmeralda © Nintendo / Creatures Inc. / GAME FREAK inc., del vídeo «Victory! (Gym Leader) - Pokémon Ruby/Sapphire/Emerald Soundtrack» en YouTube (elegido por Jose, 12/11/2026)",
+      "license": "Música propiedad de sus titulares, usada como fan project no oficial (mismo riesgo asumido que con el resto de la música, PRD §0)."
+    },
+    "yt-emerald-elite": {
+      "name": "Pokémon Ruby, Sapphire & Emerald - Elite Four Battle Music (HQ), en YouTube",
+      "page": "https://www.youtube.com/watch?v=h92NII_daio",
+      "video": "https://www.youtube.com/watch?v=h92NII_daio",
+      "credit": "Música de combate contra el Alto Mando de Pokémon Esmeralda © Nintendo / Creatures Inc. / GAME FREAK inc., del vídeo «Pokémon Ruby, Sapphire & Emerald - Elite Four Battle Music (HQ)» en YouTube (elegido por Jose, 12/11/2026)",
+      "license": "Música propiedad de sus titulares, usada como fan project no oficial (mismo riesgo asumido que con el resto de la música, PRD §0)."
+    },
+    "yt-emerald-champion": {
+      "name": "Pokémon Ruby, Sapphire & Emerald - Champion Battle Music (HQ), en YouTube",
+      "page": "https://www.youtube.com/watch?v=LaAGsbtETIg",
+      "video": "https://www.youtube.com/watch?v=LaAGsbtETIg",
+      "credit": "Música de combate contra el campeón de Pokémon Esmeralda © Nintendo / Creatures Inc. / GAME FREAK inc., del vídeo «Pokémon Ruby, Sapphire & Emerald - Champion Battle Music (HQ)» en YouTube (elegido por Jose, 12/11/2026)",
+      "license": "Música propiedad de sus titulares, usada como fan project no oficial (mismo riesgo asumido que con el resto de la música, PRD §0)."
+    },
+    "yt-emerald-league-victory": {
+      "name": "Victory! (Champion) - Pokémon Ruby/Sapphire/Emerald Soundtrack, en YouTube",
+      "page": "https://www.youtube.com/watch?v=YIiDP5Ot4PE",
+      "video": "https://www.youtube.com/watch?v=YIiDP5Ot4PE",
+      "credit": "Música de victoria contra el Alto Mando y el campeón de Pokémon Esmeralda © Nintendo / Creatures Inc. / GAME FREAK inc., del vídeo «Victory! (Champion) - Pokémon Ruby/Sapphire/Emerald Soundtrack» en YouTube (elegido por Jose, 12/11/2026)",
+      "license": "Música propiedad de sus titulares, usada como fan project no oficial (mismo riesgo asumido que con el resto de la música, PRD §0)."
+    },
+    "yt-emerald-hall-of-fame": {
+      "name": "Hall of Fame - Pokémon Ruby/Sapphire/Emerald Soundtrack, en YouTube",
+      "page": "https://www.youtube.com/watch?v=mFQfiBbD1zM",
+      "video": "https://www.youtube.com/watch?v=mFQfiBbD1zM",
+      "credit": "Música de el Salón de la Fama de Pokémon Esmeralda © Nintendo / Creatures Inc. / GAME FREAK inc., del vídeo «Hall of Fame - Pokémon Ruby/Sapphire/Emerald Soundtrack» en YouTube (elegido por Jose, 12/11/2026)",
+      "license": "Música propiedad de sus titulares, usada como fan project no oficial (mismo riesgo asumido que con el resto de la música, PRD §0)."
+    },
+    "yt-emerald-evolution": {
+      "name": "Evolution - Pokémon Ruby/Sapphire/Emerald Soundtrack, en YouTube",
+      "page": "https://www.youtube.com/watch?v=W4U7fILcdf4",
+      "video": "https://www.youtube.com/watch?v=W4U7fILcdf4",
+      "credit": "Música de la evolución de Pokémon Esmeralda © Nintendo / Creatures Inc. / GAME FREAK inc., del vídeo «Evolution - Pokémon Ruby/Sapphire/Emerald Soundtrack» en YouTube (elegido por Jose, 12/11/2026)",
+      "license": "Música propiedad de sus titulares, usada como fan project no oficial (mismo riesgo asumido que con el resto de la música, PRD §0)."
     }
   },
   "music": [
@@ -139,6 +188,56 @@
       "loopStartSec": 11.98,
       "loopEndSec": 22.7689,
       "_nota": "Suena en vez de la música de combate mientras el Pokémon del jugador tiene la barra en rojo (decisión de Jose, 30/10/2026). Se le quita el silencio del principio (0,68 s en el vídeo). Trae entrada (0-12 s), el bucle (10,789 s) dos veces y un fundido desde 33,8 s; el bucle acaba antes del fundido, que no llega a sonar."
+    },
+    {
+      "id": "emerald-gym",
+      "source": "yt-emerald-gym",
+      "trimLeadingSilence": true,
+      "_nota": "Campaña de Hoenn (Esmeralda). Combate contra líder de gimnasio. Bucle de find-loops.py (49,19 s).",
+      "loopStartSec": 94.17,
+      "loopEndSec": 143.3559
+    },
+    {
+      "id": "emerald-gym-victory",
+      "source": "yt-emerald-gym-victory",
+      "trimLeadingSilence": true,
+      "_nota": "Campaña de Hoenn (Esmeralda). Victoria contra un líder: suena una vez en Resultado (72 s, sin bucle claro en el vídeo)."
+    },
+    {
+      "id": "emerald-elite",
+      "source": "yt-emerald-elite",
+      "trimLeadingSilence": true,
+      "_nota": "Campaña de Hoenn (Esmeralda). Combate contra el Alto Mando. Bucle de 50,68 s (find-loops.py); costura a −11 dB por la compresión del vídeo, el fundido de 40 ms la tapa.",
+      "loopStartSec": 58.5,
+      "loopEndSec": 109.1772
+    },
+    {
+      "id": "emerald-champion",
+      "source": "yt-emerald-champion",
+      "trimLeadingSilence": true,
+      "_nota": "Campaña de Hoenn (Esmeralda). Combate contra el campeón. Bucle de find-loops.py (54,59 s).",
+      "loopStartSec": 76.07,
+      "loopEndSec": 130.6584
+    },
+    {
+      "id": "emerald-league-victory",
+      "source": "yt-emerald-league-victory",
+      "trimLeadingSilence": true,
+      "_nota": "Campaña de Hoenn (Esmeralda). Victoria contra el Alto Mando y el campeón: suena una vez en Resultado (54 s)."
+    },
+    {
+      "id": "emerald-hall-of-fame",
+      "source": "yt-emerald-hall-of-fame",
+      "trimLeadingSilence": true,
+      "_nota": "Campaña de Hoenn (Esmeralda). Salón de la Fama: suena una vez (70 s, con fundido final)."
+    },
+    {
+      "id": "emerald-evolution",
+      "source": "yt-emerald-evolution",
+      "trimLeadingSilence": true,
+      "_nota": "Campaña de Hoenn (Esmeralda). Escena de evolución. El vídeo es el bucle de 8,03 s repetido; costura calculada a mano con seam_at de find-loops.py.",
+      "loopStartSec": 18.1,
+      "loopEndSec": 26.133
     }
   ],
   "sfx": [

@@ -11,7 +11,9 @@ describe('scripts/build-audio.mjs', () => {
   it('el manifiesto es válido: música por https desde el OST (la de vida baja, de un vídeo) y efectos desde el ZIP', async () => {
     const { planAudio } = await importScript('scripts/build-audio.mjs')
     const plans = planAudio(manifest())
-    expect(plans.filter((plan: { kind: string }) => plan.kind === 'music')).toHaveLength(15)
+    // Cambio de requisito (Jose, 12/11/2026): siete pistas de Esmeralda para la campaña de Hoenn, de vídeos de YouTube.
+    expect(plans.filter((plan: { kind: string }) => plan.kind === 'music')).toHaveLength(22)
+    expect(plans.find((plan: { id: string }) => plan.id === 'emerald-gym')).toMatchObject({ video: 'https://www.youtube.com/watch?v=0j4sfjIXTA0', cacheName: 'emerald-gym.yt' })
     // Sin el pitido de vida baja: lo sustituye la música (decisión de Jose, 30/10/2026).
     expect(plans.filter((plan: { kind: string }) => plan.kind === 'sfx')).toHaveLength(17)
     expect(plans.find((plan: { id: string }) => plan.id === 'critical-health')).toMatchObject({ video: 'https://www.youtube.com/watch?v=aLVr0VfeLmk', cacheName: 'critical-health.yt' })
@@ -35,8 +37,14 @@ describe('scripts/build-audio.mjs', () => {
   it('las pistas de combate tienen puntos de bucle dentro de la pista y fuera del fundido; el jingle de victoria, no', () => {
     const index = readJson<Index>('src', 'generated', 'audio-index.json')
     for (const [id, entry] of Object.entries(index.music)) {
-      if (id === 'victory-pwt') {
+      // Jingles que suenan una vez: el del PWT y, en la campaña de Hoenn, las victorias y el Salón de la Fama (12/11/2026).
+      if (['victory-pwt', 'emerald-gym-victory', 'emerald-league-victory', 'emerald-hall-of-fame'].includes(id)) {
         expect(entry.loopStartSec, id).toBeUndefined()
+        continue
+      }
+      if (id === 'emerald-evolution') {
+        // La de evolución es una frase de 8 s que se repite (el vídeo es solo el bucle).
+        expect(entry).toMatchObject({ loopStartSec: 18.1, loopEndSec: 26.133 })
         continue
       }
       if (id === 'critical-health') {

@@ -87,6 +87,42 @@
       "durationSec": 38.753,
       "loopStartSec": 11.98,
       "loopEndSec": 22.7689
+    },
+    "emerald-gym": {
+      "path": "audio/music/emerald-gym.m4a",
+      "durationSec": 179.438,
+      "loopStartSec": 94.17,
+      "loopEndSec": 143.3559
+    },
+    "emerald-gym-victory": {
+      "path": "audio/music/emerald-gym-victory.m4a",
+      "durationSec": 71.926
+    },
+    "emerald-elite": {
+      "path": "audio/music/emerald-elite.m4a",
+      "durationSec": 178.509,
+      "loopStartSec": 58.5,
+      "loopEndSec": 109.1772
+    },
+    "emerald-champion": {
+      "path": "audio/music/emerald-champion.m4a",
+      "durationSec": 178.916,
+      "loopStartSec": 76.07,
+      "loopEndSec": 130.6584
+    },
+    "emerald-league-victory": {
+      "path": "audio/music/emerald-league-victory.m4a",
+      "durationSec": 53.632
+    },
+    "emerald-hall-of-fame": {
+      "path": "audio/music/emerald-hall-of-fame.m4a",
+      "durationSec": 69.283
+    },
+    "emerald-evolution": {
+      "path": "audio/music/emerald-evolution.m4a",
+      "durationSec": 33.596,
+      "loopStartSec": 18.1,
+      "loopEndSec": 26.133
     }
   },
   "sfx": {

@@ -13,6 +13,7 @@ import { esCampaign } from '../../i18n/esCampaign'
 import { PartySlot } from './PartySlot'
 import { messagePages } from './emeraldBattleModel'
 import { animationFrame, evolutionLength, sceneSpriteTop, firstStep, nextStep, optionsWidth, type EvolutionChoices, type EvolutionStep, type LeagueEvolution } from './evolutionModel'
+import { EVOLUTION_MUSIC, useCampaignMusic } from './campaignMusic'
 
 const LENGTH = evolutionLength()
 const frameShowsNew = (step: EvolutionStep, frame: number) => { return step === 'animating' && animationFrame(frame).evolved }
@@ -37,6 +38,8 @@ export function EvolutionScene({ evolutions, nameOf, hpOf, onDone, scale, reserv
   const [cursor, setCursor] = useState(0)
   // Fotograma de la animación de evolución (60 Hz); con movimiento reducido no se anima.
   const [frame, setFrame] = useState(0)
+  // La música de evolución suena mientras se anima (EVOSTATE_START_MUSIC hasta EVOSTATE_RESTORE_SCREEN).
+  useCampaignMusic(step === 'animating' ? EVOLUTION_MUSIC : null)
   useEffect(() => {
     if (step !== 'animating') return
     if (reducedMotion()) { setStep('evolved'); return }

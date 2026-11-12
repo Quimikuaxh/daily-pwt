@@ -25,6 +25,7 @@ import { slotBox } from './partySlotModel'
 import { EMERALD_INTRO, sessionBattleClient, UNUSED_INIT, type StartBattle } from './campaignBattle'
 import { activeOf, backSpot, BALL_TINT, barHpAt, barImage, faintDrop, frontSpot, healthbox, hpPauseMs, messagePages, partyFromRequest, ppColor, recallFrame, sendOutFrame, viewHp, type SendOutState } from './emeraldBattleModel'
 import { statAt } from './draftModel'
+import { useCampaignMusic } from './campaignMusic'
 import type { MonView } from '../../battle/protocol'
 import moveData from '../../generated/emerald/moves.json'
 
@@ -51,6 +52,8 @@ type EmeraldBattleProps = {
    * el turno (sin esto, la caja no aparecía al enviarlo en la intro y enseñaba al anterior durante un cambio).
    */
   playerLevels: Readonly<Record<string, number>>
+  /** Tema del combate (`battleMusic`): suena desde la intro hasta que acaba. */
+  music: string
   onEnded: (ended: EngineEnd) => void
   reservedHeight?: number
   scale?: number
@@ -58,7 +61,7 @@ type EmeraldBattleProps = {
 
 type Menu = 'actions' | 'moves' | 'party' | 'confirm'
 
-export function EmeraldBattle({ session, start, data, trainer, intro, rivalLevels, playerLevels, onEnded, reservedHeight, scale }: EmeraldBattleProps) {
+export function EmeraldBattle({ session, start, data, trainer, intro, rivalLevels, playerLevels, music, onEnded, reservedHeight, scale }: EmeraldBattleProps) {
   const client = useMemo(() => sessionBattleClient(session, start), [session, start])
   const battleNames = useMemo(() => emeraldBattleNames(data.names), [data.names])
   // PS máximos del rival (el motor solo da su porcentaje): los de Gen 3 a su nivel, con 20 IV, sin EV y naturaleza neutra (PRD §0).
@@ -78,6 +81,7 @@ export function EmeraldBattle({ session, start, data, trainer, intro, rivalLevel
     playSfx: () => undefined,
     playCry: () => undefined,
   })
+  useCampaignMusic(battle.introPhase !== 'loading' && !battle.ended ? music : null)
   const [menu, setMenu] = useState('actions' as Menu)
   const [moveCursor, setMoveCursor] = useState(0)
   const [target, setTarget] = useState(null as number | null)
