@@ -86,8 +86,8 @@ const trainerOf = (encounter: CampaignEncounter) => ({
 const randomSeed = () => `hoenn-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
 
 export default function CampaignScreen({ store: givenStore, cloud, ...props }: CampaignScreenProps) {
-  const local = useMemo(() => givenStore ?? new LocalCampaignStore(browserStorage()), [givenStore])
-  if (cloud) return <CloudCampaign cloud={cloud} {...props} />
+  const local = useMemo(() => { return givenStore ?? new LocalCampaignStore(browserStorage()) }, [givenStore])
+  if (cloud) { return <CloudCampaign cloud={cloud} {...props} /> }
   return <CampaignView {...props} store={local} newSession={(client) => { return new LocalCampaignSession(client, local) }} />
 }
 
