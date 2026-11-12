@@ -27,8 +27,9 @@ test.describe('Pantalla Hoy', () => {
     }
     await expect(footer).toContainText('no oficial')
 
-    // F3: accesos a Estadísticas, Ayuda y Ajustes en la cabecera. Los botones de combate son el oficial y la práctica.
-    for (const name of ['Estadísticas', 'Ayuda', 'Ajustes']) await expect(page.getByRole('banner').getByRole('button', { name })).toHaveCount(1)
+    // F3: accesos en la cabecera. Los botones de combate son el oficial y la práctica. Cambio de requisito (D7, 0e20993): «Ayuda» pasa a
+    // «Modos de juego» (reto diario y Nuzlocke) y la Ayuda se abre desde Ajustes.
+    for (const name of ['Estadísticas', 'Modos de juego', 'Ajustes']) await expect(page.getByRole('banner').getByRole('button', { name })).toHaveCount(1)
     await expect(page.getByRole('button', { name: /^(Combate oficial|Práctica)/ }), 'botones de combate: oficial y práctica').toHaveCount(2)
 
     // Todas las imágenes cargan (sprites del repo).

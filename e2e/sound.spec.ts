@@ -61,8 +61,11 @@ test.describe('Sonido', () => {
     expect(music.filter((path) => /\/audio\/music\/critical-health\.m4a$/.test(path))).toHaveLength(1)
     expect(music.filter((path) => /\/audio\/music\/last-pokemon\.m4a$/.test(path))).toHaveLength(1)
     expect(music.filter((path) => /\/audio\/music\/(gym|champion)-(kanto|johto|hoenn|sinnoh|unova)\.m4a$/.test(path))).toHaveLength(1)
-    // Todos los efectos del índice.
-    expect(new Set(audio.filter((path) => path.includes('/audio/sfx/'))).size).toBe(Object.keys(audioIndex.sfx).length)
+    // Todos los efectos del reto diario. Cambio de requisito (12/11/2026): el índice también trae los de Esmeralda (`emerald-*`), que solo
+    // descarga la campaña de Hoenn.
+    const dailySfx = Object.keys(audioIndex.sfx).filter((id) => !id.startsWith('emerald-'))
+    expect(new Set(audio.filter((path) => path.includes('/audio/sfx/'))).size).toBe(dailySfx.length)
+    expect(audio.some((path) => path.includes('/audio/sfx/emerald-'))).toBe(false)
     expect(errors).toEqual([])
   })
 })
