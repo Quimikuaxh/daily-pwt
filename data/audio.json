@@ -84,6 +84,13 @@
       "zip": "Game Boy Advance - Pokemon Emerald - Miscellaneous - Sound Effects.zip",
       "credit": "Efectos de sonido de Pokémon Esmeralda © Nintendo / Creatures Inc. / GAME FREAK inc., ripeados en The Sounds Resource",
       "license": "Sonidos propiedad de sus titulares; sin licencia abierta."
+    },
+    "yt-emerald-evolved": {
+      "name": "Congratulations on Your Evolution! - Pokemon Ruby/Sapphire/Emerald Soundtrack, en YouTube",
+      "page": "https://www.youtube.com/watch?v=jdVNPAFnF64",
+      "video": "https://www.youtube.com/watch?v=jdVNPAFnF64",
+      "credit": "Fanfarria de evolución de Pokémon Esmeralda © Nintendo / Creatures Inc. / GAME FREAK inc., del vídeo «Congratulations on Your Evolution! - Pokemon Ruby/Sapphire/Emerald Soundtrack» en YouTube",
+      "license": "Música propiedad de sus titulares, usada como fan project no oficial (mismo riesgo asumido que con el resto de la música, PRD §0)."
     }
   },
   "music": [
@@ -245,6 +252,12 @@
       "_nota": "Campaña de Hoenn (Esmeralda). Escena de evolución. El vídeo es el bucle de 8,03 s repetido; costura calculada a mano con seam_at de find-loops.py.",
       "loopStartSec": 18.1,
       "loopEndSec": 26.133
+    },
+    {
+      "id": "emerald-evolved",
+      "source": "yt-emerald-evolved",
+      "trimLeadingSilence": true,
+      "_nota": "Campaña de Hoenn (Esmeralda). Fanfarria de «¡Enhorabuena! … ha evolucionado» (MUS_EVOLVED): suena una vez con el mensaje."
     }
   ],
   "sfx": [
@@ -433,6 +446,12 @@
       "source": "tsr-sfx-emerald",
       "entry": "emerald_0021.wav",
       "_nota": "Campaña de Hoenn: SE_EXP, final de la animación de evolución (sonido 33 de songs.h)."
+    },
+    {
+      "id": "emerald-low-health",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_005A.wav",
+      "_nota": "Campaña de Hoenn: SE_LOW_HEALTH, pitido de vida baja (sonido 90 de songs.h). El fichero son dos vueltas de 0,6 s; se repite cada 1,2 s mientras la barra del jugador está en rojo."
     }
   ],
   "trainers": {

@@ -16,6 +16,8 @@ export const resultMusic = (mode: ResultMode): string | null =>
   mode === 'medal' ? 'emerald-gym-victory' : mode === 'beaten' ? 'emerald-league-victory' : mode === 'hallOfFame' ? 'emerald-hall-of-fame' : null
 
 export const EVOLUTION_MUSIC = 'emerald-evolution'
+/** Fanfarria de «¡Enhorabuena! … ha evolucionado» (MUS_EVOLVED), una vez. */
+export const EVOLVED_MUSIC = 'emerald-evolved'
 
 /** Suena `id` mientras no sea `null` (con transición si cambia) y se funde al quitarla o al salir de la pantalla. */
 export function useCampaignMusic(id: string | null): void {
@@ -40,10 +42,19 @@ const BATTLE_SFX: Partial<Record<SfxId, string>> = {
 }
 export const emeraldSfxFor = (id: SfxId): string | null => BATTLE_SFX[id] ?? null
 
-export const BATTLE_SFX_IDS = ['emerald-hit-super', 'emerald-hit-neutral', 'emerald-hit-weak', 'emerald-faint', 'emerald-stat-up', 'emerald-stat-down',
+export const LOW_HEALTH_SFX = 'emerald-low-health'
+/** El pitido de vida baja: el fichero trae dos vueltas de 0,6 s (`[`/`]` de se_low_health.mid, 36 pulsos a 400 000 µs/24). */
+export const LOW_HEALTH_PERIOD_MS = 1200
+
+export const BATTLE_SFX_IDS = [LOW_HEALTH_SFX, 'emerald-hit-super', 'emerald-hit-neutral', 'emerald-hit-weak', 'emerald-faint', 'emerald-stat-up', 'emerald-stat-down',
   'emerald-select', 'emerald-ball-throw', 'emerald-ball-open'] as const
 export const EVOLUTION_SFX_IDS = ['emerald-evo-spiral', 'emerald-evo-arc', 'emerald-evo-circle', 'emerald-evo-spray', 'emerald-evo-done'] as const
 
 export const playSfx = (id: string): void => getAudio().playSfx(id)
 /** Descarga los efectos de una pantalla al entrar (DEC-57: solo lo que va a sonar). */
 export const preloadSfx = (ids: readonly string[]): void => getAudio().preload([], ids)
+
+/** Gritos de la tercera generación (`gen:emerald-cries`): `emerald-<especie>` en el índice de gritos. */
+const cryOf = (species: string) => `emerald-${species}`
+export const playCry = (species: string, faint = false): void => getAudio().playCry(cryOf(species), { faint })
+export const preloadCries = (species: readonly string[]): void => getAudio().preload([], [], species.map(cryOf))

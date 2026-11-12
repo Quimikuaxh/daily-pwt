@@ -13,7 +13,7 @@ import { esCampaign } from '../../i18n/esCampaign'
 import { PartySlot } from './PartySlot'
 import { messagePages } from './emeraldBattleModel'
 import { animationFrame, evolutionLength, evolutionSound, sceneSpriteTop, firstStep, nextStep, optionsWidth, type EvolutionChoices, type EvolutionStep, type LeagueEvolution } from './evolutionModel'
-import { EVOLUTION_MUSIC, EVOLUTION_SFX_IDS, playSfx, preloadSfx, useCampaignMusic } from './campaignMusic'
+import { EVOLUTION_MUSIC, EVOLUTION_SFX_IDS, EVOLVED_MUSIC, playCry, playSfx, preloadCries, preloadSfx, useCampaignMusic } from './campaignMusic'
 
 const LENGTH = evolutionLength()
 const frameShowsNew = (step: EvolutionStep, frame: number) => { return step === 'animating' && animationFrame(frame).evolved }
@@ -39,12 +39,21 @@ export function EvolutionScene({ evolutions, nameOf, hpOf, onDone, scale, reserv
   // Fotograma de la animación de evolución (60 Hz); con movimiento reducido no se anima.
   const [frame, setFrame] = useState(0)
   // La música de evolución suena mientras se anima (EVOSTATE_START_MUSIC hasta EVOSTATE_RESTORE_SCREEN).
-  useCampaignMusic(step === 'animating' ? EVOLUTION_MUSIC : null)
-  useEffect(() => preloadSfx(EVOLUTION_SFX_IDS), [])
+  // Después, la fanfarria de «¡Enhorabuena!» con el mensaje (MUS_EVOLVED), una vez.
+  useCampaignMusic(step === 'animating' ? EVOLUTION_MUSIC : step === 'evolved' ? EVOLVED_MUSIC : null)
+  useEffect(() => {
+    preloadSfx(EVOLUTION_SFX_IDS)
+    preloadCries(evolutions.flatMap((evolution) => [evolution.species, ...evolution.targets]))
+  }, [evolutions])
   // Un efecto al empezar cada fase de destellos y otro al acabar (Task_Sparkles_*_Init, EVOSTATE_EVO_SOUND).
   const sparklePhase = step === 'animating' ? evolutionSound(frame) : null
   useEffect(() => { if (sparklePhase) playSfx(sparklePhase) }, [sparklePhase])
   useEffect(() => { if (step === 'evolved') playSfx('emerald-evo-done') }, [step, index])
+  // Grito al anunciarse (EVOSTATE_INTRO_MON_ANIM) y el de la forma nueva al acabar (EVOSTATE_EVO_MON_ANIM).
+  const evolvingSpecies = step === 'evolving' ? evolutions[index]?.species : null
+  useEffect(() => { if (evolvingSpecies) playCry(evolvingSpecies) }, [evolvingSpecies, index])
+  const evolvedSpecies = step === 'evolved' ? (choices[evolutions[index]?.id ?? ''] ?? evolutions[index]?.targets[0]) : null
+  useEffect(() => { if (evolvedSpecies) playCry(evolvedSpecies) }, [evolvedSpecies, index])
   useEffect(() => {
     if (step !== 'animating') return
     if (reducedMotion()) { setStep('evolved'); return }

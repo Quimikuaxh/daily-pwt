@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import audioIndex from '../../generated/audio-index.json'
-import { BATTLE_SFX_IDS, battleMusic, emeraldSfxFor, EVOLUTION_MUSIC, EVOLUTION_SFX_IDS, resultMusic } from './campaignMusic'
+import emeraldCries from '../../generated/emerald/cries.json'
+import emeraldSprites from '../../generated/emerald/sprites.json'
+import { BATTLE_SFX_IDS, battleMusic, emeraldSfxFor, EVOLUTION_MUSIC, EVOLUTION_SFX_IDS, EVOLVED_MUSIC, LOW_HEALTH_SFX, resultMusic } from './campaignMusic'
 import { EVOLUTION_PHASES, evolutionSound } from './evolutionModel'
 
 // UT-190 · Música y efectos de la campaña de Hoenn: tema por rival, por resultado y de la evolución, efectos de Esmeralda, todos en el índice de audio.
@@ -37,5 +39,18 @@ describe('efectos de la campaña', () => {
     expect(evolutionSound(EVOLUTION_PHASES.cycle)).toBeNull()
     expect(evolutionSound(EVOLUTION_PHASES.circle)).toBe('emerald-evo-circle')
     expect(evolutionSound(EVOLUTION_PHASES.spray)).toBe('emerald-evo-spray')
+  })
+})
+
+describe('fanfarria, pitido de vida baja y gritos de la tercera generación', () => {
+  it('la fanfarria de la evolución suena una vez y el pitido está entre los efectos del combate', () => {
+    expect(music[EVOLVED_MUSIC]).toBeDefined()
+    expect(music[EVOLVED_MUSIC]?.loopStartSec).toBeUndefined()
+    expect(BATTLE_SFX_IDS).toContain(LOW_HEALTH_SFX)
+  })
+
+  it('hay un grito de Esmeralda para cada una de las 386 especies', () => {
+    expect(Object.keys(emeraldCries).sort()).toEqual(Object.keys(emeraldSprites).sort())
+    expect(Object.keys(emeraldCries)).toHaveLength(386)
   })
 })

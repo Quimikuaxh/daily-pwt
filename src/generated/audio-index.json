@@ -123,6 +123,10 @@
       "durationSec": 33.596,
       "loopStartSec": 18.1,
       "loopEndSec": 26.133
+    },
+    "emerald-evolved": {
+      "path": "audio/music/emerald-evolved.m4a",
+      "durationSec": 6.757
     }
   },
   "sfx": {
@@ -249,6 +253,10 @@
     "emerald-evo-done": {
       "path": "audio/sfx/emerald-evo-done.m4a",
       "durationSec": 1.642
+    },
+    "emerald-low-health": {
+      "path": "audio/sfx/emerald-low-health.m4a",
+      "durationSec": 1.207
     }
   },
   "trainers": {

@@ -25,7 +25,7 @@ import { slotBox } from './partySlotModel'
 import { EMERALD_INTRO, sessionBattleClient, UNUSED_INIT, type StartBattle } from './campaignBattle'
 import { activeOf, backSpot, BALL_TINT, barHpAt, barImage, faintDrop, frontSpot, healthbox, hpPauseMs, messagePages, partyFromRequest, ppColor, recallFrame, SEND_OUT, sendOutFrame, viewHp, type SendOutState } from './emeraldBattleModel'
 import { statAt } from './draftModel'
-import { BATTLE_SFX_IDS, emeraldSfxFor, playSfx, preloadSfx, useCampaignMusic } from './campaignMusic'
+import { BATTLE_SFX_IDS, emeraldSfxFor, LOW_HEALTH_PERIOD_MS, LOW_HEALTH_SFX, playCry, playSfx, preloadCries, preloadSfx, useCampaignMusic } from './campaignMusic'
 import type { MonView } from '../../battle/protocol'
 import moveData from '../../generated/emerald/moves.json'
 
@@ -80,7 +80,8 @@ export function EmeraldBattle({ session, start, data, trainer, intro, rivalLevel
     hpPause: (before, after) => hpPauseMs(before, after, rivalMaxHp),
     // Efectos de Esmeralda; los de la bola, al ritmo del envío (abajo).
     playSfx: (id) => { const sound = emeraldSfxFor(id); if (sound) playSfx(sound) },
-    playCry: () => undefined,
+    // Gritos de la tercera generación; al debilitarse, más graves (CRY_MODE_FAINT).
+    playCry: (species, faint) => playCry(species, faint),
   })
   useCampaignMusic(battle.introPhase !== 'loading' && !battle.ended ? music : null)
   useEffect(() => preloadSfx(BATTLE_SFX_IDS), [])
@@ -121,6 +122,17 @@ export function EmeraldBattle({ session, start, data, trainer, intro, rivalLevel
   const playerHp = player ? viewHp(player, rivalMaxHp) : null
   const rivalBar = useBarHp(`${view?.rival.active ?? ''}-${rival?.species ?? ''}`, rivalHp?.hp ?? 0, rivalHp?.maxHp ?? 1, battle.speed)
   const playerBar = useBarHp(`${view?.player.active ?? ''}-${player?.species ?? ''}`, playerHp?.hp ?? 0, playerHp?.maxHp ?? 1, battle.speed)
+  // Gritos de los Pokémon del combate, como el diario: solo los suyos.
+  const teamSpecies = [...(view?.rival.team ?? []), ...(view?.player.team ?? [])].map((mon) => mon.species).join(',')
+  useEffect(() => { if (teamSpecies) preloadCries(teamSpecies.split(',')) }, [teamSpecies])
+  // Pitido de vida baja (HandleLowHpMusicChange): mientras la barra del jugador está en rojo, encima de la música.
+  const lowHealth = !!player && !player.fainted && !!playerHp && !battle.ended && barImage(playerBar / playerHp.maxHp) === 'combate-barra-roja'
+  useEffect(() => {
+    if (!lowHealth) return
+    playSfx(LOW_HEALTH_SFX)
+    const timer = setInterval(() => playSfx(LOW_HEALTH_SFX), LOW_HEALTH_PERIOD_MS)
+    return () => clearInterval(timer)
+  }, [lowHealth])
   const rivalLevel = view?.rival.active != null ? rivalLevels[view.rival.team[view.rival.active]?.teamIndex ?? view.rival.active] ?? 0 : 0
   const requestMoves = request?.active?.[0]?.moves ?? []
   // Como en el diario: cuando se puede actuar, el menú sustituye al último mensaje; un aviso propio (MOCHILA, HUIR) va encima.
