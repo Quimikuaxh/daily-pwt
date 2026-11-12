@@ -2,7 +2,8 @@ import type { ResolvedSet } from '../core/types'
 
 export type Choice = { type: 'move' | 'switch'; slot: number }
 
-export type AiKind = 'heuristic' | 'trivial'
+/** `lookahead`: solo el Alto Mando y el campeón de la Nuzlocke de Hoenn (mira un turno por delante con lo que ha visto); el diario usa `heuristic`. */
+export type AiKind = 'heuristic' | 'trivial' | 'lookahead'
 
 export type BattleGeneration = 3 | 5
 

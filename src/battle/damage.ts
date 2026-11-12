@@ -89,3 +89,12 @@ export function damageOrZero(attacker: DamageSide, defender: DamageSide, moveId:
     return { min: 0, max: 0, defenderMaxHp: Math.max(1, defender.hp ?? 1) }
   }
 }
+
+/** Velocidad efectiva en combate: la del cálculo con sus cambios de característica y, paralizado, la cuarta parte (hasta la 6.ª gen.). */
+export function effectiveSpeed(side: DamageSide, field: DamageField = {}): number {
+  const generation = generations[field.generation ?? 5]
+  const pokemon = calcPokemon({ ...side, boosts: {} }, generation)
+  const stage = side.boosts?.spe ?? 0
+  const multiplier = stage >= 0 ? (2 + stage) / 2 : 2 / (2 - stage)
+  return Math.floor(pokemon.rawStats.spe * multiplier * (side.status === 'par' ? 0.25 : 1))
+}

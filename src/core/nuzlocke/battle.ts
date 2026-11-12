@@ -92,7 +92,8 @@ function buildCampaignBattleInit(
         : undefined
       return battleSet(definition, member, ivs)
     }),
-    ai: 'heuristic',
+    // El Alto Mando y el campeón miran un turno por delante con lo que han visto; los gimnasios, la heurística (Jose, 12/11/2026).
+    ai: encounter.kind === 'gym' ? 'heuristic' : 'lookahead',
     maxTurns: MAX_TURNS,
   }
 }

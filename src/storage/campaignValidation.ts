@@ -32,7 +32,7 @@ function set(v: unknown): boolean {
 }
 
 function init(v: unknown): boolean {
-  return object(v) && text(v.battleSeed) && v.generation === 3 && (v.ai === 'heuristic' || v.ai === 'trivial') &&
+  return object(v) && text(v.battleSeed) && v.generation === 3 && (v.ai === 'heuristic' || v.ai === 'trivial' || v.ai === 'lookahead') &&
     count(v.maxTurns) && v.maxTurns > 0 && Array.isArray(v.player) && v.player.length > 0 && v.player.length <= 6 && v.player.every(set) &&
     Array.isArray(v.rival) && v.rival.length > 0 && v.rival.length <= 6 && v.rival.every(set) &&
     (v.playerLead === undefined || (count(v.playerLead) && v.playerLead < v.player.length))

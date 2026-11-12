@@ -28,6 +28,20 @@ describe('combates de la campaña de Hoenn', () => {
     expect(beginCampaignBattle(definition, ready, options, ['treecko']).init).toEqual(init)
   })
 
+  // UT-195 (Jose, 12/11/2026): los gimnasios siguen con la heurística; el Alto Mando y el campeón miran un turno por delante.
+  it('usa la IA de un turno por delante solo con el Alto Mando y el campeón', () => {
+    const at = (encounterIndex: number) => beginCampaignBattle(definition, { ...ready, encounterIndex }, options, ['treecko']).init.ai
+    expect(at(0)).toBe('heuristic')
+    expect(at(7)).toBe('heuristic')
+    expect(at(8)).toBe('lookahead')
+    expect(at(12)).toBe('lookahead')
+    // Un combate entero contra Sixto con esa IA termina sin errores (decide en cada turno y en los cambios forzados).
+    const engine = createBattleEngine(beginCampaignBattle(definition, { ...ready, encounterIndex: 8 }, options, ['treecko']).init)
+    let update = engine.start()
+    for (let turn = 0; turn < 40 && !update.ended; turn++) update = engine.choose({ type: 'move', slot: 1 })
+    expect(update.ended).toBeTruthy()
+  })
+
   it('arranca el motor con un solo Pokémon y aplica una derrota real a la campaña', () => {
     const { init, state } = beginCampaignBattle(definition, ready, options, ['treecko'])
     const engine = createBattleEngine(init)

@@ -4,6 +4,8 @@ import { toId } from '../core/id'
 import { Prng } from '../core/prng'
 import { buildAiState } from './ai/state'
 import { aiSeed, chooseRivalAction } from './ai/heuristic'
+import { chooseLookaheadAction } from './ai/lookahead'
+import { buildVisibleAiState } from './ai/visible'
 import { chooseTrivialAction } from './ai/trivial'
 import { evaluateEnd, forfeitBattle } from './end'
 import type { BattleRequest, BattleSet, Choice, EngineBattleView, EngineEnd, EngineInit, EngineUpdate, MonView } from './protocol'
@@ -263,7 +265,9 @@ export function createBattleEngine(init: EngineInit): BattleEngine {
 
   function makeRivalChoice(): void {
     const request = rivalSide.activeRequest as BattleRequest
-    const choice = init.ai === 'trivial' ? chooseTrivialAction(request) : chooseRivalAction(buildAiState(battle), aiRng)
+    const choice = init.ai === 'trivial' ? chooseTrivialAction(request)
+      : init.ai === 'lookahead' ? chooseLookaheadAction(buildVisibleAiState(battle), aiRng)
+        : chooseRivalAction(buildAiState(battle), aiRng)
     // Una decisión de la IA que el sim rechaza no puede dejar la partida colgada: se deja que el sim elija.
     if (!rivalSide.choose(describeChoice(choice))) rivalSide.autoChoose()
   }
