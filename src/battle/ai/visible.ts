@@ -1,12 +1,12 @@
-import type { Battle, Pokemon } from '@pkmn/sim'
+import { Dex, type Battle, type Pokemon } from '@pkmn/sim'
 import { buildAiState, type AiMon, type AiState } from './state'
 
 /**
- * Lo que el rival ha visto del jugador (Nuzlocke de Hoenn, Alto Mando y campeón; Jose, 12/11/2026: «solo lo que ha visto»). De cada
- * Pokémon del jugador sabe la especie solo si ha salido al campo; sus PS y cambios, como en su caja; sus movimientos, los que ha usado;
- * ni objeto ni habilidad (la de la especie, como cualquiera que conozca la Pokédex). Mientras no use ninguno, se supone un ataque básico
- * de cada uno de sus tipos (`BASIC_ATTACKS`), lo mínimo que se deduce de verlo. El nivel y las estadísticas salen de las reglas de la
- * campaña (20 IV, sin EV, naturaleza neutra), que son públicas.
+ * Lo que el rival sabe del jugador (Nuzlocke de Hoenn, Alto Mando y campeón; Jose, 12/11/2026). Conoce su equipo entero, banquillo
+ * incluido, con sus PS y cambios; no sabe sus movimientos exactos ni su objeto (la habilidad, la de la especie). De cada Pokémon cuenta
+ * con los movimientos que le ha visto usar y, mientras no los conozca todos, predice los posibles: de los que puede llevar según las
+ * reglas de la campaña (`EngineInit.foeMovePool`), el ataque más fuerte de cada tipo. Sin esa lista, un ataque básico de cada tipo suyo
+ * (`BASIC_ATTACKS`). El nivel y las estadísticas salen de las reglas de la campaña (20 IV, sin EV, naturaleza neutra), que son públicas.
  */
 
 /** Un ataque de unos 60 de potencia de cada tipo en Esmeralda: lo que se supone que tiene un Pokémon del que aún no se ha visto nada. */
@@ -16,13 +16,27 @@ export const BASIC_ATTACKS: Readonly<Record<string, string>> = {
   Rock: 'ancientpower', Ghost: 'shadowpunch', Dragon: 'dragonbreath', Dark: 'bite', Steel: 'steelwing',
 }
 
-const seen = (pokemon: Pokemon) => pokemon.isActive || pokemon.previouslySwitchedIn > 0
+/** De los movimientos posibles, el ataque más fuerte (potencia por precisión) de cada tipo que no se le haya visto ya. */
+function predicted(pool: readonly string[], known: readonly string[], generation: 3 | 5): string[] {
+  const dex = Dex.forGen(generation)
+  const knownTypes = new Set(known.map((id) => dex.moves.get(id).type))
+  const best = new Map<string, { id: string; power: number }>()
+  for (const id of pool) {
+    const move = dex.moves.get(id)
+    if (!move.exists || move.category === 'Status' || !move.basePower || known.includes(move.id) || knownTypes.has(move.type)) continue
+    const power = move.basePower * (move.accuracy === true ? 1 : move.accuracy / 100)
+    if ((best.get(move.type)?.power ?? -1) < power) best.set(move.type, { id: move.id, power })
+  }
+  return [...best.values()].map((entry) => entry.id)
+}
 
-function visibleMon(mon: AiMon, pokemon: Pokemon): AiMon {
+function visibleMon(mon: AiMon, pokemon: Pokemon, pool: readonly string[] | undefined, generation: 3 | 5): AiMon {
   const used: string[] = pokemon.moveSlots.filter((slot) => slot.used).map((slot) => slot.id)
-  const moves = used.length
-    ? mon.moves.filter((move) => used.includes(move.id.replace(/^hiddenpower.+/, 'hiddenpower')))
-    : pokemon.species.types.map((type) => ({ id: BASIC_ATTACKS[type], pp: 1, disabled: false })).filter((move) => move.id)
+  const seenMoves = mon.moves.filter((move) => used.includes(move.id.replace(/^hiddenpower.+/, 'hiddenpower')))
+  const guesses = used.length >= 4 ? [] : pool
+    ? predicted(pool, used, generation)
+    : used.length ? [] : pokemon.species.types.map((type) => BASIC_ATTACKS[type]).filter(Boolean)
+  const moves = [...seenMoves, ...guesses.map((id) => ({ id, pp: 1, disabled: false }))]
   return {
     ...mon,
     set: { ...mon.set, item: '', ability: pokemon.species.abilities[0] ? pokemon.species.abilities[0].toLowerCase().replace(/[^a-z0-9]/g, '') : mon.set.ability, moves: moves.map((move) => move.id) },
@@ -30,10 +44,10 @@ function visibleMon(mon: AiMon, pokemon: Pokemon): AiMon {
   }
 }
 
-/** Estado de la IA con solo lo que el rival ha visto del jugador (su propio equipo lo conoce entero). */
-export function buildVisibleAiState(battle: Battle): AiState {
+/** Estado de la IA sin los movimientos exactos ni los objetos del jugador (`pools`: lo que cada especie suya puede llevar). */
+export function buildVisibleAiState(battle: Battle, pools?: Readonly<Record<string, readonly string[]>>): AiState {
   const full = buildAiState(battle)
   const foe = battle.sides[0].pokemon
-  const pokemon = full.foe.pokemon.flatMap((mon, i) => (seen(foe[i]) ? [visibleMon(mon, foe[i])] : []))
-  return { ...full, foe: { ...full.foe, pokemon } }
+  const generation = full.generation ?? 5
+  return { ...full, foe: { ...full.foe, pokemon: full.foe.pokemon.map((mon, i) => visibleMon(mon, foe[i], pools?.[foe[i].species.id], generation)) } }
 }

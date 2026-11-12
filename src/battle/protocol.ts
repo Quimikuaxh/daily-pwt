@@ -24,6 +24,11 @@ export type EngineInit = {
   rival: BattleSet[]
   ai: AiKind
   maxTurns: number
+  /**
+   * Para `lookahead`: los movimientos que cada Pokémon del jugador (por especie) puede tener según las reglas de la campaña. La IA no
+   * sabe cuáles lleva; con esto predice los posibles hasta verlos usar (Jose, 12/11/2026).
+   */
+  foeMovePool?: Readonly<Record<string, readonly string[]>>
 }
 
 export type RequestMove = {

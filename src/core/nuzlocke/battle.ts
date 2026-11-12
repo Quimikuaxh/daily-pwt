@@ -7,8 +7,8 @@ import { toId } from '../id'
 import { deriveSeed, Prng } from '../prng'
 import type { StatsTable } from '../types'
 import { finishEncounter, startEncounter, type CampaignDefinition, type CampaignState } from './campaign'
-import { validateCampaignMoveSelection } from './progression'
-import { EMERALD_BATTLE_HAPPINESS, EMERALD_RULES_VERSION, isEmeraldCampaign } from './calendar'
+import { availableMoves, validateCampaignMoveSelection } from './progression'
+import { campaignMachineMoves, EMERALD_BATTLE_HAPPINESS, EMERALD_RULES_VERSION, isEmeraldCampaign } from './calendar'
 
 type RivalMember = { species: string; level: number; item: string | null; moves: readonly string[] }
 export type CampaignBattleDefinition = {
@@ -95,6 +95,12 @@ function buildCampaignBattleInit(
     // El Alto Mando y el campeón miran un turno por delante con lo que han visto; los gimnasios, la heurística (Jose, 12/11/2026).
     ai: encounter.kind === 'gym' ? 'heuristic' : 'lookahead',
     maxTurns: MAX_TURNS,
+    // Lo que cada Pokémon del jugador puede llevar (por nivel y MT desbloqueadas compatibles): de ahí predice la IA sus movimientos.
+    ...(encounter.kind === 'gym' ? {} : { foeMovePool: Object.fromEntries(state.battleTeam.map((id) => {
+      const member = state.members.find((recruit) => recruit.id === id)!
+      return [gen3.species.get(definition.species[member.species]?.simulatorSpecies ?? member.species).id,
+        availableMoves(definition.species, member, campaignMachineMoves(definition, state, unlockedMoves))]
+    })) }),
   }
 }
 
