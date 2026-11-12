@@ -45,6 +45,7 @@
     "gen:item-icons": "node scripts/fetch-item-icons.mjs",
     "gen:emerald-items": "node scripts/import-emerald-items.mjs",
     "gen:emerald-calendar": "node scripts/build-emerald-calendar.mjs",
+    "gen:emerald-move-sounds": "node scripts/build-emerald-move-sounds.mjs",
     "gen:emerald-moves": "node scripts/build-emerald-moves.mjs",
     "gen:emerald-cries": "node scripts/build-emerald-cries.mjs"
   },

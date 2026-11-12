@@ -6,6 +6,8 @@
  */
 import type { CampaignState } from '../../core/nuzlocke/campaign'
 import { esCampaign } from '../../i18n/esCampaign'
+import { emeraldTheme } from '../console/themes/emerald'
+import type { BitmapFont } from '../console/theme'
 import type { CampaignEncounter } from './hoennRoute'
 
 export type ResultMode = 'medal' | 'beaten' | 'whiteout' | 'hallOfFame'
@@ -31,7 +33,10 @@ export const trainerId = (seed: string): string => String(hash(seed) % 100000).p
 export const protagonistOf = (seed: string): Protagonist => (hash(`${seed}:protagonista`) % 2 === 0 ? 'brendan' : 'may')
 
 /** Nombre del jugador: el nickname de la cuenta o, sin él, el del protagonista. */
-export const playerNameOf = (seed: string, nickname?: string): string => nickname ?? esCampaign.result.protagonist[protagonistOf(seed)]
+/** El nombre se pinta con la fuente de Esmeralda: lo que no tiene glifo (el «_» de los nicknames) va como espacio y no como «?». */
+const printable = (name: string): string => [...name].map((char) => (char in (emeraldTheme.font as BitmapFont).charmap ? char : ' ')).join('')
+
+export const playerNameOf = (seed: string, nickname?: string): string => nickname ? printable(nickname) : esCampaign.result.protagonist[protagonistOf(seed)]
 
 /** Minutos desde que empezó la campaña (0 en campañas guardadas antes de registrarlo). */
 export const minutesSince = (startedAt: number | undefined, now: number): number => startedAt !== undefined ? Math.max(0, Math.floor((now - startedAt) / 60000)) : 0

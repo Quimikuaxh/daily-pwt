@@ -11,7 +11,10 @@ test('T3 Hoy → Modos → Ruta → cuatro elecciones de Petra → Ruta → Hoy'
   await page.getByRole('button', { name: 'Empezar campaña', exact: true }).click()
   const petra = page.getByRole('region', { name: 'Ficha de Petra' })
   await expect(petra).toContainText('LÍDER PETRA')
-  await expect(page.getByRole('list', { name: 'Medallas: 0 de 8' })).toBeVisible()
+  // Cambio de requisito (Jose, 12/11/2026): en escritorio las medallas van en el panel «Tu campaña»; en móvil, en la barra.
+  const card = page.getByRole('region', { name: 'Tu campaña' })
+  if (await card.count()) await expect(card).toContainText('0 de 8')
+  else await expect(page.getByRole('list', { name: 'Medallas: 0 de 8' })).toBeVisible()
   await page.getByRole('button', { name: /^Continuar/ }).click()
   for (let pick = 1; pick <= 4; pick++) {
     const candidates = page.getByRole('button', { name: /^Candidato/ })
@@ -61,12 +64,15 @@ async function playCampaignBattle(page: import('@playwright/test').Page, { reloa
       await page.getByRole('button', { name: 'Nuzlocke de Hoenn' }).click()
       await expect(page.locator('.emerald-battle')).toBeVisible()
     }
-    const yes = battle.getByRole('button', { name: 'Sí, cambiar de POKéMON' })
+    // Cambio de requisito (Jose, 12/11/2026): tocar un Pokémon abre CAMBIAR / DATOS / CANCELAR (antes, SÍ/NO).
+    const yes = battle.locator('button[aria-label^="Cambiar a "]:not([aria-disabled])')
+    const closeMenu = battle.getByRole('button', { name: 'Cerrar el menú' })
     const next = battle.getByRole('button', { name: /^Continuar: / })
     const fight = battle.getByRole('button', { name: 'LUCHAR' })
     // Los mensajes avanzan solos: un botón visto puede desaparecer antes del clic, así que cada clic espera poco y el bucle sigue.
     const tap = (target: import('@playwright/test').Locator) => target.click({ timeout: 1500 }).catch(() => undefined)
-    if (await yes.count()) await tap(yes)
+    if (await yes.count()) await tap(yes.first())
+    else if (await closeMenu.count()) await tap(closeMenu)
     else if (await next.count()) await tap(next)
     else if (await fight.count()) {
       await tap(fight)

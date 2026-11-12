@@ -35,11 +35,12 @@ describe('Campaña de Hoenn', () => {
     store.write(createCampaign('anterior'), null, 0)
     const { user } = mount(store)
     const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false)
-    await user.click(screen.getByRole('button', { name: 'Empezar campaña' }))
+    // Cambio de requisito (Jose, 12/11/2026): con una campaña en curso el botón se llama «Nueva partida».
+    await user.click(screen.getByRole('button', { name: 'Nueva partida' }))
     expect(confirm).toHaveBeenCalledWith('Ya tienes una campaña en curso. ¿Empezar otra? Se perderá la actual.')
     expect(store.read()?.state.seed).toBe('anterior')
     confirm.mockReturnValue(true)
-    await user.click(screen.getByRole('button', { name: 'Empezar campaña' }))
+    await user.click(screen.getByRole('button', { name: 'Nueva partida' }))
     expect(store.read()?.state).toEqual({ ...createCampaign('t3-petra'), startedAt: expect.any(Number) })
   })
 
@@ -91,7 +92,8 @@ describe('Campaña de Hoenn', () => {
     const offer = store.read()!.state.offer
     await user.click(candidates()[0])
     await user.click(screen.getByRole('button', { name: 'Otros: ver tu equipo y la caja' }))
-    expect(screen.getByRole('status')).toHaveTextContent('Lo que tienes. CANCELAR vuelve al draft.')
+    // Cambio de requisito (Jose, 12/11/2026): texto más corto, el anterior no cabía.
+    expect(screen.getByRole('status')).toHaveTextContent('Tu equipo y la caja.')
     expect(screen.queryByRole('button', { name: /^Aceptar/ })).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Volver al draft' }))
     expect(candidates()).toHaveLength(4)
@@ -106,7 +108,14 @@ describe('Campaña de Hoenn', () => {
     const { user } = mount(store)
     await user.click(screen.getByRole('button', { name: /^Continuar: preparar equipo/ }))
     await user.click(screen.getByRole('button', { name: /^Equipo, puesto 1: KADABRA/ }))
+    // UT-210 (Jose, 12/11/2026): DATOS en el menú del PC abre la ficha y SALIR vuelve al equipo.
+    await user.click(screen.getByRole('menuitem', { name: 'Datos de KADABRA' }))
+    expect(screen.getByRole('region', { name: /KADABRA/ })).toHaveTextContent('Datos de KADABRA')
+    await user.click(screen.getByRole('button', { name: 'Salir de los datos' }))
+    await user.click(screen.getByRole('button', { name: /^Equipo, puesto 1: KADABRA/ }))
     await user.click(screen.getByRole('menuitem', { name: 'Evolucionar a KADABRA' }))
+    // Jose, 12/11/2026 (opción A): la evolución, el combate y el resultado no llevan «Volver a la ruta» en la barra.
+    expect(screen.queryByRole('button', { name: 'Volver a la ruta' })).not.toBeInTheDocument()
     for (let tap = 0; tap < 3; tap++) await user.click(screen.getByRole('button', { name: /^Continuar: / }))
     expect(store.read()!.state.members[0]).toMatchObject({ species: 'alakazam', history: [{ species: 'abra' }, { species: 'kadabra', evolvedAt: 37 }] })
     expect(screen.getByRole('button', { name: /^Equipo, puesto 1: ALAKAZAM/ })).toBeInTheDocument()
@@ -140,4 +149,19 @@ describe('Campaña de Hoenn', () => {
     // Cambio de requisito (D7, Equipo y PC, 11/11/2026): en preparación, Continuar abre Equipo y PC (antes, desactivado).
     expect(screen.getByRole('button', { name: /^Continuar/ })).toBeEnabled()
   })
+
+  // UT-208 (Jose, 12/11/2026): entre rondas de la Liga se abre Equipo y PC con la plantilla fijada (sin la caja) antes del rival.
+  it('en la Liga con plantilla, Continuar abre Equipo y PC solo con la plantilla y ACEPTAR lleva a la ficha del rival', async () => {
+    const store = new LocalCampaignStore(new MemoryStorage())
+    const member = (id: string, species: string) => ({ id, species, level: 50, history: [], fainted: false, victories: 0 })
+    store.write({ ...createCampaign('liga'), phase: 'prepare', encounterIndex: 9, pick: 0, offer: [], leagueEvolved: true, leagueRoster: ['a', 'b'],
+      members: [member('a', 'grovyle'), member('b', 'machop'), member('c', 'wingull')] }, null, 0)
+    const { user } = mount(store)
+    await user.click(screen.getByRole('button', { name: /^Continuar/ }))
+    expect(screen.getByRole('button', { name: /^Equipo, puesto 1: GROVYLE/ })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /WINGULL/ })).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /^Aceptar/ }))
+    expect(store.read()!.state.leagueRoster).toEqual(['a', 'b'])
+  })
 })
+

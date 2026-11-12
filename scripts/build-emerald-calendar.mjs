@@ -21,6 +21,12 @@ function habitualIndex(source, milestones) {
 const evolutionItems = new Set(['thunderstone', 'moonstone', 'firestone', 'leafstone', 'sunstone', 'waterstone', 'kingsrock', 'metalcoat',
   'dragonscale', 'upgrade', 'deepseatooth', 'deepseascale'])
 
+/**
+ * Equipables que no hacen nada en un combate de la campaña (Jose, 12/11/2026): dinero, experiencia, encuentros salvajes, huir, amistad,
+ * no evolucionar y la VESTIDURA (solo baja la Velocidad). No van a la Mochila.
+ */
+export const USELESS_HELD = new Set(['amuletcoin', 'expshare', 'cleansetag', 'smokeball', 'soothebell', 'everstone', 'machobrace'])
+
 export function buildEmeraldCalendar(evidence) {
   validateEmeraldItems(evidence)
   const { milestones } = evidence
@@ -42,7 +48,7 @@ export function buildEmeraldCalendar(evidence) {
           return true
         })
         .map(source => ({ before: milestones[habitualIndex(source, milestones)], map: source.map, event: source.event }))
-      if (units.length) held[id] = item.held === 'berry' ? { kind: 'berry', before: milestones.find(milestone => units.some(unit => unit.before === milestone)), infinite: true, sources: units }
+      if (units.length && !USELESS_HELD.has(id)) held[id] = item.held === 'berry' ? { kind: 'berry', before: milestones.find(milestone => units.some(unit => unit.before === milestone)), infinite: true, sources: units }
         : { kind: 'held', units }
       if (!item.move && !evolutionItems.has(id)) continue
     }

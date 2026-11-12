@@ -1,11 +1,30 @@
+import moveSoundData from '../../generated/emerald/move-sounds.json'
 /**
  * Música y efectos de la campaña de Hoenn (pistas de Esmeralda elegidas por Jose el 12/11/2026, `data/audio.json`): combate por tipo de rival,
  * victoria en Resultado, Salón de la Fama y evolución. Como el reto diario (DEC-57), cada pantalla descarga solo su pista.
  */
 import { useEffect } from 'react'
-import { getAudio } from '../../audio/audio'
+import { getAudio as baseAudio } from '../../audio/audio'
+import type { AudioIndex } from '../../audio/audioEngine'
+import emeraldAudio from '../../generated/emerald/audio-index.json'
+import emeraldCries from '../../generated/emerald/cries.json'
 import type { SfxId } from '../../audio/audio'
 import type { ResultMode } from './resultModel'
+
+/**
+ * Música, efectos y gritos de Esmeralda: se registran en el motor la primera vez que la campaña lo usa (no van en el índice del reto
+ * diario, para no pesar en su ruta crítica, E2E-21). Los gritos, como `emerald-<especie>`.
+ */
+let registered = false
+function getAudio() {
+  const audio = baseAudio()
+  if (!registered) {
+    registered = true
+    const cries = Object.fromEntries(Object.entries(emeraldCries as NonNullable<AudioIndex['cries']>).map(([id, entry]) => [`emerald-${id}`, entry]))
+    audio.register({ ...(emeraldAudio as Partial<AudioIndex>), cries })
+  }
+  return audio
+}
 
 /** Tema de combate: líder de gimnasio, Alto Mando o campeón. */
 export const battleMusic = (kind: 'gym' | 'elite' | 'champion'): string =>
@@ -71,3 +90,14 @@ export const preloadSfx = (ids: readonly string[]): void => getAudio().preload([
 const cryOf = (species: string) => `emerald-${species}`
 export const playCry = (species: string, faint = false): void => getAudio().playCry(cryOf(species), { faint })
 export const preloadCries = (species: readonly string[]): void => getAudio().preload([], [], species.map(cryOf))
+
+/**
+ * Sonidos de cada ataque (`gen:emerald-move-sounds`, de los guiones de animación de pokeemerald): los efectos del ataque con el fotograma
+ * en que suenan. Suenan al decir «X usó Y» (Jose, 12/11/2026); el golpe (eficaz, poco eficaz…) sigue sonando al recibir el daño.
+ */
+const moveSounds = moveSoundData as unknown as Record<string, [number, string][]>
+export const moveSoundIds = (moves: readonly string[]): string[] => [...new Set(moves.flatMap((move) => (moveSounds[move] ?? []).map(([, id]) => id)))]
+export function playMoveSounds(move: string, speed: number): () => void {
+  const timers = (moveSounds[move] ?? []).map(([frame, id]) => setTimeout(() => playSfx(id), (frame * 1000) / 60 / speed))
+  return () => { timers.forEach(clearTimeout) }
+}

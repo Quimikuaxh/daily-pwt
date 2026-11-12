@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { campaignPlaces as places, mockCampaignCanvas } from '../../test-utils/campaignUi'
+import { campaignEncounters, campaignPlaces as places, mockCampaignCanvas } from '../../test-utils/campaignUi'
 import { emeraldTheme } from '../console/themes/emerald'
 import { RouteScreen } from './RouteScreen'
 
@@ -54,5 +54,17 @@ describe('Ruta y ficha del Domo', () => {
     const spot = badges ? places[badges - 1] : { x: 5, y: 13 }
     expect(player).toHaveStyle({ left: `${spot.x * 8 - 4}px`, top: `${spot.y * 8 - 4}px` })
     expect(player).toHaveAttribute('alt', '')
+  })
+
+  // UT-207 (Jose, 12/11/2026): en la Liga, la ficha enseña al rival que toca y se recorren los cinco con flechas.
+  it('la ficha de la Liga empieza en el que toca y pasa por los cinco con su estado', async () => {
+    const user = userEvent.setup()
+    const league = { rivals: campaignEncounters.filter((encounter) => encounter.kind !== 'gym'), next: 1 }
+    render(<RouteScreen places={places} badges={8} speciesName={id => id} league={league} scale={2} />)
+    expect(screen.getByRole('region', { name: /Fátima/ })).toHaveTextContent('Llevas hasta')
+    await user.click(screen.getByRole('button', { name: 'Ver la ficha de Sixto' }))
+    expect(screen.getByRole('region', { name: /Sixto/ })).toHaveTextContent('¡Ya le has vencido!')
+    for (const name of ['Fátima', 'Nívea', 'Dracón']) await user.click(screen.getByRole('button', { name: `Ver la ficha de ${name}` }))
+    expect(screen.getByRole('region', { name: /Dracón/ })).toHaveTextContent('Tras las 8 MEDALLAS')
   })
 })

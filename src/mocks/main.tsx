@@ -15,6 +15,7 @@ import { hallOfFameSpots } from '../ui/campaign/resultModel'
 import { ShareScreen } from '../ui/campaign/ShareScreen'
 import { MovesScreen } from '../ui/campaign/MovesScreen'
 import { Modal } from '../ui/common/Modal'
+import { BattlePanelsMock, SidePanelsMock, StatusMock } from './sidePanels'
 import '../index.css'
 import '../ui/campaign/campaign.css'
 
@@ -338,7 +339,13 @@ const views: Record<string, () => ReactNode[]> = { 'compartir-a': ShareA, 'compa
 const view = views[new URLSearchParams(location.search).get('v') ?? ''] ?? EvoScene
 // La pantalla real (no una maqueta), para revisar la imagen que exporta: `?v=compartir` (gana) o `?v=compartir-perdida`.
 const shareMode = new URLSearchParams(location.search).get('v')
-if (shareMode === 'modos-a' || shareMode === 'modos-b') {
+if (shareMode === 'estados') {
+  createRoot(document.getElementById('root')!).render(<StatusMock />)
+} else if (shareMode === 'paneles-combate') {
+  createRoot(document.getElementById('root')!).render(<BattlePanelsMock />)
+} else if (shareMode === 'paneles') {
+  createRoot(document.getElementById('root')!).render(<SidePanelsMock />)
+} else if (shareMode === 'modos-a' || shareMode === 'modos-b') {
   createRoot(document.getElementById('root')!).render(shareMode === 'modos-a' ? <ModesA /> : <ModesB />)
 } else if (shareMode === 'movimientos') {
   // La pantalla real de Movimientos con datos de ejemplo, para revisar SALIR y las flechas.

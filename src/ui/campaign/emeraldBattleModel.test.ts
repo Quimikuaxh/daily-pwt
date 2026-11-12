@@ -28,7 +28,8 @@ describe('modelo de la pantalla de combate', () => {
     // Cambio de requisito (Jose, 11/11/2026): el rival, 4 px a la izquierda y arriba del centro del juego.
     expect(frontSpot('geodude')).toEqual({ x: 140, y: 4 + 18 })
     expect(backSpot('abra').x).toBe(40)
-    expect(healthbox(true)).toMatchObject({ left: 126, top: 72, bar: { x: 158, y: 88 }, hp: { y: 91 } })
+    // Cambio de requisito (Jose, 12/11/2026): los PS, 1 px más abajo (a y + 19 pisaban la barra).
+    expect(healthbox(true)).toMatchObject({ left: 126, top: 72, bar: { x: 158, y: 88 }, hp: { y: 92 } })
     expect(healthbox(false)).toMatchObject({ left: 12, top: 14, bar: { x: 36, y: 30 } })
     expect([barImage(1), barImage(0.5), barImage(0.2)]).toEqual(['combate-barra', 'combate-barra-amarilla', 'combate-barra-roja'])
     expect(activeOf({ active: null, team: [] })).toBeNull()
@@ -48,8 +49,9 @@ describe('modelo de la pantalla de combate', () => {
 })
 
 describe('adaptador de la sesión de campaña', () => {
-  it('la intro de Esmeralda no tiene pancarta, iris ni entrada', () => {
-    expect(EMERALD_INTRO).toMatchObject({ vs: 0, iris: 0, enter: 0 })
+  // Cambio de requisito (Jose, 12/11/2026): sin pancarta VS, pero con transición (vs) y el entrenador que entra (iris).
+  it('la intro de Esmeralda lleva transición y entrada del entrenador', () => {
+    expect(EMERALD_INTRO).toMatchObject({ vs: 1000, iris: 900, enter: 0 })
   })
 
   it('arranca con start, manda las decisiones a la sesión y traduce sus respuestas a updates del diario', () => {
@@ -81,5 +83,27 @@ describe('adaptador de la sesión de campaña', () => {
     expect(input.preparation.leadId).toBe('b')
     expect(input.preparation.movesByMember.a).toEqual(['pound'])
     expect(input.preparation.movesByMember.b.length).toBeGreaterThan(0)
+  })
+})
+
+// UT-200 (Jose, 12/11/2026): entrada al combate con transición y el entrenador rival antes de sus Pokémon.
+import { openingFrame, TRAINER_SPOT, trainerX, transitionFrame, TRANSITION_FRAMES } from './emeraldBattleModel'
+describe('entrada al combate', () => {
+  it('dos destellos blancos y franjas negras que cierran hasta tapar la pantalla; al entrar el entrenador se abren', () => {
+    expect([0, 6, 12, 18].map((f) => transitionFrame(f).white)).toEqual([true, false, true, false])
+    expect(transitionFrame(24).bars).toBe(0)
+    expect(transitionFrame(TRANSITION_FRAMES).bars).toBe(1)
+    expect(openingFrame(0)?.bars).toBe(1)
+    expect(openingFrame(20)).toBeNull()
+  })
+
+  it('el entrenador entra por la izquierda, se queda mientras reta y sale por la derecha al enviar', () => {
+    expect(trainerX('vs', 10)).toBeNull()
+    expect(trainerX('iris', 0)).toBe(-64)
+    expect(trainerX('iris', 54)).toBe(TRAINER_SPOT.x)
+    expect(trainerX('challenge', 999)).toBe(TRAINER_SPOT.x)
+    expect(trainerX('rivalSend', 8)).toBeGreaterThan(TRAINER_SPOT.x)
+    expect(trainerX('rivalSend', 16)).toBeNull()
+    expect(trainerX('done', 0)).toBeNull()
   })
 })

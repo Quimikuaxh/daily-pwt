@@ -49,6 +49,8 @@ export type CampaignState = {
   /** Puntos Batalla por gastar y objetos comprados en el canje (heldItems.ts). */
   battlePoints?: number
   purchases?: readonly string[]
+  /** Alineación del último combate (Jose, 12/11/2026): el equipo del tramo siguiente arranca con los que fueron y siguen en pie. */
+  lastTeam?: readonly string[]
   /** Momento (ms desde 1970) en que empezó; lo pone la interfaz al crearla, para el TIEMPO de la Ficha de Entrenador. */
   startedAt?: number
 }
@@ -371,7 +373,7 @@ export function finishEncounter(
   })
   const gymWin = won && isEmeraldCampaign(definition) && encounterAt(definition, state).kind === 'gym'
   const earned = gymWin ? battlePointsFor(fainted) : 0
-  const finished = { ...state, members, battleTeam: [], battleSeed: undefined, ...(earned ? { battlePoints: (state.battlePoints ?? 0) + earned } : {}) }
+  const finished = { ...state, members, battleTeam: [], lastTeam: [...state.battleTeam], battleSeed: undefined, ...(earned ? { battlePoints: (state.battlePoints ?? 0) + earned } : {}) }
   if (!won) return { ...finished, phase: 'lost' }
 
   const nextIndex = state.encounterIndex + 1

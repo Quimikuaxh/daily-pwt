@@ -15,6 +15,7 @@ export class LocalCampaignSession {
   private readonly prefix = `campaign-${++sessionNumber}`
   private sequence = 0
   private pending: Pending | null = null
+  private queued: CampaignDecision | null = null
   private ready = false
   private knownRevision: number | null = null
   private stopped = false
@@ -69,6 +70,9 @@ export class LocalCampaignSession {
   }
 
   resume(definition: CampaignBattleInput['definition']): void {
+    // La pantalla se puede montar otra vez mientras arranca (al volver a entrar, o al recargar el código en desarrollo): la respuesta de
+    // la preparación o reanudación en curso llega igual a quien escuche, así que no se pide otra.
+    if (!this.stopped && !this.saving && (this.pending?.kind === 'resume' || this.pending?.kind === 'prepare')) return
     if (this.stopped || this.saving || this.pending) throw new Error(esCampaign.resumeBusy)
     const record = this.store.read()
     if (!record?.battle) throw new Error(esCampaign.noSavedBattle)
@@ -82,6 +86,11 @@ export class LocalCampaignSession {
   choose(choice: Choice): void | Promise<void> { return this.decide(choice) }
   forfeit(): void | Promise<void> { return this.decide({ type: 'forfeit' }) }
   private decide(decision: CampaignDecision): void | Promise<void> {
+    // Mientras el combate arranca (preparación o reanudación), una decisión no se pierde (la pantalla se quedaba esperando para siempre):
+    // se manda en cuanto la sesión está lista. Con otra decisión aún en el motor, se descarta: la respuesta de esa ya trae el turno nuevo y
+    // aplicarla después la llevaría a un turno que no es el suyo.
+    if (!this.stopped && (this.pending?.kind === 'prepare' || this.pending?.kind === 'resume')) { this.queued = decision; return }
+    if (!this.stopped && (this.saving || this.pending?.kind === 'decision')) return
     const current = this.active()
     if (current.battle.checkpoint?.update.ended) throw new Error(esCampaign.ended)
     const battleSeed = current.battle.init!.battleSeed
@@ -145,6 +154,9 @@ export class LocalCampaignSession {
         this.knownRevision = ready ? saved.revision : null
         this.pending = null
         this.emit(message)
+        const queued = this.queued
+        this.queued = null
+        if (queued && ready && !this.stopped) void Promise.resolve(this.decide(queued)).catch(() => undefined)
       }
       if (save) {
         const result = this.persist(state, battle, record.revision, done)

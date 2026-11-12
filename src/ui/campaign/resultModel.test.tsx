@@ -19,7 +19,8 @@ describe('qué resultado', () => {
   })
 
   it('nombre: el nickname o el protagonista fijo de la semilla; ID de cinco cifras fijo', () => {
-    expect(playerNameOf('s', 'Jose_11')).toBe('Jose_11')
+    // Cambio de requisito (Jose, 12/11/2026): lo que la fuente de Esmeralda no tiene (el «_») va como espacio, no como «?».
+    expect(playerNameOf('s', 'Jose_11')).toBe('Jose 11')
     expect(['BRUNO', 'AURA']).toContain(playerNameOf('s'))
     expect(playerNameOf('s')).toBe(protagonistOf('s') === 'brendan' ? 'BRUNO' : 'AURA')
     expect(trainerId('s')).toMatch(/^\d{5}$/)

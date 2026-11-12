@@ -21,6 +21,8 @@ type DomeCardProps = {
   onPage: (page: number) => void
   accessibleName: string
   accessibleText: string
+  /** Varios rivales en la misma ficha (la Liga): flechas junto al título para pasar de uno a otro. */
+  rivals?: { index: number; total: number; onStep: (step: number) => void; label: (step: number) => string }
 }
 
 const SLOTS = [
@@ -29,7 +31,10 @@ const SLOTS = [
   { ix: 80, iy: 54, nx: 120, ny: 72, nw: 64 },
 ] as const
 
-export function DomeCard({ rivalId, title, party, page, lines, onPage, accessibleName, accessibleText }: DomeCardProps) {
+/** Flechas de rival que tienen a quién ir (la izquierda si no es el primero, la derecha si no es el último). */
+const rivalArrows = (index: number, total: number) => ([[-1, 'izda', 12], [1, 'dcha', 220]] as const).filter(([step]) => { return index + step >= 0 && total > index + step })
+
+export function DomeCard({ rivalId, title, party, page, lines, onPage, accessibleName, accessibleText, rivals }: DomeCardProps) {
   const pages = Math.ceil(party.length / 3)
   const shown = party.slice(page * 3, page * 3 + 3)
   const positions = shown.length === 1 ? [SLOTS[1]] : SLOTS
@@ -61,6 +66,13 @@ export function DomeCard({ rivalId, title, party, page, lines, onPage, accessibl
           aria-label={esCampaign.route.pageLabel(target + 1, pages)} onClick={() => onPage(target)}>
           <img src={emeraldTheme.asset(`domo-flecha-${side}`)} alt="" style={{ left: 4, top: 8 }} />
         </button>
+      ))}
+      {rivals && rivalArrows(rivals.index, rivals.total).map(([step, side, x]) => (
+        (
+          <button key={side} type="button" className="dome-arrow" style={{ left: x, top: 10, width: 12, height: 16 }} aria-label={rivals.label(step)} onClick={() => rivals.onStep(step)}>
+            <img src={emeraldTheme.asset(`domo-flecha-${side}`)} alt="" style={{ left: 0, top: 0, transform: 'scale(0.75)', transformOrigin: '0 0' }} />
+          </button>
+        )
       ))}
       <section className="sr-only" aria-label={accessibleName}>
         <p>{accessibleText}</p>

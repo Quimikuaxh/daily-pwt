@@ -33,6 +33,7 @@ export const emeraldTheme: ConsoleTheme = {
   colors: {
     ...battle,
     ventana: ['#626262', '#d5d5cd'], // texto estándar sobre ventana blanca (std_menu.pal)
+    'ventana-off': ['#b4b4b4', '#e6e6e6'], // opción que no se puede elegir ahora (CAMBIAR fuera de turno)
     blanco: ['#f8f8f8', '#606060'],
     salon: ['#ffffff', '#626262'], // hall_of_fame.c: sMonInfoTextColors
     domo: ['#ffffff', '#4a4a4a'], // ficha del Domo: índices 14 y 13 de battle_interface/text.pal

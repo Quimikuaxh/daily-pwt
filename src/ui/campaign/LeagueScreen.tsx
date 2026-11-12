@@ -42,7 +42,8 @@ export function LeagueScreen({ rival, beaten, members, roster, speciesName, onAc
   const locked = roster !== null
   const party = rival.team.map((member) => ({ species: member.species, name: speciesName(member.species), level: member.level }))
   const title = rival.kind === 'champion' ? t.championTitle(rival.nameEs) : t.eliteTitle(rival.nameEs)
-  const lines = (shown: readonly { level: number }[]) => [t.progress(beaten), t.levels(shown.map((member) => member.level)), t.boxClosed]
+  // Nivel máximo de todo el equipo del rival, no solo de los que se ven en la ficha (Jose, 12/11/2026).
+  const lines = () => [t.progress(beaten), t.levels(rival.team.map((member) => member.level)), t.boxClosed]
   const prompt = note ?? (locked ? t.locked : t.choose)
   const names = selected.map((id) => members.find((member) => { return member.id === id })?.name ?? id).join(', ')
 
@@ -65,7 +66,7 @@ export function LeagueScreen({ rival, beaten, members, roster, speciesName, onAc
       <ConsoleStage theme={emeraldTheme} scale={scale} reservedHeight={reservedHeight} screens={[(
         <DomeCard key="card" rivalId={rival.id} title={title} party={party} page={page} onPage={setPage} lines={lines}
           accessibleName={t.cardLabel(rival.nameEs)}
-          accessibleText={`${title}. ${lines(party).join(' ')}`} />
+          accessibleText={`${title}. ${lines().join(' ')}`} />
       ), (
         <div key="party" className="league-party">
           <img src={emeraldTheme.asset('equipo-fondo')} alt="" style={{ left: 0, top: 0 }} />

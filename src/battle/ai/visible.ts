@@ -49,7 +49,8 @@ function visibleMon(mon: AiMon, pokemon: Pokemon, pool: readonly string[] | unde
  * cuánto ha avanzado Tóxico, si tiene Drenadoras y si está atado a un movimiento (Otra Vez, Anulación, Tormento, Mofa u objeto Elección).
  */
 export type ActiveDanger = { perish: number | null; toxicStage: number; leechSeed: boolean; locked: boolean }
-export type LookaheadState = AiState & { danger: ActiveDanger }
+/** `foeLastMove`: el último ataque que ha usado el Pokémon del jugador en el campo (se ve en el combate). */
+export type LookaheadState = AiState & { danger: ActiveDanger; foeLastMove?: string | null; justIn?: boolean }
 
 function dangerOf(pokemon: Pokemon | undefined): ActiveDanger {
   const volatiles = (pokemon?.volatiles ?? {}) as Record<string, { duration?: number } | undefined>
@@ -70,5 +71,8 @@ export function buildVisibleAiState(battle: Battle, pools?: Readonly<Record<stri
     ...full,
     foe: { ...full.foe, pokemon: full.foe.pokemon.map((mon, i) => visibleMon(mon, foe[i], pools?.[foe[i].species.id], generation)) },
     danger: dangerOf(battle.sides[1].pokemon[0]),
+    foeLastMove: battle.sides[0].active[0]?.lastMove?.id ?? null,
+    // Recién entrado (no ha actuado aún en el campo): sin esto, contra quien le gana a todos, cambiaba cada turno.
+    justIn: (battle.sides[1].active[0]?.activeTurns ?? 0) <= 1,
   }
 }

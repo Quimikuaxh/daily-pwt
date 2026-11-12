@@ -42,7 +42,8 @@ describe('pantalla de la Mochila', () => {
     const onGive = vi.fn()
     const onClose = vi.fn()
     render(<BagScreen protagonist="brendan" member={{ species: 'machop', name: 'MACHOP', level: 40, hp: 114, item }}
-      contents={(pocket) => (pocket === 'items' ? many : [{ id: 'oranberry', name: 'BAYA ARANJA', text: 'Restaura', free: Infinity }])} onGive={onGive} onClose={onClose} scale={2} />)
+      contents={(pocket) => (pocket === 'items' ? many : pocket === 'evolution' ? [{ id: 'firestone', name: 'PIEDRA FUEGO', text: 'Evoluciona', free: 0, view: true }]
+        : [{ id: 'oranberry', name: 'BAYA ARANJA', text: 'Restaura', free: Infinity }])} onGive={onGive} onClose={onClose} scale={2} />)
     return { onGive, onClose }
   }
 
@@ -58,7 +59,7 @@ describe('pantalla de la Mochila', () => {
 
   it('cambia de bolsillo; sin objeto da directamente; con objeto pregunta si cambiarlo', () => {
     const { onGive } = mount('o5')
-    fireEvent.click(screen.getByRole('button', { name: 'Bolsillo siguiente: BAYAS' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Bolsillo anterior: BAYAS' }))
     expect(screen.getByRole('button', { name: 'BAYA ARANJA' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'BAYA ARANJA' }))
     expect(screen.getByRole('status')).toHaveTextContent('MACHOP ya lleva O5. ¿Cambiarlo?')
@@ -68,9 +69,26 @@ describe('pantalla de la Mochila', () => {
 
   it('CERRAR MOCHILA vuelve sin dar nada', () => {
     const { onGive, onClose } = mount(null)
-    fireEvent.click(screen.getByRole('button', { name: 'Bolsillo siguiente: BAYAS' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Bolsillo anterior: BAYAS' }))
     fireEvent.click(screen.getByRole('button', { name: 'Cerrar la Mochila y volver al equipo' }))
     expect(onClose).toHaveBeenCalled()
     expect(onGive).not.toHaveBeenCalled()
   })
+
+  // Jose, 12/11/2026: CANCELAR abajo, sin bajar hasta CERRAR MOCHILA.
+  it('CANCELAR vuelve sin dar nada desde cualquier punto de la lista', () => {
+    const { onGive, onClose } = mount(null)
+    fireEvent.click(screen.getByRole('button', { name: 'Cancelar: volver al equipo sin dar nada' }))
+    expect(onClose).toHaveBeenCalled()
+    expect(onGive).not.toHaveBeenCalled()
+  })
+
+  // UT-209 (Jose, 12/11/2026): bolsillos OBJ. EVOL. y MT/MO, solo para mirar.
+  it('OBJ. EVOL. enseña los objetos pero no deja darlos', () => {
+    const { onGive } = mount(null)
+    fireEvent.click(screen.getByRole('button', { name: 'Bolsillo siguiente: OBJ. EVOL.' }))
+    fireEvent.click(screen.getByRole('button', { name: 'PIEDRA FUEGO' }))
+    expect(onGive).not.toHaveBeenCalled()
+  })
 })
+

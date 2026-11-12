@@ -247,6 +247,15 @@ export function createAudioEngine({ index, baseUrl, createContext, fetchBytes, u
   for (const type of UNLOCK_EVENTS) unlockTarget?.addEventListener(type, unlock)
 
   return {
+    /**
+     * Añade pistas, efectos y gritos al índice: la campaña registra los de Esmeralda al cargar su código, así el reto diario no los lleva
+     * en su ruta crítica (E2E-21).
+     */
+    register(extra: Partial<AudioIndex>) {
+      Object.assign(index.music, extra.music)
+      Object.assign(index.sfx, extra.sfx)
+      if (extra.cries) index.cries = { ...index.cries, ...extra.cries }
+    },
     /** Volumen (0-100) y silencio de Ajustes; se aplican al instante a lo que suena. */
     configure(settings: { volume: number; muted: boolean }) {
       volume = settings.volume

@@ -1,7 +1,9 @@
+import { useEffect } from 'react'
 import { es } from '../../i18n/es'
 import { Modal } from '../common/Modal'
 
-type Mode = { id: string; label: string; hint: string; onOpen: () => void }
+/** `prefetch`: descarga el código del modo al abrir la ventana (entrar en él no espera a la descarga). */
+type Mode = { id: string; label: string; hint: string; onOpen: () => void; prefetch?: () => void }
 
 const base = import.meta.env.BASE_URL
 
@@ -13,7 +15,7 @@ const base = import.meta.env.BASE_URL
 function ModeArt({ id }: { id: string }) {
   if (id === 'daily') {
     return (
-      <span className="modes-art" aria-hidden="true">
+      <span className="modes-art modes-art-daily" aria-hidden="true">
         <img src={`${base}ui/battle/pwt-stage.png`} alt="" className="modes-art-bg" />
         <img src={`${base}sprites/trainers/maximo-vs.png`} alt="" className="modes-art-left" />
         <img src={`${base}sprites/trainers/cintia-vs.png`} alt="" className="modes-art-right" />
@@ -40,11 +42,13 @@ function ModeArt({ id }: { id: string }) {
  * «Estás aquí»), y lo dice `aria-current`.
  */
 export function ModesDialog({ modes, onClose }: { modes: readonly Mode[]; onClose: () => void }) {
+  // Al abrir Modos ya se descarga la campaña: al elegirla salía medio segundo en blanco esperando su código (Jose, 12/11/2026).
+  useEffect(() => { modes.forEach((mode) => mode.prefetch?.()) }, [modes])
   const text = es.modes
   const option = (id: string, label: string, hint: string, current: boolean, onClick: () => void) => {
     return (
       <li key={id}>
-        <button type="button" className="btn modes-option" aria-current={current ? 'page' : undefined} aria-label={label} aria-describedby={`mode-${id}-hint`} onClick={onClick}>
+        <button type="button" className="btn modes-option" aria-current={current ? 'page' : undefined} aria-describedby={`mode-${id}-hint`} onClick={onClick}>
           <ModeArt id={id} />
           <span className="modes-text">
             <span className="modes-label">{label}</span>

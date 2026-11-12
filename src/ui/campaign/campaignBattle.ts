@@ -12,7 +12,8 @@ import { campaignMemberMoves } from '../../core/nuzlocke/progression'
 import type { INTRO_DURATIONS_MS, SWITCH_DURATIONS_MS } from '../../hooks/useBattle'
 
 export const EMERALD_INTRO: Readonly<Record<keyof typeof INTRO_DURATIONS_MS, number>> = {
-  vs: 0, iris: 0, enter: 0, challenge: 1200, rivalSend: 1300, playerSend: 1500,
+  // vs: la transición (60 fotogramas); iris: el entrenador entra (54). Antes, 0 y 0: el combate aparecía de golpe (Jose, 12/11/2026).
+  vs: 1000, iris: 900, enter: 0, challenge: 1200, rivalSend: 1300, playerSend: 1500,
 }
 
 /**

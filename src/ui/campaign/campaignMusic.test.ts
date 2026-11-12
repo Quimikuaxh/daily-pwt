@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import audioIndex from '../../generated/audio-index.json'
+import baseIndex from '../../generated/audio-index.json'
+import emeraldIndex from '../../generated/emerald/audio-index.json'
+
+// La música y los efectos de Esmeralda van en su propio índice (12/11/2026, E2E-21); aquí se miran juntos.
+const audioIndex = { music: { ...baseIndex.music, ...emeraldIndex.music }, sfx: { ...baseIndex.sfx, ...emeraldIndex.sfx } }
 import emeraldCries from '../../generated/emerald/cries.json'
 import emeraldSprites from '../../generated/emerald/sprites.json'
 import { townMusic, BATTLE_SFX_IDS, battleMusic, emeraldSfxFor, EVOLUTION_MUSIC, EVOLUTION_SFX_IDS, EVOLVED_MUSIC, LOW_HEALTH_SFX, resultMusic } from './campaignMusic'

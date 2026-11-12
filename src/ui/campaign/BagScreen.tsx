@@ -17,8 +17,8 @@ import { itemName, POCKETS, scrollFor, VISIBLE_ROWS, type BagItem, type Pocket }
 import type { Protagonist } from './resultModel'
 
 const t = esCampaign.bag
-/** Fotograma de la mochila de cada bolsillo (bag_male/female.png): 1 objetos, 5 bayas. */
-const BAG_FRAME: Record<Pocket, number> = { items: 1, berries: 5 }
+/** Fotograma de la mochila de cada bolsillo (bag_male/female.png): 1 objetos, 2 objetos clave, 4 MT/MO, 5 bayas. */
+const BAG_FRAME: Record<Pocket, number> = { items: 1, evolution: 2, machines: 4, berries: 5 }
 
 type BagScreenProps = {
   protagonist: Protagonist
@@ -62,6 +62,8 @@ export function BagScreen({ protagonist, member, contents, onGive, onClose, scal
     if (i === items.length) { onClose(); return }
     point(i)
     const item = items[i]
+    // OBJ. EVOL. y MT/MO: solo para mirar.
+    if (item.view) return
     if (member.item && member.item !== item.id) { setAsking(item.id); return }
     onGive(item.id)
   }
@@ -147,6 +149,10 @@ export function BagScreen({ protagonist, member, contents, onGive, onClose, scal
           <GameWindow x={1} y={17} width={21} height={2}>
             <GameText text={message} y={1} width={168} fit />
           </GameWindow>
+          {/* CANCELAR en la píldora de abajo, como la pantalla de equipo: sin bajar hasta CERRAR MOCHILA (Jose, 12/11/2026). */}
+          <button type="button" className="team-button" style={{ left: 184, top: 144, width: 56, height: 16 }} aria-label={t.cancelLabel} onClick={onClose}>
+            <GameText text={t.cancel} x={5} y={1} width={48} align="center" face="small" color="equipo" hidden />
+          </button>
           <p className="sr-only" role="status">{message}</p>
         </div>
       )]} />

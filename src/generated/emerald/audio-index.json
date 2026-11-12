@@ -1,0 +1,676 @@
+{
+  "music": {
+    "emerald-gym": {
+      "path": "audio/music/emerald-gym.m4a",
+      "durationSec": 179.438,
+      "loopStartSec": 94.17,
+      "loopEndSec": 143.3559
+    },
+    "emerald-gym-victory": {
+      "path": "audio/music/emerald-gym-victory.m4a",
+      "durationSec": 71.926
+    },
+    "emerald-elite": {
+      "path": "audio/music/emerald-elite.m4a",
+      "durationSec": 178.509,
+      "loopStartSec": 58.5,
+      "loopEndSec": 109.1772
+    },
+    "emerald-champion": {
+      "path": "audio/music/emerald-champion.m4a",
+      "durationSec": 178.916,
+      "loopStartSec": 76.07,
+      "loopEndSec": 130.6584
+    },
+    "emerald-league-victory": {
+      "path": "audio/music/emerald-league-victory.m4a",
+      "durationSec": 53.632
+    },
+    "emerald-hall-of-fame": {
+      "path": "audio/music/emerald-hall-of-fame.m4a",
+      "durationSec": 69.283
+    },
+    "emerald-evolution": {
+      "path": "audio/music/emerald-evolution.m4a",
+      "durationSec": 33.596,
+      "loopStartSec": 18.1,
+      "loopEndSec": 26.133
+    },
+    "emerald-evolved": {
+      "path": "audio/music/emerald-evolved.m4a",
+      "durationSec": 6.757
+    },
+    "emerald-credits": {
+      "path": "audio/music/emerald-credits.m4a",
+      "durationSec": 174.715
+    },
+    "emerald-town-rustboro": {
+      "path": "audio/music/emerald-town-rustboro.m4a",
+      "durationSec": 101.769,
+      "loopStartSec": 15.38,
+      "loopEndSec": 75.6275
+    },
+    "emerald-town-dewford": {
+      "path": "audio/music/emerald-town-dewford.m4a",
+      "durationSec": 110.838,
+      "loopStartSec": 4.65,
+      "loopEndSec": 71.3081
+    },
+    "emerald-town-verdanturf": {
+      "path": "audio/music/emerald-town-verdanturf.m4a",
+      "durationSec": 75.573,
+      "loopStartSec": 2.25,
+      "loopEndSec": 48.156
+    },
+    "emerald-town-chimney": {
+      "path": "audio/music/emerald-town-chimney.m4a",
+      "durationSec": 110.396,
+      "loopStartSec": 30.15,
+      "loopEndSec": 73.8803
+    },
+    "emerald-town-petalburg": {
+      "path": "audio/music/emerald-town-petalburg.m4a",
+      "durationSec": 64.255,
+      "loopStartSec": 3.97,
+      "loopEndSec": 34.5795
+    },
+    "emerald-town-fortree": {
+      "path": "audio/music/emerald-town-fortree.m4a",
+      "durationSec": 55.258,
+      "loopStartSec": 12.7,
+      "loopEndSec": 42.8242
+    },
+    "emerald-town-lilycove": {
+      "path": "audio/music/emerald-town-lilycove.m4a",
+      "durationSec": 86.921,
+      "loopStartSec": 3.95,
+      "loopEndSec": 60.0982
+    },
+    "emerald-town-sootopolis": {
+      "path": "audio/music/emerald-town-sootopolis.m4a",
+      "durationSec": 92.462,
+      "loopStartSec": 4.37,
+      "loopEndSec": 58.8613
+    },
+    "emerald-town-evergrande": {
+      "path": "audio/music/emerald-town-evergrande.m4a",
+      "durationSec": 94.717,
+      "loopStartSec": 15.35,
+      "loopEndSec": 75.5983
+    }
+  },
+  "sfx": {
+    "emerald-hit-super": {
+      "path": "audio/sfx/emerald-hit-super.m4a",
+      "durationSec": 1.509
+    },
+    "emerald-hit-neutral": {
+      "path": "audio/sfx/emerald-hit-neutral.m4a",
+      "durationSec": 0.714
+    },
+    "emerald-hit-weak": {
+      "path": "audio/sfx/emerald-hit-weak.m4a",
+      "durationSec": 0.486
+    },
+    "emerald-ball-throw": {
+      "path": "audio/sfx/emerald-ball-throw.m4a",
+      "durationSec": 0.617
+    },
+    "emerald-ball-open": {
+      "path": "audio/sfx/emerald-ball-open.m4a",
+      "durationSec": 0.602
+    },
+    "emerald-faint": {
+      "path": "audio/sfx/emerald-faint.m4a",
+      "durationSec": 0.789
+    },
+    "emerald-select": {
+      "path": "audio/sfx/emerald-select.m4a",
+      "durationSec": 0.229
+    },
+    "emerald-stat-up": {
+      "path": "audio/sfx/emerald-stat-up.m4a",
+      "durationSec": 1.318
+    },
+    "emerald-stat-down": {
+      "path": "audio/sfx/emerald-stat-down.m4a",
+      "durationSec": 1.325
+    },
+    "emerald-evo-spiral": {
+      "path": "audio/sfx/emerald-evo-spiral.m4a",
+      "durationSec": 1.267
+    },
+    "emerald-evo-arc": {
+      "path": "audio/sfx/emerald-evo-arc.m4a",
+      "durationSec": 0.719
+    },
+    "emerald-evo-circle": {
+      "path": "audio/sfx/emerald-evo-circle.m4a",
+      "durationSec": 0.768
+    },
+    "emerald-evo-spray": {
+      "path": "audio/sfx/emerald-evo-spray.m4a",
+      "durationSec": 2.465
+    },
+    "emerald-evo-done": {
+      "path": "audio/sfx/emerald-evo-done.m4a",
+      "durationSec": 1.642
+    },
+    "emerald-low-health": {
+      "path": "audio/sfx/emerald-low-health.m4a",
+      "durationSec": 1.207
+    },
+    "emerald-se-bang": {
+      "path": "audio/sfx/emerald-se-bang.m4a",
+      "durationSec": 0.795
+    },
+    "emerald-se-m-absorb": {
+      "path": "audio/sfx/emerald-se-m-absorb.m4a",
+      "durationSec": 0.391
+    },
+    "emerald-se-m-absorb-2": {
+      "path": "audio/sfx/emerald-se-m-absorb-2.m4a",
+      "durationSec": 1.057
+    },
+    "emerald-se-m-acid-armor": {
+      "path": "audio/sfx/emerald-se-m-acid-armor.m4a",
+      "durationSec": 1.354
+    },
+    "emerald-se-m-attract": {
+      "path": "audio/sfx/emerald-se-m-attract.m4a",
+      "durationSec": 0.923
+    },
+    "emerald-se-m-attract2": {
+      "path": "audio/sfx/emerald-se-m-attract2.m4a",
+      "durationSec": 3.713
+    },
+    "emerald-se-m-barrier": {
+      "path": "audio/sfx/emerald-se-m-barrier.m4a",
+      "durationSec": 0.94
+    },
+    "emerald-se-m-baton-pass": {
+      "path": "audio/sfx/emerald-se-m-baton-pass.m4a",
+      "durationSec": 0.885
+    },
+    "emerald-se-m-belly-drum": {
+      "path": "audio/sfx/emerald-se-m-belly-drum.m4a",
+      "durationSec": 0.553
+    },
+    "emerald-se-m-bind": {
+      "path": "audio/sfx/emerald-se-m-bind.m4a",
+      "durationSec": 0.583
+    },
+    "emerald-se-m-bite": {
+      "path": "audio/sfx/emerald-se-m-bite.m4a",
+      "durationSec": 0.505
+    },
+    "emerald-se-m-blizzard": {
+      "path": "audio/sfx/emerald-se-m-blizzard.m4a",
+      "durationSec": 2.49
+    },
+    "emerald-se-m-blizzard2": {
+      "path": "audio/sfx/emerald-se-m-blizzard2.m4a",
+      "durationSec": 0.571
+    },
+    "emerald-se-m-bonemerang": {
+      "path": "audio/sfx/emerald-se-m-bonemerang.m4a",
+      "durationSec": 0.472
+    },
+    "emerald-se-m-brick-break": {
+      "path": "audio/sfx/emerald-se-m-brick-break.m4a",
+      "durationSec": 0.654
+    },
+    "emerald-se-m-bubble": {
+      "path": "audio/sfx/emerald-se-m-bubble.m4a",
+      "durationSec": 0.469
+    },
+    "emerald-se-m-bubble2": {
+      "path": "audio/sfx/emerald-se-m-bubble2.m4a",
+      "durationSec": 0.321
+    },
+    "emerald-se-m-bubble3": {
+      "path": "audio/sfx/emerald-se-m-bubble3.m4a",
+      "durationSec": 0.555
+    },
+    "emerald-se-m-bubble-beam": {
+      "path": "audio/sfx/emerald-se-m-bubble-beam.m4a",
+      "durationSec": 1.428
+    },
+    "emerald-se-m-bubble-beam2": {
+      "path": "audio/sfx/emerald-se-m-bubble-beam2.m4a",
+      "durationSec": 0.719
+    },
+    "emerald-se-m-charge": {
+      "path": "audio/sfx/emerald-se-m-charge.m4a",
+      "durationSec": 1.225
+    },
+    "emerald-se-m-charm": {
+      "path": "audio/sfx/emerald-se-m-charm.m4a",
+      "durationSec": 0.455
+    },
+    "emerald-se-m-comet-punch": {
+      "path": "audio/sfx/emerald-se-m-comet-punch.m4a",
+      "durationSec": 0.387
+    },
+    "emerald-se-m-confuse-ray": {
+      "path": "audio/sfx/emerald-se-m-confuse-ray.m4a",
+      "durationSec": 0.747
+    },
+    "emerald-se-m-cosmic-power": {
+      "path": "audio/sfx/emerald-se-m-cosmic-power.m4a",
+      "durationSec": 3.386
+    },
+    "emerald-se-m-crabhammer": {
+      "path": "audio/sfx/emerald-se-m-crabhammer.m4a",
+      "durationSec": 0.399
+    },
+    "emerald-se-m-cut": {
+      "path": "audio/sfx/emerald-se-m-cut.m4a",
+      "durationSec": 0.77
+    },
+    "emerald-se-m-detect": {
+      "path": "audio/sfx/emerald-se-m-detect.m4a",
+      "durationSec": 0.696
+    },
+    "emerald-se-m-dig": {
+      "path": "audio/sfx/emerald-se-m-dig.m4a",
+      "durationSec": 0.467
+    },
+    "emerald-se-m-dive": {
+      "path": "audio/sfx/emerald-se-m-dive.m4a",
+      "durationSec": 0.937
+    },
+    "emerald-se-m-dizzy-punch": {
+      "path": "audio/sfx/emerald-se-m-dizzy-punch.m4a",
+      "durationSec": 0.398
+    },
+    "emerald-se-m-double-slap": {
+      "path": "audio/sfx/emerald-se-m-double-slap.m4a",
+      "durationSec": 0.431
+    },
+    "emerald-se-m-double-team": {
+      "path": "audio/sfx/emerald-se-m-double-team.m4a",
+      "durationSec": 0.442
+    },
+    "emerald-se-m-dragon-rage": {
+      "path": "audio/sfx/emerald-se-m-dragon-rage.m4a",
+      "durationSec": 1.439
+    },
+    "emerald-se-m-earthquake": {
+      "path": "audio/sfx/emerald-se-m-earthquake.m4a",
+      "durationSec": 3.587
+    },
+    "emerald-se-m-ember": {
+      "path": "audio/sfx/emerald-se-m-ember.m4a",
+      "durationSec": 0.467
+    },
+    "emerald-se-m-encore": {
+      "path": "audio/sfx/emerald-se-m-encore.m4a",
+      "durationSec": 0.37
+    },
+    "emerald-se-m-explosion": {
+      "path": "audio/sfx/emerald-se-m-explosion.m4a",
+      "durationSec": 1.25
+    },
+    "emerald-se-m-faint-attack": {
+      "path": "audio/sfx/emerald-se-m-faint-attack.m4a",
+      "durationSec": 0.72
+    },
+    "emerald-se-m-fire-punch": {
+      "path": "audio/sfx/emerald-se-m-fire-punch.m4a",
+      "durationSec": 0.976
+    },
+    "emerald-se-m-flamethrower": {
+      "path": "audio/sfx/emerald-se-m-flamethrower.m4a",
+      "durationSec": 3.331
+    },
+    "emerald-se-m-flame-wheel": {
+      "path": "audio/sfx/emerald-se-m-flame-wheel.m4a",
+      "durationSec": 0.602
+    },
+    "emerald-se-m-flame-wheel2": {
+      "path": "audio/sfx/emerald-se-m-flame-wheel2.m4a",
+      "durationSec": 0.954
+    },
+    "emerald-se-m-flatter": {
+      "path": "audio/sfx/emerald-se-m-flatter.m4a",
+      "durationSec": 0.385
+    },
+    "emerald-se-m-giga-drain": {
+      "path": "audio/sfx/emerald-se-m-giga-drain.m4a",
+      "durationSec": 0.614
+    },
+    "emerald-se-m-grasswhistle": {
+      "path": "audio/sfx/emerald-se-m-grasswhistle.m4a",
+      "durationSec": 3.233
+    },
+    "emerald-se-m-gust": {
+      "path": "audio/sfx/emerald-se-m-gust.m4a",
+      "durationSec": 2.49
+    },
+    "emerald-se-m-gust2": {
+      "path": "audio/sfx/emerald-se-m-gust2.m4a",
+      "durationSec": 0.577
+    },
+    "emerald-se-m-hail": {
+      "path": "audio/sfx/emerald-se-m-hail.m4a",
+      "durationSec": 0.687
+    },
+    "emerald-se-m-harden": {
+      "path": "audio/sfx/emerald-se-m-harden.m4a",
+      "durationSec": 0.566
+    },
+    "emerald-se-m-haze": {
+      "path": "audio/sfx/emerald-se-m-haze.m4a",
+      "durationSec": 2.86
+    },
+    "emerald-se-m-headbutt": {
+      "path": "audio/sfx/emerald-se-m-headbutt.m4a",
+      "durationSec": 0.559
+    },
+    "emerald-se-m-heal-bell": {
+      "path": "audio/sfx/emerald-se-m-heal-bell.m4a",
+      "durationSec": 0.486
+    },
+    "emerald-se-m-heat-wave": {
+      "path": "audio/sfx/emerald-se-m-heat-wave.m4a",
+      "durationSec": 2.391
+    },
+    "emerald-se-m-horn-attack": {
+      "path": "audio/sfx/emerald-se-m-horn-attack.m4a",
+      "durationSec": 0.353
+    },
+    "emerald-se-m-hydro-pump": {
+      "path": "audio/sfx/emerald-se-m-hydro-pump.m4a",
+      "durationSec": 2.084
+    },
+    "emerald-se-m-hyper-beam": {
+      "path": "audio/sfx/emerald-se-m-hyper-beam.m4a",
+      "durationSec": 0.602
+    },
+    "emerald-se-m-hyper-beam2": {
+      "path": "audio/sfx/emerald-se-m-hyper-beam2.m4a",
+      "durationSec": 0.538
+    },
+    "emerald-se-m-icy-wind": {
+      "path": "audio/sfx/emerald-se-m-icy-wind.m4a",
+      "durationSec": 0.494
+    },
+    "emerald-se-m-jump-kick": {
+      "path": "audio/sfx/emerald-se-m-jump-kick.m4a",
+      "durationSec": 0.442
+    },
+    "emerald-se-m-leer": {
+      "path": "audio/sfx/emerald-se-m-leer.m4a",
+      "durationSec": 1.137
+    },
+    "emerald-se-m-lick": {
+      "path": "audio/sfx/emerald-se-m-lick.m4a",
+      "durationSec": 0.737
+    },
+    "emerald-se-m-mega-kick": {
+      "path": "audio/sfx/emerald-se-m-mega-kick.m4a",
+      "durationSec": 1.267
+    },
+    "emerald-se-m-mega-kick2": {
+      "path": "audio/sfx/emerald-se-m-mega-kick2.m4a",
+      "durationSec": 0.544
+    },
+    "emerald-se-m-metronome": {
+      "path": "audio/sfx/emerald-se-m-metronome.m4a",
+      "durationSec": 0.46
+    },
+    "emerald-se-m-milk-drink": {
+      "path": "audio/sfx/emerald-se-m-milk-drink.m4a",
+      "durationSec": 0.501
+    },
+    "emerald-se-m-minimize": {
+      "path": "audio/sfx/emerald-se-m-minimize.m4a",
+      "durationSec": 1.018
+    },
+    "emerald-se-m-mist": {
+      "path": "audio/sfx/emerald-se-m-mist.m4a",
+      "durationSec": 0.408
+    },
+    "emerald-se-m-moonlight": {
+      "path": "audio/sfx/emerald-se-m-moonlight.m4a",
+      "durationSec": 4.978
+    },
+    "emerald-se-m-morning-sun": {
+      "path": "audio/sfx/emerald-se-m-morning-sun.m4a",
+      "durationSec": 1.458
+    },
+    "emerald-se-m-nightmare": {
+      "path": "audio/sfx/emerald-se-m-nightmare.m4a",
+      "durationSec": 1.194
+    },
+    "emerald-se-m-pay-day": {
+      "path": "audio/sfx/emerald-se-m-pay-day.m4a",
+      "durationSec": 0.621
+    },
+    "emerald-se-m-perish-song": {
+      "path": "audio/sfx/emerald-se-m-perish-song.m4a",
+      "durationSec": 3.2
+    },
+    "emerald-se-m-petal-dance": {
+      "path": "audio/sfx/emerald-se-m-petal-dance.m4a",
+      "durationSec": 2.465
+    },
+    "emerald-se-m-poison-powder": {
+      "path": "audio/sfx/emerald-se-m-poison-powder.m4a",
+      "durationSec": 0.316
+    },
+    "emerald-se-m-psybeam": {
+      "path": "audio/sfx/emerald-se-m-psybeam.m4a",
+      "durationSec": 0.819
+    },
+    "emerald-se-m-psybeam2": {
+      "path": "audio/sfx/emerald-se-m-psybeam2.m4a",
+      "durationSec": 0.886
+    },
+    "emerald-se-m-rain-dance": {
+      "path": "audio/sfx/emerald-se-m-rain-dance.m4a",
+      "durationSec": 1.976
+    },
+    "emerald-se-m-razor-wind": {
+      "path": "audio/sfx/emerald-se-m-razor-wind.m4a",
+      "durationSec": 0.598
+    },
+    "emerald-se-m-razor-wind2": {
+      "path": "audio/sfx/emerald-se-m-razor-wind2.m4a",
+      "durationSec": 0.308
+    },
+    "emerald-se-m-reflect": {
+      "path": "audio/sfx/emerald-se-m-reflect.m4a",
+      "durationSec": 0.961
+    },
+    "emerald-se-m-reversal": {
+      "path": "audio/sfx/emerald-se-m-reversal.m4a",
+      "durationSec": 1.17
+    },
+    "emerald-se-m-rock-throw": {
+      "path": "audio/sfx/emerald-se-m-rock-throw.m4a",
+      "durationSec": 0.668
+    },
+    "emerald-se-m-sacred-fire": {
+      "path": "audio/sfx/emerald-se-m-sacred-fire.m4a",
+      "durationSec": 0.58
+    },
+    "emerald-se-m-sacred-fire2": {
+      "path": "audio/sfx/emerald-se-m-sacred-fire2.m4a",
+      "durationSec": 1.767
+    },
+    "emerald-se-m-sandstorm": {
+      "path": "audio/sfx/emerald-se-m-sandstorm.m4a",
+      "durationSec": 2.517
+    },
+    "emerald-se-m-sand-attack": {
+      "path": "audio/sfx/emerald-se-m-sand-attack.m4a",
+      "durationSec": 0.49
+    },
+    "emerald-se-m-sand-tomb": {
+      "path": "audio/sfx/emerald-se-m-sand-tomb.m4a",
+      "durationSec": 1.758
+    },
+    "emerald-se-m-scratch": {
+      "path": "audio/sfx/emerald-se-m-scratch.m4a",
+      "durationSec": 0.386
+    },
+    "emerald-se-m-screech": {
+      "path": "audio/sfx/emerald-se-m-screech.m4a",
+      "durationSec": 0.568
+    },
+    "emerald-se-m-self-destruct": {
+      "path": "audio/sfx/emerald-se-m-self-destruct.m4a",
+      "durationSec": 0.632
+    },
+    "emerald-se-m-sing": {
+      "path": "audio/sfx/emerald-se-m-sing.m4a",
+      "durationSec": 4.407
+    },
+    "emerald-se-m-sketch": {
+      "path": "audio/sfx/emerald-se-m-sketch.m4a",
+      "durationSec": 0.35
+    },
+    "emerald-se-m-sky-uppercut": {
+      "path": "audio/sfx/emerald-se-m-sky-uppercut.m4a",
+      "durationSec": 0.601
+    },
+    "emerald-se-m-snore": {
+      "path": "audio/sfx/emerald-se-m-snore.m4a",
+      "durationSec": 0.647
+    },
+    "emerald-se-m-solar-beam": {
+      "path": "audio/sfx/emerald-se-m-solar-beam.m4a",
+      "durationSec": 3.234
+    },
+    "emerald-se-m-spit-up": {
+      "path": "audio/sfx/emerald-se-m-spit-up.m4a",
+      "durationSec": 0.515
+    },
+    "emerald-se-m-stat-increase": {
+      "path": "audio/sfx/emerald-se-m-stat-increase.m4a",
+      "durationSec": 1.318
+    },
+    "emerald-se-m-strength": {
+      "path": "audio/sfx/emerald-se-m-strength.m4a",
+      "durationSec": 0.686
+    },
+    "emerald-se-m-string-shot": {
+      "path": "audio/sfx/emerald-se-m-string-shot.m4a",
+      "durationSec": 0.629
+    },
+    "emerald-se-m-string-shot2": {
+      "path": "audio/sfx/emerald-se-m-string-shot2.m4a",
+      "durationSec": 1.168
+    },
+    "emerald-se-m-supersonic": {
+      "path": "audio/sfx/emerald-se-m-supersonic.m4a",
+      "durationSec": 0.891
+    },
+    "emerald-se-m-surf": {
+      "path": "audio/sfx/emerald-se-m-surf.m4a",
+      "durationSec": 1.649
+    },
+    "emerald-se-m-swagger": {
+      "path": "audio/sfx/emerald-se-m-swagger.m4a",
+      "durationSec": 0.418
+    },
+    "emerald-se-m-swagger2": {
+      "path": "audio/sfx/emerald-se-m-swagger2.m4a",
+      "durationSec": 0.383
+    },
+    "emerald-se-m-sweet-scent": {
+      "path": "audio/sfx/emerald-se-m-sweet-scent.m4a",
+      "durationSec": 2.959
+    },
+    "emerald-se-m-swift": {
+      "path": "audio/sfx/emerald-se-m-swift.m4a",
+      "durationSec": 0.463
+    },
+    "emerald-se-m-swords-dance": {
+      "path": "audio/sfx/emerald-se-m-swords-dance.m4a",
+      "durationSec": 1.167
+    },
+    "emerald-se-m-tail-whip": {
+      "path": "audio/sfx/emerald-se-m-tail-whip.m4a",
+      "durationSec": 0.402
+    },
+    "emerald-se-m-take-down": {
+      "path": "audio/sfx/emerald-se-m-take-down.m4a",
+      "durationSec": 0.876
+    },
+    "emerald-se-m-teeter-dance": {
+      "path": "audio/sfx/emerald-se-m-teeter-dance.m4a",
+      "durationSec": 0.97
+    },
+    "emerald-se-m-teleport": {
+      "path": "audio/sfx/emerald-se-m-teleport.m4a",
+      "durationSec": 1.019
+    },
+    "emerald-se-m-thunderbolt": {
+      "path": "audio/sfx/emerald-se-m-thunderbolt.m4a",
+      "durationSec": 0.648
+    },
+    "emerald-se-m-thunderbolt2": {
+      "path": "audio/sfx/emerald-se-m-thunderbolt2.m4a",
+      "durationSec": 0.628
+    },
+    "emerald-se-m-thunder-wave": {
+      "path": "audio/sfx/emerald-se-m-thunder-wave.m4a",
+      "durationSec": 0.666
+    },
+    "emerald-se-m-toxic": {
+      "path": "audio/sfx/emerald-se-m-toxic.m4a",
+      "durationSec": 0.535
+    },
+    "emerald-se-m-tri-attack": {
+      "path": "audio/sfx/emerald-se-m-tri-attack.m4a",
+      "durationSec": 0.468
+    },
+    "emerald-se-m-tri-attack2": {
+      "path": "audio/sfx/emerald-se-m-tri-attack2.m4a",
+      "durationSec": 1.289
+    },
+    "emerald-se-m-twister": {
+      "path": "audio/sfx/emerald-se-m-twister.m4a",
+      "durationSec": 2.96
+    },
+    "emerald-se-m-uproar": {
+      "path": "audio/sfx/emerald-se-m-uproar.m4a",
+      "durationSec": 0.588
+    },
+    "emerald-se-m-vicegrip": {
+      "path": "audio/sfx/emerald-se-m-vicegrip.m4a",
+      "durationSec": 0.519
+    },
+    "emerald-se-m-vital-throw": {
+      "path": "audio/sfx/emerald-se-m-vital-throw.m4a",
+      "durationSec": 0.456
+    },
+    "emerald-se-m-vital-throw2": {
+      "path": "audio/sfx/emerald-se-m-vital-throw2.m4a",
+      "durationSec": 0.522
+    },
+    "emerald-se-m-waterfall": {
+      "path": "audio/sfx/emerald-se-m-waterfall.m4a",
+      "durationSec": 1.172
+    },
+    "emerald-se-m-whirlpool": {
+      "path": "audio/sfx/emerald-se-m-whirlpool.m4a",
+      "durationSec": 2.074
+    },
+    "emerald-se-m-wing-attack": {
+      "path": "audio/sfx/emerald-se-m-wing-attack.m4a",
+      "durationSec": 0.558
+    },
+    "emerald-se-m-yawn": {
+      "path": "audio/sfx/emerald-se-m-yawn.m4a",
+      "durationSec": 0.967
+    },
+    "emerald-se-shiny": {
+      "path": "audio/sfx/emerald-se-shiny.m4a",
+      "durationSec": 0.768
+    }
+  }
+}

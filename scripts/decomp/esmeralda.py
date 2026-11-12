@@ -419,6 +419,13 @@ def type_icons():
         atlas.alpha_composite(reconstructed, (32, i * 16))
         metadata['rotulos'][name] = {'texto': label, 'ancho': rotulos_es.label_width(label, letters), 'paleta': n}
         metadata['paletas'][n] = {'tinta': pal[15], 'sombra': pal[14]}
+    # «???» (MALDICIÓN en Gen 3): el rótulo no tiene letras que traducir; va el original con su paleta (sMoveTypeToOamPaletteNum: 15,
+    # la tercera de move_types). Jose, 12/11/2026.
+    mystery_pal = jasc(G / 'types/move_types_3.pal')
+    im = Image.open(G / 'types/mystery.png')
+    mystery = Image.new('RGBA', im.size)
+    mystery.putdata([mystery_pal[c % 16] + (255 if c % 16 else 0,) for c in im.getdata()])
+    save(mystery, 'tipo-mystery.png')
     for c, glyph in letters.items():
         metadata['letras'][c] = {k: sorted(v) if isinstance(v, set) else v for k, v in glyph.items()}
     review(atlas, 'tipos-comparacion.png')
@@ -529,7 +536,8 @@ def item_icons():
     # data/nuzlocke/hoenn-emerald-calendar.json (held y exchange). item_icon_table.h da icono y paleta de cada ITEM_X;
     # src/data/graphics/items.h, sus ficheros. El id es la constante sin ITEM_ en minúsculas y sin guiones bajos (kingsrock).
     calendar = json.loads((comun.ROOT / 'data/nuzlocke/hoenn-emerald-calendar.json').read_text())
-    wanted = set(calendar['held']) | {entry['item'] for entry in calendar['exchange']}
+    # Y los del calendario (piedras y objetos de evolución, MT y MO), para los bolsillos OBJ. EVOL. y MT/MO de la Mochila (Jose, 12/11/2026).
+    wanted = set(calendar['held']) | {entry['item'] for entry in calendar['exchange']} | set(calendar['items'])
     table = {name: pair for name, pair in re.findall(r'\[ITEM_(\w+)\]\s*=\s*\{(gItemIcon_\w+, gItemIconPalette_\w+)\}', (SRC / 'src/data/item_icon_table.h').read_text())}
     files = dict(re.findall(r'const u\d+ (gItemIcon(?:Palette)?_\w+)\[\] = INCGFX_U\d+\("([^"]+?)\.(?:png|pal)"', (SRC / 'src/data/graphics/items.h').read_text()))
     found = set()

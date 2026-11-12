@@ -34,13 +34,10 @@ describe('inventario equipable (DEC-94)', () => {
       .toMatchObject({ leftovers: 2, quickclaw: 2, oranberry: Infinity })
   })
 
-  it('concede por separado fuentes físicas distintas del mismo objeto', () => {
-    // Dos Piedras Eternas: una oculta y una Poké Ball en Granito B2F.
-    expect(heldItemStock(ready()).everstone).toBeUndefined()
-    expect(heldItemStock(ready(1)).everstone).toBe(2)
-    let state = equipItem(ready(1), 'member-0', 'everstone')
-    state = equipItem(state, 'member-1', 'everstone')
-    expect(() => equipItem(state, 'member-2', 'everstone')).toThrow(/libre/)
+  // Cambio de requisito (Jose, 12/11/2026): la PIEDRAETERNA, el único equipable con dos fuentes físicas, sale de la Mochila (no hace
+  // nada en combate); las unidades repetidas se siguen probando con las compras del canje (arriba).
+  it('los equipables que no hacen nada en combate no están en el inventario', () => {
+    for (const id of ['everstone', 'amuletcoin', 'expshare', 'machobrace']) expect(heldItemStock(ready(12))[id]).toBeUndefined()
   })
 
   it('controla las unidades libres, permite reequipar la propia y libera al quitar o caer el portador', () => {

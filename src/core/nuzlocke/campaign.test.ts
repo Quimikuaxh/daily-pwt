@@ -51,6 +51,8 @@ describe('estado de campaña', () => {
     const after = finishEncounter(definition, playing, true, [true, false])
     expect(after.members.find(member => member.id === b.id)?.fainted).toBe(true)
     expect(after.members.find(member => member.id === a.id)?.level).toBe(20)
+    // Jose, 12/11/2026: se guarda la alineación para arrancar con ella el equipo del tramo siguiente.
+    expect(after.lastTeam).toEqual([b.id, a.id])
     const next = recruitAll(after)
     expect(next.members).toHaveLength(6)
     expect(() => startEncounter(definition, next, [b.id])).toThrow(/equipo/i)

@@ -58,7 +58,7 @@ describe('AppMenu', () => {
     const onOpen = vi.fn()
     const { user } = mount({ modes: [{ id: 'hoenn', label: 'Nuzlocke de Hoenn', hint: 'Campaña', onOpen }] })
     await user.click(screen.getByRole('button', { name: 'Modos de juego' }))
-    await user.click(await screen.findByRole('button', { name: 'Nuzlocke de Hoenn' }))
+    await user.click(await screen.findByRole('button', { name: /^Nuzlocke de Hoenn/ }))
     expect(onOpen).toHaveBeenCalledOnce()
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })

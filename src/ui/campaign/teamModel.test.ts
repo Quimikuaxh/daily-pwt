@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { CampaignState } from '../../core/nuzlocke/campaign'
 import { makeGameData } from '../../test-utils/fixtures'
-import { initialLayout, lineup, monAt, moveMon, partyCount, teamMonOf, type TeamLayout } from './teamModel'
+import { fittingLayout, initialLayout, lineup, monAt, moveMon, partyCount, teamMonOf, type TeamLayout } from './teamModel'
 import { arrowTarget, placeKey, placeOf } from './teamDrag'
 
 // UT-173 · Equipo y PC de la campaña (D7, maqueta aprobada el 11/11/2026).
@@ -82,5 +82,23 @@ describe('claves y teclado', () => {
     expect(arrowTarget({ area: 'party', i: 5 }, 'ArrowDown')).toEqual({ area: 'party', i: 5 })
     expect(arrowTarget({ area: 'party', i: 1 }, 'ArrowUp')).toEqual({ area: 'party', i: 0 })
     expect(arrowTarget({ area: 'party', i: 1 }, 'Enter')).toBeNull()
+  })
+})
+
+// UT-202 (Jose, 12/11/2026): la colocación de Equipo y PC se conserva al salir y volver a entrar mientras siga valiendo.
+describe('colocación guardada', () => {
+  it('vale con los mismos miembros y sin pasar del límite; con otro miembro o más del límite, no', () => {
+    const layout = moveMon(initialLayout(five, 3), { area: 'party', i: 0 }, { area: 'box', box: 0, i: 0 }, 3).layout
+    expect(fittingLayout(layout, five, 3)).toBe(layout)
+    expect(fittingLayout(null, five, 3)).toBeNull()
+    expect(fittingLayout(initialLayout(five, 3), five, 2)).toBeNull()
+    expect(fittingLayout(layout, state([...five.members.map((recruit) => member(recruit.id, recruit.fainted)), member('zubat')]), 3)).toBeNull()
+  })
+})
+
+// UT-206 (Jose, 12/11/2026): el equipo del gimnasio siguiente arranca con los del anterior que siguen en pie, en su orden.
+describe('equipo del tramo siguiente', () => {
+  it('pone delante a los del último combate vivos y deja fuera al caído', () => {
+    expect(initialLayout(five, 3, ['skitty', 'ralts', 'machop']).party.slice(0, 3)).toEqual(['skitty', 'machop', 'grovyle'])
   })
 })

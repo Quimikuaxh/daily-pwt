@@ -7,7 +7,7 @@ import uiAssets from '../../generated/emerald/ui-assets.json'
 import { emeraldSprite, emeraldTheme } from '../console/themes/emerald'
 
 type Preloadable = { members: readonly { species: string; fainted?: boolean }[]; offer: readonly string[] }
-type ImageFactory = () => { src: string }
+type ImageFactory = () => { src: string; decode?: () => Promise<void> }
 
 const requested = new Set<string>()
 
@@ -22,12 +22,20 @@ export function campaignPreloadUrls(state: Preloadable | null, rivalSpecies: rea
 }
 
 /** Pide al navegador lo que aún no se haya pedido (cada URL, una vez por página). */
+/** Imágenes precargadas, retenidas para que el navegador no descarte su decodificación. */
+const decoded: ReturnType<ImageFactory>[] = []
+
 export function preloadCampaign(state: Preloadable | null, rivalSpecies: readonly string[], createImage: ImageFactory = () => new Image()): number {
   let count = 0
   for (const url of campaignPreloadUrls(state, rivalSpecies)) {
     if (requested.has(url)) continue
     requested.add(url)
-    createImage().src = url
+    const image = createImage()
+    image.src = url
+    // Decodificada y retenida: al montar una pantalla, el fondo se pinta en el primer fotograma (sin esto, al pasar de una pantalla a
+    // otra salía un fotograma en negro con solo los textos; Jose, 12/11/2026).
+    void image.decode?.().catch(() => undefined)
+    decoded.push(image)
     count++
   }
   return count

@@ -1,7 +1,6 @@
 {
   "description": "Nombres de los objetos equipables y del canje de la campaña en la edición española de Esmeralda (12/11/2026). Fuente: guiasnintendo.com, Pokémon Esmeralda, «Otros» y «Bayas» (solo los nombres). Abreviados como en Gen 3, de 12 letras como mucho.",
   "items": {
-    "amuletcoin": "MON. AMULETO",
     "aspearberry": "BAYA PERASI",
     "blackglasses": "GAFAS DE SOL",
     "brightpowder": "POLVO BRILLO",
@@ -9,9 +8,6 @@
     "cheriberry": "BAYA ZREZA",
     "chestoberry": "BAYA ATANIA",
     "choiceband": "CIN. ELEGIDA",
-    "cleansetag": "AMULETO",
-    "everstone": "PIEDRAETERNA",
-    "expshare": "REPARTIR EXP",
     "figyberry": "BAYA HIGOG",
     "focusband": "CINTA FOCUS",
     "hardstone": "PIEDRA DURA",
@@ -21,7 +17,6 @@
     "leftovers": "RESTOS",
     "leppaberry": "BAYA ZANAMA",
     "liechiberry": "BAYA LICHI",
-    "machobrace": "VESTIDURA",
     "magnet": "IMÁN",
     "mentalherb": "HIER. MENTAL",
     "miracleseed": "SEM. MILAGRO",
@@ -36,9 +31,7 @@
     "shellbell": "CAMP. CONCHA",
     "silkscarf": "PAÑUELO SEDA",
     "sitrusberry": "BAYA ZIDRA",
-    "smokeball": "BOLA HUMO",
     "softsand": "ARENA FINA",
-    "soothebell": "CAMP. ALIVIO",
     "whiteherb": "HIER. BLANCA"
   }
 }

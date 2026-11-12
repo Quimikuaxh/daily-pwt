@@ -30,6 +30,16 @@ const SWITCH_COST = 0.15
 const FUTURE_WEIGHT = 0.5
 /** Por debajo de esta fracción de los PS del jugador, un ataque «no hace casi nada». */
 const USELESS_FRACTION = 0.1
+/**
+ * Contra un Pokémon que repite ataque (Cinta Elegida, o simplemente el que más le conviene) el peor caso de todos los ataques posibles
+ * hacía que cada cambio pareciera mejor que quedarse y la IA cambiaba sin parar (Jose, 12/11/2026, Tauros contra Sixto). Ahora la
+ * puntuación mezcla el peor caso con el ataque que acaba de usar (`LAST_MOVE_WEIGHT`), y un cambio solo gana si supera al mejor
+ * ataque por `SWITCH_MARGIN`, salvo que esté atado o en peligro (`stuck`) o que apenas haga daño (`WEAK_FRACTION`).
+ */
+const LAST_MOVE_WEIGHT = 0.5
+const SWITCH_MARGIN = 0.2
+/** Si el del campo no le quita ni esta fracción de PS al rival, no se le exige el margen: no hace nada útil quedándose. */
+const WEAK_FRACTION = 0.3
 
 const side = (mon: AiMon): DamageSide => ({ set: mon.set, hp: mon.hp, boosts: mon.boosts, status: mon.status })
 const priority = (moveId: string, field: DamageField) => Dex.forGen(field.generation ?? 5).moves.get(moveId).priority ?? 0
@@ -114,7 +124,7 @@ function stuck(me: AiMon, foe: AiMon, danger: ActiveDanger | undefined, field: D
   return bestHit(me, foe, field, true) < foe.hp * USELESS_FRACTION
 }
 
-export function chooseLookaheadAction(state: AiState & { danger?: ActiveDanger }, rng: Prng): Choice {
+export function chooseLookaheadAction(state: AiState & { danger?: ActiveDanger; foeLastMove?: string | null; justIn?: boolean }, rng: Prng): Choice {
   const base = chooseRivalAction(state, rng)
   if (state.self.mustSwitch) return base
   const me = state.self.pokemon[0]
@@ -133,11 +143,19 @@ export function chooseLookaheadAction(state: AiState & { danger?: ActiveDanger }
   const options: { choice: Choice; action: Action }[] = isStuck ? [] : usable(me)
     .map(({ move, slot }) => ({ choice: { type: 'move', slot } as Choice, action: { kind: 'move', moveId: move.id, info: moveInfo(move.id, field.generation) } as Action }))
     .filter(({ action }) => action.kind === 'move' && action.info.kind === 'attack' && !action.info.unreliable)
-  for (const { mon, slot } of bench) options.push({ choice: { type: 'switch', slot }, action: { kind: 'switch', mon } })
+  // Recién entrado, no vuelve a cambiar salvo que esté atado o en peligro: cada cambio regala un golpe (Jose, 12/11/2026, Sixto).
+  if (!state.justIn || isStuck) for (const { mon, slot } of bench) options.push({ choice: { type: 'switch', slot }, action: { kind: 'switch', mon } })
   if (!options.length) return base
   const responses: (string | null)[] = attacksOf(foe, field).map((move) => move.id)
   if (!responses.length) responses.push(null)
-  const worst = options.map(({ action }) => Math.min(...responses.map((response) => turnScore(me, action, foe, response, field, weight))))
-  const top = Math.max(...worst)
-  return rng.pick(options.filter((_, i) => Math.abs(worst[i] - top) < 1e-9)).choice
+  const last = state.foeLastMove && responses.includes(state.foeLastMove) ? state.foeLastMove : null
+  const scores = options.map(({ action }) => {
+    const worst = Math.min(...responses.map((response) => turnScore(me, action, foe, response, field, weight)))
+    return last ? (1 - LAST_MOVE_WEIGHT) * worst + LAST_MOVE_WEIGHT * turnScore(me, action, foe, last, field, weight) : worst
+  })
+  const bestMove = Math.max(-Infinity, ...scores.filter((_, i) => options[i].action.kind === 'move'))
+  const weak = bestHit(me, foe, field, true) < foe.hp * WEAK_FRACTION
+  const adjusted = scores.map((score, i) => (options[i].action.kind === 'switch' && !isStuck && !weak && Number.isFinite(bestMove) ? score - SWITCH_MARGIN : score))
+  const top = Math.max(...adjusted)
+  return rng.pick(options.filter((_, i) => Math.abs(adjusted[i] - top) < 1e-9)).choice
 }

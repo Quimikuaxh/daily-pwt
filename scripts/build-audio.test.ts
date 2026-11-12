@@ -6,6 +6,16 @@ type Index = Record<'music' | 'sfx', Record<string, { path: string; durationSec:
 type Trainer = { id: string; category: 'leader' | 'champion'; region: string }
 
 const manifest = (): Manifest => readJson('data', 'audio.json')
+/** Índice del diario más el de Esmeralda (`emerald-*`, aparte para no pesar en la ruta crítica del diario; E2E-21, 12/11/2026). */
+function fullIndex<T extends Index>(): T {
+  const base = readJson<T>('src', 'generated', 'audio-index.json')
+  const emerald = readJson<Index>('src', 'generated', 'emerald', 'audio-index.json')
+  for (const kind of ['music', 'sfx'] as const) {
+    expect(Object.keys(base[kind]).some((id) => id.startsWith('emerald-')), `${kind} del diario sin Esmeralda`).toBe(false)
+    base[kind] = { ...base[kind], ...emerald[kind] }
+  }
+  return base
+}
 
 describe('scripts/build-audio.mjs', () => {
   it('el manifiesto es válido: música por https desde el OST (la de vida baja, de un vídeo) y efectos desde el ZIP', async () => {
@@ -16,11 +26,16 @@ describe('scripts/build-audio.mjs', () => {
     expect(plans.filter((plan: { kind: string }) => plan.kind === 'music')).toHaveLength(33)
     expect(plans.find((plan: { id: string }) => plan.id === 'emerald-gym')).toMatchObject({ video: 'https://www.youtube.com/watch?v=0j4sfjIXTA0', cacheName: 'emerald-gym.yt' })
     // Sin el pitido de vida baja: lo sustituye la música (decisión de Jose, 30/10/2026).
-    expect(plans.filter((plan: { kind: string }) => plan.kind === 'sfx')).toHaveLength(32)
+    // Cambio de requisito (Jose, 12/11/2026): más los 128 efectos de los ataques de Esmeralda (`gen:emerald-move-sounds`).
+    expect(plans.filter((plan: { kind: string }) => plan.kind === 'sfx')).toHaveLength(160)
     // Cambio de requisito (12/11/2026): 14 efectos de Esmeralda para la campaña, del ZIP de The Sounds Resource (nombre = número de songs.h).
     expect(plans.find((plan: { id: string }) => plan.id === 'emerald-faint')).toMatchObject({ zip: 'Game Boy Advance - Pokemon Emerald - Miscellaneous - Sound Effects.zip', entry: 'emerald_0010.wav' })
     expect(plans.find((plan: { id: string }) => plan.id === 'critical-health')).toMatchObject({ video: 'https://www.youtube.com/watch?v=aLVr0VfeLmk', cacheName: 'critical-health.yt' })
     expect(() => planAudio({ ...manifest(), sources: { ...manifest().sources, 'yt-critical-health': { video: 'http://inseguro' } } })).toThrow(/Vídeo mal definido/)
+    // Jose, 12/11/2026: los golpes de Esmeralda sonaban bajos; se suben 6 dB al codificarlos (`gainDb`), y un valor raro se rechaza.
+    expect(plans.find((plan: { id: string }) => plan.id === 'emerald-hit-neutral')).toMatchObject({ gainDb: 6 })
+    expect(plans.find((plan: { id: string }) => plan.id === 'emerald-faint')).not.toHaveProperty('gainDb')
+    expect(() => planAudio({ ...manifest(), sfx: [{ ...manifest().sfx[0], gainDb: 40 }] })).toThrow(/gainDb no válido/)
     const kanto = plans.find((plan: { id: string }) => plan.id === 'gym-kanto')
     expect(kanto.url).toBe('https://archive.org/download/pkmn-bw2-soundtrack/Disc%202/04%20-%20Battle!%20(Gym%20Leader%20-%20Kanto).flac')
   })
@@ -38,7 +53,7 @@ describe('scripts/build-audio.mjs', () => {
 
   // UT-75 · Puntos de bucle (DEC-57).
   it('las pistas de combate tienen puntos de bucle dentro de la pista y fuera del fundido; el jingle de victoria, no', () => {
-    const index = readJson<Index>('src', 'generated', 'audio-index.json')
+    const index = fullIndex<Index>()
     for (const [id, entry] of Object.entries(index.music)) {
       // Jingles que suenan una vez: el del PWT y, en la campaña de Hoenn, las victorias y el Salón de la Fama (12/11/2026).
       if (['victory-pwt', 'emerald-gym-victory', 'emerald-league-victory', 'emerald-hall-of-fame', 'emerald-evolved', 'emerald-credits'].includes(id)) {
@@ -74,7 +89,7 @@ describe('scripts/build-audio.mjs', () => {
 
   it('cada entrenador tiene su tema (el suyo propio, o `gym-<región>` o `champion-<región>`) y todo el audio está generado', async () => {
     const { trainerMusicOf } = await importScript('scripts/build-audio.mjs')
-    const index = readJson<Index & { trainers: Record<string, string> }>('src', 'generated', 'audio-index.json')
+    const index = fullIndex<Index & { trainers: Record<string, string> }>()
     const trainers = readJson<{ trainers: Trainer[] }>('data', 'trainers.json').trainers
     expect(trainers.length).toBeGreaterThan(50)
     for (const trainer of trainers) {

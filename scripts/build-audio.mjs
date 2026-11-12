@@ -6,6 +6,7 @@ import { CACHE_DIR, fromRoot } from './lib/paths.mjs'
 
 const MANIFEST_PATH = fromRoot('data', 'audio.json')
 const INDEX_PATH = fromRoot('src', 'generated', 'audio-index.json')
+const EMERALD_INDEX_PATH = fromRoot('src', 'generated', 'emerald', 'audio-index.json')
 const AUDIO_DIR = fromRoot('public', 'audio')
 const MUSIC_CACHE = resolve(CACHE_DIR, 'audio')
 const SFX_CACHE = resolve(CACHE_DIR, 'sfx')
@@ -62,7 +63,9 @@ export function planAudio(manifest) {
       return { kind, id: item.id, path, url: source.baseUrl + encodeURIComponent(item.file).replaceAll('%2F', '/'), cacheName: item.file.split('/').pop(), ...(loop && { loop }) }
     }
     if (!source.zip || !item.entry) throw new Error(`Efecto mal definido: ${item.id}`)
-    return { kind, id: item.id, path, zip: source.zip, entry: item.entry }
+    // `gainDb`: subida de volumen para un efecto que suena más bajo que el resto (los golpes de Esmeralda, unos 7 dB por debajo de los del PWT).
+    if (item.gainDb !== undefined && !(typeof item.gainDb === 'number' && item.gainDb > 0 && item.gainDb <= 20)) throw new Error(`gainDb no válido en ${item.id}`)
+    return { kind, id: item.id, path, zip: source.zip, entry: item.entry, ...(item.gainDb && { gainDb: item.gainDb }) }
   }
   return [...manifest.music.map(plan('music')), ...manifest.sfx.map(plan('sfx'))]
 }
@@ -117,7 +120,7 @@ async function main() {
     try {
       if (force || !existsSync(target)) {
         if (item.kind === 'music') encode(item.video ? downloadVideoAudio(item) : await downloadFlac(item), target, MUSIC_ARGS, item.trimLeadingSilence ? TRIM_LEADING_SILENCE : undefined)
-        else encode('pipe:0', target, SFX_ARGS, TRIM_SILENCE, extractEntry(item.zip, item.entry))
+        else encode('pipe:0', target, SFX_ARGS, item.gainDb ? `${TRIM_SILENCE},volume=${item.gainDb}dB` : TRIM_SILENCE, extractEntry(item.zip, item.entry))
         console.log(`  ${item.path}`)
       }
       const durationSec = Math.round(ffprobeDuration(target) * 1000) / 1000
@@ -133,8 +136,18 @@ async function main() {
     process.exitCode = 1
     return
   }
+  // Lo de Esmeralda (`emerald-*`) va en su propio índice, que carga la campaña: así no pesa en la ruta crítica del reto diario (E2E-21).
+  const emerald = { music: {}, sfx: {} }
+  for (const kind of ['music', 'sfx']) {
+    for (const id of Object.keys(index[kind])) {
+      if (!id.startsWith('emerald-')) continue
+      emerald[kind][id] = index[kind][id]
+      delete index[kind][id]
+    }
+  }
   writeFileSync(INDEX_PATH, `${JSON.stringify(index, null, 2)}\n`)
-  console.log(`Audio completo (${Object.keys(index.music).length} pistas, ${Object.keys(index.sfx).length} efectos).`)
+  writeFileSync(EMERALD_INDEX_PATH, `${JSON.stringify(emerald, null, 2)}\n`)
+  console.log(`Audio completo (${Object.keys(index.music).length} + ${Object.keys(emerald.music).length} de Esmeralda pistas, ${Object.keys(index.sfx).length} + ${Object.keys(emerald.sfx).length} de Esmeralda efectos).`)
 }
 
 if (isMain(import.meta.url)) await main()

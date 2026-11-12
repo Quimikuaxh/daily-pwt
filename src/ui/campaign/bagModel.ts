@@ -8,12 +8,15 @@ import descriptions from '../../../data/nuzlocke/emerald-item-descriptions-es.js
 import names from '../../../data/nuzlocke/emerald-item-names-es.json'
 import type { CampaignState } from '../../core/nuzlocke/campaign'
 import { heldItemStock } from '../../core/nuzlocke/heldItems'
+import { emeraldReached } from '../../core/nuzlocke/calendar'
 
-export type Pocket = 'items' | 'berries'
-export const POCKETS: readonly Pocket[] = ['items', 'berries']
+/** OBJ. EVOL. y MT/MO, solo para mirar (Jose, 12/11/2026): lo conseguido que la campaña usa sola (evoluciones y movimientos). */
+export type Pocket = 'items' | 'berries' | 'evolution' | 'machines'
+export const POCKETS: readonly Pocket[] = ['items', 'evolution', 'machines', 'berries']
 export const VISIBLE_ROWS = 8
 
-export type BagItem = { id: string; name: string; text: string; free: number }
+/** `view`: se puede mirar pero no dar (OBJ. EVOL. y MT/MO). */
+export type BagItem = { id: string; name: string; text: string; free: number; view?: boolean }
 
 const kinds = calendar.held as Record<string, { kind: string }>
 const itemNames = names.items as Record<string, string>
@@ -22,6 +25,16 @@ const itemTexts = descriptions.items as Record<string, string>
 export const itemName = (id: string): string => itemNames[id] ?? id.toUpperCase()
 export const itemText = (id: string): string => itemTexts[id] ?? ''
 const pocketOf = (id: string): Pocket => (kinds[id]?.kind === 'berry' ? 'berries' : 'items')
+
+const calendarItems = calendar.items as Record<string, { before: string; move?: string }>
+/** MT y MO conseguidas hasta el tramo actual, en su orden (MT01…, MO01…), con el movimiento que enseñan. */
+export function machineItems(state: Pick<CampaignState, 'encounterIndex'>): { id: string; move: string }[] {
+  return Object.entries(calendarItems).flatMap(([id, item]) => (item.move && emeraldReached(state, item.before) ? [{ id, move: item.move }] : []))
+    .sort((a, b) => a.id.localeCompare(b.id))
+}
+
+/** «MT01»/«MO03» a partir del id del objeto. */
+export const machineLabel = (id: string): string => `${id.startsWith('hm') ? 'MO' : 'MT'}${id.slice(2)}`
 
 /** Objetos del bolsillo con unidades libres para `memberId` (lo que lleva él cuenta como libre: se puede volver a dar). */
 export function bagContents(state: Pick<CampaignState, 'encounterIndex' | 'purchases' | 'members'>, pocket: Pocket, memberId: string): BagItem[] {

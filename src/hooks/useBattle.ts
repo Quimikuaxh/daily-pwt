@@ -82,6 +82,11 @@ export type BattleParams = {
   /** Duraciones de la intro (por defecto, las del PWT). La campaña de Hoenn no tiene pancarta ni iris: los pone a 0. */
   introDurations?: Readonly<Record<keyof typeof INTRO_DURATIONS_MS, number>>
   /**
+   * Combate que se retoma (la campaña al volver a entrar, Jose 12/11/2026): sin entrada y sin repetir los mensajes del último turno; se
+   * enseña el estado guardado y se sigue. El reto diario no lo usa.
+   */
+  skipIntro?: boolean
+  /**
    * Imágenes de la intro listas (escenario y pancarta VS): la intro se queda en `loading` hasta que resuelve. Sin ella, en el móvil el
    * escenario salía antes que los sprites la primera vez con cada entrenador (Jose, 11/11/2026). Debe resolver siempre (con tope).
    */
@@ -152,6 +157,7 @@ function introSteps(params: BattleParams): Step[] {
 }
 
 function stepsFor(update: Update, isFirstUpdate: boolean, params: BattleParams): Step[] {
+  if (isFirstUpdate && params.skipIntro) return [{ line: null, text: null, phase: 'done', wait: 0 }]
   // Las tres frases de apertura (RF-53) sustituyen a los `|switch|` del primer update, que repetirían lo mismo.
   const introPlan: Step[] = isFirstUpdate ? introSteps(params) : []
   const lines = orderBattleMessages(isFirstUpdate ? update.lines.filter((line) => !line.startsWith('|switch|')) : update.lines)

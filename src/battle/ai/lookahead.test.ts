@@ -75,6 +75,18 @@ describe('cuándo cambia (Jose, 12/11/2026)', () => {
     expect(choose(state, 'x')).toEqual({ type: 'switch', slot: 2 })
   })
 
+  // UT-204 (Jose, 12/11/2026): contra un Tauros con Cinta Elegida, Sixto cambiaba cada turno (con el motor: 22 cambios voluntarios en 6
+  // combates de 8 turnos; con esto, 10). Recién entrado no vuelve a cambiar salvo que esté atado o en peligro.
+  it('recién entrado no cambia aunque otro aguante mejor; atado a algo inútil, sí', () => {
+    const heatran = rs('heatran', 'leftovers', 'flashfire', ['fireblast', 'flashcannon', 'earthpower', 'lavaplume'])
+    const skarmory = rs('skarmory', 'leftovers', 'sturdy', ['bravebird', 'roost', 'spikes', 'whirlwind'])
+    const foe = mkMon(garchomp, { moves: [{ id: 'earthquake', pp: 10, disabled: false }] })
+    const state = { ...mkState([mkMon(heatran, { hpFraction: 0.5 }), mkMon(skarmory)], [foe]), justIn: true }
+    for (const seed of ['a', 'b', 'c']) expect(choose(state, seed).type).toBe('move')
+    const locked = { ...state, danger: { ...noDanger, perish: 1 } }
+    expect(choose(locked, 'a')).toEqual({ type: 'switch', slot: 2 })
+  })
+
   it('el único que gana a un Pokémon del jugador es más importante, y que reciba daño pesa más', () => {
     const snorlax = rs('snorlax', 'leftovers', 'thickfat', ['bodyslam', 'return', 'crunch', 'rest'])
     const team = [mkMon(snorlax), mkMon(heatran)]

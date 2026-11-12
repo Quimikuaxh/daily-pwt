@@ -28,6 +28,9 @@ export type MoveInfo = {
   source: { level: number } | { machine: string }
 }
 
+/** Id del icono de tipo (`tipo-*`): el «???» de MALDICIÓN en Gen 3 es `mystery` (graphics/types/mystery.png; Jose, 12/11/2026). */
+export const typeIconId = (type: string): string => (type === '???' ? 'mystery' : type.toLowerCase())
+
 type MoveRow = { type: string; category: string; power: number | null; accuracy: number | null; pp: number }
 const rows = moveData as Record<string, MoveRow>
 const spanish = descriptions.moves as Record<string, string>
@@ -38,7 +41,7 @@ export function moveInfo(id: string, data: GameData, source: MoveInfo['source'])
   return {
     id,
     name: emeraldMoveName(id, data.names),
-    type: row.type.toLowerCase(),
+    type: typeIconId(row.type),
     typeName: (data.names.types[row.type] ?? row.type).toUpperCase(),
     category: row.category as MoveInfo['category'],
     power: row.power,

@@ -17,7 +17,7 @@ function state(v: unknown): boolean {
       (m.recruitmentHistoryLength === undefined || (count(m.recruitmentHistoryLength) && m.recruitmentHistoryLength <= m.history.length)) &&
       (m.item === undefined || text(m.item)) &&
       (m.moves === undefined || (list(m.moves) && m.moves.length >= 1 && m.moves.length <= 4))) &&
-    (v.battlePoints === undefined || count(v.battlePoints)) && (v.startedAt === undefined || count(v.startedAt)) && (v.purchases === undefined || list(v.purchases)) &&
+    (v.battlePoints === undefined || count(v.battlePoints)) && (v.startedAt === undefined || count(v.startedAt)) && (v.purchases === undefined || list(v.purchases)) && (v.lastTeam === undefined || list(v.lastTeam)) &&
     (v.scannerChoice === undefined || v.scannerChoice === 'deepseatooth' || v.scannerChoice === 'deepseascale') &&
     (v.draftTypeCovered === undefined || typeof v.draftTypeCovered === 'boolean') &&
     (v.leagueEvolved === undefined || typeof v.leagueEvolved === 'boolean')

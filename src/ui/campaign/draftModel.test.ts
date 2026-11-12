@@ -25,7 +25,7 @@ describe('modelo del Draft', () => {
       id: 'bulbasaur', name: 'BULBASAUR', dex: 1, types: ['grass', 'poison'], typeNames: ['Planta', 'Veneno'],
       total: 318, stats: [41, 22, 22, 27, 27, 21], ability: 'ESPESURA', evolution: { target: 'IVYSAUR', level: 16 },
       // Cambio de requisito (Jose, 12/11/2026): descripción de la habilidad y cómo evoluciona por cualquier método.
-      abilityText: 'Potencia PLANTA en apuros.', evolutionText: 'Evoluciona a IVYSAUR en el Nv16.',
+      abilityText: 'Potencia PLANTA en apuros.', evolutionText: 'Evoluciona a IVYSAUR al Nv16.',
       moves: expect.any(Array),
     })
     // Los cuatro con que llegaría: los últimos aprendidos por nivel (Jose, 12/11/2026).
@@ -51,7 +51,7 @@ describe('modelo del Draft', () => {
     for (const id of ['bulbasaur', 'venusaur']) {
       const notes = candidateNotes(candidateOf(id, 15, campaignDefinition, data))
       // Cambio de requisito (Jose, 12/11/2026): «No evoluciona.» (las notas cuentan también otros métodos).
-      expect(notes.join(' ')).toBe(id === 'bulbasaur' ? 'Evoluciona a IVYSAUR en el Nv16.' : 'No evoluciona.')
+      expect(notes.join(' ')).toBe(id === 'bulbasaur' ? 'Evoluciona a IVYSAUR al Nv16.' : 'No evoluciona.')
       expect(notes.every(line => textWidth(emeraldTheme.font as BitmapFont, line) <= 144)).toBe(true)
     }
   })
@@ -60,22 +60,23 @@ describe('modelo del Draft', () => {
 // Jose, 12/11/2026: también cómo evolucionan los que no lo hacen por nivel; la ventana NOTAS tiene dos líneas.
 describe('cómo evoluciona cada candidato', () => {
   const text = (id: string) => candidateOf(id, 15, campaignDefinition, data).evolutionText
-  // Cambio de requisito (Jose, 12/11/2026): cada forma con su condición en la campaña (intercambio en el Nv37, con objeto si lo pide;
+  // Cambio de requisito (Jose, 12/11/2026): cada forma con su condición en la campaña (intercambio al Nv37, con objeto si lo pide;
+  // Cambio de requisito (Jose, 12/11/2026): «al Nv16», no «en el Nv16».
   // amistad por victorias).
   it('por nivel, objeto, intercambio, amistad, belleza y varias formas, con las condiciones de la campaña', () => {
-    expect(text('bulbasaur')).toBe('Evoluciona a IVYSAUR en el Nv16.')
+    expect(text('bulbasaur')).toBe('Evoluciona a IVYSAUR al Nv16.')
     expect(text('shellder')).toBe('Evoluciona a CLOYSTER con PIEDRA AGUA.')
-    expect(text('kadabra')).toBe('Evoluciona a ALAKAZAM en el Nv37.')
-    expect(text('onix')).toBe('Evoluciona a STEELIX en el Nv37 con REVEST. METÁLICO.')
+    expect(text('kadabra')).toBe('Evoluciona a ALAKAZAM al Nv37.')
+    expect(text('onix')).toBe('Evoluciona a STEELIX al Nv37 con REVEST. METÁLICO.')
     expect(text('golbat')).toBe('Evoluciona a CROBAT tras 3 victorias.')
     expect(text('feebas')).toBe('Evoluciona a MILOTIC tras vencer a NORMAN.')
     expect(text('slowpoke')).toBe('Evoluciona a SLOWBRO (Nv37) o SLOWKING (Nv37 + ROCA DEL REY).')
     expect(text('gloom')).toBe('Evoluciona a VILEPLUME (PIEDRA HOJA) o BELLOSSOM (PIEDRA SOLAR).')
     expect(text('tyrogue')).toBe('Evoluciona a HITMONCHAN, HITMONLEE o HITMONTOP (Nv20).')
-    expect(text('nincada')).toBe('Evoluciona a NINJASK en el Nv20.')
+    expect(text('nincada')).toBe('Evoluciona a NINJASK al Nv20.')
     expect(text('aggron')).toBe('No evoluciona.')
     expect(text('eevee')).toMatch(/^Evoluciona (a .*\(con piedras\)|de 5 formas)/)
-    expect(text('clamperl')).toBe('Evoluciona en el Nv37 a HUNTAIL (DIENTE MARINO) o GOREBYSS (ESCAMA MARINA).')
+    expect(text('clamperl')).toBe('Evoluciona al Nv37 a HUNTAIL (DIENTE MARINO) o GOREBYSS (ESCAMA MARINA).')
   })
 
   it('cabe en las tres líneas de NOTAS para todas las especies de la campaña', () => {

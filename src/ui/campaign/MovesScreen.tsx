@@ -17,6 +17,7 @@ import type { BitmapFont } from '../console/theme'
 import { esCampaign } from '../../i18n/esCampaign'
 import { wrapText } from './draftModel'
 import { learnMove, type MoveInfo } from './movesModel'
+import { SummaryValue } from './SummaryValue'
 
 const t = esCampaign.moves
 const font = emeraldTheme.font as BitmapFont
@@ -186,8 +187,8 @@ export function MovesScreen({ mon, legal, equipped, onChange, onExit, scale, res
             <div aria-hidden="true">
               <GameText text={t.powerLabel} x={8} y={121} width={52} fit color="datos-rotulo" hidden />
               <GameText text={t.accuracyLabel} x={8} y={137} width={52} fit color="datos-rotulo" hidden />
-              <GameText text={selected.power ? padNumber(font, selected.power, 3) : t.none} x={61} y={121} color="datos" hidden />
-              <GameText text={selected.accuracy ? padNumber(font, selected.accuracy, 3) : t.none} x={61} y={137} color="datos" hidden />
+              <SummaryValue value={selected.power} y={121} />
+              <SummaryValue value={selected.accuracy} y={137} />
               {selected.text.split('\n').map((line, i) => <GameText key={i} text={line} x={86} y={121 + i * 16} width={148} color="datos" hidden />)}
             </div>
           )}

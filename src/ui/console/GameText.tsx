@@ -4,10 +4,10 @@
  * lo que se lee y lo que se ve salen de la misma cadena, que viene de i18n como el resto de textos. Solo para temas con fuente de mapa de
  * bits.
  */
-import { useEffect, useRef } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 import { useConsoleTheme } from './ConsoleStage'
 import { accessibleText, glyphCodes, textWidth } from './glyphs'
-import { loadImage, tint } from './glyphSheets'
+import { loadedImage, loadImage, tint } from './glyphSheets'
 import type { BitmapFont } from './theme'
 
 type GameTextProps = {
@@ -40,13 +40,14 @@ export function GameText({ text, x = 0, y = 0, face = 'normal', color = 'ventana
   const [ink, shadow] = theme.colors[color] ?? theme.colors.ventana
   const left = align === 'center' ? x + Math.floor((width - painted) / 2) : align === 'right' ? x + width - painted : x
 
-  useEffect(() => {
+  // Antes de pintar la pantalla (useLayoutEffect) y, si la fuente ya está cargada, en el acto: al cambiar de pantalla los textos no salen un
+  // fotograma después que el resto (Jose, 12/11/2026: «carga rara» al ir del draft al equipo y volver).
+  useLayoutEffect(() => {
     const canvas = ref.current
     const g = canvas?.getContext('2d')
     if (!canvas || !g) return
     let cancelled = false
-    void Promise.all([loadImage(font.mask(usedFace, 'ink')), shadow ? loadImage(font.mask(usedFace, 'shadow')) : null]).then(([inkMask, shadowMask]) => {
-      if (cancelled) return
+    const draw = (inkMask: HTMLImageElement, shadowMask: HTMLImageElement | null) => {
       const inkSheet = tint(inkMask, `${theme.id}:${usedFace}:ink:${ink}`, ink)
       const shadowSheet = shadowMask && shadow ? tint(shadowMask, `${theme.id}:${usedFace}:shadow:${shadow}`, shadow) : null
       const { w: cellW, h: cellH, columns } = font.glyph
@@ -59,6 +60,17 @@ export function GameText({ text, x = 0, y = 0, face = 'normal', color = 'ventana
         if (inkSheet) g.drawImage(inkSheet, sx, sy, cellW, cellH, pen, 0, cellW, cellH)
         pen += (font.widths[usedFace]?.[code] ?? 0) + spacing
       }
+    }
+    const inkSrc = font.mask(usedFace, 'ink')
+    const shadowSrc = shadow ? font.mask(usedFace, 'shadow') : null
+    const readyInk = loadedImage(inkSrc)
+    const readyShadow = shadowSrc ? loadedImage(shadowSrc) : null
+    if (readyInk && (!shadowSrc || readyShadow)) {
+      draw(readyInk, readyShadow)
+      return
+    }
+    void Promise.all([loadImage(inkSrc), shadowSrc ? loadImage(shadowSrc) : null]).then(([inkMask, shadowMask]) => {
+      if (!cancelled) draw(inkMask, shadowMask)
     }).catch(() => undefined)
     return () => {
       cancelled = true

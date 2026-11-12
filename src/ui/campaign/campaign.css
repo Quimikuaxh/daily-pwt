@@ -55,49 +55,75 @@
   filter: brightness(0.5);
 }
 
+/* Botones de la campaña como ventanas de Esmeralda (PRD §0, 12/11/2026): el marco 1 a x2 (marco-1, 9 cortes de 8 px) con el texto gris
+   y su sombra del menú (std_menu.pal); la acción principal lleva el cursor ▶ del menú de pausa. Descartadas: las píldoras moradas del
+   menú de equipo y el rojo y negro del reto diario. */
 .campaign-action,
 .campaign-restart {
   font: inherit;
-  color: #f8f8f8;
+  font-size: 20px;
+  line-height: 20px;
+  color: #626262;
+  text-shadow: 2px 0 #d5d5cd, 0 2px #d5d5cd, 2px 2px #d5d5cd;
   cursor: pointer;
-  border-radius: 8px;
+  background: none;
+  border: 16px solid transparent;
+  border-image: var(--campaign-frame) 8 fill / 16px;
+  image-rendering: pixelated;
+  white-space: nowrap;
+  text-transform: uppercase;
 }
 
-/* La fuente de píxel pinta sus mayúsculas bajas en la caja (descent-override 0 %): el relleno de abajo las sube. Medido con
-   armonia-visual el 12/11/2026 (mayúsculas: +0,75 px en escritorio y 0 en móvil, regla «exacto o hasta 1 px más abajo»); antes, +3,75. */
+/* La fuente de píxel pinta sus mayúsculas bajas en la caja (descent-override 0 %): el relleno de abajo las sube. */
 .campaign-action {
+  position: relative;
   flex: 1;
-  min-height: 40px;
-  padding: 0 0 6px;
-  font-size: 24px;
-  text-shadow: 2px 2px #681028;
-  background: #b81840;
-  border: 3px solid #f8f8f8;
+  padding: 0 4px 4px 20px;
+  text-align: left;
 }
 
-.campaign-action:hover:not(:disabled) {
-  background: #d02050;
+.campaign-action::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  /* Centrado con las mayúsculas (Jose, 12/11/2026: el ▶ se veía alto); medido con armonia-visual: con 50 % quedaba 3 px por encima. */
+  top: calc(50% + 1px);
+  transform: translateY(-50%);
+  width: 8px;
+  height: 14px;
+  background: #626262;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  filter: drop-shadow(2px 2px 0 #d5d5cd);
+}
+
+.campaign-action:hover:not(:disabled),
+.campaign-restart:hover {
+  color: #303030;
 }
 
 .campaign-action:disabled {
-  opacity: 0.45;
+  opacity: 0.55;
   cursor: default;
 }
 
 .campaign-action:focus-visible,
 .campaign-restart:focus-visible {
-  outline: 3px solid #f8f8f8;
-  outline-offset: 2px;
+  outline: 3px solid #f85838;
+  outline-offset: 0;
 }
 
 .campaign-secondary { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
 
-.campaign-restart {
-  /* Igual que .campaign-action: mayúsculas a +0,25 px del centro (antes, +2,25). */
-  padding: 2px 12px 6px;
-  background: #2a2a2a;
-  border: 2px solid #d8d8d8;
-}
+.campaign-restart { padding: 0 4px 4px; }
+
+/* Con los paneles laterales (escritorio) la barra lleva la acción principal y los secundarios en una fila, sin la tira de medallas. */
+.campaign-bar[data-panels] { gap: 8px; }
+
+/* Paneles laterales en escritorio (CampaignSide.tsx): a los lados de la consola, sin cambiar su escala. */
+.campaign-main { position: relative; }
+.campaign-side { position: absolute; top: 8px; }
+.console-screen .campaign-side-medal-off { filter: brightness(0) opacity(0.18); }
+.console-screen .campaign-side-fainted { filter: grayscale(1) opacity(0.5); }
 
 /* Cursor del mapa: dos fotogramas alternos (el del juego parpadea), quietos con animaciones reducidas. */
 @keyframes campaign-blink {
@@ -127,7 +153,7 @@
 @media (max-width: 400px) {
   .campaign-bar { padding: 0 8px; }
   .campaign-medals img { width: 18px; height: 18px; }
-  .campaign-action { font-size: 20px; }
+  .campaign-action, .campaign-restart { font-size: 16px; }
 }
 
 /* Draft: Poké Balls de pokeball_selection (3 fotogramas de 32 x 32 en vertical); la elegida se bambolea como sAnim_Select_Pokeball_Moving
@@ -267,7 +293,6 @@
 .console-screen .mon-back { width: 64px; height: 64px; }
 .console-screen .battle-hp-empty { background: #393939; }
 .console-screen .battle-option > canvas:first-child { visibility: hidden; }
-.console-screen .battle-option:hover > canvas:first-child,
 .console-screen .battle-option:focus > canvas:first-child { visibility: visible; }
 .console-screen .battle-option:focus-visible { outline: 0; }
 .console-screen .battle-option:disabled { cursor: default; }
@@ -345,7 +370,7 @@
 /* Pantalla final para compartir: los botones debajo de la consola, fuera de la imagen que se exporta. */
 .share-screen { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; align-self: stretch; }
 .share-actions { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
-.share-actions .campaign-action { white-space: nowrap; width: auto; padding-inline: 1rem; }
+.share-actions .campaign-action { width: auto; padding-right: 8px; }
 /* Al perder la campaña, los del último combate salen en gris (Jose, 12/11/2026); exportScreens lo respeta. */
 .console-screen .share-fallen { filter: grayscale(1); }
 
@@ -353,7 +378,7 @@
 .campaign-cloud { display: contents; }
 .campaign-cloud-status, .campaign-cloud-alert { max-width: 36rem; margin: 0 auto 0.75rem; padding: 0.75rem 1rem; text-align: center; color: #f8f8f8; }
 .campaign-cloud-alert { background: #681028; border: 3px solid #f8f8f8; border-radius: 8px; display: flex; flex-direction: column; gap: 0.5rem; align-items: center; }
-.campaign-cloud-alert .campaign-action { flex: none; padding-inline: 1rem; }
+.campaign-cloud-alert .campaign-action { flex: none; padding-right: 8px; }
 
 /* Flecha ▼ al final de un mensaje que espera un toque: 0, 1, 2 y 1 px, 8 fotogramas cada uno (MessageArrow). */
 @keyframes message-arrow {
@@ -380,3 +405,10 @@
 .campaign-steps span { display: inline-block; padding: 0 6px 3px; border-radius: 6px; }
 .campaign-steps li + li::before { content: '→'; margin-right: 4px; color: #6a6a6a; }
 .campaign-steps li[aria-current="step"] span { color: #f8f8f8; background: #b81840; }
+
+/* Transición de entrada al combate: franjas negras que cierran la pantalla (emeraldBattleModel, transitionFrame). */
+.console-screen .battle-transition-bar { background: #000; }
+
+/* El Resultado de la campaña comparte clase con el del reto diario (index.css: alto de pantalla y centrado): aquí va arriba, alineado
+   con los paneles laterales, sin hueco encima (Jose, 12/11/2026). */
+.campaign-main .result-screen { min-height: 0; justify-content: flex-start; padding: 0; align-self: stretch; }

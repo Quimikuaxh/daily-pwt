@@ -62,7 +62,7 @@ export function EvolutionScene({ evolutions, nameOf, hpOf, onDone, scale, reserv
     if (reducedMotion()) { setStep('evolved'); return }
     const started = performance.now()
     let handle = requestAnimationFrame(function tick(now) {
-      const next = Math.floor(((now - started) * 60) / 1000)
+      const next = Math.max(0, Math.floor(((now - started) * 60) / 1000))
       if (next >= LENGTH) { setStep('evolved'); return }
       setFrame(next)
       handle = requestAnimationFrame(tick)

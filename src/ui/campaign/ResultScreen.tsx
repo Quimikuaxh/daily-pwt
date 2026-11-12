@@ -33,12 +33,14 @@ type ResultScreenProps = {
   badgeNames: readonly string[]
   card: { id: string; points: number; pokedex: number; minutes: number }
   team: readonly ResultMember[]
+  /** Rival vencido (`lider-*`): vuelve a salir en el campo mientras habla, como el juego al dar la medalla (Jose, 12/11/2026). */
+  trainer?: string | null
   onDone: () => void
   reservedHeight?: number
   scale?: number
 }
 
-export function ResultScreen({ mode, message, player, protagonist, badges, badgeNames, card, team, onDone, reservedHeight, scale }: ResultScreenProps) {
+export function ResultScreen({ mode, message, player, protagonist, badges, badgeNames, card, team, trainer = null, onDone, reservedHeight, scale }: ResultScreenProps) {
   useCampaignMusic(resultMusic(mode))
   const [showCard, setShowCard] = useState(false)
   const [page, setPage] = useState(0)
@@ -94,6 +96,8 @@ export function ResultScreen({ mode, message, player, protagonist, badges, badge
     return (
       <>
         <img src={emeraldTheme.asset('combate-escenario')} alt="" style={{ left: 0, top: 0 }} />
+        {/* El rival, sobre su plataforma (centro del sprite del rival en (176,40), como sus Pokémon). */}
+        {trainer && mode !== 'whiteout' && <img src={emeraldTheme.asset(`lider-${trainer}`)} alt="" style={{ left: 144, top: 8 }} />}
         <img src={emeraldTheme.asset('combate-caja-mensaje')} alt="" style={{ left: 0, top: 112 }} />
         {(pages[page] ?? []).map((line, i) => <GameText key={i} text={line} x={16} y={121 + 16 * i} color="combate-mensaje" hidden />)}
         {lastLine !== null && <MessageArrow x={16 + textWidth(font, lastLine) + 1} y={120 + 16 * ((pages[page]?.length ?? 1) - 1)} />}

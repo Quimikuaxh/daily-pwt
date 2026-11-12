@@ -55,11 +55,12 @@ describe('DEC-94: calendario de equipables', () => {
     expect(createHash('sha256').update(JSON.stringify(calendar.items)).digest('hex'))
       .toBe('14f294ab4eda2215ee06d9a59c7a74a4117d0114df707e98f24c4f2a8edeed54')
     expect(calendar.exchange).toEqual(evidence.exchange)
-    expect(Object.keys(calendar.held)).toHaveLength(35)
+    // Cambio de requisito (Jose, 12/11/2026): fuera los siete que no hacen nada en combate (USELESS_HELD).
+    expect(Object.keys(calendar.held)).toHaveLength(28)
+    for (const id of ['amuletcoin', 'expshare', 'cleansetag', 'smokeball', 'soothebell', 'everstone', 'machobrace']) expect(calendar.held).not.toHaveProperty(id)
     expect(calendar.held.oranberry).toMatchObject({ kind: 'berry', before: 'petra', infinite: true })
     expect(calendar.held.sitrusberry).toMatchObject({ kind: 'berry', before: 'alana', infinite: true })
     expect(calendar.held.silkscarf).toEqual({ kind: 'held', units: [{ before: 'marcial', map: 'DewfordTown_House2', event: 'DewfordTown_House2_EventScript_Man' }] })
-    expect(calendar.held.everstone.units).toHaveLength(2)
     for (const item of ['leftovers', 'metalcoat', 'potion']) expect(calendar.held[item]).toBeUndefined()
   })
 
@@ -80,7 +81,7 @@ describe('DEC-94: calendario de equipables', () => {
     ])
   })
 
-  it.each(['hardstone', 'smokeball', 'magnet'])('%s: la entrega normal y la recogida con bolsa llena son una sola unidad', item => {
+  it.each(['hardstone', 'magnet'])('%s: la entrega normal y la recogida con bolsa llena son una sola unidad', item => {
     // pokeemerald: TrickHouseEnd da el premio; TrickHouseEntrance lo recupera solo si la bolsa estaba llena.
     expect(buildEmeraldCalendar(evidence).held[item].units).toHaveLength(1)
   })

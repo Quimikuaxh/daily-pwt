@@ -1508,7 +1508,10 @@ img.sprite,
 .modes-art-bg { inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .modes-art-left { left: 4%; bottom: 0; height: 92%; }
 .modes-art-right { right: 4%; bottom: 0; height: 92%; }
-.modes-art-vs { left: 50%; top: 22%; width: 36%; transform: translateX(-50%); }
+.modes-art-vs { left: 50%; top: 4%; width: 26%; transform: translateX(-50%); }
+/* Reto diario: Máximo y Cintia pegados a los bordes y el VS arriba, entre las cabezas; centrado y más grande tapaba a Máximo (Jose, 12/11/2026). */
+.modes-art-daily .modes-art-left { left: -4%; }
+.modes-art-daily .modes-art-right { right: -4%; }
 
 .settings-help {
   width: 100%;

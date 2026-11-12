@@ -14,7 +14,7 @@ it('Hoy → Modos → Nuzlocke de Hoenn → Volver a Hoy', async () => {
   render(<App data={makeGameData()} store={new LocalStorageStore(null)} createClient={() => mockClient() as any} />)
   expect(screen.getByRole('button', { name: /combate oficial/i })).toBeInTheDocument()
   await user.click(screen.getByRole('button', { name: 'Modos de juego' }))
-  await user.click(await screen.findByRole('button', { name: 'Nuzlocke de Hoenn' }))
+  await user.click(await screen.findByRole('button', { name: /^Nuzlocke de Hoenn/ }))
   expect(await screen.findByRole('heading', { name: 'Ruta' })).toBeInTheDocument()
   expect(screen.getByRole('region', { name: 'Ficha de Petra' })).toHaveTextContent('LÍDER PETRA')
   await user.click(screen.getByRole('button', { name: 'Volver a Hoy' }))

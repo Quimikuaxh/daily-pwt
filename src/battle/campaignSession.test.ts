@@ -132,6 +132,20 @@ describe('sesión local de campaña', () => {
     expect(resumed.session.snapshot()!.battle!.checkpoint!.decisions).toBe(1)
   })
 
+  // UT-201 (Jose, 12/11/2026: «La campaña no está lista para otra decisión» y la pantalla se quedaba pillada).
+  it('una decisión durante el arranque espera a que esté listo; otra con una decisión en curso se descarta; reanudar dos veces no falla', () => {
+    const delayed = mount(new MemoryStorage(), true)
+    const input = campaignInput()
+    delayed.session.prepare(input)
+    expect(() => delayed.session.resume(input.definition)).not.toThrow()
+    expect(() => delayed.session.choose({ type: 'move', slot: 1 })).not.toThrow()
+    expect(delayed.session.snapshot()!.battle!.decisions).toEqual([])
+    delayed.deliver()
+    expect(delayed.session.snapshot()!.battle!.decisions).toEqual([{ type: 'move', slot: 1 }])
+    expect(() => delayed.session.choose({ type: 'move', slot: 2 })).not.toThrow()
+    expect(delayed.session.snapshot()!.battle!.decisions).toEqual([{ type: 'move', slot: 1 }])
+  })
+
   it('reanuda tras rendirse y cierra una sola vez, incluso si se pierde la confirmación del cierre', () => {
     const storage = new MemoryStorage()
     const input = campaignInput()

@@ -392,3 +392,13 @@ describe('crossfadeLoopSeam', () => {
     expect(Math.abs(data[8 * rate - fade / 2])).toBeLessThan(0.1)
   })
 })
+
+// Jose, 12/11/2026 (E2E-21): la campaña registra su audio al cargarse; el índice del diario no lo lleva.
+describe('registro de audio', () => {
+  it('lo registrado se puede precargar como lo del índice inicial', async () => {
+    const { engine, fetchBytes } = setup()
+    engine.register({ sfx: { 'emerald-se-x': { path: 'audio/sfx/emerald-se-x.m4a', durationSec: 0.3 } } })
+    engine.preload([], ['emerald-se-x'])
+    expect(fetchBytes).toHaveBeenCalledWith('/daily-pwt/audio/sfx/emerald-se-x.m4a')
+  })
+})

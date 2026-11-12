@@ -347,25 +347,25 @@
       "id": "emerald-town-dewford",
       "source": "yt-emerald-town-dewford",
       "trimLeadingSilence": true,
-      "_nota": "Campaña de Hoenn: menús del tramo de Pueblo Azuliza (Marcial). Bucle a mano: la pista entera antes del fundido.",
-      "loopStartSec": 8.15,
-      "loopEndSec": 92.7488
+      "_nota": "Campaña de Hoenn: menús del tramo de Pueblo Azuliza (Marcial). Bucle de 66,658 s hallado por autosemejanza del espectrograma y afinado a la muestra (correlación 0,97); find-loops.py no lo encuentra porque el vídeo trae una sola vuelta y media.",
+      "loopStartSec": 4.65,
+      "loopEndSec": 71.3081
     },
     {
       "id": "emerald-town-verdanturf",
       "source": "yt-emerald-town-verdanturf",
       "trimLeadingSilence": true,
-      "_nota": "Campaña de Hoenn: menús del tramo de Pueblo Verdegal, para Ciudad Malvalona (Erico). Bucle a mano: la pista entera antes del fundido.",
-      "loopStartSec": 8.85,
-      "loopEndSec": 54.7478
+      "_nota": "Campaña de Hoenn: menús del tramo de Pueblo Verdegal, para Ciudad Malvalona (Erico). Bucle de 45.906 s por autosemejanza del espectrograma, con la costura afinada a la muestra (12/11/2026; antes 8.85–54.7478).",
+      "loopStartSec": 2.25,
+      "loopEndSec": 48.156
     },
     {
       "id": "emerald-town-chimney",
       "source": "yt-emerald-town-chimney",
       "trimLeadingSilence": true,
-      "_nota": "Campaña de Hoenn: menús del tramo de Monte Cenizo, para Pueblo Lavacalda (Candela). Bucle a mano (bucle de 43,7 s).",
-      "loopStartSec": 31.35,
-      "loopEndSec": 75.07
+      "_nota": "Campaña de Hoenn: menús del tramo de Monte Cenizo, para Pueblo Lavacalda (Candela). Bucle de 43.730 s por autosemejanza del espectrograma, con la costura afinada a la muestra (12/11/2026; antes 31.35–75.07).",
+      "loopStartSec": 30.15,
+      "loopEndSec": 73.8803
     },
     {
       "id": "emerald-town-petalburg",
@@ -379,17 +379,17 @@
       "id": "emerald-town-fortree",
       "source": "yt-emerald-town-fortree",
       "trimLeadingSilence": true,
-      "_nota": "Campaña de Hoenn: menús del tramo de Ciudad Arborada (Alana). Bucle a mano (bucle de 30,1 s).",
-      "loopStartSec": 6.75,
-      "loopEndSec": 36.8828
+      "_nota": "Campaña de Hoenn: menús del tramo de Ciudad Arborada (Alana). Bucle de 30.124 s por autosemejanza del espectrograma, con la costura afinada a la muestra (12/11/2026; antes 6.75–36.8828).",
+      "loopStartSec": 12.7,
+      "loopEndSec": 42.8242
     },
     {
       "id": "emerald-town-lilycove",
       "source": "yt-emerald-town-lilycove",
       "trimLeadingSilence": true,
-      "_nota": "Campaña de Hoenn: menús del tramo de Ciudad Calagua, para Ciudad Algaria (Vito y Leti). Bucle a mano: la pista entera antes del fundido.",
-      "loopStartSec": 11.6,
-      "loopEndSec": 67.7482
+      "_nota": "Campaña de Hoenn: menús del tramo de Ciudad Calagua, para Ciudad Algaria (Vito y Leti). Bucle de 56.148 s por autosemejanza del espectrograma, con la costura afinada a la muestra (12/11/2026; antes 11.6–67.7482).",
+      "loopStartSec": 3.95,
+      "loopEndSec": 60.0982
     },
     {
       "id": "emerald-town-sootopolis",
@@ -403,9 +403,9 @@
       "id": "emerald-town-evergrande",
       "source": "yt-emerald-town-evergrande",
       "trimLeadingSilence": true,
-      "_nota": "Campaña de Hoenn: menús del tramo de Ciudad Colosalia (Liga). Bucle a mano: la pista entera antes del fundido.",
-      "loopStartSec": 5.4,
-      "loopEndSec": 76.0013
+      "_nota": "Campaña de Hoenn: menús del tramo de Ciudad Colosalia (Liga). Bucle de 60.248 s por autosemejanza del espectrograma, con la costura afinada a la muestra (12/11/2026; antes 5.4–76.0013).",
+      "loopStartSec": 15.35,
+      "loopEndSec": 75.5983
     }
   ],
   "sfx": [
@@ -515,19 +515,22 @@
       "id": "emerald-hit-super",
       "source": "tsr-sfx-emerald",
       "entry": "emerald_000E.wav",
-      "_nota": "Campaña de Hoenn: SE_SUPER_EFFECTIVE, golpe supereficaz (sonido 14 de songs.h)."
+      "_nota": "Campaña de Hoenn: SE_SUPER_EFFECTIVE, golpe supereficaz (sonido 14 de songs.h).",
+      "gainDb": 6
     },
     {
       "id": "emerald-hit-neutral",
       "source": "tsr-sfx-emerald",
       "entry": "emerald_000D.wav",
-      "_nota": "Campaña de Hoenn: SE_EFFECTIVE, golpe neutro (sonido 13 de songs.h)."
+      "_nota": "Campaña de Hoenn: SE_EFFECTIVE, golpe neutro (sonido 13 de songs.h).",
+      "gainDb": 6
     },
     {
       "id": "emerald-hit-weak",
       "source": "tsr-sfx-emerald",
       "entry": "emerald_000C.wav",
-      "_nota": "Campaña de Hoenn: SE_NOT_EFFECTIVE, golpe poco eficaz (sonido 12 de songs.h)."
+      "_nota": "Campaña de Hoenn: SE_NOT_EFFECTIVE, golpe poco eficaz (sonido 12 de songs.h).",
+      "gainDb": 6
     },
     {
       "id": "emerald-ball-throw",
@@ -600,6 +603,774 @@
       "source": "tsr-sfx-emerald",
       "entry": "emerald_005A.wav",
       "_nota": "Campaña de Hoenn: SE_LOW_HEALTH, pitido de vida baja (sonido 90 de songs.h). El fichero son dos vueltas de 0,6 s; se repite cada 1,2 s mientras la barra del jugador está en rojo."
+    },
+    {
+      "id": "emerald-se-bang",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0014.wav",
+      "_nota": "Campaña de Hoenn: SE_BANG (sonido 20 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-absorb",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00B4.wav",
+      "_nota": "Campaña de Hoenn: SE_M_ABSORB (sonido 180 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-absorb-2",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00B3.wav",
+      "_nota": "Campaña de Hoenn: SE_M_ABSORB_2 (sonido 179 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-acid-armor",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00DA.wav",
+      "_nota": "Campaña de Hoenn: SE_M_ACID_ARMOR (sonido 218 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-attract",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00E2.wav",
+      "_nota": "Campaña de Hoenn: SE_M_ATTRACT (sonido 226 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-attract2",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00E3.wav",
+      "_nota": "Campaña de Hoenn: SE_M_ATTRACT2 (sonido 227 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-barrier",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00D0.wav",
+      "_nota": "Campaña de Hoenn: SE_M_BARRIER (sonido 208 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-baton-pass",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00E0.wav",
+      "_nota": "Campaña de Hoenn: SE_M_BATON_PASS (sonido 224 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-belly-drum",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00B9.wav",
+      "_nota": "Campaña de Hoenn: SE_M_BELLY_DRUM (sonido 185 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-bind",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00AA.wav",
+      "_nota": "Campaña de Hoenn: SE_M_BIND (sonido 170 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-bite",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00A1.wav",
+      "_nota": "Campaña de Hoenn: SE_M_BITE (sonido 161 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-blizzard",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0099.wav",
+      "_nota": "Campaña de Hoenn: SE_M_BLIZZARD (sonido 153 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-blizzard2",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_009A.wav",
+      "_nota": "Campaña de Hoenn: SE_M_BLIZZARD2 (sonido 154 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-bonemerang",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00BB.wav",
+      "_nota": "Campaña de Hoenn: SE_M_BONEMERANG (sonido 187 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-brick-break",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00C6.wav",
+      "_nota": "Campaña de Hoenn: SE_M_BRICK_BREAK (sonido 198 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-bubble",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_007C.wav",
+      "_nota": "Campaña de Hoenn: SE_M_BUBBLE (sonido 124 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-bubble2",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_007D.wav",
+      "_nota": "Campaña de Hoenn: SE_M_BUBBLE2 (sonido 125 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-bubble3",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_007E.wav",
+      "_nota": "Campaña de Hoenn: SE_M_BUBBLE3 (sonido 126 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-bubble-beam",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00B6.wav",
+      "_nota": "Campaña de Hoenn: SE_M_BUBBLE_BEAM (sonido 182 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-bubble-beam2",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00B7.wav",
+      "_nota": "Campaña de Hoenn: SE_M_BUBBLE_BEAM2 (sonido 183 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-charge",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00D5.wav",
+      "_nota": "Campaña de Hoenn: SE_M_CHARGE (sonido 213 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-charm",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00D4.wav",
+      "_nota": "Campaña de Hoenn: SE_M_CHARM (sonido 212 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-comet-punch",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_008B.wav",
+      "_nota": "Campaña de Hoenn: SE_M_COMET_PUNCH (sonido 139 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-confuse-ray",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00C4.wav",
+      "_nota": "Campaña de Hoenn: SE_M_CONFUSE_RAY (sonido 196 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-cosmic-power",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00F3.wav",
+      "_nota": "Campaña de Hoenn: SE_M_COSMIC_POWER (sonido 243 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-crabhammer",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_008E.wav",
+      "_nota": "Campaña de Hoenn: SE_M_CRABHAMMER (sonido 142 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-cut",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0080.wav",
+      "_nota": "Campaña de Hoenn: SE_M_CUT (sonido 128 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-detect",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00D1.wav",
+      "_nota": "Campaña de Hoenn: SE_M_DETECT (sonido 209 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-dig",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00AF.wav",
+      "_nota": "Campaña de Hoenn: SE_M_DIG (sonido 175 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-dive",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00E9.wav",
+      "_nota": "Campaña de Hoenn: SE_M_DIVE (sonido 233 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-dizzy-punch",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00B0.wav",
+      "_nota": "Campaña de Hoenn: SE_M_DIZZY_PUNCH (sonido 176 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-double-slap",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0086.wav",
+      "_nota": "Campaña de Hoenn: SE_M_DOUBLE_SLAP (sonido 134 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-double-team",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0087.wav",
+      "_nota": "Campaña de Hoenn: SE_M_DOUBLE_TEAM (sonido 135 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-dragon-rage",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00AB.wav",
+      "_nota": "Campaña de Hoenn: SE_M_DRAGON_RAGE (sonido 171 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-earthquake",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00EA.wav",
+      "_nota": "Campaña de Hoenn: SE_M_EARTHQUAKE (sonido 234 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-ember",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0097.wav",
+      "_nota": "Campaña de Hoenn: SE_M_EMBER (sonido 151 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-encore",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00DE.wav",
+      "_nota": "Campaña de Hoenn: SE_M_ENCORE (sonido 222 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-explosion",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00B2.wav",
+      "_nota": "Campaña de Hoenn: SE_M_EXPLOSION (sonido 178 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-faint-attack",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00BE.wav",
+      "_nota": "Campaña de Hoenn: SE_M_FAINT_ATTACK (sonido 190 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-fire-punch",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0093.wav",
+      "_nota": "Campaña de Hoenn: SE_M_FIRE_PUNCH (sonido 147 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-flamethrower",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0092.wav",
+      "_nota": "Campaña de Hoenn: SE_M_FLAMETHROWER (sonido 146 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-flame-wheel",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0090.wav",
+      "_nota": "Campaña de Hoenn: SE_M_FLAME_WHEEL (sonido 144 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-flame-wheel2",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0091.wav",
+      "_nota": "Campaña de Hoenn: SE_M_FLAME_WHEEL2 (sonido 145 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-flatter",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00E5.wav",
+      "_nota": "Campaña de Hoenn: SE_M_FLATTER (sonido 229 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-giga-drain",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00C7.wav",
+      "_nota": "Campaña de Hoenn: SE_M_GIGA_DRAIN (sonido 199 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-grasswhistle",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00E7.wav",
+      "_nota": "Campaña de Hoenn: SE_M_GRASSWHISTLE (sonido 231 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-gust",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0084.wav",
+      "_nota": "Campaña de Hoenn: SE_M_GUST (sonido 132 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-gust2",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0085.wav",
+      "_nota": "Campaña de Hoenn: SE_M_GUST2 (sonido 133 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-hail",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00F2.wav",
+      "_nota": "Campaña de Hoenn: SE_M_HAIL (sonido 242 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-harden",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0078.wav",
+      "_nota": "Campaña de Hoenn: SE_M_HARDEN (sonido 120 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-haze",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00F6.wav",
+      "_nota": "Campaña de Hoenn: SE_M_HAZE (sonido 246 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-headbutt",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00A2.wav",
+      "_nota": "Campaña de Hoenn: SE_M_HEADBUTT (sonido 162 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-heal-bell",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00C3.wav",
+      "_nota": "Campaña de Hoenn: SE_M_HEAL_BELL (sonido 195 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-heat-wave",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00F0.wav",
+      "_nota": "Campaña de Hoenn: SE_M_HEAT_WAVE (sonido 240 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-horn-attack",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00A6.wav",
+      "_nota": "Campaña de Hoenn: SE_M_HORN_ATTACK (sonido 166 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-hydro-pump",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00A4.wav",
+      "_nota": "Campaña de Hoenn: SE_M_HYDRO_PUMP (sonido 164 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-hyper-beam",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00D7.wav",
+      "_nota": "Campaña de Hoenn: SE_M_HYPER_BEAM (sonido 215 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-hyper-beam2",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00F7.wav",
+      "_nota": "Campaña de Hoenn: SE_M_HYPER_BEAM2 (sonido 247 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-icy-wind",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0089.wav",
+      "_nota": "Campaña de Hoenn: SE_M_ICY_WIND (sonido 137 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-jump-kick",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_008F.wav",
+      "_nota": "Campaña de Hoenn: SE_M_JUMP_KICK (sonido 143 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-leer",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00C0.wav",
+      "_nota": "Campaña de Hoenn: SE_M_LEER (sonido 192 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-lick",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00BC.wav",
+      "_nota": "Campaña de Hoenn: SE_M_LICK (sonido 188 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-mega-kick",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_008C.wav",
+      "_nota": "Campaña de Hoenn: SE_M_MEGA_KICK (sonido 140 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-mega-kick2",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_008D.wav",
+      "_nota": "Campaña de Hoenn: SE_M_MEGA_KICK2 (sonido 141 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-metronome",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00BA.wav",
+      "_nota": "Campaña de Hoenn: SE_M_METRONOME (sonido 186 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-milk-drink",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00E1.wav",
+      "_nota": "Campaña de Hoenn: SE_M_MILK_DRINK (sonido 225 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-minimize",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00CC.wav",
+      "_nota": "Campaña de Hoenn: SE_M_MINIMIZE (sonido 204 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-mist",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00A8.wav",
+      "_nota": "Campaña de Hoenn: SE_M_MIST (sonido 168 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-moonlight",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00D3.wav",
+      "_nota": "Campaña de Hoenn: SE_M_MOONLIGHT (sonido 211 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-morning-sun",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00E4.wav",
+      "_nota": "Campaña de Hoenn: SE_M_MORNING_SUN (sonido 228 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-nightmare",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0079.wav",
+      "_nota": "Campaña de Hoenn: SE_M_NIGHTMARE (sonido 121 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-pay-day",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00AE.wav",
+      "_nota": "Campaña de Hoenn: SE_M_PAY_DAY (sonido 174 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-perish-song",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00AD.wav",
+      "_nota": "Campaña de Hoenn: SE_M_PERISH_SONG (sonido 173 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-petal-dance",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00CA.wav",
+      "_nota": "Campaña de Hoenn: SE_M_PETAL_DANCE (sonido 202 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-poison-powder",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00A9.wav",
+      "_nota": "Campaña de Hoenn: SE_M_POISON_POWDER (sonido 169 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-psybeam",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00BD.wav",
+      "_nota": "Campaña de Hoenn: SE_M_PSYBEAM (sonido 189 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-psybeam2",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00C8.wav",
+      "_nota": "Campaña de Hoenn: SE_M_PSYBEAM2 (sonido 200 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-rain-dance",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_007F.wav",
+      "_nota": "Campaña de Hoenn: SE_M_RAIN_DANCE (sonido 127 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-razor-wind",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0088.wav",
+      "_nota": "Campaña de Hoenn: SE_M_RAZOR_WIND (sonido 136 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-razor-wind2",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00A0.wav",
+      "_nota": "Campaña de Hoenn: SE_M_RAZOR_WIND2 (sonido 160 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-reflect",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00CF.wav",
+      "_nota": "Campaña de Hoenn: SE_M_REFLECT (sonido 207 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-reversal",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00D9.wav",
+      "_nota": "Campaña de Hoenn: SE_M_REVERSAL (sonido 217 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-rock-throw",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0083.wav",
+      "_nota": "Campaña de Hoenn: SE_M_ROCK_THROW (sonido 131 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-sacred-fire",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0095.wav",
+      "_nota": "Campaña de Hoenn: SE_M_SACRED_FIRE (sonido 149 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-sacred-fire2",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0096.wav",
+      "_nota": "Campaña de Hoenn: SE_M_SACRED_FIRE2 (sonido 150 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-sandstorm",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00DB.wav",
+      "_nota": "Campaña de Hoenn: SE_M_SANDSTORM (sonido 219 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-sand-attack",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_009F.wav",
+      "_nota": "Campaña de Hoenn: SE_M_SAND_ATTACK (sonido 159 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-sand-tomb",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00E6.wav",
+      "_nota": "Campaña de Hoenn: SE_M_SAND_TOMB (sonido 230 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-scratch",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_009B.wav",
+      "_nota": "Campaña de Hoenn: SE_M_SCRATCH (sonido 155 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-screech",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00B5.wav",
+      "_nota": "Campaña de Hoenn: SE_M_SCREECH (sonido 181 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-self-destruct",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00B1.wav",
+      "_nota": "Campaña de Hoenn: SE_M_SELF_DESTRUCT (sonido 177 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-sing",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00AC.wav",
+      "_nota": "Campaña de Hoenn: SE_M_SING (sonido 172 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-sketch",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00CD.wav",
+      "_nota": "Campaña de Hoenn: SE_M_SKETCH (sonido 205 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-sky-uppercut",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00EE.wav",
+      "_nota": "Campaña de Hoenn: SE_M_SKY_UPPERCUT (sonido 238 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-snore",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00C5.wav",
+      "_nota": "Campaña de Hoenn: SE_M_SNORE (sonido 197 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-solar-beam",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00C9.wav",
+      "_nota": "Campaña de Hoenn: SE_M_SOLAR_BEAM (sonido 201 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-spit-up",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00E8.wav",
+      "_nota": "Campaña de Hoenn: SE_M_SPIT_UP (sonido 232 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-stat-increase",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00EF.wav",
+      "_nota": "Campaña de Hoenn: SE_M_STAT_INCREASE (sonido 239 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-strength",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00D6.wav",
+      "_nota": "Campaña de Hoenn: SE_M_STRENGTH (sonido 214 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-string-shot",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0081.wav",
+      "_nota": "Campaña de Hoenn: SE_M_STRING_SHOT (sonido 129 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-string-shot2",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0082.wav",
+      "_nota": "Campaña de Hoenn: SE_M_STRING_SHOT2 (sonido 130 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-supersonic",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00B8.wav",
+      "_nota": "Campaña de Hoenn: SE_M_SUPERSONIC (sonido 184 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-surf",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00A3.wav",
+      "_nota": "Campaña de Hoenn: SE_M_SURF (sonido 163 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-swagger",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00C1.wav",
+      "_nota": "Campaña de Hoenn: SE_M_SWAGGER (sonido 193 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-swagger2",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00C2.wav",
+      "_nota": "Campaña de Hoenn: SE_M_SWAGGER2 (sonido 194 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-sweet-scent",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00EC.wav",
+      "_nota": "Campaña de Hoenn: SE_M_SWEET_SCENT (sonido 236 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-swift",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00CE.wav",
+      "_nota": "Campaña de Hoenn: SE_M_SWIFT (sonido 206 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-swords-dance",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00BF.wav",
+      "_nota": "Campaña de Hoenn: SE_M_SWORDS_DANCE (sonido 191 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-tail-whip",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00A7.wav",
+      "_nota": "Campaña de Hoenn: SE_M_TAIL_WHIP (sonido 167 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-take-down",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0098.wav",
+      "_nota": "Campaña de Hoenn: SE_M_TAKE_DOWN (sonido 152 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-teeter-dance",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00F4.wav",
+      "_nota": "Campaña de Hoenn: SE_M_TEETER_DANCE (sonido 244 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-teleport",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00CB.wav",
+      "_nota": "Campaña de Hoenn: SE_M_TELEPORT (sonido 203 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-thunderbolt",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0076.wav",
+      "_nota": "Campaña de Hoenn: SE_M_THUNDERBOLT (sonido 118 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-thunderbolt2",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0077.wav",
+      "_nota": "Campaña de Hoenn: SE_M_THUNDERBOLT2 (sonido 119 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-thunder-wave",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_008A.wav",
+      "_nota": "Campaña de Hoenn: SE_M_THUNDER_WAVE (sonido 138 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-toxic",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0094.wav",
+      "_nota": "Campaña de Hoenn: SE_M_TOXIC (sonido 148 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-tri-attack",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00DC.wav",
+      "_nota": "Campaña de Hoenn: SE_M_TRI_ATTACK (sonido 220 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-tri-attack2",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00DD.wav",
+      "_nota": "Campaña de Hoenn: SE_M_TRI_ATTACK2 (sonido 221 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-twister",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00EB.wav",
+      "_nota": "Campaña de Hoenn: SE_M_TWISTER (sonido 235 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-uproar",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00F1.wav",
+      "_nota": "Campaña de Hoenn: SE_M_UPROAR (sonido 241 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-vicegrip",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_009C.wav",
+      "_nota": "Campaña de Hoenn: SE_M_VICEGRIP (sonido 156 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-vital-throw",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_007A.wav",
+      "_nota": "Campaña de Hoenn: SE_M_VITAL_THROW (sonido 122 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-vital-throw2",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_007B.wav",
+      "_nota": "Campaña de Hoenn: SE_M_VITAL_THROW2 (sonido 123 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-waterfall",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00D8.wav",
+      "_nota": "Campaña de Hoenn: SE_M_WATERFALL (sonido 216 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-whirlpool",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00A5.wav",
+      "_nota": "Campaña de Hoenn: SE_M_WHIRLPOOL (sonido 165 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-wing-attack",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_009D.wav",
+      "_nota": "Campaña de Hoenn: SE_M_WING_ATTACK (sonido 157 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-m-yawn",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_00ED.wav",
+      "_nota": "Campaña de Hoenn: SE_M_YAWN (sonido 237 de songs.h), de los guiones de animación de los ataques."
+    },
+    {
+      "id": "emerald-se-shiny",
+      "source": "tsr-sfx-emerald",
+      "entry": "emerald_0066.wav",
+      "_nota": "Campaña de Hoenn: SE_SHINY (sonido 102 de songs.h), de los guiones de animación de los ataques."
     }
   ],
   "trainers": {

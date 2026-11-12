@@ -44,3 +44,12 @@ describe('aprender y olvidar', () => {
     expect(learnMove(['a', 'b'], 'a')).toBeNull()
   })
 })
+
+// Jose, 12/11/2026: MALDICIÓN, de tipo «???» en Gen 3, lleva su icono (`tipo-mystery`), no ninguno.
+import { typeIconId } from './movesModel'
+describe('icono de tipo', () => {
+  it('«???» es mystery y el resto, el tipo en minúsculas', () => {
+    expect(typeIconId('???')).toBe('mystery')
+    expect(typeIconId('Grass')).toBe('grass')
+  })
+})

@@ -11,7 +11,7 @@ import { GameWindow } from '../console/GameWindow'
 import { emeraldTheme } from '../console/themes/emerald'
 import { esCampaign } from '../../i18n/esCampaign'
 import { DomeCard } from './DomeCard'
-import { placeState, playerSpot, type RoutePlace } from './hoennRoute'
+import { placeState, playerSpot, type CampaignEncounter, type RoutePlace } from './hoennRoute'
 
 const t = esCampaign.route
 
@@ -19,28 +19,44 @@ type RouteScreenProps = {
   places: readonly RoutePlace[]
   badges: number
   speciesName: (id: string) => string
+  /** La Liga: sus cinco rivales en orden y cuál toca (0 a 5; 5, ya ganada). */
+  league?: { rivals: readonly CampaignEncounter[]; next: number }
   scale?: number
   reservedHeight?: number
 }
 
-function cardLines(place: RoutePlace, badges: number, levels: readonly number[]): string[] {
+/** El nivel que se da es el máximo de todo el equipo del rival, no solo de los que se ven en la ficha (Jose, 12/11/2026). */
+function cardLines(place: RoutePlace, badges: number, leagueState: 'won' | 'next' | 'pending' | null = null): string[] {
+  const levels = place.rival.team.map((member) => member.level)
   const city = t.cities[place.id]
   const head = place.gym === null ? t.leagueHead(city) : t.gymHead(place.gym, city)
   const what = place.gym === null ? t.levels(levels) : t.typeLine(t.types[place.id], t.levels(levels))
   const max = Math.max(...place.rival.team.map((member) => member.level))
-  const state = placeState(place, badges)
-  const status = state === 'won' ? t.wonLine(t.badges[place.id]) : state === 'next' ? t.nextLine(place.rival.team.length, max)
+  const state = leagueState ?? placeState(place, badges)
+  const status = state === 'won' ? (leagueState ? t.leagueWonLine : t.wonLine(t.badges[place.id])) : state === 'next' ? t.nextLine(place.rival.team.length, max)
     : place.gym === null ? t.leaguePendingLine : t.pendingLine
   return [head, what, status]
 }
 
-export function RouteScreen({ places, badges, speciesName, scale, reservedHeight }: RouteScreenProps) {
+/** Estado de un rival de la Liga: vencido, el que toca (con las 8 medallas) o pendiente. */
+function leagueStateOf(index: number, next: number, badges: number): 'won' | 'next' | 'pending' {
+  if (next > index) return 'won'
+  return index === next && badges >= 8 ? 'next' : 'pending'
+}
+
+export function RouteScreen({ places, badges, speciesName, league, scale, reservedHeight }: RouteScreenProps) {
   const next = places.find((place) => placeState(place, badges) === 'next') ?? places[places.length - 1]
   const [selectedId, setSelectedId] = useState(next.id)
   const [page, setPage] = useState(0)
-  const place = places.find((candidate) => candidate.id === selectedId) ?? next
+  // Liga: la ficha enseña al rival que toca y se pasa por los cinco con flechas (Jose, 12/11/2026: solo salía Plubio).
+  const [leagueIndex, setLeagueIndex] = useState(Math.min(league?.next ?? 0, (league?.rivals.length ?? 1) - 1))
+  const basePlace = places.find((candidate) => candidate.id === selectedId) ?? next
+  const leagueRival = basePlace.gym === null && league ? league.rivals[leagueIndex] : null
+  const place = leagueRival ? { ...basePlace, rival: leagueRival } : basePlace
   const party = place.rival.team.map((member) => ({ species: member.species, name: speciesName(member.species), level: member.level }))
-  const title = place.gym === null ? t.championTitle(place.rival.nameEs) : t.leaderTitle(place.rival.nameEs, place.id === 'vito-y-leti')
+  const title = place.gym !== null ? t.leaderTitle(place.rival.nameEs, place.id === 'vito-y-leti')
+    : place.rival.kind === 'elite' ? esCampaign.league.eliteTitle(place.rival.nameEs) : t.championTitle(place.rival.nameEs)
+  const leagueState = leagueRival && league ? leagueStateOf(leagueIndex, league.next, badges) : null
 
   return (
     <ConsoleStage theme={emeraldTheme} scale={scale} reservedHeight={reservedHeight} screens={[(
@@ -72,9 +88,10 @@ export function RouteScreen({ places, badges, speciesName, scale, reservedHeight
       party={party}
       page={page}
       onPage={setPage}
-      lines={(shown) => cardLines(place, badges, shown.map((member) => member.level))}
+      lines={() => cardLines(place, badges, leagueState)}
+      rivals={leagueRival && league ? { index: leagueIndex, total: league.rivals.length, onStep: (step) => { setLeagueIndex(leagueIndex + step); setPage(0) }, label: (step) => t.leagueRivalLabel(league.rivals[leagueIndex + step].nameEs) } : undefined}
       accessibleName={t.cardLabel(place.rival.nameEs)}
-      accessibleText={`${title}. ${t.medals(badges)}. ${cardLines(place, badges, party.map((member) => member.level)).join(' ')}`}
+      accessibleText={`${title}. ${t.medals(badges)}. ${cardLines(place, badges, leagueState).join(' ')}`}
     />
   )]} />
   )

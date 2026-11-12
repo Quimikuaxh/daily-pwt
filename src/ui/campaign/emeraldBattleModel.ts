@@ -51,9 +51,13 @@ export function healthbox(player: boolean) {
     name: { x: left + (player ? 16 : 8), y: top + 3 },
     level: { x: left + (player ? 77 : 69), y: top + 3 },
     bar: { x: x + (player ? 16 : 8) - 16, y },
-    // PS 2 px más arriba que en la maqueta (y + 19): pegados al borde inferior de la caja (Jose, 11/11/2026).
-    hp: { x: left + 60, y: top + 19 },
-    max: { x: left + 80, y: top + 19 },
+    // Estado alterado (UpdateStatusIconInHealthbox): icono de 24 x 8 en la tesela 0x1A de la caja del jugador (x + 16, y + 24 desde su
+    // esquina) y en la 0x11 de la del rival (x + 8, y + 16), donde tapa el rótulo PS de la barra.
+    status: player ? { x: left + 16, y: top + 24 } : { x: left + 8, y: top + 16 },
+    // PS en y + 20: a y + 21 tocaban el borde inferior de la caja y a y + 19 pisaban la barra (Jose, 11 y 12/11/2026); así queda
+    // un píxel libre por encima.
+    hp: { x: left + 60, y: top + 20 },
+    max: { x: left + 80, y: top + 20 },
   }
 }
 
@@ -293,3 +297,38 @@ export function recallFrame(frame: number): { visible: boolean; scale: number; t
   const scale = (256 - 2 * Math.min(steps, 18) - 16 * Math.max(0, steps - 18)) / 256
   return { visible: scale > 0, scale: Math.max(0, scale), tint: Math.min(1, steps / SEND_OUT.tint) }
 }
+
+/**
+ * Entrada al combate (Jose, 12/11/2026: era muy brusca y quería ver antes al entrenador). Transición de combate contra entrenador en
+ * `TRANSITION_FRAMES` fotogramas: dos destellos blancos (6 fotogramas cada uno, como la transición del juego) y después franjas negras que
+ * cierran la pantalla alternando lado. Luego el entrenador entra desde la izquierda hasta su sitio (`TRAINER_IN_FRAMES`), habla y, al
+ * enviar, sale por la derecha (`TRAINER_OUT_FRAMES`) antes de que aparezca la bola.
+ */
+export const TRANSITION_FRAMES = 60
+export const TRAINER_IN_FRAMES = 54
+export const TRAINER_OUT_FRAMES = 16
+/** Sitio del entrenador rival: su sprite de 64 x 64 centrado en (176,40), donde sale su Pokémon. */
+export const TRAINER_SPOT = { x: 144, y: 8 }
+export const TRANSITION_BARS = 8
+
+export function transitionFrame(frame: number): { white: boolean; bars: number } {
+  if (frame < 24) return { white: Math.floor(frame / 6) % 2 === 0, bars: 0 }
+  return { white: false, bars: Math.min(1, (frame - 24) / (TRANSITION_FRAMES - 24)) }
+}
+
+/** x del entrenador rival en cada fase de la entrada, o null si no se ve. */
+export function trainerX(phase: string, frame: number): number | null {
+  if (phase === 'iris') return Math.round(-64 + (TRAINER_SPOT.x + 64) * Math.min(1, frame / TRAINER_IN_FRAMES))
+  if (phase === 'enter' || phase === 'challenge') return TRAINER_SPOT.x
+  if (phase === 'rivalSend') return frame < TRAINER_OUT_FRAMES ? Math.round(TRAINER_SPOT.x + (240 - TRAINER_SPOT.x) * (frame / TRAINER_OUT_FRAMES)) : null
+  return null
+}
+
+/** Al empezar a entrar el entrenador, las franjas se abren en `OPENING_FRAMES` fotogramas: el combate no aparece de golpe tras el negro. */
+export const OPENING_FRAMES = 20
+export const openingFrame = (frame: number): { white: boolean; bars: number } | null =>
+  frame < OPENING_FRAMES ? { white: false, bars: 1 - frame / OPENING_FRAMES } : null
+
+/** Color del recuadro de cada estado (iconos de estado de la caja de PS de Gen 3). */
+/** Color de cada icono de estado (sStatusIconColors de battle_interface.c, de RGB de 5 bits a 8). */
+export const STATUS_COLORS: Readonly<Record<string, string>> = { psn: '#c562c5', tox: '#c562c5', par: '#bdbd18', slp: '#a4a48b', frz: '#8bb4e6', brn: '#e67352' }

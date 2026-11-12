@@ -15,6 +15,8 @@ import { GameWindow } from '../console/GameWindow'
 import { emeraldSprite, emeraldTheme } from '../console/themes/emerald'
 import { esCampaign } from '../../i18n/esCampaign'
 import { PartySlot } from './PartySlot'
+import { SummaryPages } from './SummaryPages'
+import type { SummaryData } from './EmeraldBattle'
 import { slotBox } from './partySlotModel'
 import { BOX_SIZE, lineup, monAt, moveMon, partyCount, PARTY_SIZE, samePlace, type MoveNote, type Place, type TeamLayout, type TeamMon } from './teamModel'
 import { arrowTarget, pcMenuWindow, placeKey, placeOf, useMonDrag } from './teamDrag'
@@ -38,6 +40,8 @@ type TeamScreenProps = {
   onTakeItem: (id: string) => void
   /** Cada cambio de colocación, para conservarla al ir a Movimientos y volver. */
   onLayoutChange?: (layout: TeamLayout) => void
+  /** DATOS en el menú del PC (Jose, 12/11/2026): la ficha del Pokémon en la pantalla de abajo. */
+  summaryOf?: (id: string) => SummaryData | null
   /** Solo para mirar (desde OTROS en el draft; Jose, 12/11/2026): sin mover, sin menú y sin ACEPTAR; CANCELAR vuelve. */
   readOnly?: boolean
   /** EVOLUCIONAR en el menú del PC: si ese Pokémon puede evolucionar ahora (objeto, intercambio, amistad o belleza). */
@@ -53,10 +57,12 @@ const PILL_X = 5
 
 const boxCell = (i: number) => ({ x: 100 + 24 * (i % 6), y: 44 + 24 * Math.floor(i / 6) })
 
-export function TeamScreen({ readOnly = false, canEvolve, onEvolve, mons, initial, limit, rivalName, itemName, onAccept, onCancel, onMoves, onGiveItem, onTakeItem, onLayoutChange, scale, reservedHeight }: TeamScreenProps) {
+export function TeamScreen({ readOnly = false, canEvolve, onEvolve, mons, initial, limit, rivalName, itemName, onAccept, onCancel, onMoves, onGiveItem, onTakeItem, onLayoutChange, summaryOf, scale, reservedHeight }: TeamScreenProps) {
   const [layout, setLayout] = useState(initial)
   const [box, setBox] = useState(0)
   const [held, setHeld] = useState(null as Place | null)
+  const [summaryId, setSummaryId] = useState(null as string | null)
+  const [summaryPage, setSummaryPage] = useState(0)
   const [hover, setHover] = useState(null as Place | null)
   const [note, setNote] = useState(null as MoveNote | null)
   // Menú del PC (MOVER / MOVIMIENTOS / CANCELAR) del Pokémon tocado, como al pulsar A en el juego.
@@ -184,6 +190,7 @@ export function TeamScreen({ readOnly = false, canEvolve, onEvolve, mons, initia
               ] : [
                 [m.move, m.moveLabel(mons[menuId].name), () => { setHeld(menu); setMenu(null) }],
                 [m.moves, m.movesLabel(mons[menuId].name), () => { setMenu(null); onMoves(menuId) }],
+                ...(summaryOf ? [[m.summary, m.summaryLabel(mons[menuId].name), () => { setMenu(null); setSummaryId(menuId); setSummaryPage(0) }] as const] : []),
                 // OBJETO: sin objeto, la Mochila directamente; con objeto, DAR / QUITAR como el menú de equipo del juego.
                 [m.item, m.itemLabel(mons[menuId].name), () => { if (mons[menuId].item) setItemMenu(true); else { setMenu(null); onGiveItem(menuId) } }],
                 ...(canEvolve?.(menuId) && onEvolve ? [[m.evolve, m.evolveLabel(mons[menuId].name), () => { setMenu(null); onEvolve(menuId) }] as const] : []),
@@ -201,7 +208,11 @@ export function TeamScreen({ readOnly = false, canEvolve, onEvolve, mons, initia
             </div>
           )}
         </div>
-      ), (
+      ), (() => { return summaryId && summaryOf?.(summaryId) ? (
+        <SummaryPages key="summary" mon={summaryOf(summaryId)!.mon} level={summaryOf(summaryId)!.level} item={summaryOf(summaryId)!.item}
+          page={summaryPage} onPage={setSummaryPage} profile={esCampaign.draft.trainedProfile(summaryOf(summaryId)!.level)}
+          heading={m.summaryLabel(mons[summaryId].name)} onExit={() => { setSummaryId(null) }} />
+      ) : (
         <div key="party" className="team-party">
           <img src={emeraldTheme.asset('equipo-fondo')} alt="" style={{ left: 0, top: 0 }} />
           {Array.from({ length: PARTY_SIZE }, (_, i) => {
@@ -214,7 +225,8 @@ export function TeamScreen({ readOnly = false, canEvolve, onEvolve, mons, initia
               <button key={i} type="button" className="team-cell" data-place={placeKey(place)} style={{ left: r.x, top: r.y, width: r.w, height: r.h }}
                 aria-label={slotLabel(place, id)} aria-disabled={i >= limit || undefined} {...drag.handlers(place)}
                 onPointerEnter={() => { if (!menu) setHover(place) }} onFocus={() => { if (!menu) setHover(place) }}>
-                <PartySlot i={i} mon={mon && { ...mon, maxHp: mon.hp }} state={active ? 'activa' : 'normal'} held={samePlace(held, place) || id === draggingId} bounce={active} />
+                {/* Cogido con un toque, el equipo no tiene mano que lo lleve: sigue con sus datos, marcado, hasta soltarlo (Jose, 12/11/2026). */}
+                <PartySlot i={i} mon={mon && { ...mon, maxHp: mon.hp }} state={active ? 'activa' : 'normal'} held={id === draggingId} bounce={active} />
               </button>
             )
           })}
@@ -239,7 +251,7 @@ export function TeamScreen({ readOnly = false, canEvolve, onEvolve, mons, initia
             <p role="status">{`${message} ${noteText ?? t.status(partyCount(layout), limit)}${heldId ? ` ${t.moving(mons[heldId].name)}` : ''}`}</p>
           </section>
         </div>
-      )]} />
+      ) })()]} />
       {drag.dragging && draggingId && createPortal(
         <div className="team-drag" aria-hidden="true" style={{ left: drag.dragging.x, top: drag.dragging.y, '--k': drag.dragging.scale } as CSSProperties}>
           <img className="mon-icon" src={emeraldSprite('icon', mons[draggingId].species)} alt="" style={{ left: -16, top: -12 }} />

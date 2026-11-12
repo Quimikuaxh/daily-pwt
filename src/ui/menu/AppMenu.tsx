@@ -82,7 +82,7 @@ export type AppMenuProps = {
   /** Abrir una repetición del historial de un amigo (desde Estadísticas › Amigos). */
   onWatchFriendReplay?: (nickname: string, date: string) => void
   /** Otros modos de juego del menú Modos (de momento, la campaña Nuzlocke de Hoenn). Sin él, Modos solo enseña el reto diario. */
-  modes?: readonly { id: string; label: string; hint: string; onOpen: () => void }[]
+  modes?: readonly { id: string; label: string; hint: string; onOpen: () => void; prefetch?: () => void }[]
   /** Directo (RF-111c): ver el oficial en curso de un amigo. */
   onWatchLive?: (nickname: string) => void
   /** Solo en Hoy: aviso para elegir nombre e iniciar sesión (RF-94b), como mucho una vez al día. */

@@ -32,7 +32,8 @@ import { REPLAY_PARAM, replayIdFrom, replayLink } from './ui/replay/replayLink'
 const ReplayScreen = lazy(() => import('./ui/replay/replayModule').then((module) => ({ default: module.ReplayScreen })))
 const LiveScreen = lazy(() => import('./ui/replay/replayModule').then((module) => ({ default: module.LiveScreen })))
 // Campaña Nuzlocke de Hoenn (D7): aparte, fuera de la ruta crítica del reto diario.
-const CampaignScreen = lazy(() => import('./ui/campaign/CampaignScreen'))
+const loadCampaignScreen = () => import('./ui/campaign/CampaignScreen')
+const CampaignScreen = lazy(loadCampaignScreen)
 
 type AppProps = {
   data: GameData | null
@@ -89,6 +90,8 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
   const store = account && accountState.status === 'signedIn' ? account.store : localStore
   // Nickname del jugador (pancarta VS de sus combates y repeticiones); sin cuenta o sin nombre, sale el del protagonista.
   const nickname = isPlayer(accountState) ? (accountState.nickname ?? undefined) : undefined
+  // En la campaña, solo un nombre elegido: con el provisional (entrenador_12345) sale el protagonista de Esmeralda (Jose, 12/11/2026).
+  const campaignName = isPlayer(accountState) && accountState.summary?.nicknameChosen ? nickname : undefined
   const [settings, setSettings] = useState<Settings>(() => loadSettings(browserStorage()))
   // Tras «Borrar datos locales» se vuelve a pintar: Hoy relee el historial (vacío) en cada render; Ajustes sigue abierto con su aviso.
   const [, setDataGeneration] = useState(0)
@@ -169,7 +172,7 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
   const menu: MenuContext = {
     trainerName: (trainerId) => data?.trainers.find((trainer) => trainer.id === trainerId)?.nameEs ?? trainerId,
     onWatchReplay: (date) => setScreen({ name: 'replay', source: { kind: 'mine', date } }),
-    modes: [{ id: 'nuzlocke-hoenn', label: esCampaign.entry, hint: esCampaign.entryHint, onOpen: () => setScreen({ name: 'campaign' }) }],
+    modes: [{ id: 'nuzlocke-hoenn', label: esCampaign.entry, hint: esCampaign.entryHint, onOpen: () => setScreen({ name: 'campaign' }), prefetch: () => { void loadCampaignScreen() } }],
     onWatchFriendReplay: (nickname, date) => setScreen({ name: 'replay', source: { kind: 'friend', nickname, date } }),
     onWatchLive: (nickname) => setScreen({ name: 'live', nickname }),
     historyArt: (item) => historyArtFor(item, data),
@@ -250,7 +253,7 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
   if (screen.name === 'campaign' && data) {
     return (
       <Suspense fallback={null}>
-        <CampaignScreen data={data} playerName={nickname} onExit={() => setScreen({ name: 'today' })}
+        <CampaignScreen data={data} playerName={campaignName} onExit={() => setScreen({ name: 'today' })}
           cloud={account && accountState.status === 'signedIn' ? account.campaign : undefined} />
       </Suspense>
     )

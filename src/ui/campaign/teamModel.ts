@@ -78,3 +78,15 @@ export function moveMon(layout: TeamLayout, from: Place, to: Place, limit: numbe
   const compact = fill(party.filter((id): id is string => !!id), PARTY_SIZE)
   return { layout: { party: compact, boxes }, note: null }
 }
+
+/** Colocación de Equipo y PC guardada en la pantalla, si sigue valiendo: los mismos miembros y no más en el equipo que el límite. */
+export function fittingLayout(layout: TeamLayout | null, state: CampaignState, limit: number): TeamLayout | null {
+  if (!layout) return null
+  const placed = [...layout.party, ...layout.boxes.flatMap((box) => box.mons)].filter((id): id is string => id !== null)
+  const members = state.members.map((member) => member.id)
+  const party = layout.party.filter((id) => id !== null)
+  const fainted = new Set(state.members.filter((member) => member.fainted).map((member) => member.id))
+  const same = placed.length === members.length && members.every((id) => placed.includes(id))
+  return same && party.length <= limit && party.every((id) => !fainted.has(id)) ? layout : null
+}
+

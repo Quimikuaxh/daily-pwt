@@ -1221,26 +1221,6 @@
         }
       ]
     },
-    "machobrace": {
-      "kind": "held",
-      "units": [
-        {
-          "before": "candela",
-          "map": "Route111_WinstrateFamilysHouse",
-          "event": "Route111_WinstrateFamilysHouse_EventScript_Victoria"
-        }
-      ]
-    },
-    "expshare": {
-      "kind": "held",
-      "units": [
-        {
-          "before": "petra",
-          "map": "RustboroCity_DevonCorp_3F",
-          "event": "RustboroCity_DevonCorp_3F_EventScript_GiveExpShare"
-        }
-      ]
-    },
     "quickclaw": {
       "kind": "held",
       "units": [
@@ -1251,16 +1231,6 @@
         }
       ]
     },
-    "soothebell": {
-      "kind": "held",
-      "units": [
-        {
-          "before": "erico",
-          "map": "SlateportCity_PokemonFanClub",
-          "event": "SlateportCity_PokemonFanClub_EventScript_GiveSootheBell"
-        }
-      ]
-    },
     "mentalherb": {
       "kind": "held",
       "units": [
@@ -1268,51 +1238,6 @@
           "before": "alana",
           "map": "FortreeCity_House4",
           "event": "FortreeCity_House4_EventScript_WingullReturned"
-        }
-      ]
-    },
-    "amuletcoin": {
-      "kind": "held",
-      "units": [
-        {
-          "before": "petra",
-          "map": "LittlerootTown_BrendansHouse_1F",
-          "event": "PlayersHouse_1F_EventScript_TryGiveAmuletCoin"
-        }
-      ]
-    },
-    "cleansetag": {
-      "kind": "held",
-      "units": [
-        {
-          "before": "vito-y-leti",
-          "map": "MtPyre_1F",
-          "event": "MtPyre_1F_EventScript_CleanseTagWoman"
-        }
-      ]
-    },
-    "smokeball": {
-      "kind": "held",
-      "units": [
-        {
-          "before": "alana",
-          "map": "Route110_TrickHouseEnd",
-          "event": "Route110_TrickHouseEnd_EventScript_CompletedPuzzle4"
-        }
-      ]
-    },
-    "everstone": {
-      "kind": "held",
-      "units": [
-        {
-          "before": "marcial",
-          "map": "GraniteCave_B2F",
-          "event": "bg_events[0]"
-        },
-        {
-          "before": "marcial",
-          "map": "GraniteCave_B2F",
-          "event": "bg_events[1]"
         }
       ]
     },

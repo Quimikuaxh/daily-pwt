@@ -30,7 +30,7 @@ function engineClient(): BattleClient {
   }
 }
 
-type Overrides = Partial<Pick<BattleParams, 'replay' | 'onDecision' | 'onSettled' | 'onReplayFailed' | 'onFinish' | 'playSfx'>>
+type Overrides = Partial<Pick<BattleParams, 'replay' | 'onDecision' | 'onSettled' | 'onReplayFailed' | 'onFinish' | 'playSfx' | 'skipIntro'>>
 function mount(over: Overrides = {}) {
   const params: BattleParams = {
     client: engineClient(),
@@ -169,3 +169,16 @@ describe('efectos de sonido del combate', () => {
     expect(playSfx).not.toHaveBeenCalled()
   })
 })
+
+// UT-203 (Jose, 12/11/2026): la campaña retoma un combate guardado sin la entrada ni los mensajes del último turno.
+describe('combate que se retoma (skipIntro)', () => {
+  it('va directo al menú con la vista del primer update y sin mensaje', async () => {
+    const resumed = mount({ skipIntro: true })
+    await settle(50)
+    expect(resumed.result.current.introPhase).toBe('done')
+    expect(resumed.result.current.canAct).toBe(true)
+    expect(resumed.result.current.message).toBeNull()
+    expect(resumed.result.current.view).not.toBeNull()
+  })
+})
+

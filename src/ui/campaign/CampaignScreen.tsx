@@ -22,9 +22,9 @@ import { candidateOf, emeraldDex } from './draftModel'
 import { DraftScreen } from './DraftScreen'
 import { badgeCount, routePlaces, type CampaignEncounter } from './hoennRoute'
 import { RouteScreen } from './RouteScreen'
-import { initialLayout, teamMonOf, type TeamLayout } from './teamModel'
+import { fittingLayout, initialLayout, teamMonOf, type TeamLayout } from './teamModel'
 import { MovesScreen } from './MovesScreen'
-import { equippedMoves, legalMoves } from './movesModel'
+import { equippedMoves, legalMoves, moveInfo } from './movesModel'
 import { setCampaignMemberMoves } from '../../core/nuzlocke/progression'
 import type { CampaignBattleDefinition } from '../../core/nuzlocke/battle'
 import { LocalCampaignSession } from '../../battle/campaignSession'
@@ -34,7 +34,10 @@ import { EmeraldBattle } from './EmeraldBattle'
 import { ResultScreen } from './ResultScreen'
 import { EvolutionScene } from './EvolutionScene'
 import { BagScreen } from './BagScreen'
-import { bagContents, itemName as emeraldItemName } from './bagModel'
+import { bagContents, itemName as emeraldItemName, machineItems, machineLabel } from './bagModel'
+import { campaignEvolutionItems } from '../../core/nuzlocke/calendar'
+import { emeraldMoveName } from './emeraldNames'
+import moveTexts from '../../../data/nuzlocke/emerald-move-descriptions-es.json'
 import { buyExchangeItem, equipItem, exchangeItems } from '../../core/nuzlocke/heldItems'
 import { ExchangeScreen } from './ExchangeScreen'
 import { leagueEvolutions } from './evolutionModel'
@@ -44,6 +47,11 @@ import { type CampaignResult, minutesSince, playerNameOf, protagonistOf, recruit
 import { TeamScreen } from './TeamScreen'
 import { battleMusic, townMusic, useCampaignMusic } from './campaignMusic'
 import { ShareScreen } from './ShareScreen'
+import { CampaignCard, SideColumn, TeamPanel, useSidePanelOffset } from './CampaignSide'
+import { CAMPAIGN_PANEL, type SideSets } from './sidePanelsModel'
+import { toId } from '../../core/id'
+import { NEUTRAL_NATURE } from '../../core/constants'
+import type { CSSProperties } from 'react'
 import './campaign.css'
 
 const t = esCampaign.route
@@ -80,12 +88,21 @@ const inLeague = (state: CampaignState) => encounters[state.encounterIndex].kind
 
 const teamLimit = (state: CampaignState) => encounters[state.encounterIndex].kind === 'gym' ? encounters[state.encounterIndex].team.length : 6
 
+/** Los cinco de la Liga, en orden (Alto Mando y campeón). */
+const leagueRivals = encounters.filter((encounter) => encounter.kind !== 'gym')
+
 const battleDefinition = definition as unknown as CampaignBattleDefinition
 /** Género del rival para «la LÍDER» / «el LÍDER» (Esmeralda); el Alto Mando habla como líder y Plubio como campeón. */
 const FEMALE = new Set(['petra', 'candela', 'alana', 'fatima', 'nivea'])
 const trainerOf = (encounter: CampaignEncounter) => ({
   nameEs: encounter.nameEs, category: encounter.kind === 'champion' ? 'champion' as const : 'leader' as const, gender: FEMALE.has(encounter.id) ? 'F' as const : 'M' as const,
 })
+
+/** Pantallas con su propia salida: sin «Volver a la ruta» en la barra. */
+const OWN_EXIT: readonly string[] = ['battle', 'result', 'evolution', 'evolveOne']
+
+/** Descripción española de un movimiento en dos líneas (la de Movimientos). */
+const moveDescription = (move: string): string => (moveTexts as unknown as { moves: Record<string, string> }).moves[move] ?? ''
 
 const randomSeed = () => `hoenn-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
 
@@ -145,7 +162,10 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
   const [view, setView] = useState(() => (store.read()?.battle ? 'battle' : 'route') as 'route' | 'draft' | 'team' | 'teamView' | 'evolveOne' | 'moves' | 'battle' | 'result' | 'share' | 'evolution' | 'league' | 'bag' | 'exchange')
   // El worker de combate (y su sesión) solo se crea al entrar en combate: Ruta, Draft y Equipo no lo necesitan.
   const [session, setSession] = useState(() => (store.read()?.battle ? newSession(createBattleClient()) : null))
+  // Combate guardado al abrir la campaña: se retoma donde estaba, sin la entrada (Jose, 12/11/2026). Uno nuevo, con ella.
+  const [resumedBattle, setResumedBattle] = useState(() => !!store.read()?.battle)
   const enterBattle = (lineup: readonly string[]) => {
+    setResumedBattle(false)
     if (state) setBattleContext({ before: state, lineup })
     if (!session) setSession(newSession(createBattleClient()))
     setView('battle')
@@ -176,7 +196,8 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
   const continueCampaign = () => {
     if (state?.phase === 'prepare' && inLeague(state)) {
       // Liga: evoluciones (una vez), después los 6 en Equipo y PC y la elección de participantes; con la plantilla fijada, el rival.
-      if (state.leagueRoster) { setView('league'); return }
+      // Entre rondas, primero Equipo y PC con la plantilla (orden, movimientos y objetos; Jose, 12/11/2026) y después la ficha del rival.
+      if (state.leagueRoster) { setView('team'); return }
       if (!state.leagueEvolved) {
         if (leagueEvolutions(definition, state).length) { setView('evolution'); return }
         save(evolveForLeague(definition, state, {}))
@@ -185,7 +206,8 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
       setView('team')
       return
     }
-    if (state?.phase === 'prepare') { setTeamLayout(null); setView('team'); return }
+    // La colocación de Equipo y PC se conserva al salir y volver a entrar (Jose, 12/11/2026); `fittingLayout` la descarta si ya no vale.
+    if (state?.phase === 'prepare') { setView('team'); return }
     if (state?.phase !== 'draft') return
     openNext(state)
     setView('draft')
@@ -224,6 +246,67 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
       : steps.current === 'battle' ? t.actions.battle(rivalNow.nameEs)
         : t.actions[steps.current] as string
   const speciesName = (id: string) => data.names.species[id] ?? id
+  // Tipos de Esmeralda (sin el tipo Hada de generaciones posteriores), en minúsculas como los iconos tipo-*.
+  const typesOf = (id: string) => (definition.species[id]?.types ?? data.dex.species[id]?.types ?? []).map((type) => type.toLowerCase())
+
+  // Paneles laterales en escritorio (PRD §0, 12/11/2026): en los menús, «Tu campaña» y «Tu equipo»; con ellos, la tira de medallas de la
+  // barra sobra y los botones secundarios van en la misma fila que el principal.
+  const sideOffset = useSidePanelOffset(150, CAMPAIGN_PANEL.h)
+  // El TIEMPO de la ficha avanza solo: se rehace cada medio minuto.
+  const [now, setNow] = useState(() => Date.now())
+  useEffect(() => {
+    const timer = setInterval(() => { setNow(Date.now()) }, 30_000)
+    return () => { clearInterval(timer) }
+  }, [])
+  // En todas las pantallas menos el combate, que lleva los suyos (Jose, 12/11/2026: el resultado no debe quedar solo en medio).
+  const panels = sideOffset !== null && state !== null && view !== 'battle'
+  const sidePanels = () => {
+    if (!panels || !state || sideOffset === null) return null
+    // El mismo equipo que la pantalla de Equipo y PC mientras se edita (Jose, 12/11/2026: no coincidían); fuera de ella, el guardado.
+    // En la Liga, con la plantilla fijada, el equipo es esa plantilla (los que siguen en pie, en su orden; Jose, 12/11/2026).
+    const roster = state.leagueRoster?.filter((id) => state.members.some((member) => { return member.id === id && !member.fainted }))
+    const limit = roster ? roster.length : state.phase === 'prepare' ? teamLimit(state) : 6
+    const layout = (state.phase === 'prepare' && !roster ? fittingLayout(teamLayout, state, limit) : null) ?? initialLayout(state, limit, roster ?? team ?? state.lastTeam ?? [])
+    const party = layout.party.map((id) => {
+      const member = state.members.find((candidate) => { return candidate.id === id })
+      if (!member) return null
+      const mon = teamMonOf(member, data)
+      return { species: member.species, name: mon.name, level: member.level, hp: mon.hp, maxHp: mon.hp, item: member.item ?? null }
+    })
+    const encounter = encounters[state.encounterIndex]
+    return (
+      <>
+        <SideColumn side="left" offset={sideOffset} label={esCampaign.side.campaignLabel}>
+          <CampaignCard points={state.battlePoints ?? 0} minutes={minutesSince(state.startedAt, now)}
+            fainted={state.members.filter((member) => member.fainted).length} species={recruitedSpecies(state)}
+            box={layout.boxes[0].mons.filter(Boolean).length} badges={badges}
+            next={esCampaign.side.nextValue(encounter.nameEs, Math.max(...encounter.team.map((member) => member.level)))} />
+        </SideColumn>
+        <SideColumn side="right" offset={sideOffset} label={esCampaign.side.teamLabel}>
+          <TeamPanel party={party} limit={limit} itemName={emeraldItemName}
+            box={layout.boxes.flatMap((box) => box.mons.flatMap((id) => {
+              const member = state.members.find((candidate) => { return candidate.id === id })
+              return member ? [{ species: member.species, name: teamMonOf(member, data).name, fainted: member.fainted }] : []
+            }))} />
+        </SideColumn>
+      </>
+    )
+  }
+
+  // Solo en la Ruta: en el draft, el equipo o el combate era fácil pulsarlo sin querer (Jose, 12/11/2026).
+  const secondary = () => {
+    if (!state || view !== 'route') return null
+    return (
+      <>
+        {state.phase === 'prepare' && (
+          <button type="button" className="campaign-restart" aria-label={esCampaign.exchange.openLabel(state.battlePoints ?? 0)} onClick={() => setView('exchange')}>
+            {esCampaign.exchange.open}
+          </button>
+        )}
+        <button type="button" className="campaign-restart" onClick={start}>{esCampaign.restartCampaign}</button>
+      </>
+    )
+  }
 
   const start = () => {
     if (state && !window.confirm(esCampaign.newCampaignConfirm)) return
@@ -287,21 +370,34 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
 
   const teamScreen = () => {
     if (view !== 'team' || state?.phase !== 'prepare') return null
+    // Liga con la plantilla fijada: solo sus miembros (la caja está cerrada); se puede cambiar el orden, los movimientos y los objetos.
+    const roster = state.leagueRoster
+    const shown = roster ? { ...state, members: state.members.filter((member) => { return roster.includes(member.id) }) } : state
+    const limit = roster ? shown.members.filter((member) => { return !member.fainted }).length : teamLimit(state)
+    const preferred = roster ?? team ?? state.lastTeam ?? []
     return (
     <TeamScreen
-      mons={Object.fromEntries(state.members.map((member) => [member.id, teamMonOf(member, data)]))}
-      initial={teamLayout ?? initialLayout(state, teamLimit(state), team ?? [])}
-      limit={teamLimit(state)}
+      mons={Object.fromEntries(shown.members.map((member) => [member.id, teamMonOf(member, data)]))}
+      initial={fittingLayout(teamLayout, shown, limit) ?? initialLayout(shown, limit, preferred)}
+      limit={limit}
       rivalName={encounters[state.encounterIndex].nameEs}
       itemName={emeraldItemName}
-      onAccept={(chosen) => { setTeam(chosen); if (inLeague(state)) setView('league'); else enterBattle(chosen) }}
+      onAccept={(chosen) => {
+        setTeam(chosen)
+        if (roster) save({ ...state, leagueRoster: [...chosen, ...roster.filter((id) => !chosen.includes(id))] })
+        if (inLeague(state)) setView('league'); else enterBattle(chosen)
+      }}
       onCancel={() => setView('route')}
       onMoves={(id) => { setMovesFor(id); setView('moves') }}
       onGiveItem={(id) => { setMovesFor(id); setView('bag') }}
       onTakeItem={(id) => { save(equipItem(state, id, null)) }}
-      canEvolve={(id) => evolveTargets(state, id).length > 0}
+      canEvolve={(id) => !roster && evolveTargets(state, id).length > 0}
       onEvolve={(id) => { setEvolvingId(id); setView('evolveOne') }}
       onLayoutChange={setTeamLayout}
+      summaryOf={(id) => {
+        const member = state.members.find((candidate) => { return candidate.id === id })
+        return member ? memberSummary(state, member) : null
+      }}
       reservedHeight={150}
     />
     )
@@ -340,6 +436,7 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
         badges={badges} badgeNames={badgeNames}
         card={{ id: trainerId(after.seed), points: after.battlePoints ?? 0, pokedex: recruitedSpecies(after), minutes: result.minutes }}
         team={team}
+        trainer={encounter.id}
         // Al ganar al campeón o al perder la campaña, la pantalla final para compartir; si no, a la Ruta.
         onDone={() => { if (mode === 'hallOfFame' || mode === 'whiteout') { setView('share'); return } setResult(null); setView('route') }}
         reservedHeight={150}
@@ -366,6 +463,30 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
     )
   }
 
+  // Sets para los paneles del combate mientras el motor lo prepara (Jose, 12/11/2026: tardaban en salir): los del jugador y el rival
+  // con la habilidad de la especie; cuando llega la preparación, los del registro (los del motor).
+  const provisionalSets = (current: CampaignState, lineup: readonly string[]): SideSets => {
+    const flat = (value: number) => ({ hp: value, atk: value, def: value, spa: value, spd: value, spe: value })
+    const set = (species: string, level: number, item: string | null | undefined, moves: readonly string[]) => ({
+      species: toId(battleDefinition.species[species]?.simulatorSpecies ?? species), nameEs: species, level, item: item ?? '',
+      ability: toId(data.dex.species[species]?.abilities[0] ?? ''), moves: [...moves], nature: NEUTRAL_NATURE, ivs: flat(20), evs: flat(0),
+    })
+    const player = lineup.flatMap((id) => {
+      const member = current.members.find((candidate) => { return candidate.id === id })
+      return member ? [set(member.species, member.level, member.item, equippedMoves(definition, current, member))] : []
+    })
+    return { player, rival: battleDefinition.encounters[current.encounterIndex].team.map((member) => set(member.species, member.level, member.item, member.moves)) }
+  }
+
+  // DATOS de un miembro (Jose, 12/11/2026): la ficha del draft con sus movimientos equipados, su nivel y su objeto.
+  const memberSummary = (current: CampaignState, member: CampaignState['members'][number]) => {
+    const mon = candidateOf(member.species, member.level, definition, data, member.history)
+    return {
+      mon: { ...mon, moves: equippedMoves(definition, current, member).map((id) => moveInfo(id, data, { level: member.level })) },
+      level: member.level, item: member.item ? emeraldItemName(member.item) : null,
+    }
+  }
+
   const battleScreen = () => {
     if (view !== 'battle' || !state || !session) return null
     const encounter = encounters[state.encounterIndex]
@@ -378,6 +499,13 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
         start={startBattle}
         data={data}
         trainer={trainerOf(encounter)}
+        trainerId={encounter.id}
+        summaryOf={(species, occurrence) => {
+          const ids = battleContext?.lineup ?? []
+          const member = ids.map((id) => state.members.find((candidate) => { return candidate.id === id })).filter((candidate) => candidate?.species === species)[occurrence]
+          return member ? memberSummary(state, member) : null
+        }}
+        resumed={resumedBattle}
         intro={{ rivalLead: speciesName(encounter.team[0].species).toUpperCase(), playerLead: lead ? speciesName(lead.species).toUpperCase() : '' }}
         rivalLevels={encounter.team.map((member) => member.level)}
         playerLevels={Object.fromEntries(state.members.map((member) => [member.species, member.level]))}
@@ -389,6 +517,7 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
           return [{ species: member.species, name: mon.name, level: member.level, hp: mon.hp, maxHp: mon.hp, fainted: member.fainted, active: i === 0 }]
         })}
         onEnded={() => { session.finish(battleDefinition) }}
+        sides={{ sets: () => store.read()?.battle?.init ?? provisionalSets(state, battleContext?.lineup ?? []), typesOf, trainer: encounter.id }}
         reservedHeight={150}
       />
     )
@@ -457,7 +586,11 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
       <BagScreen
         protagonist={protagonistOf(state.seed)}
         member={{ species: member.species, name: mon.name, level: member.level, hp: mon.hp, item: member.item ?? null }}
-        contents={(pocket) => bagContents(state, pocket, member.id)}
+        contents={(pocket) => {
+          if (pocket === 'evolution') return [...campaignEvolutionItems(definition, state)].sort().map((id) => ({ id, name: emeraldItemName(id), text: esCampaign.bag.evolutionText, free: 0, view: true }))
+          if (pocket === 'machines') return machineItems(state).map(({ id, move }) => ({ id, name: esCampaign.bag.machineName(machineLabel(id), emeraldMoveName(move, data.names)), text: moveDescription(move), free: 0, view: true }))
+          return bagContents(state, pocket, member.id)
+        }}
         onGive={(item) => { save(equipItem(state, member.id, item)); setView('team') }}
         onClose={() => setView('team')}
         reservedHeight={150}
@@ -482,8 +615,10 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
     )
   }
 
+  // Marco de ventana de Esmeralda para los botones (URL absoluta: relativa en una variable CSS se resolvería contra la hoja de estilos).
+  const pageStyle = { '--campaign-frame': `url("${new URL(emeraldTheme.asset('marco-1'), document.baseURI).href}")` } as CSSProperties
   return (
-    <div className="page campaign-page">
+    <div className="page campaign-page" style={pageStyle}>
       <a href="#main" className="skip-link">{es.app.skipToContent}</a>
       <header className="today-header">
         <div className="today-header-inner">
@@ -509,7 +644,8 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
             reservedHeight={150}
           />
         ) : (
-          <RouteScreen places={places} badges={badges} speciesName={speciesName} reservedHeight={150} />
+          <RouteScreen places={places} badges={badges} speciesName={speciesName} reservedHeight={150}
+            league={{ rivals: leagueRivals, next: Math.max(0, Math.min(leagueRivals.length, (state?.encounterIndex ?? 0) - encounters.findIndex((encounter) => encounter.kind !== 'gym') + (state?.phase === 'won' ? 1 : 0))) }} />
         ))}
         {steps && view === 'route' && (
           <ol className="campaign-steps" aria-label={t.stepsLabel(t.steps[steps.current])}>
@@ -520,18 +656,24 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
             ))}
           </ol>
         )}
-        <div className="campaign-bar">
-          <ul className="campaign-medals" aria-label={t.medals(badges)}>
-            {places.filter((place) => place.gym !== null).map((place) => (
-              <li key={place.id}>
-                <img src={emeraldTheme.asset(`medalla-${place.gym}`)} alt={t.medal(t.badges[place.id], (place.gym ?? 0) <= badges)}
-                  className={(place.gym ?? 0) <= badges ? undefined : 'campaign-medal-off'} />
-              </li>
-            ))}
-          </ul>
+        {sidePanels()}
+        <div className="campaign-bar" data-panels={panels || undefined}>
+          {/* En escritorio, con campaña, las medallas van en la ficha del panel «Tu campaña» (también en el combate). */}
+          {(sideOffset === null || state === null) && (
+            <ul className="campaign-medals" aria-label={t.medals(badges)}>
+              {places.filter((place) => place.gym !== null).map((place) => (
+                <li key={place.id}>
+                  <img src={emeraldTheme.asset(`medalla-${place.gym}`)} alt={t.medal(t.badges[place.id], (place.gym ?? 0) <= badges)}
+                    className={(place.gym ?? 0) <= badges ? undefined : 'campaign-medal-off'} />
+                </li>
+              ))}
+            </ul>
+          )}
           {state ? (
             view !== 'route' ? (
-              <button type="button" className="campaign-action" onClick={() => { if (view === 'share') setResult(null); setView('route') }}>{esCampaign.draft.back}</button>
+              // Solo en los menús y en la pantalla final, que no tiene otra salida (Jose, 12/11/2026, opción A): el combate, el resultado
+              // y la evolución tienen su propio camino y ahí se pulsaba sin querer.
+              !OWN_EXIT.includes(view) && <button type="button" className="campaign-action" onClick={() => { if (view === 'share') setResult(null); setView('route') }}>{esCampaign.draft.back}</button>
             ) : (
               <button type="button" className="campaign-action" disabled={state.phase !== 'draft' && state.phase !== 'prepare'} onClick={continueCampaign}
                 aria-label={t.actionLabel(action, next.gym === null ? t.continueLeague.replace('Continuar: ', '') : t.continueLabel(next.gym).replace('Continuar: ', ''))}>
@@ -541,19 +683,10 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
           ) : (
             <button type="button" className="campaign-action" onClick={start}>{esCampaign.newCampaign}</button>
           )}
+          {panels && secondary()}
         </div>
-        {/* Botones secundarios en una fila (Jose, 12/11/2026: apilados no gustaban). */}
-        {/* Solo en la Ruta: en el draft, el equipo o el combate era fácil pulsarlo sin querer (Jose, 12/11/2026). */}
-        {state && view === 'route' && (
-          <div className="campaign-secondary">
-            {state.phase === 'prepare' && (
-              <button type="button" className="campaign-restart" aria-label={esCampaign.exchange.openLabel(state.battlePoints ?? 0)} onClick={() => setView('exchange')}>
-                {esCampaign.exchange.open}
-              </button>
-            )}
-            <button type="button" className="campaign-restart" onClick={start}>{esCampaign.newCampaign}</button>
-          </div>
-        )}
+        {/* Botones secundarios en una fila (Jose, 12/11/2026: apilados no gustaban); con los paneles, junto al principal. */}
+        {!panels && state && view === 'route' && <div className="campaign-secondary">{secondary()}</div>}
         {store instanceof LocalCampaignStore && !store.persistent && <p className="fight-hint" role="status">{esCampaign.notSaved}</p>}
       </main>
     </div>

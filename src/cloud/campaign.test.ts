@@ -328,10 +328,11 @@ describe('guardado de campaña por cuenta, D4(b)', () => {
     session.subscribe(m => messages.push(m))
     await session.prepare(campaignInput())
     expect(messages).toHaveLength(0)
-    expect(() => session.choose({ type: 'move', slot: 1 })).toThrow()
+    // Cambio de requisito (Jose, 12/11/2026): una decisión durante el arranque ya no falla; espera a que la sesión esté lista.
+    expect(() => session.choose({ type: 'move', slot: 1 })).not.toThrow()
     const op = api.saveCampaign.mock.calls[1][0]
     wait.resolve({ operationId: op.operationId, revision: op.record.revision })
-    await vi.waitFor(() => expect(messages.at(-1)?.type).toBe('campaign-prepared'))
+    await vi.waitFor(() => expect(messages.some((message) => message.type === 'campaign-prepared')).toBe(true))
   })
 
   it('no reenvía una intención pendiente de A al abrir B; la recupera solo al volver a A', async () => {
