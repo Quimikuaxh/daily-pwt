@@ -423,7 +423,6 @@ export const es = {
     title: 'Modos de juego',
     daily: 'Reto diario',
     dailyHint: 'Un combate al día contra un entrenador del PWT.',
-    current: 'Estás aquí',
   },
 
   settings: {

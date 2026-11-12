@@ -1475,13 +1475,40 @@ img.sprite,
 
 .modes-option {
   width: 100%;
-  justify-content: space-between;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14px;
+  padding: 8px;
+  text-align: left;
 }
 
-.modes-current {
-  font-size: 0.8em;
-  opacity: 0.8;
+/* El modo en el que se está, marcado con color (Jose, 12/11/2026: en vez de «Estás aquí»). */
+.modes-option[aria-current="page"] {
+  --fill: #b81840;
+  --dots: #c83058;
 }
+
+.modes-text { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
+.modes-label { font-size: 1.15em; }
+.modes-hint { margin: 0; }
+.modes-option[aria-current="page"] .modes-hint { color: #f0d8e0; }
+
+/* Miniatura de cada modo: capas en pixel art sobre un fondo recortado. */
+.modes-art {
+  position: relative;
+  flex: none;
+  width: 112px;
+  height: 84px;
+  overflow: hidden;
+  border-radius: 6px;
+}
+.modes-art img { position: absolute; image-rendering: pixelated; }
+.modes-art-bg { inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.modes-art-left { left: 4%; bottom: 0; height: 92%; }
+.modes-art-right { right: 4%; bottom: 0; height: 92%; }
+.modes-art-vs { left: 50%; top: 22%; width: 36%; transform: translateX(-50%); }
 
 .settings-help {
   width: 100%;

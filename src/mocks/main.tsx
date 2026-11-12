@@ -14,6 +14,7 @@ import { slotBox } from '../ui/campaign/partySlotModel'
 import { hallOfFameSpots } from '../ui/campaign/resultModel'
 import { ShareScreen } from '../ui/campaign/ShareScreen'
 import { MovesScreen } from '../ui/campaign/MovesScreen'
+import { Modal } from '../ui/common/Modal'
 import '../index.css'
 import '../ui/campaign/campaign.css'
 
@@ -270,11 +271,76 @@ function ShareB() {
   ]
 }
 
+
+/** Maquetas de «Modos de juego» más vistosa (Jose, 12/11/2026): A, lista con miniatura; B, dos tarjetas con imagen grande. */
+const pixel = { imageRendering: 'pixelated' as const }
+function DailyArt({ w, h }: { w: number; h: number }) {
+  return (
+    <span style={{ position: 'relative', display: 'block', width: w, height: h, overflow: 'hidden', borderRadius: 6, flex: 'none' }}>
+      <img src="ui/battle/pwt-stage.png" alt="" style={{ ...pixel, position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+      <img src="sprites/trainers/misty-vs.png" alt="" style={{ ...pixel, position: 'absolute', left: '12%', bottom: 0, height: '90%' }} />
+      <img src="ui/battle/vs-logo.png" alt="" style={{ ...pixel, position: 'absolute', right: '8%', top: '18%', width: '42%' }} />
+    </span>
+  )
+}
+function LockeArt({ w, h }: { w: number; h: number }) {
+  return (
+    <span style={{ position: 'relative', display: 'block', width: w, height: h, overflow: 'hidden', borderRadius: 6, flex: 'none' }}>
+      <img src="ui/emerald/mapa-hoenn.png" alt="" style={{ ...pixel, position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+      <img src="ui/emerald/entrenador-brendan.png" alt="" style={{ ...pixel, position: 'absolute', left: '50%', bottom: 0, height: '95%', transform: 'translateX(-50%)' }} />
+      <img src="ui/emerald/medalla-1.png" alt="" style={{ ...pixel, position: 'absolute', right: 6, top: 6, width: 22 }} />
+    </span>
+  )
+}
+function ModesA() {
+  const row = (art: ReactNode, title: string, hint: string, current = false) => (
+    <li>
+      <button type="button" className="btn modes-option" style={{ display: 'flex', gap: 14, alignItems: 'center', padding: 8, textAlign: 'left', height: 'auto' }}>
+        {art}
+        <span style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: 1 }}>
+          <span style={{ fontSize: '1.15em' }}>{title} {current && <span className="modes-current">· Estás aquí</span>}</span>
+          <span className="settings-hint" style={{ margin: 0 }}>{hint}</span>
+        </span>
+      </button>
+    </li>
+  )
+  return (
+    <Modal title="Modos de juego" onClose={() => undefined} className="modes-dialog">
+      <ul className="modes-list">
+        {row(<DailyArt w={112} h={84} />, 'Reto diario', 'Un combate al día contra un entrenador del PWT.', true)}
+        {row(<LockeArt w={112} h={84} />, 'Nuzlocke de Hoenn', 'Campaña con draft de Pokémon contra los gimnasios y la Liga de Esmeralda.')}
+      </ul>
+    </Modal>
+  )
+}
+function ModesB() {
+  const card = (art: ReactNode, title: string, hint: string, current = false) => (
+    <li style={{ flex: 1, minWidth: 0 }}>
+      <button type="button" className="btn modes-option" style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 8, height: '100%', alignItems: 'stretch', textAlign: 'left' }}>
+        {art}
+        <span style={{ fontSize: '1.15em' }}>{title}</span>
+        <span className="settings-hint" style={{ margin: 0 }}>{hint}</span>
+        {current && <span className="modes-current">Estás aquí</span>}
+      </button>
+    </li>
+  )
+  return (
+    <Modal title="Modos de juego" onClose={() => undefined} className="modes-dialog">
+      <ul className="modes-list" style={{ flexDirection: 'row' }}>
+        {card(<DailyArt w={'100%' as unknown as number} h={120} />, 'Reto diario', 'Un combate al día contra un entrenador del PWT.', true)}
+        {card(<LockeArt w={'100%' as unknown as number} h={120} />, 'Nuzlocke de Hoenn', 'Campaña con draft contra los gimnasios y la Liga de Esmeralda.')}
+      </ul>
+    </Modal>
+  )
+}
+
 const views: Record<string, () => ReactNode[]> = { 'compartir-a': ShareA, 'compartir-b': ShareB, mochila: Bag, 'evo-a': EvoScene, 'evo-b': EvoData, 'evo-c': EvoPc, 'objetos-pc': ItemsPc, canje: Exchange }
 const view = views[new URLSearchParams(location.search).get('v') ?? ''] ?? EvoScene
 // La pantalla real (no una maqueta), para revisar la imagen que exporta: `?v=compartir` (gana) o `?v=compartir-perdida`.
 const shareMode = new URLSearchParams(location.search).get('v')
-if (shareMode === 'movimientos') {
+if (shareMode === 'modos-a' || shareMode === 'modos-b') {
+  createRoot(document.getElementById('root')!).render(shareMode === 'modos-a' ? <ModesA /> : <ModesB />)
+} else if (shareMode === 'movimientos') {
   // La pantalla real de Movimientos con datos de ejemplo, para revisar SALIR y las flechas.
   const legal = ['tackle', 'growl', 'ember', 'leer', 'bite', 'flamewheel', 'rage', 'scaryface', 'slash', 'flamethrower'].map((id, i) => ({
     id, name: id.toUpperCase(), type: 'fire', typeName: 'FUEGO', category: 'Special' as const, power: 40, accuracy: 100, pp: 25, text: 'Línea uno\nlínea dos.', source: { level: i + 1 },
