@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { BattleView, MonView } from '../../battle/protocol'
-import { backSpot, ballTarget, barFrames, barHpAt, faintDrop, hpPauseMs, recallFrame, sendOutFrame, sendOutLength, viewHp } from './emeraldBattleModel'
+import { backSpot, ballParticles, ballTarget, barFrames, barHpAt, faintDrop, hpPauseMs, playerBallPath, recallFrame, releaseFrame, sendOutFrame, sendOutLength, viewHp } from './emeraldBattleModel'
 
 // UT-189 · Animaciones del combate de Esmeralda: barra de PS al ritmo de Gen 3 (CalcNewBarValue), caída al debilitarse, envío y retirada.
 const mon = (species: string, extra: Partial<MonView>): MonView => ({ species, hpPercent: 100, status: null, fainted: false, ...extra })
@@ -57,16 +57,33 @@ describe('envío y retirada', () => {
     expect(sendOutFrame(false, 'geodude', 21).ball?.frame).toBe(2)
     expect(sendOutFrame(false, 'geodude', 26).ball).toBeNull()
     expect(sendOutFrame(false, 'geodude', 28).mon).toMatchObject({ scale: 1, dy: 0, tint: 0.25 })
-    expect(sendOutFrame(false, 'geodude', sendOutLength(false))).toMatchObject({ mon: { scale: 1, tint: 0 }, healthboxDx: 0 })
+    expect(sendOutFrame(false, 'geodude', sendOutLength(false, 'geodude'))).toMatchObject({ mon: { scale: 1, tint: 0 }, healthboxDx: 0 })
   })
 
-  it('el jugador: la bola vuela 25 fotogramas en arco desde (24,68) hasta 24 px bajo su centro', () => {
+  it('el jugador: la bola sube en arco desde (24,68), gira a un tercio de velocidad cerca de lo alto y baja hasta 24 px bajo su centro', () => {
+    const path = playerBallPath('grovyle')
     const target = ballTarget(true, 'grovyle')
-    expect(sendOutFrame(true, 'grovyle', 0).ball).toEqual({ x: 24, y: 68, frame: 0 })
-    const middle = sendOutFrame(true, 'grovyle', 12).ball
-    // A mitad de camino, 30 px por encima de la recta.
-    expect(68 + ((target.y - 68) * 12) / 25 - middle!.y).toBeGreaterThan(28)
-    expect(sendOutFrame(true, 'grovyle', 25)).toMatchObject({ ball: { ...target, frame: 1 }, mon: { visible: true }, healthboxDx: 110 })
+    // 25 pasos, de los que los del giro cuentan uno de cada tres: 43 fotogramas en total.
+    expect(path).toHaveLength(43)
+    expect(releaseFrame(true, 'grovyle')).toBe(43)
+    expect(path[0]).toEqual({ x: 25, y: 65, angle: 0 })
+    // Empieza a girar al llegar la fase del arco a 35 (25/256 de vuelta por fotograma) y se para al abrirse.
+    expect(path[6].angle).toBe(0)
+    expect(path[7].angle).toBeCloseTo(-35.16, 1)
+    expect(Math.min(...path.map((step) => step.y))).toBeLessThan(58)
+    expect(Math.abs(path.at(-1)!.x - target.x)).toBeLessThanOrEqual(1)
+    expect(Math.abs(path.at(-1)!.y - target.y)).toBeLessThanOrEqual(4)
+    expect(sendOutFrame(true, 'grovyle', 43)).toMatchObject({ ball: { x: path.at(-1)!.x, y: path.at(-1)!.y, frame: 1, angle: 0 }, mon: { visible: true }, healthboxDx: 110 })
+  })
+
+  it('al abrirse salen 16 chispas, una por fotograma en 8 direcciones, que se alejan 2 px por fotograma desde 5 px por encima', () => {
+    expect(ballParticles({ x: 100, y: 60 }, 0)).toEqual([{ x: 100, y: 55, frame: 0 }])
+    expect(ballParticles({ x: 100, y: 60 }, 15)).toHaveLength(16)
+    // La primera (hacia abajo: Sin 0, Cos 0) a los 10 fotogramas va 18 px más abajo.
+    expect(ballParticles({ x: 100, y: 60 }, 10)[0]).toMatchObject({ x: 100, y: 55 + 18 })
+    expect(ballParticles({ x: 100, y: 60 }, 40)).toHaveLength(0)
+    expect(sendOutFrame(false, 'geodude', 15).particles).toEqual([])
+    expect(sendOutFrame(false, 'geodude', 16).particles).toHaveLength(1)
   })
 
   it('la retirada encoge 2/256 por fotograma 18 fotogramas y 16/256 después, tomando el color de la bola', () => {

@@ -91,6 +91,8 @@ export type BattleParams = {
    * (`HP_BAR_PAUSE_MS`). La campaña de Hoenn la alarga con lo que tarda la barra de Gen 3 en bajar (1 PS por fotograma).
    */
   hpPause?: (before: BattleView, after: BattleView) => number
+  /** Duraciones del cambio (por defecto, las del PWT). La campaña de Hoenn las alarga al vuelo y las chispas de la bola de Esmeralda. */
+  switchDurations?: Readonly<Record<keyof typeof SWITCH_DURATIONS_MS, number>>
 }
 
 /** Especie del Pokémon que entra en `|switch|p1a: X|Garchomp, L50, M|…` (id). */
@@ -313,7 +315,7 @@ export function useBattle(params: BattleParams): BattleController {
           sfxLater('ball-throw', ball.throw, false)
           sfxLater('ball-open', ball.open, false)
           cryLater(switchSpecies(step.line as string), ball.open, false)
-          if (!switching.endsWith('-send')) await pause(SWITCH_DURATIONS_MS.recall, false, false)
+          if (!switching.endsWith('-send')) await pause((paramsRef.current.switchDurations ?? SWITCH_DURATIONS_MS).recall, false, false)
           if (cancelled) return
           setSwitchStage('send')
         }
@@ -362,7 +364,7 @@ export function useBattle(params: BattleParams): BattleController {
         } else if (step.wait !== undefined) {
           await pause(step.wait, true)
         } else if (switching) {
-          await pause(SWITCH_DURATIONS_MS.send)
+          await pause((paramsRef.current.switchDurations ?? SWITCH_DURATIONS_MS).send)
         } else if (step.line !== null && VISUAL_LINE_TYPES.has(lineType(step.line))) {
           const hpPause = paramsRef.current.hpPause
           await pause(HP_LINE_TYPES.has(lineType(step.line)) ? (hpPause && hpBefore ? hpPause(hpBefore, shown) : HP_BAR_PAUSE_MS) : VISUAL_PAUSE_MS)

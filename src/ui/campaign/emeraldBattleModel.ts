@@ -147,11 +147,11 @@ export function faintDrop(player: boolean, species: string): { steps: number; di
 
 /**
  * Envío y retirada (pokeball.c y battle_anim_throw.c), en fotogramas de 60 Hz. El rival tiene la bola en su sitio 16 fotogramas
- * (SpriteCB_OpponentMonSendOut); la del jugador vuela 25 en arco desde (24,68) (SpriteCB_PlayerMonSendOut_1). Al abrirse (5 + 5
- * fotogramas), el Pokémon sale: crece de 0x28 a 0x100 en 12 fotogramas (sAffineAnim_Battler_Emerge) subiendo 16 px (HandleBallAnimEnd),
- * pasa del color de la Poké Ball al suyo en 16 (Task_FadeMon_ToNormal) y su caja de PS entra 115 px a 5 px por fotograma
- * (StartHealthboxSlideIn). La retirada encoge 2/256 por fotograma 18 fotogramas y 16/256 después (sAffineAnim_Battler_Return) mientras
- * toma el color de la bola.
+ * (SpriteCB_OpponentMonSendOut); la del jugador vuela desde (24,68) (`playerBallPath`). Al abrirse (5 + 5 fotogramas) salen 16 chispas
+ * (PokeBallOpenParticleAnimation) y el Pokémon: crece de 0x28 a 0x100 en 12 fotogramas (sAffineAnim_Battler_Emerge) subiendo 16 px
+ * (HandleBallAnimEnd), pasa del color de la Poké Ball al suyo en 16 (Task_FadeMon_ToNormal) y su caja de PS entra 115 px a 5 px por
+ * fotograma (StartHealthboxSlideIn). La retirada encoge 2/256 por fotograma 18 fotogramas y 16/256 después (sAffineAnim_Battler_Return)
+ * mientras toma el color de la bola.
  */
 export const SEND_OUT = { rivalWait: 16, throwFrames: 25, ballOpen: 5, emerge: 12, tint: 16, slide: 115, slideSpeed: 5 } as const
 /** Color de apertura de la Poké Ball (gBallOpenFadeColors[BALL_POKE] = RGB(31, 22, 30)). */
@@ -162,36 +162,117 @@ export const ballTarget = (player: boolean, species: string) =>
   player ? { x: backSpot(species).x + 32, y: backSpot(species).y + 32 + 24 } : { x: 172, y: 36 + 24 }
 
 const sineQ8 = (index: number) => Math.trunc(Math.sin(((index & 0xff) * Math.PI) / 128) * 256)
+const gbaSin = (index: number, amplitude: number) => Math.floor((amplitude * sineQ8(index)) / 256)
+const gbaCos = (index: number, amplitude: number) => gbaSin((index & 0xff) + 64, amplitude)
+const hiByte = (value: number) => (value >> 8) & 0xff
+
+export type BallStep = { x: number; y: number; angle: number }
+
+/**
+ * Vuelo de la bola del jugador (SpriteCB_PlayerMonSendOut_1/_2, InitAnimArcTranslation y AnimTranslateLinear, en enteros de 16 bits como
+ * el juego): recta de 25 pasos de (24,68) al destino con medio seno de 30 px hacia arriba; mientras la fase del arco va de 35 a 80, la
+ * bola va a un tercio de velocidad, la fase avanza a un tercio y gira 25/256 de vuelta por fotograma (sAffineAnim_BallRotate_4), y solo
+ * gasta un paso de cada tres. Una posición y giro (grados) por fotograma, hasta el de abrirse.
+ */
+export function playerBallPath(species: string): BallStep[] {
+  const target = ballTarget(true, species)
+  const dx = target.x - 24
+  const dy = target.y - 68
+  const delta = (d: number) => { const v = Math.floor(((Math.abs(d) << 8) & 0xffff) / SEND_OUT.throwFrames); return d < 0 ? v | 1 : v & ~1 }
+  let steps: number = SEND_OUT.throwFrames
+  let vx = delta(dx)
+  let vy = delta(dy)
+  let accX = 0
+  let accY = 0
+  const phaseSpeed = Math.floor(0x8000 / SEND_OUT.throwFrames)
+  let phase = 0
+  let spin = 0
+  let spinning = false
+  let angle = 0
+  const path: BallStep[] = []
+  const linear = () => {
+    if (!steps) return true
+    accX = (accX + vx) & 0xffff
+    accY = (accY + vy) & 0xffff
+    steps--
+    return false
+  }
+  const offset = () => ({ x2: vx & 1 ? -(accX >> 8) : accX >> 8, y2: vy & 1 ? -(accY >> 8) : accY >> 8 })
+  for (let frame = 0; frame < 200; frame++) {
+    const hi = hiByte(phase)
+    if (hi >= 35 && hi < 80) {
+      if (!spin) {
+        vx = (Math.trunc(vx / 3) & ~1) | (vx & 1)
+        vy = (Math.trunc(vy / 3) & ~1) | (vy & 1)
+        spinning = true
+      }
+      const kept = steps
+      linear()
+      phase = (phase + Math.trunc(phaseSpeed / 3)) & 0xffff
+      spin += 1
+      steps = spin % 3 !== 0 ? kept : kept - 1
+      if (hiByte(phase) >= 80) {
+        vx = ((vx * 3) & ~1) | (vx & 1)
+        vy = ((vy * 3) & ~1) | (vy & 1)
+      }
+    } else {
+      if (linear()) break
+      phase = (phase + phaseSpeed) & 0xffff
+    }
+    if (spinning) angle -= (25 * 360) / 256
+    const { x2, y2 } = offset()
+    path.push({ x: 24 + x2, y: 68 + y2 + gbaSin(hiByte(phase), -30), angle })
+  }
+  return path
+}
+
+/** Chispa al abrirse la bola: posición y fotograma de su tira (0, 1, 2 o el 0 volteado). */
+export type BallParticle = { x: number; y: number; frame: number }
+const PARTICLE_FRAMES = [0, 1, 2, 3, 2, 1]
+
+/**
+ * Chispas de la Poké Ball (PokeBallOpenParticleAnimation): una por fotograma durante 16, en 8 direcciones (la novena vuelve a la
+ * primera), que se alejan de 5 px por encima de la bola 2 px por fotograma hasta 48. `f`: fotogramas desde que se abre.
+ */
+export function ballParticles(center: { x: number; y: number }, f: number): BallParticle[] {
+  const particles: BallParticle[] = []
+  for (let k = 0; k < 16; k++) {
+    const age = f - k
+    if (age < 0 || age > 24) continue
+    const radius = Math.max(0, 2 * (age - 1))
+    const angle = (k % 8) * 32
+    particles.push({ x: center.x + gbaSin(angle, radius), y: center.y - 5 + gbaCos(angle, radius), frame: PARTICLE_FRAMES[age % 6] })
+  }
+  return particles
+}
 
 export type SendOutState = {
-  ball: { x: number; y: number; frame: number } | null
+  ball: { x: number; y: number; frame: number; angle: number } | null
+  particles: BallParticle[]
   mon: { visible: boolean; scale: number; dy: number; tint: number }
   /** Desplazamiento de la caja de PS mientras entra (`null`: aún no se ve). */
   healthboxDx: number | null
 }
 
+/** Fotograma en que se abre la bola: el rival a los 16; el jugador, cuando su bola llega. */
+export const releaseFrame = (player: boolean, species: string): number => (player ? playerBallPath(species).length : SEND_OUT.rivalWait)
+
 /** Lo que se ve `frame` fotogramas después de empezar a enviar al Pokémon. */
 export function sendOutFrame(player: boolean, species: string, frame: number): SendOutState {
-  const release = player ? SEND_OUT.throwFrames : SEND_OUT.rivalWait
-  const target = ballTarget(player, species)
+  const path = player ? playerBallPath(species) : null
+  const release = path ? path.length : SEND_OUT.rivalWait
+  // Se abre donde acaba el vuelo (el juego suma ahí el desplazamiento; puede quedar a unos píxeles del destino por el redondeo).
+  const end = path?.at(-1)
+  const target = end ? { x: end.x, y: end.y } : ballTarget(player, species)
   const f = frame - release
   let ball: SendOutState['ball'] = null
-  if (f < 0) {
-    if (player) {
-      // Arco de TranslateAnimHorizontalArc: recta de (24,68) al destino y medio seno de 30 px hacia arriba.
-      const t = frame / SEND_OUT.throwFrames
-      const lift = Math.floor((-30 * sineQ8(Math.floor((frame * 128) / SEND_OUT.throwFrames))) / 256)
-      ball = { x: Math.round(24 + (target.x - 24) * t), y: Math.round(68 + (target.y - 68) * t) + lift, frame: 0 }
-    } else {
-      ball = { ...target, frame: 0 }
-    }
-  } else if (f < 2 * SEND_OUT.ballOpen) {
-    ball = { ...target, frame: f < SEND_OUT.ballOpen ? 1 : 2 }
-  }
+  if (f < 0) ball = path ? { x: path[frame].x, y: path[frame].y, frame: 0, angle: path[frame].angle } : { ...target, frame: 0, angle: 0 }
+  else if (f < 2 * SEND_OUT.ballOpen) ball = { ...target, frame: f < SEND_OUT.ballOpen ? 1 : 2, angle: 0 }
   const emerging = f >= 0 && f < SEND_OUT.emerge
   const slide = f < 0 ? null : Math.max(0, SEND_OUT.slide - SEND_OUT.slideSpeed * (f + 1))
   return {
     ball,
+    particles: f < 0 ? [] : ballParticles(target, f),
     mon: {
       visible: f >= 0,
       scale: emerging ? (0x28 + 0x12 * f) / 256 : 1,
@@ -202,9 +283,9 @@ export function sendOutFrame(player: boolean, species: string, frame: number): S
   }
 }
 
-/** Fotogramas del envío completo (hasta que la caja de PS ha entrado). */
-export const sendOutLength = (player: boolean): number =>
-  (player ? SEND_OUT.throwFrames : SEND_OUT.rivalWait) + Math.ceil(SEND_OUT.slide / SEND_OUT.slideSpeed)
+/** Fotogramas del envío completo (hasta que la caja de PS ha entrado y las chispas se han ido). */
+export const sendOutLength = (player: boolean, species: string): number =>
+  releaseFrame(player, species) + Math.max(Math.ceil(SEND_OUT.slide / SEND_OUT.slideSpeed), 16 + 25)
 
 /** Retirada: escala y color de la bola `frame` fotogramas después de empezar. */
 export function recallFrame(frame: number): { visible: boolean; scale: number; tint: number } {

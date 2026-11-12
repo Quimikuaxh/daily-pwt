@@ -595,6 +595,17 @@ def evolution_bg():
     save(sprite(G / 'misc/evo_sparkle.png', (0, 0, 8, 8)), 'evolucion-destello.png')
     # Poké Ball del envío y la retirada (balls/poke.png): tres fotogramas de 16 x 16, cerrada, abriéndose y abierta (pokeball.c).
     save(sprite(G / 'balls/poke.png'), 'combate-poke-ball.png')
+    # Chispas al abrirse (battle_anims/sprites/particles.png con la paleta de circle_impact.png, sBallParticlePalettes): los fotogramas
+    # de sAnim_RegularBall, 0, 1, 2 y el 0 volteado, en una tira de 8 x 32.
+    parts = Image.open(G / 'battle_anims/sprites/particles.png')
+    pal = pngpal(Image.open(G / 'battle_anims/sprites/circle_impact.png'))
+    rgba = Image.new('RGBA', parts.size)
+    rgba.putdata([pal[c] + (255 if c else 0,) for c in parts.getdata()])
+    strip = Image.new('RGBA', (8, 32), (0, 0, 0, 0))
+    for k, (frame, flip) in enumerate([(0, False), (1, False), (2, False), (0, True)]):
+        cell = rgba.crop((0, 8 * frame, 8, 8 * frame + 8))
+        strip.paste(cell.transpose(Image.Transpose.FLIP_LEFT_RIGHT) if flip else cell, (0, 8 * k))
+    save(strip, 'combate-chispas-bola.png')
 
 
 comun.terminar((fonts, window_frames, region_map, dome_card, badges, portraits, species, factory, summary_pages, ball_display,

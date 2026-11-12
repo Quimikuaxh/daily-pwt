@@ -9,11 +9,17 @@ import type { CampaignBattleInput, EngineInit } from '../../battle/protocol'
 import type { CampaignState } from '../../core/nuzlocke/campaign'
 import { campaignMachineMoves } from '../../core/nuzlocke/calendar'
 import { campaignMemberMoves } from '../../core/nuzlocke/progression'
-import type { INTRO_DURATIONS_MS } from '../../hooks/useBattle'
+import type { INTRO_DURATIONS_MS, SWITCH_DURATIONS_MS } from '../../hooks/useBattle'
 
 export const EMERALD_INTRO: Readonly<Record<keyof typeof INTRO_DURATIONS_MS, number>> = {
-  vs: 0, iris: 0, enter: 0, challenge: 1200, rivalSend: 1300, playerSend: 1300,
+  vs: 0, iris: 0, enter: 0, challenge: 1200, rivalSend: 1300, playerSend: 1500,
 }
+
+/**
+ * Cambio en Esmeralda (`sendOutFrame`, `recallFrame`): la retirada son 33 fotogramas (550 ms) y el envío del jugador, hasta 84
+ * (vuelo de la bola de 43 y chispas de 41), así que 1,5 s; con las del PWT (500 y 1100 ms) se cortaban.
+ */
+export const EMERALD_SWITCH: Readonly<Record<keyof typeof SWITCH_DURATIONS_MS, number>> = { recall: 550, send: 1500 }
 
 /** `useBattle` pide un `EngineInit` para arrancar el cliente; en la campaña lo construye el worker, así que no se usa. */
 export const UNUSED_INIT = null as unknown as EngineInit
