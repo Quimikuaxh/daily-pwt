@@ -3,6 +3,7 @@
  * Ruta) y debajo la barra del portal con las medallas y la acción principal (maqueta aprobada: nada de eso tapa el mapa). Sin campaña
  * guardada, la barra ofrece empezarla; empezar otra sobre una en curso pide confirmación. Se carga aparte (lazy) desde App.
  */
+import { preloadCampaign } from './campaignPreload'
 import { availableDraftForms } from '../../core/nuzlocke/draftAvailability'
 import emeraldCalendar from '../../../data/nuzlocke/hoenn-emerald-calendar.json'
 import { campaignSteps } from './stepsModel'
@@ -196,6 +197,12 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
     else { save(next); setView('route') }
   }
   const places = useMemo(() => routePlaces(encounters), [])
+  // Precarga al entrar y al cambiar de tramo, equipo u oferta: la interfaz entera y los sprites que pueden salir pronto.
+  const preloadKey = state ? `${state.encounterIndex}|${state.members.map((member) => member.species).join(',')}|${state.offer.join(',')}` : ''
+  useEffect(() => {
+    preloadCampaign(state, encounters[state?.encounterIndex ?? 0].team.map((member) => member.species))
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo cuando cambia lo que se precarga
+  }, [preloadKey])
   // En los menús (Ruta, draft, equipo, movimientos, Mochila, Tienda, Liga) suena el tema de la ciudad del tramo; el combate, el
   // resultado, la evolución y el final llevan la suya.
   const menuView = !['battle', 'result', 'share', 'evolution', 'evolveOne'].includes(view)

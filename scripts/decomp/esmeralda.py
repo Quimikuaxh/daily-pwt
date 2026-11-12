@@ -620,5 +620,12 @@ def evolution_bg():
     save(strip, 'combate-chispas-bola.png')
 
 
+def asset_list():
+    # Lista de la interfaz para precargarla al entrar en la campaña (Jose, 12/11/2026: no conforme se necesita). Va la última:
+    # recoge todo lo que han escrito los pasos anteriores.
+    names = sorted(p.stem for p in Path('public/ui/emerald').glob('*.png'))
+    write_json(f'{DATA}/ui-assets.json', names)
+
+
 comun.terminar((fonts, window_frames, region_map, dome_card, badges, portraits, species, factory, summary_pages, ball_display,
-                storage, party_screen, moves_page, type_icons, list_arrows, battle_screen, final_screens, item_icons, bag, evolution_bg))
+                storage, party_screen, moves_page, type_icons, list_arrows, battle_screen, final_screens, item_icons, bag, evolution_bg, asset_list))
