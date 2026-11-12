@@ -34,7 +34,6 @@ export function DraftScreen({ candidates, pick, picks, level, rivalName, onRecru
   // Páginas de Datos: 0 INFO, 1 ESTADÍSTICAS, 2 MOVIMIENTOS (Jose, 12/11/2026: los cuatro con que llegaría).
   const [page, setPage] = useState(0)
   const [moveCursor, setMoveCursor] = useState(0)
-  const info = page === 0
   const [option, setOption] = useState(0)
   const mon = candidates[cursor] ?? candidates[0]
   const recruit = () => { setMenu(false); setCursor(0); setPage(0); onRecruit(mon.id) }
