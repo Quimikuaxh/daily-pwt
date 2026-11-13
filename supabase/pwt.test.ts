@@ -691,3 +691,36 @@ describe('historial y repeticiones (UT-105)', () => {
     await expect(t.as(null, `select * from pwt.shared_replays`)).rejects.toThrow()
   })
 })
+
+// UT-214 · Estadísticas e historial de cualquier jugador, aunque no sea amigo (Jose, 13/11/2026).
+describe('vista de cualquier jugador (UT-214)', () => {
+  it('cualquiera con sesión ve a cualquier jugador con nickname, con las reglas de la vista de un amigo', async () => {
+    const [ana, beto] = [await t.user(), await t.user()]
+    for (const [player, name] of [[ana, 'Ana_p'], [beto, 'Beto_p']] as const) {
+      await t.call(player, `select pwt.ensure_profile()`)
+      await t.call(player, `select pwt.set_nickname($1)`, [name])
+    }
+    const closed = addDays(t.today, -201)
+    for (const date of [closed, t.today]) {
+      await seedDay(beto.id, date, 'won', 4)
+      await t.as(beto, `select pwt.save_replay($1::date, 'datos')`, [date])
+    }
+    // Sin ser amigos, con cuenta.
+    const profile = await t.call<{ nickname: string; history: Array<{ date: string; watchable: boolean }> }>(ana, `select pwt.player_profile('BETO_P')`)
+    expect(profile.nickname).toBe('Beto_p')
+    expect(profile.history).toEqual([expect.objectContaining({ date: t.today, watchable: false }), expect.objectContaining({ date: closed, watchable: true })])
+    expect(await t.call(ana, `select pwt.get_player_replay('beto_p', $1::date)`, [closed])).toBe('datos')
+    await expect(t.call(ana, `select pwt.get_player_replay('beto_p', $1::date)`, [t.today])).rejects.toThrow('replay_not_found')
+    // Sin cuenta también se puede ver, y también se puede ver a un jugador sin cuenta.
+    const guest = await t.user(true)
+    await t.call(guest, `select pwt.ensure_profile()`)
+    expect((await t.call<{ nickname: string }>(guest, `select pwt.player_profile('beto_p')`)).nickname).toBe('Beto_p')
+    const guestName = await t.call<{ nickname: string }>(guest, `select pwt.ensure_profile()`)
+    expect((await t.call<{ nickname: string }>(ana, `select pwt.player_profile($1)`, [guestName.nickname])).nickname).toBe(guestName.nickname)
+    // Lo que no existe o sin sesión, no.
+    await expect(t.call(ana, `select pwt.player_profile('nadie_p')`)).rejects.toThrow('player_not_found')
+    await expect(t.as(null, `select pwt.player_profile('beto_p')`)).rejects.toThrow()
+    await expect(t.as(ana, `select pwt.player_of_caller('beto_p')`)).rejects.toThrow()
+  })
+})
+

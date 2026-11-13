@@ -71,6 +71,8 @@ export const esCloud = {
   },
 
   ranking: {
+    // Cualquier jugador del ranking se puede abrir (Jose, 13/11/2026).
+    openPlayer: (nickname: string) => `Ver las estadísticas de ${nickname}`,
     points: 'Puntos del mes',
     streak: 'Racha',
     global: 'Todos',
@@ -115,7 +117,10 @@ export const esCloud = {
     list: 'Tus amigos',
     none: 'Aún no tienes amigos añadidos.',
     open: (nickname: string) => `Ver las estadísticas de ${nickname}`,
+    // Ver a cualquier jugador desde la búsqueda, sin ser amigo (Jose, 13/11/2026).
+    view: 'Ver',
     back: '‹ Amigos',
+    backToRankings: '‹ Rankings',
     history: 'Historial',
     noHistory: 'Aún no tiene combates con repetición.',
     profileFailed: 'No se han podido cargar sus datos.',

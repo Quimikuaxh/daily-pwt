@@ -96,8 +96,8 @@ export interface CloudApi {
   removeFriend(nickname: string): Promise<void>
   listFriends(): Promise<PlayerRow[]>
   /** Solo de un amigo (`not_friends` si no lo es) y sin el día de hoy hasta que se cierre. */
-  friendProfile(nickname: string): Promise<FriendProfile>
-  getFriendReplay(nickname: string, date: string): Promise<string>
+  playerProfile(nickname: string): Promise<FriendProfile>
+  getPlayerReplay(nickname: string, date: string): Promise<string>
   /** F5: repetición comprimida del oficial de ese día (`encodeReplay`). */
   saveReplay(date: string, data: string): Promise<void>
   myHistory(): Promise<HistoryItem[]>

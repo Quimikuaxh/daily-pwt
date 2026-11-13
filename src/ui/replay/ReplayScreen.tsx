@@ -45,7 +45,7 @@ export function ReplayScreen({ source, api, ready, ownName, data, settings, onSo
     let cancelled = false
     const load = async () => {
       if (source.kind === 'mine') return { replay: await decodeReplay(await api.getMyReplay(source.date)), mine: false }
-      if (source.kind === 'friend') return { replay: await decodeReplay(await api.getFriendReplay(source.nickname, source.date)), mine: false }
+      if (source.kind === 'friend') return { replay: await decodeReplay(await api.getPlayerReplay(source.nickname, source.date)), mine: false }
       const shared = await api.getSharedReplay(source.id)
       return { replay: await decodeReplay(shared.data), mine: shared.mine, nickname: shared.nickname }
     }

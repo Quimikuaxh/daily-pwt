@@ -225,7 +225,7 @@ describe('cuenta en la interfaz (UT-100)', () => {
     const api = fakeApi({
       mySummary: async () => ({ nickname: 'Jose', registered: true, points: [], incomingRequests: 0 }),
       listFriends: async () => [{ nickname: 'Eva', relation: 'friend' }],
-      friendProfile: async (nickname) => ({
+      playerProfile: async (nickname) => ({
         nickname,
         days: [cloudDay({ date: '2026-10-25', status: 'won' }), cloudDay({ date: '2026-10-26', status: 'lost', survivors: 0 })],
         points: [{ date: '2026-10-25', points: 4.5, provisional: false }],
@@ -241,7 +241,7 @@ describe('cuenta en la interfaz (UT-100)', () => {
     await user.click(await screen.findByRole('tab', { name: 'Amigos' }))
     await user.click(await screen.findByRole('button', { name: 'Ver las estadísticas de Eva' }))
     expect(await screen.findByRole('heading', { name: 'Eva' })).toBeInTheDocument()
-    expect(api.friendProfile).toHaveBeenCalledWith('Eva')
+    expect(api.playerProfile).toHaveBeenCalledWith('Eva')
     expect(await screen.findByTestId('stats-played')).toHaveTextContent('2')
     expect(screen.getByTestId('stats-month-points')).toHaveTextContent('4,5')
     // De otro: sin botón de compartir; su historial solo con «Ver repetición».
@@ -258,7 +258,7 @@ describe('cuenta en la interfaz (UT-100)', () => {
     const api = fakeApi({
       mySummary: async () => ({ nickname: 'Jose', registered: true, points: [], incomingRequests: 0 }),
       listFriends: async () => [{ nickname: 'Eva', relation: 'friend' }],
-      friendProfile: async (nickname) => ({
+      playerProfile: async (nickname) => ({
         nickname,
         days: [cloudDay({ date: '2026-10-26', status: 'won', survivors: 2 }), cloudDay({ date: TODAY, status: 'won', survivors: 5 })],
         points: [{ date: '2026-10-26', points: 4.5, provisional: false }],
@@ -282,7 +282,7 @@ describe('cuenta en la interfaz (UT-100)', () => {
     const api = fakeApi({
       mySummary: async () => ({ nickname: 'Jose', registered: true, points: [], incomingRequests: 0 }),
       listFriends: async () => [{ nickname: 'Eva', relation: 'friend' }],
-      friendProfile: async (nickname) => ({
+      playerProfile: async (nickname) => ({
         nickname,
         days: [],
         points: [],
@@ -303,7 +303,7 @@ describe('cuenta en la interfaz (UT-100)', () => {
     const api = fakeApi({
       mySummary: async () => ({ nickname: 'Jose', registered: true, points: [], incomingRequests: 0 }),
       listFriends: async () => [{ nickname: 'Eva', relation: 'friend' }],
-      friendProfile: async () => {
+      playerProfile: async () => {
         throw serverError('not_friends')
       },
     })
@@ -338,4 +338,31 @@ describe('cuenta en la interfaz (UT-100)', () => {
     expect(screen.queryByText(/provisional/i)).toBeNull()
   })
 
+
+  // UT-214 (Jose, 13/11/2026): cualquier jugador del ranking o de la búsqueda se puede abrir, aunque no sea amigo.
+  it('desde el ranking se abre cualquier jugador y «‹ Rankings» vuelve al mismo ranking; desde la búsqueda, «Ver»', async () => {
+    const api = fakeApi({
+      mySummary: async () => ({ nickname: 'Jose', registered: true, points: [], incomingRequests: 0 }),
+      pointsRanking: async () => rankingPage([
+        { rank: 1, nickname: 'Bea', verified: false, points: 12.5, provisional: false, me: false },
+        { rank: 2, nickname: 'Jose', verified: true, points: 3, provisional: false, me: true },
+      ]),
+      searchPlayers: async () => [{ nickname: 'Carla', relation: 'none' }],
+    })
+    const { user } = await mount(GOOGLE, api)
+    await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
+    await user.click(await screen.findByRole('tab', { name: 'Rankings' }))
+    expect(screen.queryByRole('button', { name: 'Ver las estadísticas de Jose' })).toBeNull()
+    await user.click(await screen.findByRole('button', { name: 'Ver las estadísticas de Bea' }))
+    expect(await screen.findByRole('heading', { name: 'Bea' })).toBeInTheDocument()
+    expect(api.playerProfile).toHaveBeenCalledWith('Bea')
+    await user.click(screen.getByRole('button', { name: '‹ Rankings' }))
+    expect(await screen.findByRole('table')).toBeVisible()
+    await user.click(screen.getByRole('tab', { name: /Amigos/ }))
+    await user.type(await screen.findByLabelText(/Buscar/), 'Car')
+    await user.click(screen.getByRole('button', { name: 'Buscar' }))
+    await user.click(await screen.findByRole('button', { name: 'Ver las estadísticas de Carla' }))
+    expect(await screen.findByRole('heading', { name: 'Carla' })).toBeInTheDocument()
+  })
 })
+

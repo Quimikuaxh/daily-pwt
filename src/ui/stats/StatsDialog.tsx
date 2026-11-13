@@ -4,6 +4,7 @@ import type { HistoryItem } from '../../cloud/api'
 import type { HistoryArt } from '../replay/historyArt'
 import { isPlayer, type AccountState } from '../../cloud/state'
 import { es } from '../../i18n/es'
+import { esCloud } from '../../i18n/esCloud'
 import type { GameStore } from '../../storage/gameStore'
 import { Modal } from '../common/Modal'
 import { StatsSummary } from './StatsSummary'
@@ -75,7 +76,13 @@ export function StatsDialog({ store, today, onClose, account, accountState, trai
       <div id="stats-tabpanel" role={withAccount ? 'tabpanel' : undefined} aria-labelledby={withAccount ? `stats-tab-${tab}` : undefined}>
         {tab === 'mine' && <MyStats store={store} today={today} accountState={accountState} />}
         <Suspense fallback={<Loading label={es.ranking.loading} />}>
-        {tab === 'rankings' && account && <RankingsPanel api={account.api} today={today} member={member} />}
+        {/* El ranking sigue montado mientras se mira a un jugador: al volver conserva el ranking, la vista y la página. */}
+        {tab === 'rankings' && account && (
+          <>
+            <div hidden={friend !== null}><RankingsPanel api={account.api} today={today} member={member} onOpen={setFriend} /></div>
+            {friend && account.api && <FriendView api={account.api} nickname={friend} today={today} onBack={() => setFriend(null)} backLabel={esCloud.friends.backToRankings} trainerName={trainerName} art={historyArt} onWatch={onWatchFriendReplay} />}
+          </>
+        )}
         {tab === 'friends' && account &&
           (member && account.api ? (
             friend ? (
