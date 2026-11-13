@@ -1,0 +1,1025 @@
+{
+  "schemaVersion": 1,
+  "rulesVersion": "unova-n2b2-items:2026-11-13",
+  "approval": "2026-11-13",
+  "exchangePoints": {
+    "perGym": 8,
+    "flawlessBonus": 3
+  },
+  "source": {
+    "items": {
+      "url": "https://www.serebii.net/black2white2/items.shtml",
+      "sha256": "4a21d5350374762ee1d68c4d330a042fc0c2a7317bc79ac3c9b1dd5855a2a0bc"
+    },
+    "subway": {
+      "url": "https://www.serebii.net/black2white2/battlesubway.shtml",
+      "sha256": "a964d25fe5cb40bf7fa1823a3413bb4f3a27cd36f869e5705f43eb5dc5c6e6cf"
+    }
+  },
+  "milestones": [
+    "cheren",
+    "hiedra",
+    "camus",
+    "camila",
+    "yakon",
+    "gerania",
+    "lirio",
+    "ciprian",
+    "anis",
+    "aza",
+    "catleya",
+    "lotto",
+    "iris"
+  ],
+  "held": {
+    "berryjuice": {
+      "kind": "held",
+      "before": "lirio",
+      "units": [
+        {
+          "before": "lirio",
+          "zone": "undellatown"
+        }
+      ]
+    },
+    "aspearberry": {
+      "kind": "berry",
+      "before": "camus",
+      "infinite": true,
+      "from": "casteliacity",
+      "units": []
+    },
+    "cheriberry": {
+      "kind": "berry",
+      "before": "camus",
+      "infinite": true,
+      "from": "casteliacity",
+      "units": []
+    },
+    "chestoberry": {
+      "kind": "berry",
+      "before": "camus",
+      "infinite": true,
+      "from": "casteliacity",
+      "units": []
+    },
+    "grepaberry": {
+      "kind": "berry",
+      "before": "yakon",
+      "infinite": true,
+      "from": "route5",
+      "units": []
+    },
+    "habanberry": {
+      "kind": "berry",
+      "before": "yakon",
+      "infinite": true,
+      "from": "driftveilcity",
+      "units": []
+    },
+    "hondewberry": {
+      "kind": "berry",
+      "before": "yakon",
+      "infinite": true,
+      "from": "route5",
+      "units": []
+    },
+    "kelpsyberry": {
+      "kind": "berry",
+      "before": "yakon",
+      "infinite": true,
+      "from": "route5",
+      "units": []
+    },
+    "oranberry": {
+      "kind": "berry",
+      "before": "cheren",
+      "infinite": true,
+      "from": "route19",
+      "units": []
+    },
+    "pechaberry": {
+      "kind": "berry",
+      "before": "cheren",
+      "infinite": true,
+      "from": "route20",
+      "units": []
+    },
+    "persimberry": {
+      "kind": "berry",
+      "before": "lirio",
+      "infinite": true,
+      "from": "reversalmountain",
+      "units": []
+    },
+    "pomegberry": {
+      "kind": "berry",
+      "before": "yakon",
+      "infinite": true,
+      "from": "route5",
+      "units": []
+    },
+    "qualotberry": {
+      "kind": "berry",
+      "before": "yakon",
+      "infinite": true,
+      "from": "route5",
+      "units": []
+    },
+    "rawstberry": {
+      "kind": "berry",
+      "before": "camus",
+      "infinite": true,
+      "from": "casteliacity",
+      "units": []
+    },
+    "sitrusberry": {
+      "kind": "berry",
+      "before": "camila",
+      "infinite": true,
+      "from": "route4",
+      "units": []
+    },
+    "tamatoberry": {
+      "kind": "berry",
+      "before": "yakon",
+      "infinite": true,
+      "from": "route5",
+      "units": []
+    },
+    "airballoon": {
+      "kind": "held",
+      "before": "yakon",
+      "units": [
+        {
+          "before": "yakon",
+          "zone": "driftveilcity"
+        }
+      ]
+    },
+    "bigroot": {
+      "kind": "held",
+      "before": "yakon",
+      "units": [
+        {
+          "before": "yakon",
+          "zone": "driftveilcity"
+        }
+      ]
+    },
+    "blacksludge": {
+      "kind": "held",
+      "before": "camus",
+      "units": [
+        {
+          "before": "camus",
+          "zone": "casteliasewers"
+        }
+      ]
+    },
+    "blackglasses": {
+      "kind": "held",
+      "before": "camus",
+      "units": [
+        {
+          "before": "camus",
+          "zone": "casteliacity"
+        }
+      ]
+    },
+    "charcoal": {
+      "kind": "held",
+      "before": "camus",
+      "units": [
+        {
+          "before": "camus",
+          "zone": "casteliacity"
+        },
+        {
+          "before": "camus",
+          "zone": "casteliacity"
+        }
+      ]
+    },
+    "darkgem": {
+      "kind": "held",
+      "before": "lirio",
+      "units": [
+        {
+          "before": "lirio",
+          "zone": "route9"
+        }
+      ]
+    },
+    "destinyknot": {
+      "kind": "held",
+      "before": "camus",
+      "units": [
+        {
+          "before": "camus",
+          "zone": "casteliacity"
+        }
+      ]
+    },
+    "dracoplate": {
+      "kind": "held",
+      "before": "lirio",
+      "units": [
+        {
+          "before": "lirio",
+          "zone": "undellabay"
+        }
+      ]
+    },
+    "dragonfang": {
+      "kind": "held",
+      "before": "anis",
+      "units": [
+        {
+          "before": "anis",
+          "zone": "victoryroadb2w2"
+        }
+      ]
+    },
+    "dragongem": {
+      "kind": "held",
+      "before": "gerania",
+      "units": [
+        {
+          "before": "gerania",
+          "zone": "mistraltoncave"
+        }
+      ]
+    },
+    "electricgem": {
+      "kind": "held",
+      "before": "gerania",
+      "units": [
+        {
+          "before": "gerania",
+          "zone": "chargestonecave"
+        }
+      ]
+    },
+    "eviolite": {
+      "kind": "held",
+      "before": "camus",
+      "units": [
+        {
+          "before": "camus",
+          "zone": "casteliacity"
+        }
+      ]
+    },
+    "expertbelt": {
+      "kind": "held",
+      "before": "cheren",
+      "units": [
+        {
+          "before": "yakon",
+          "zone": "driftveilcity"
+        },
+        {
+          "before": "cheren",
+          "zone": "route19"
+        }
+      ]
+    },
+    "firegem": {
+      "kind": "held",
+      "before": "lirio",
+      "units": [
+        {
+          "before": "lirio",
+          "zone": "reversalmountain"
+        }
+      ]
+    },
+    "flameorb": {
+      "kind": "held",
+      "before": "lirio",
+      "units": [
+        {
+          "before": "lirio",
+          "zone": "reversalmountain"
+        }
+      ]
+    },
+    "floatstone": {
+      "kind": "held",
+      "before": "lirio",
+      "units": [
+        {
+          "before": "lirio",
+          "zone": "opelucidcity"
+        }
+      ]
+    },
+    "flyinggem": {
+      "kind": "held",
+      "before": "gerania",
+      "units": [
+        {
+          "before": "gerania",
+          "zone": "mistraltoncity"
+        }
+      ]
+    },
+    "fullincense": {
+      "kind": "held",
+      "before": "yakon",
+      "infinite": true,
+      "from": "driftveilcity",
+      "units": []
+    },
+    "ghostgem": {
+      "kind": "held",
+      "before": "lirio",
+      "units": [
+        {
+          "before": "lirio",
+          "zone": "celestialtower"
+        }
+      ]
+    },
+    "gripclaw": {
+      "kind": "held",
+      "before": "camila",
+      "units": [
+        {
+          "before": "camila",
+          "zone": "route4"
+        }
+      ]
+    },
+    "groundgem": {
+      "kind": "held",
+      "before": "camila",
+      "units": [
+        {
+          "before": "camila",
+          "zone": "desertresort"
+        }
+      ]
+    },
+    "hardstone": {
+      "kind": "held",
+      "before": "camus",
+      "units": [
+        {
+          "before": "camus",
+          "zone": "relicpassage"
+        }
+      ]
+    },
+    "icegem": {
+      "kind": "held",
+      "before": "anis",
+      "units": [
+        {
+          "before": "anis",
+          "zone": "giantchasm"
+        }
+      ]
+    },
+    "laxincense": {
+      "kind": "held",
+      "before": "yakon",
+      "infinite": true,
+      "from": "driftveilcity",
+      "units": []
+    },
+    "leftovers": {
+      "kind": "held",
+      "before": "camus",
+      "units": [
+        {
+          "before": "camus",
+          "zone": "casteliasewers"
+        }
+      ]
+    },
+    "machobrace": {
+      "kind": "held",
+      "before": "camila",
+      "units": [
+        {
+          "before": "camila",
+          "zone": "route16"
+        }
+      ]
+    },
+    "magnet": {
+      "kind": "held",
+      "before": "gerania",
+      "units": [
+        {
+          "before": "gerania",
+          "zone": "chargestonecave"
+        }
+      ]
+    },
+    "metronome": {
+      "kind": "held",
+      "before": "lirio",
+      "units": [
+        {
+          "before": "lirio",
+          "zone": "lacunosatown"
+        }
+      ]
+    },
+    "miracleseed": {
+      "kind": "held",
+      "before": "camus",
+      "units": [
+        {
+          "before": "camus",
+          "zone": "casteliacity"
+        },
+        {
+          "before": "camus",
+          "zone": "casteliacity"
+        }
+      ]
+    },
+    "mysticwater": {
+      "kind": "held",
+      "before": "camus",
+      "units": [
+        {
+          "before": "camila",
+          "zone": "route4"
+        },
+        {
+          "before": "camus",
+          "zone": "casteliacity"
+        }
+      ]
+    },
+    "normalgem": {
+      "kind": "held",
+      "before": "anis",
+      "units": [
+        {
+          "before": "anis",
+          "zone": "victoryroadb2w2"
+        }
+      ]
+    },
+    "oddincense": {
+      "kind": "held",
+      "before": "yakon",
+      "infinite": true,
+      "from": "driftveilcity",
+      "units": []
+    },
+    "poisonbarb": {
+      "kind": "held",
+      "before": "anis",
+      "units": [
+        {
+          "before": "anis",
+          "zone": "route22"
+        }
+      ]
+    },
+    "poisongem": {
+      "kind": "held",
+      "before": "camus",
+      "units": [
+        {
+          "before": "camus",
+          "zone": "casteliasewers"
+        }
+      ]
+    },
+    "powerband": {
+      "kind": "held",
+      "before": "lirio",
+      "units": [
+        {
+          "before": "lirio",
+          "zone": "route13"
+        },
+        {
+          "before": "anis",
+          "zone": "plasmafrigate"
+        }
+      ]
+    },
+    "powerlens": {
+      "kind": "held",
+      "before": "lirio",
+      "units": [
+        {
+          "before": "lirio",
+          "zone": "route13"
+        }
+      ]
+    },
+    "quickclaw": {
+      "kind": "held",
+      "before": "camus",
+      "units": [
+        {
+          "before": "camus",
+          "zone": "casteliacity"
+        }
+      ]
+    },
+    "ringtarget": {
+      "kind": "held",
+      "before": "lirio",
+      "units": [
+        {
+          "before": "lirio",
+          "zone": "opelucidcity"
+        }
+      ]
+    },
+    "rockgem": {
+      "kind": "held",
+      "before": "camus",
+      "units": [
+        {
+          "before": "camus",
+          "zone": "relicpassage"
+        }
+      ]
+    },
+    "rockincense": {
+      "kind": "held",
+      "before": "yakon",
+      "infinite": true,
+      "from": "driftveilcity",
+      "units": []
+    },
+    "rockyhelmet": {
+      "kind": "held",
+      "before": "camus",
+      "units": [
+        {
+          "before": "camus",
+          "zone": "relicpassage"
+        }
+      ]
+    },
+    "roseincense": {
+      "kind": "held",
+      "before": "yakon",
+      "infinite": true,
+      "from": "driftveilcity",
+      "units": []
+    },
+    "scopelens": {
+      "kind": "held",
+      "before": "camus",
+      "units": [
+        {
+          "before": "camus",
+          "zone": "casteliacity"
+        }
+      ]
+    },
+    "seaincense": {
+      "kind": "held",
+      "before": "yakon",
+      "infinite": true,
+      "from": "driftveilcity",
+      "units": []
+    },
+    "sharpbeak": {
+      "kind": "held",
+      "before": "gerania",
+      "units": [
+        {
+          "before": "gerania",
+          "zone": "mistraltoncity"
+        }
+      ]
+    },
+    "shellbell": {
+      "kind": "held",
+      "before": "yakon",
+      "units": [
+        {
+          "before": "yakon",
+          "zone": "driftveilcity"
+        }
+      ]
+    },
+    "silkscarf": {
+      "kind": "held",
+      "before": "hiedra",
+      "units": [
+        {
+          "before": "hiedra",
+          "zone": "virbankcomplex"
+        }
+      ]
+    },
+    "softsand": {
+      "kind": "held",
+      "before": "camila",
+      "units": [
+        {
+          "before": "camila",
+          "zone": "desertresort"
+        }
+      ]
+    },
+    "spelltag": {
+      "kind": "held",
+      "before": "lirio",
+      "units": [
+        {
+          "before": "lirio",
+          "zone": "lentimastown"
+        },
+        {
+          "before": "lirio",
+          "zone": "strangehouse"
+        }
+      ]
+    },
+    "splashplate": {
+      "kind": "held",
+      "before": "lirio",
+      "units": [
+        {
+          "before": "lirio",
+          "zone": "undellabay"
+        }
+      ]
+    },
+    "stickybarb": {
+      "kind": "held",
+      "before": "cheren",
+      "units": [
+        {
+          "before": "cheren",
+          "zone": "route20"
+        }
+      ]
+    },
+    "toxicorb": {
+      "kind": "held",
+      "before": "lirio",
+      "units": [
+        {
+          "before": "lirio",
+          "zone": "reversalmountain"
+        }
+      ]
+    },
+    "twistedspoon": {
+      "kind": "held",
+      "before": "camus",
+      "units": [
+        {
+          "before": "camus",
+          "zone": "casteliasewers"
+        }
+      ]
+    },
+    "watergem": {
+      "kind": "held",
+      "before": "lirio",
+      "units": [
+        {
+          "before": "lirio",
+          "zone": "reversalmountain"
+        }
+      ]
+    },
+    "waveincense": {
+      "kind": "held",
+      "before": "yakon",
+      "infinite": true,
+      "from": "driftveilcity",
+      "units": []
+    },
+    "widelens": {
+      "kind": "held",
+      "before": "camila",
+      "units": [
+        {
+          "before": "camila",
+          "zone": "route4"
+        }
+      ]
+    }
+  },
+  "evolution": {
+    "dragonscale": {
+      "before": "anis",
+      "zone": "victoryroadb2w2"
+    },
+    "duskstone": {
+      "before": "lirio",
+      "zone": "strangehouse"
+    },
+    "electirizer": {
+      "before": "anis",
+      "zone": "plasmafrigate"
+    },
+    "firestone": {
+      "before": "camila",
+      "zone": "desertresort"
+    },
+    "leafstone": {
+      "before": "camila",
+      "zone": "lostlornforest"
+    },
+    "magmarizer": {
+      "before": "anis",
+      "zone": "plasmafrigate"
+    },
+    "moonstone": {
+      "before": "gerania",
+      "zone": "route6"
+    },
+    "prismscale": {
+      "before": "lirio",
+      "zone": "undellatown"
+    },
+    "razorclaw": {
+      "before": "anis",
+      "zone": "giantchasm"
+    },
+    "razorfang": {
+      "before": "lirio",
+      "zone": "route11"
+    },
+    "shinystone": {
+      "before": "gerania",
+      "zone": "route6"
+    },
+    "sunstone": {
+      "before": "camila",
+      "zone": "reliccastle"
+    },
+    "thunderstone": {
+      "before": "camila",
+      "zone": "nimbasacity"
+    },
+    "waterstone": {
+      "before": "cheren",
+      "zone": "route19"
+    }
+  },
+  "excluded": {
+    "dawnstone": "después de la Liga; aleatorio (nubes de polvo)",
+    "deepseascale": "después de la Liga",
+    "deepseatooth": "después de la Liga",
+    "dubiousdisc": "después de la Liga",
+    "kingsrock": "después de la Liga",
+    "metalcoat": "después de la Liga",
+    "ovalstone": "después de la Liga",
+    "protector": "después de la Liga",
+    "reapercloth": "después de la Liga",
+    "upgrade": "después de la Liga",
+    "aguavberry": "sin fuente",
+    "apicotberry": "sin fuente",
+    "babiriberry": "sin fuente",
+    "belueberry": "sin fuente",
+    "blukberry": "sin fuente",
+    "chartiberry": "sin fuente",
+    "chilanberry": "sin fuente",
+    "chopleberry": "sin fuente",
+    "cobaberry": "sin fuente",
+    "colburberry": "sin fuente",
+    "cornnberry": "sin fuente",
+    "custapberry": "sin fuente",
+    "durinberry": "sin fuente",
+    "enigmaberry": "sin fuente",
+    "figyberry": "sin fuente",
+    "ganlonberry": "sin fuente",
+    "iapapaberry": "sin fuente",
+    "jabocaberry": "sin fuente",
+    "kasibberry": "sin fuente",
+    "kebiaberry": "sin fuente",
+    "lansatberry": "sin fuente",
+    "leppaberry": "sin fuente",
+    "liechiberry": "sin fuente",
+    "lumberry": "después de la Liga",
+    "magoberry": "sin fuente",
+    "magostberry": "sin fuente",
+    "micleberry": "sin fuente",
+    "nanabberry": "sin fuente",
+    "nomelberry": "sin fuente",
+    "occaberry": "sin fuente",
+    "pamtreberry": "sin fuente",
+    "passhoberry": "sin fuente",
+    "payapaberry": "sin fuente",
+    "petayaberry": "sin fuente",
+    "pinapberry": "sin fuente",
+    "rabutaberry": "sin fuente",
+    "razzberry": "sin fuente",
+    "rindoberry": "sin fuente",
+    "rowapberry": "sin fuente",
+    "salacberry": "sin fuente",
+    "shucaberry": "sin fuente",
+    "spelonberry": "sin fuente",
+    "starfberry": "sin fuente",
+    "tangaberry": "sin fuente",
+    "wacanberry": "sin fuente",
+    "watmelberry": "sin fuente",
+    "wepearberry": "sin fuente",
+    "wikiberry": "sin fuente",
+    "yacheberry": "sin fuente",
+    "absorbbulb": "tienda de PB (canje)",
+    "adamantorb": "después de la Liga",
+    "bindingband": "tienda de PB (canje)",
+    "blackbelt": "después de la Liga",
+    "brightpowder": "tienda de PB (canje)",
+    "buggem": "después de la Liga; aleatorio (nubes de polvo)",
+    "burndrive": "después de la Liga",
+    "cellbattery": "tienda de PB (canje)",
+    "chilldrive": "después de la Liga",
+    "choiceband": "tienda de PB (canje)",
+    "choicescarf": "tienda de PB (canje)",
+    "choicespecs": "tienda de PB (canje)",
+    "damprock": "después de la Liga",
+    "dousedrive": "después de la Liga",
+    "dreadplate": "después de la Liga",
+    "earthplate": "después de la Liga",
+    "ejectbutton": "tienda de PB (canje)",
+    "fightinggem": "después de la Liga; aleatorio (nubes de polvo)",
+    "fistplate": "después de la Liga",
+    "flameplate": "después de la Liga",
+    "focusband": "tienda de PB (canje)",
+    "focussash": "tienda de PB (canje)",
+    "grassgem": "después de la Liga; aleatorio (nubes de polvo)",
+    "griseousorb": "después de la Liga",
+    "heatrock": "después de la Liga",
+    "icicleplate": "después de la Liga",
+    "icyrock": "después de la Liga",
+    "insectplate": "después de la Liga",
+    "ironball": "tienda de PB (canje)",
+    "ironplate": "después de la Liga",
+    "laggingtail": "sin fuente",
+    "lifeorb": "tienda de PB (canje)",
+    "lightball": "sin fuente",
+    "lightclay": "sin fuente",
+    "luckypunch": "sin fuente",
+    "lustrousorb": "después de la Liga",
+    "meadowplate": "después de la Liga",
+    "mentalherb": "sin fuente",
+    "metalpowder": "sin fuente",
+    "mindplate": "después de la Liga",
+    "muscleband": "tienda de PB (canje)",
+    "nevermeltice": "después de la Liga",
+    "poweranklet": "tienda de PB (canje)",
+    "powerbelt": "tienda de PB (canje)",
+    "powerbracer": "tienda de PB (canje)",
+    "powerherb": "tienda de PB (canje)",
+    "powerweight": "tienda de PB (canje)",
+    "psychicgem": "después de la Liga; aleatorio (nubes de polvo)",
+    "quickpowder": "sin fuente",
+    "redcard": "tienda de PB (canje)",
+    "shedshell": "sin fuente",
+    "shockdrive": "después de la Liga",
+    "silverpowder": "sin fuente",
+    "skyplate": "después de la Liga",
+    "smoothrock": "después de la Liga",
+    "souldew": "después de la Liga",
+    "spookyplate": "después de la Liga",
+    "steelgem": "después de la Liga; aleatorio (nubes de polvo)",
+    "stick": "sin fuente",
+    "stoneplate": "después de la Liga",
+    "thickclub": "sin fuente",
+    "toxicplate": "después de la Liga",
+    "whiteherb": "tienda de PB (canje)",
+    "wiseglasses": "tienda de PB (canje)",
+    "zapplate": "después de la Liga",
+    "zoomlens": "tienda de PB (canje)"
+  },
+  "exchange": [
+    {
+      "item": "scopelens",
+      "price": 8
+    },
+    {
+      "item": "widelens",
+      "price": 8
+    },
+    {
+      "item": "muscleband",
+      "price": 8
+    },
+    {
+      "item": "wiseglasses",
+      "price": 8
+    },
+    {
+      "item": "razorclaw",
+      "price": 8
+    },
+    {
+      "item": "razorfang",
+      "price": 8
+    },
+    {
+      "item": "bindingband",
+      "price": 8
+    },
+    {
+      "item": "brightpowder",
+      "price": 12
+    },
+    {
+      "item": "focusband",
+      "price": 12
+    },
+    {
+      "item": "zoomlens",
+      "price": 12
+    },
+    {
+      "item": "ironball",
+      "price": 12
+    },
+    {
+      "item": "airballoon",
+      "price": 12
+    },
+    {
+      "item": "powerbracer",
+      "price": 16
+    },
+    {
+      "item": "powerbelt",
+      "price": 16
+    },
+    {
+      "item": "powerlens",
+      "price": 16
+    },
+    {
+      "item": "powerband",
+      "price": 16
+    },
+    {
+      "item": "poweranklet",
+      "price": 16
+    },
+    {
+      "item": "powerweight",
+      "price": 16
+    },
+    {
+      "item": "toxicorb",
+      "price": 16
+    },
+    {
+      "item": "flameorb",
+      "price": 16
+    },
+    {
+      "item": "whiteherb",
+      "price": 16
+    },
+    {
+      "item": "powerherb",
+      "price": 16
+    },
+    {
+      "item": "absorbbulb",
+      "price": 16
+    },
+    {
+      "item": "cellbattery",
+      "price": 16
+    },
+    {
+      "item": "redcard",
+      "price": 16
+    },
+    {
+      "item": "ejectbutton",
+      "price": 16
+    },
+    {
+      "item": "choiceband",
+      "price": 24
+    },
+    {
+      "item": "choicespecs",
+      "price": 24
+    },
+    {
+      "item": "choicescarf",
+      "price": 24
+    },
+    {
+      "item": "focussash",
+      "price": 24
+    },
+    {
+      "item": "lifeorb",
+      "price": 24
+    }
+  ]
+}

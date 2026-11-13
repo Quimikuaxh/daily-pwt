@@ -1,0 +1,534 @@
+{
+  "schemaVersion": 1,
+  "rulesVersion": "unova-n2b2:2026-11-13",
+  "approval": "2026-11-13",
+  "source": {
+    "url": "https://www.serebii.net/black2white2/tmhm.shtml",
+    "sha256": "437184eeecfc84962f84cd3a834795c13f9454e7faa64b59a2f1c0eccce35375",
+    "zones": "Guía de Pokémon Negro 2 y Blanco 2 de WikiDex, por medallas"
+  },
+  "milestones": [
+    "cheren",
+    "hiedra",
+    "camus",
+    "camila",
+    "yakon",
+    "gerania",
+    "lirio",
+    "ciprian",
+    "anis",
+    "aza",
+    "catleya",
+    "lotto",
+    "iris"
+  ],
+  "machines": {
+    "tm01": {
+      "before": "anis",
+      "move": "honeclaws",
+      "location": "Victory Road - By Pokémon Centre"
+    },
+    "tm03": {
+      "before": "anis",
+      "move": "psyshock",
+      "location": "Giant Chasm"
+    },
+    "tm05": {
+      "before": "anis",
+      "move": "roar",
+      "location": "Route 23"
+    },
+    "tm06": {
+      "before": "anis",
+      "move": "toxic",
+      "location": "Seaside Cave"
+    },
+    "tm07": {
+      "before": "gerania",
+      "move": "hail",
+      "location": "Mistralton PokéMart - 50,000 PokéDollars"
+    },
+    "tm09": {
+      "before": "camus",
+      "move": "venoshock",
+      "location": "Virbank City - Defeat Roxie"
+    },
+    "tm11": {
+      "before": "gerania",
+      "move": "sunnyday",
+      "location": "Mistralton PokéMart - 50,000 PokéDollars"
+    },
+    "tm12": {
+      "before": "anis",
+      "move": "taunt",
+      "location": "Route 23"
+    },
+    "tm13": {
+      "before": "anis",
+      "move": "icebeam",
+      "location": "Giant Chasm"
+    },
+    "tm14": {
+      "before": "lirio",
+      "move": "blizzard",
+      "location": "Lacunosa PokéMart 70,000 PokéDollars"
+    },
+    "tm15": {
+      "before": "lirio",
+      "move": "hyperbeam",
+      "location": "Route 9 Department Store - 90,000 PokéDollars"
+    },
+    "tm16": {
+      "before": "camila",
+      "move": "lightscreen",
+      "location": "Nimbasa City PokéMart - 30,000 Yen"
+    },
+    "tm18": {
+      "before": "gerania",
+      "move": "raindance",
+      "location": "Mistralton PokéMart - 50,000 PokéDollars"
+    },
+    "tm21": {
+      "before": "cheren",
+      "move": "frustration",
+      "location": "Floccesy Ranch"
+    },
+    "tm24": {
+      "before": "anis",
+      "move": "thunderbolt",
+      "location": "Victory Road - From Rival"
+    },
+    "tm25": {
+      "before": "lirio",
+      "move": "thunder",
+      "location": "Lacunosa Town PokéMart - 70,000 PokéDollars"
+    },
+    "tm27": {
+      "before": "cheren",
+      "move": "return",
+      "location": "Aspertia City - From Bianca"
+    },
+    "tm28": {
+      "before": "camila",
+      "move": "dig",
+      "location": "Route 4"
+    },
+    "tm29": {
+      "before": "lirio",
+      "move": "psychic",
+      "location": "Route 13"
+    },
+    "tm30": {
+      "before": "lirio",
+      "move": "shadowball",
+      "location": "Reversal Mountain"
+    },
+    "tm33": {
+      "before": "camila",
+      "move": "reflect",
+      "location": "Nimbasa City PokéMart - 30,000 PokéDollars"
+    },
+    "tm35": {
+      "before": "anis",
+      "move": "flamethrower",
+      "location": "Route 23"
+    },
+    "tm37": {
+      "before": "gerania",
+      "move": "sandstorm",
+      "location": "Mistralton City PokéMart - 50,000 PokéDollars"
+    },
+    "tm38": {
+      "before": "lirio",
+      "move": "fireblast",
+      "location": "Lacunosa Town PokéMart - 70,000 PokéDollars"
+    },
+    "tm39": {
+      "before": "camila",
+      "move": "rocktomb",
+      "location": "Relic Castle"
+    },
+    "tm40": {
+      "before": "gerania",
+      "move": "aerialace",
+      "location": "Mistralton City Runway"
+    },
+    "tm41": {
+      "before": "camus",
+      "move": "torment",
+      "location": "Castelia Sewers"
+    },
+    "tm42": {
+      "before": "ciprian",
+      "move": "facade",
+      "location": "Marine Tube"
+    },
+    "tm44": {
+      "before": "camus",
+      "move": "rest",
+      "location": "Castelia City - 11th Floor of GameFreak Building"
+    },
+    "tm45": {
+      "before": "camus",
+      "move": "attract",
+      "location": "Castelia City - North Street"
+    },
+    "tm46": {
+      "before": "hiedra",
+      "move": "thief",
+      "location": "Virbank Complex"
+    },
+    "tm49": {
+      "before": "camila",
+      "move": "echoedvoice",
+      "location": "Nimbasa City - Musical Hall"
+    },
+    "tm53": {
+      "before": "gerania",
+      "move": "energyball",
+      "location": "Aspertia City"
+    },
+    "tm55": {
+      "before": "anis",
+      "move": "scald",
+      "location": "Humilau City - Defeat Marlon"
+    },
+    "tm56": {
+      "before": "gerania",
+      "move": "fling",
+      "location": "Route 6"
+    },
+    "tm57": {
+      "before": "lirio",
+      "move": "chargebeam",
+      "location": "Lentimas Town"
+    },
+    "tm58": {
+      "before": "gerania",
+      "move": "skydrop",
+      "location": "Mistralton City"
+    },
+    "tm61": {
+      "before": "lirio",
+      "move": "willowisp",
+      "location": "Celestial Tower"
+    },
+    "tm62": {
+      "before": "lirio",
+      "move": "acrobatics",
+      "location": "Mistralton City - Defeat Skyla"
+    },
+    "tm63": {
+      "before": "yakon",
+      "move": "embargo",
+      "location": "Driftveil City Market"
+    },
+    "tm65": {
+      "before": "lirio",
+      "move": "shadowclaw",
+      "location": "Celestial Tower"
+    },
+    "tm66": {
+      "before": "camila",
+      "move": "payback",
+      "location": "Route 16"
+    },
+    "tm67": {
+      "before": "anis",
+      "move": "retaliate",
+      "location": "Team Plasma Frigate"
+    },
+    "tm68": {
+      "before": "lirio",
+      "move": "gigaimpact",
+      "location": "Route 9 Department Store - 90,000 PokéDollars"
+    },
+    "tm69": {
+      "before": "lirio",
+      "move": "rockpolish",
+      "location": "Reversal Mountain"
+    },
+    "tm70": {
+      "before": "camus",
+      "move": "flash",
+      "location": "Castelia City Mode Street"
+    },
+    "tm72": {
+      "before": "yakon",
+      "move": "voltswitch",
+      "location": "Nimbasa City - Defeat Elesa"
+    },
+    "tm73": {
+      "before": "camila",
+      "move": "thunderwave",
+      "location": "Nimbasa City PokéMart - 10,000 PokéDollars"
+    },
+    "tm74": {
+      "before": "camila",
+      "move": "gyroball",
+      "location": "Nimbasa City PokéMart - 10,000 PokéDollars"
+    },
+    "tm76": {
+      "before": "camila",
+      "move": "strugglebug",
+      "location": "Castelia City - Defeat Burgh"
+    },
+    "tm78": {
+      "before": "gerania",
+      "move": "bulldoze",
+      "location": "Driftveil City - Defeat Clay"
+    },
+    "tm80": {
+      "before": "gerania",
+      "move": "rockslide",
+      "location": "Mistralton Cave"
+    },
+    "tm81": {
+      "before": "lirio",
+      "move": "xscissor",
+      "location": "Route 7"
+    },
+    "tm82": {
+      "before": "ciprian",
+      "move": "dragontail",
+      "location": "Opelucid City - Defeat Drayden"
+    },
+    "tm83": {
+      "before": "hiedra",
+      "move": "workup",
+      "location": "Aspertia City - Defeat Cheren"
+    },
+    "tm93": {
+      "before": "anis",
+      "move": "wildcharge",
+      "location": "Victory Road"
+    },
+    "tm94": {
+      "before": "hiedra",
+      "move": "rocksmash",
+      "location": "Virbank Complex"
+    },
+    "tm95": {
+      "before": "camila",
+      "move": "snarl",
+      "location": "Lostlorn Forest"
+    },
+    "hm01": {
+      "before": "camus",
+      "move": "cut",
+      "location": "Virbank City - From Roxie"
+    },
+    "hm02": {
+      "before": "yakon",
+      "move": "fly",
+      "location": "Route 5 - From Bianca"
+    },
+    "hm03": {
+      "before": "gerania",
+      "move": "surf",
+      "location": "Route 6 - From Cheren"
+    },
+    "hm04": {
+      "before": "camus",
+      "move": "strength",
+      "location": "Castelia Sewers - From Rival"
+    },
+    "hm05": {
+      "before": "anis",
+      "move": "waterfall",
+      "location": "Victory Road - From N"
+    },
+    "hm06": {
+      "before": "lirio",
+      "move": "dive",
+      "location": "Undella Town - From Rival"
+    }
+  },
+  "excluded": {
+    "tm02": {
+      "move": "dragonclaw",
+      "location": "Dragonspiral Tower",
+      "reason": "después de la Liga"
+    },
+    "tm04": {
+      "move": "calmmind",
+      "location": "Striaton City PokéMart - 80,000 PokéDollars",
+      "reason": "después de la Liga"
+    },
+    "tm08": {
+      "move": "bulkup",
+      "location": "Striaton City PokéMart",
+      "reason": "después de la Liga"
+    },
+    "tm10": {
+      "move": "hiddenpower",
+      "location": "Pokémon World Tournament",
+      "reason": "MT de la PWT (canje de PB), excluidas"
+    },
+    "tm17": {
+      "move": "protect",
+      "location": "Pokémon World Tournament",
+      "reason": "MT de la PWT (canje de PB), excluidas"
+    },
+    "tm19": {
+      "move": "telekinesis",
+      "location": "Route 18",
+      "reason": "después de la Liga"
+    },
+    "tm20": {
+      "move": "safeguard",
+      "location": "Pokémon World Tournament",
+      "reason": "MT de la PWT (canje de PB), excluidas"
+    },
+    "tm22": {
+      "move": "solarbeam",
+      "location": "Pinwheel Forest",
+      "reason": "después de la Liga"
+    },
+    "tm23": {
+      "move": "smackdown",
+      "location": "Pokémon World Tournament",
+      "reason": "MT de la PWT (canje de PB), excluidas"
+    },
+    "tm26": {
+      "move": "earthquake",
+      "location": "Route 15",
+      "reason": "después de la Liga"
+    },
+    "tm31": {
+      "move": "brickbreak",
+      "location": "Pokémon World Tournament",
+      "reason": "MT de la PWT (canje de PB), excluidas"
+    },
+    "tm32": {
+      "move": "doubleteam",
+      "location": "Pokémon World Tournament",
+      "reason": "MT de la PWT (canje de PB), excluidas"
+    },
+    "tm34": {
+      "move": "sludgewave",
+      "location": "Pokémon World Tournament",
+      "reason": "MT de la PWT (canje de PB), excluidas"
+    },
+    "tm36": {
+      "move": "sludgebomb",
+      "location": "Route 8",
+      "reason": "después de la Liga"
+    },
+    "tm43": {
+      "move": "flamecharge",
+      "location": "Tubeline Bridge",
+      "reason": "después de la Liga"
+    },
+    "tm47": {
+      "move": "lowsweep",
+      "location": "Wellspring Cave",
+      "reason": "después de la Liga"
+    },
+    "tm48": {
+      "move": "round",
+      "location": "Pokémon World Tournament",
+      "reason": "MT de la PWT (canje de PB), excluidas"
+    },
+    "tm50": {
+      "move": "overheat",
+      "location": "N's Castle",
+      "reason": "después de la Liga"
+    },
+    "tm51": {
+      "move": "allyswitch",
+      "location": "Pokémon World Tournament",
+      "reason": "MT de la PWT (canje de PB), excluidas"
+    },
+    "tm52": {
+      "move": "focusblast",
+      "location": "Wellspring Cave",
+      "reason": "después de la Liga"
+    },
+    "tm54": {
+      "move": "falseswipe",
+      "location": "Reversal Mountain - Show Researcher you've captured all Pokémon from the cave",
+      "reason": "condición aparte (capturar todos los Pokémon de la cueva), excluida"
+    },
+    "tm59": {
+      "move": "incinerate",
+      "location": "Pokémon World Tournament",
+      "reason": "MT de la PWT (canje de PB), excluidas"
+    },
+    "tm60": {
+      "move": "quash",
+      "location": "Pokémon World Tournament",
+      "reason": "MT de la PWT (canje de PB), excluidas"
+    },
+    "tm64": {
+      "move": "explosion",
+      "location": "Pokémon World Tournament",
+      "reason": "MT de la PWT (canje de PB), excluidas"
+    },
+    "tm71": {
+      "move": "stoneedge",
+      "location": "Twist Mountain",
+      "reason": "después de la Liga"
+    },
+    "tm75": {
+      "move": "swordsdance",
+      "location": "Pokémon World Tournament",
+      "reason": "MT de la PWT (canje de PB), excluidas"
+    },
+    "tm77": {
+      "move": "psychup",
+      "location": "Pokémon World Tournament",
+      "reason": "MT de la PWT (canje de PB), excluidas"
+    },
+    "tm79": {
+      "move": "frostbreath",
+      "location": "Pokémon World Tournament",
+      "reason": "MT de la PWT (canje de PB), excluidas"
+    },
+    "tm84": {
+      "move": "poisonjab",
+      "location": "Moor of Iccirus",
+      "reason": "después de la Liga"
+    },
+    "tm85": {
+      "move": "dreameater",
+      "location": "Dreamyard",
+      "reason": "después de la Liga"
+    },
+    "tm86": {
+      "move": "grassknot",
+      "location": "Pinwheel Forest",
+      "reason": "después de la Liga"
+    },
+    "tm87": {
+      "move": "swagger",
+      "location": "Pokémon World Tournament",
+      "reason": "MT de la PWT (canje de PB), excluidas"
+    },
+    "tm88": {
+      "move": "pluck",
+      "location": "Pokémon World Tournament",
+      "reason": "MT de la PWT (canje de PB), excluidas"
+    },
+    "tm89": {
+      "move": "uturn",
+      "location": "Pokémon World Tournament",
+      "reason": "MT de la PWT (canje de PB), excluidas"
+    },
+    "tm90": {
+      "move": "substitute",
+      "location": "Twist Mountain",
+      "reason": "después de la Liga"
+    },
+    "tm91": {
+      "move": "flashcannon",
+      "location": "Twist Mountain",
+      "reason": "después de la Liga"
+    },
+    "tm92": {
+      "move": "trickroom",
+      "location": "Abundant Shrine",
+      "reason": "después de la Liga"
+    }
+  }
+}

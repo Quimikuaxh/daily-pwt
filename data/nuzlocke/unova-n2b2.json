@@ -1,0 +1,649 @@
+{
+  "schemaVersion": 1,
+  "region": "unova",
+  "edition": "n2b2",
+  "source": {
+    "gyms": {
+      "url": "https://www.serebii.net/black2white2/gyms.shtml",
+      "sha256": "2675e3734e922388c06457990ec716744ddeb2376cd9bcc6ef10771ca79a3624"
+    },
+    "elite": {
+      "url": "https://www.serebii.net/black2white2/elitefour.shtml",
+      "sha256": "481b11405b8964eea7bb4489c026cd5e53e187701111bac7849968fba3c56863"
+    }
+  },
+  "encounters": [
+    {
+      "id": "cheren",
+      "nameEs": "Cheren",
+      "kind": "gym",
+      "sourceTrainer": "Leader Cheren",
+      "team": [
+        {
+          "species": "patrat",
+          "level": 11,
+          "ability": "keeneye",
+          "item": null,
+          "moves": [
+            "workup",
+            "bite",
+            "tackle",
+            "detect"
+          ]
+        },
+        {
+          "species": "lillipup",
+          "level": 13,
+          "ability": "vitalspirit",
+          "item": null,
+          "moves": [
+            "workup",
+            "bite",
+            "tackle",
+            "helpinghand"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hiedra",
+      "nameEs": "Hiedra",
+      "kind": "gym",
+      "sourceTrainer": "Leader Roxie",
+      "team": [
+        {
+          "species": "koffing",
+          "level": 16,
+          "ability": "levitate",
+          "item": null,
+          "moves": [
+            "smog",
+            "assurance",
+            "tackle",
+            "clearsmog"
+          ]
+        },
+        {
+          "species": "whirlipede",
+          "level": 18,
+          "ability": "poisonpoint",
+          "item": null,
+          "moves": [
+            "venoshock",
+            "poisonsting",
+            "protect",
+            "pursuit"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "camus",
+      "nameEs": "Camus",
+      "kind": "gym",
+      "sourceTrainer": "Leader Burgh",
+      "team": [
+        {
+          "species": "swadloon",
+          "level": 22,
+          "ability": "leafguard",
+          "item": null,
+          "moves": [
+            "strugglebug",
+            "razorleaf",
+            "stringshot",
+            "protect"
+          ]
+        },
+        {
+          "species": "dwebble",
+          "level": 22,
+          "ability": "sturdy",
+          "item": null,
+          "moves": [
+            "strugglebug",
+            "smackdown",
+            "feintattack",
+            "rockpolish"
+          ]
+        },
+        {
+          "species": "leavanny",
+          "level": 24,
+          "ability": "swarm",
+          "item": "sitrusberry",
+          "moves": [
+            "strugglebug",
+            "razorleaf",
+            "cut",
+            "stringshot"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "camila",
+      "nameEs": "Camila",
+      "kind": "gym",
+      "sourceTrainer": "Leader Elesa",
+      "team": [
+        {
+          "species": "emolga",
+          "level": 28,
+          "ability": "static",
+          "item": null,
+          "moves": [
+            "voltswitch",
+            "quickattack",
+            "pursuit",
+            "electroball"
+          ]
+        },
+        {
+          "species": "flaaffy",
+          "level": 28,
+          "ability": "static",
+          "item": null,
+          "moves": [
+            "voltswitch",
+            "takedown",
+            "thunderwave",
+            "electroball"
+          ]
+        },
+        {
+          "species": "zebstrika",
+          "level": 30,
+          "ability": "motordrive",
+          "item": "sitrusberry",
+          "moves": [
+            "voltswitch",
+            "flamecharge",
+            "quickattack",
+            "pursuit"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yakon",
+      "nameEs": "Yakón",
+      "kind": "gym",
+      "sourceTrainer": "Leader Clay",
+      "team": [
+        {
+          "species": "krokorok",
+          "level": 31,
+          "ability": "intimidate",
+          "item": null,
+          "moves": [
+            "bulldoze",
+            "crunch",
+            "sandtomb",
+            "torment"
+          ]
+        },
+        {
+          "species": "sandslash",
+          "level": 31,
+          "ability": "sandveil",
+          "item": null,
+          "moves": [
+            "bulldoze",
+            "crushclaw",
+            "rollout",
+            "furycutter"
+          ]
+        },
+        {
+          "species": "excadrill",
+          "level": 33,
+          "ability": "sandforce",
+          "item": "sitrusberry",
+          "moves": [
+            "bulldoze",
+            "metalclaw",
+            "slash",
+            "rockslide"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gerania",
+      "nameEs": "Gerania",
+      "kind": "gym",
+      "sourceTrainer": "Leader Skyla",
+      "team": [
+        {
+          "species": "swoobat",
+          "level": 37,
+          "ability": "unaware",
+          "item": null,
+          "moves": [
+            "acrobatics",
+            "heartstamp",
+            "assurance",
+            "attract"
+          ]
+        },
+        {
+          "species": "skarmory",
+          "level": 37,
+          "ability": "sturdy",
+          "item": null,
+          "moves": [
+            "aircutter",
+            "steelwing",
+            "furyattack",
+            "agility"
+          ]
+        },
+        {
+          "species": "swanna",
+          "level": 39,
+          "ability": "bigpecks",
+          "item": "sitrusberry",
+          "moves": [
+            "airslash",
+            "bubblebeam",
+            "roost",
+            "featherdance"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lirio",
+      "nameEs": "Lirio",
+      "kind": "gym",
+      "sourceTrainer": "Leader Drayden",
+      "team": [
+        {
+          "species": "druddigon",
+          "level": 46,
+          "ability": "sheerforce",
+          "item": null,
+          "moves": [
+            "dragontail",
+            "revenge",
+            "slash",
+            "crunch"
+          ]
+        },
+        {
+          "species": "flygon",
+          "level": 46,
+          "ability": "levitate",
+          "item": null,
+          "moves": [
+            "dragontail",
+            "crunch",
+            "earthpower",
+            "rockslide"
+          ]
+        },
+        {
+          "species": "haxorus",
+          "level": 48,
+          "ability": "moldbreaker",
+          "item": "sitrusberry",
+          "moves": [
+            "dragontail",
+            "slash",
+            "assurance",
+            "dragondance"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ciprian",
+      "nameEs": "Ciprián",
+      "kind": "gym",
+      "sourceTrainer": "Leader Marlon",
+      "team": [
+        {
+          "species": "carracosta",
+          "level": 49,
+          "ability": "sturdy",
+          "item": null,
+          "moves": [
+            "scald",
+            "smackdown",
+            "crunch",
+            "shellsmash"
+          ]
+        },
+        {
+          "species": "wailord",
+          "level": 49,
+          "ability": "waterveil",
+          "item": null,
+          "moves": [
+            "scald",
+            "rollout",
+            "bounce",
+            "amnesia"
+          ]
+        },
+        {
+          "species": "jellicent",
+          "level": 51,
+          "ability": "cursedbody",
+          "item": "sitrusberry",
+          "moves": [
+            "scald",
+            "ominouswind",
+            "brine",
+            "recover"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "anis",
+      "nameEs": "Anís",
+      "kind": "elite",
+      "sourceTrainer": "Elite Four Shauntal",
+      "team": [
+        {
+          "species": "cofagrigus",
+          "level": 56,
+          "ability": "mummy",
+          "item": null,
+          "moves": [
+            "willowisp",
+            "grassknot",
+            "psychic",
+            "shadowball"
+          ]
+        },
+        {
+          "species": "drifblim",
+          "level": 56,
+          "ability": "aftermath",
+          "item": null,
+          "moves": [
+            "psychic",
+            "thunderbolt",
+            "acrobatics",
+            "shadowball"
+          ]
+        },
+        {
+          "species": "golurk",
+          "level": 56,
+          "ability": "ironfist",
+          "item": null,
+          "moves": [
+            "heavyslam",
+            "earthquake",
+            "brickbreak",
+            "shadowpunch"
+          ]
+        },
+        {
+          "species": "chandelure",
+          "level": 58,
+          "ability": "flamebody",
+          "item": "sitrusberry",
+          "moves": [
+            "energyball",
+            "fireblast",
+            "psychic",
+            "shadowball"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "aza",
+      "nameEs": "Aza",
+      "kind": "elite",
+      "sourceTrainer": "Elite Four Grimsley",
+      "team": [
+        {
+          "species": "liepard",
+          "level": 56,
+          "ability": "limber",
+          "item": null,
+          "moves": [
+            "nightslash",
+            "fakeout",
+            "aerialace",
+            "attract"
+          ]
+        },
+        {
+          "species": "scrafty",
+          "level": 56,
+          "ability": "moxie",
+          "item": null,
+          "moves": [
+            "crunch",
+            "brickbreak",
+            "poisonjab",
+            "rocktomb"
+          ]
+        },
+        {
+          "species": "krookodile",
+          "level": 56,
+          "ability": "intimidate",
+          "item": null,
+          "moves": [
+            "crunch",
+            "dragonclaw",
+            "earthquake",
+            "rocktomb"
+          ]
+        },
+        {
+          "species": "bisharp",
+          "level": 58,
+          "ability": "defiant",
+          "item": "sitrusberry",
+          "moves": [
+            "nightslash",
+            "xscissor",
+            "metalclaw",
+            "aerialace"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "catleya",
+      "nameEs": "Catleya",
+      "kind": "elite",
+      "sourceTrainer": "Elite Four Caitlin",
+      "team": [
+        {
+          "species": "musharna",
+          "level": 56,
+          "ability": "synchronize",
+          "item": null,
+          "moves": [
+            "chargebeam",
+            "dreameater",
+            "yawn",
+            "reflect"
+          ]
+        },
+        {
+          "species": "reuniclus",
+          "level": 56,
+          "ability": "magicguard",
+          "item": null,
+          "moves": [
+            "psychic",
+            "energyball",
+            "focusblast",
+            "recover"
+          ]
+        },
+        {
+          "species": "sigilyph",
+          "level": 56,
+          "ability": "wonderskin",
+          "item": null,
+          "moves": [
+            "psychic",
+            "shadowball",
+            "icebeam",
+            "airslash"
+          ]
+        },
+        {
+          "species": "gothitelle",
+          "level": 58,
+          "ability": "frisk",
+          "item": "sitrusberry",
+          "moves": [
+            "psychic",
+            "shadowball",
+            "thunderbolt",
+            "calmmind"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lotto",
+      "nameEs": "Lotto",
+      "kind": "elite",
+      "sourceTrainer": "Elite Four Marshal",
+      "team": [
+        {
+          "species": "throh",
+          "level": 56,
+          "ability": "guts",
+          "item": null,
+          "moves": [
+            "stormthrow",
+            "bulldoze",
+            "rocktomb",
+            "payback"
+          ]
+        },
+        {
+          "species": "sawk",
+          "level": 56,
+          "ability": "sturdy",
+          "item": null,
+          "moves": [
+            "brickbreak",
+            "retaliate",
+            "rockslide",
+            "payback"
+          ]
+        },
+        {
+          "species": "mienshao",
+          "level": 56,
+          "ability": "regenerator",
+          "item": null,
+          "moves": [
+            "highjumpkick",
+            "uturn",
+            "bounce",
+            "retaliate"
+          ]
+        },
+        {
+          "species": "conkeldurr",
+          "level": 58,
+          "ability": "guts",
+          "item": "sitrusberry",
+          "moves": [
+            "hammerarm",
+            "bulkup",
+            "stoneedge",
+            "retaliate"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "iris",
+      "nameEs": "Iris",
+      "kind": "champion",
+      "sourceTrainer": "Champion Iris",
+      "team": [
+        {
+          "species": "hydreigon",
+          "level": 57,
+          "ability": "levitate",
+          "item": null,
+          "moves": [
+            "flamethrower",
+            "chargebeam",
+            "dragonpulse",
+            "surf"
+          ]
+        },
+        {
+          "species": "druddigon",
+          "level": 57,
+          "ability": "sheerforce",
+          "item": "lifeorb",
+          "moves": [
+            "rockslide",
+            "flamethrower",
+            "dragontail",
+            "focusblast"
+          ]
+        },
+        {
+          "species": "archeops",
+          "level": 57,
+          "ability": "defeatist",
+          "item": null,
+          "moves": [
+            "acrobatics",
+            "rockslide",
+            "dragonclaw",
+            "endeavor"
+          ]
+        },
+        {
+          "species": "aggron",
+          "level": 57,
+          "ability": "rockhead",
+          "item": null,
+          "moves": [
+            "earthquake",
+            "doubleedge",
+            "rockslide",
+            "autotomize"
+          ]
+        },
+        {
+          "species": "lapras",
+          "level": 57,
+          "ability": "waterabsorb",
+          "item": null,
+          "moves": [
+            "surf",
+            "icebeam",
+            "thunderbolt",
+            "sing"
+          ]
+        },
+        {
+          "species": "haxorus",
+          "level": 59,
+          "ability": "moldbreaker",
+          "item": "focussash",
+          "moves": [
+            "earthquake",
+            "xscissor",
+            "dualchop",
+            "dragondance"
+          ]
+        }
+      ]
+    }
+  ]
+}

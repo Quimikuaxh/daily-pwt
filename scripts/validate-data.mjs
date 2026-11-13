@@ -8,6 +8,10 @@ import { EMERALD_PROGRESSION, validateEmeraldProgression } from './import-emeral
 import { EMERALD_ITEMS, validateEmeraldItems } from './import-emerald-items.mjs'
 import { EMERALD_CALENDAR, validateEmeraldCalendarAgainstEvidence } from './build-emerald-calendar.mjs'
 import { EMERALD_CATALOG, validateEmeraldCatalog } from './import-emerald.mjs'
+import { N2B2_CATALOG, validateN2b2Catalog } from './import-n2b2.mjs'
+import { N2B2_CALENDAR, validateN2b2Calendar } from './build-n2b2-calendar.mjs'
+import { N2B2_ITEMS, validateN2b2Items } from './build-n2b2-items.mjs'
+import { N2B2_PROGRESSION, validateN2b2Progression } from './build-n2b2-progression.mjs'
 import { isMain } from './lib/cli.mjs'
 import { gen5, toId } from './lib/dex.mjs'
 import { fromRoot } from './lib/paths.mjs'
@@ -219,6 +223,10 @@ export async function validateData() {
 
   for (const [name, path, validate] of [
     ['hoenn-emerald.json', EMERALD_CATALOG, validateEmeraldCatalog],
+    ['unova-n2b2.json', N2B2_CATALOG, validateN2b2Catalog],
+    ['unova-n2b2-calendar.json', N2B2_CALENDAR, validateN2b2Calendar],
+    ['unova-n2b2-items.json', N2B2_ITEMS, validateN2b2Items],
+    ['unova-n2b2-progression.json', N2B2_PROGRESSION, validateN2b2Progression],
     ['hoenn-emerald-progression.json', EMERALD_PROGRESSION, validateEmeraldProgression],
     ['hoenn-emerald-items.json', EMERALD_ITEMS, validateEmeraldItems],
     ['hoenn-emerald-calendar.json', EMERALD_CALENDAR,
