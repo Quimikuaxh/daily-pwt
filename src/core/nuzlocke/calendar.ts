@@ -1,30 +1,29 @@
-import approved from '../../../data/nuzlocke/hoenn-emerald-calendar.json'
+/**
+ * MT/MO y objetos de evolución desbloqueados según el calendario de cada campaña (sus reglas: `rules.ts`, DEC-101). Sin reglas (una
+ * definición de prueba), el llamador da los desbloqueos.
+ */
 import { DataError } from '../errors'
 import type { CampaignDefinition, CampaignState } from './campaign'
+import { reached, rulesOf } from './rules'
 
-export const EMERALD_RULES_VERSION = approved.rulesVersion
 export type ScannerChoice = 'deepseatooth' | 'deepseascale'
-type CalendarItem = { before: string; move?: string; quantity?: number; choice?: string }
-const items: Readonly<Record<string, CalendarItem>> = approved.items
 
-/** Reconoce el catálogo de 13 encuentros; las definiciones de otras campañas conservan su contrato. */
-export function isEmeraldCampaign(definition: Pick<CampaignDefinition, 'encounters'>): boolean {
-  return definition.encounters.length === approved.milestones.length &&
-    definition.encounters.every((encounter, index) => encounter.id === approved.milestones[index])
-}
+/** Métodos que gastan su objeto al evolucionar (el parámetro es el objeto). */
+export const ITEM_METHODS: ReadonlySet<string> = new Set(['ITEM', 'ITEM_MALE', 'ITEM_FEMALE', 'TRADE_ITEM', 'LEVEL_ITEM_DAY', 'LEVEL_ITEM_NIGHT'])
 
-export function emeraldReached(state: Pick<CampaignState, 'encounterIndex'>, before: string): boolean {
-  const index = approved.milestones.indexOf(before)
-  return index >= 0 && state.encounterIndex >= index
+/** Si la definición es la de Hoenn (Esmeralda). */
+export function isEmeraldCampaign(definition: Pick<CampaignDefinition, 'encounters'> & { campaign?: CampaignDefinition['campaign'] }): boolean {
+  return rulesOf(definition)?.id === 'hoenn-emerald'
 }
 
 export function campaignMachineMoves(
-  definition: Pick<CampaignDefinition, 'encounters'>,
+  definition: Pick<CampaignDefinition, 'encounters'> & { campaign?: CampaignDefinition['campaign'] },
   state: Pick<CampaignState, 'encounterIndex'>,
   fallback: ReadonlySet<string> = new Set(),
 ): ReadonlySet<string> {
-  if (!isEmeraldCampaign(definition)) return fallback
-  return new Set(Object.values(items).flatMap(item => item.move && emeraldReached(state, item.before) ? [item.move] : []))
+  const rules = rulesOf(definition)
+  if (!rules) return fallback
+  return new Set(Object.entries(rules.machines).flatMap(([move, before]) => reached(rules, state, before) ? [move] : []))
 }
 
 /** Los miembros y sus historiales no se eliminan al caer: cada uso permanece consumido al reanudar. */
@@ -35,8 +34,7 @@ export function consumedEvolutionItems(definition: CampaignDefinition, state: Ca
     member.history.forEach((stage, index) => {
       if (index < (member.recruitmentHistoryLength ?? 0)) return
       for (const rule of definition.species[stage.species]?.evolutions ?? []) {
-        if ((rule.method === 'ITEM' || rule.method === 'TRADE_ITEM') && typeof rule.parameter === 'string' &&
-          rule.target === stages[index + 1].species) consumed.add(rule.parameter)
+        if (ITEM_METHODS.has(rule.method) && typeof rule.parameter === 'string' && rule.target === stages[index + 1].species) consumed.add(rule.parameter)
       }
     })
   }
@@ -49,24 +47,21 @@ function scannerChoice(definition: CampaignDefinition, state: CampaignState): Sc
 }
 
 export function campaignEvolutionItems(definition: CampaignDefinition, state: CampaignState): ReadonlySet<string> {
-  if (!isEmeraldCampaign(definition)) return new Set()
+  const rules = rulesOf(definition)
+  if (!rules) return new Set()
   const consumed = consumedEvolutionItems(definition, state)
   const selected = scannerChoice(definition, state)
-  return new Set(Object.entries(items).flatMap(([id, item]) => !item.move && emeraldReached(state, item.before) &&
+  return new Set(Object.entries(rules.evolutionItems).flatMap(([id, item]) => reached(rules, state, item.before) &&
     !consumed.has(id) && (!item.choice || selected === id) ? [id] : []))
 }
 
 export function chooseScannerItem(definition: CampaignDefinition, state: CampaignState, choice: ScannerChoice): CampaignState {
-  if (!isEmeraldCampaign(definition) || state.phase !== 'prepare' ||
-    !['deepseatooth', 'deepseascale'].includes(choice) || !emeraldReached(state, items[choice].before)) {
+  const rules = rulesOf(definition)
+  const item = rules?.evolutionItems[choice]
+  if (!rules || !item?.choice || state.phase !== 'prepare' || !reached(rules, state, item.before)) {
     throw new DataError('El canje del Escáner todavía no está disponible.')
   }
   const previous = scannerChoice(definition, state)
   if (previous && previous !== choice) throw new DataError('El premio del Escáner ya se ha elegido.')
   return { ...state, scannerChoice: choice }
 }
-
-export const EMERALD_FRIENDSHIP_WINS = approved.friendshipWins
-export const EMERALD_LEAGUE_FRIENDSHIP = approved.leagueFriendship
-export const EMERALD_BATTLE_HAPPINESS = approved.battleHappiness
-export const EMERALD_BEAUTY_BEFORE = approved.beautyBefore

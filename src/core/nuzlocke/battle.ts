@@ -8,9 +8,11 @@ import { deriveSeed, Prng } from '../prng'
 import type { StatsTable } from '../types'
 import { difficultyOf, finishEncounter, startEncounter, type CampaignDefinition, type CampaignState } from './campaign'
 import { availableMoves, validateCampaignMoveSelection } from './progression'
-import { campaignMachineMoves, EMERALD_BATTLE_HAPPINESS, EMERALD_RULES_VERSION, isEmeraldCampaign } from './calendar'
+import { campaignMachineMoves } from './calendar'
+import { rulesOf } from './rules'
 
-type RivalMember = { species: string; level: number; item: string | null; moves: readonly string[] }
+/** `ability`: la de la tabla del rival (Teselia); sin ella, la primera de la especie. `gender`: el del recluta. */
+type RivalMember = { species: string; level: number; item: string | null; moves: readonly string[]; ability?: string; gender?: 'M' | 'F' | null }
 export type CampaignBattleDefinition = {
   encounters: readonly (Omit<CampaignDefinition['encounters'][number], 'team'> & { team: readonly RivalMember[] })[]
   species: Readonly<Record<string, CampaignDefinition['species'][string] & { simulatorSpecies?: string }>>
@@ -22,7 +24,8 @@ export type BattlePreparation = {
   leadId?: string
 }
 
-const gen3 = Dex.forGen(3)
+/** Datos del simulador de la generación de la campaña (Hoenn, 3; Teselia, 5). */
+const dexOf = (definition: CampaignBattleDefinition) => Dex.forGen(rulesOf(definition)?.generation ?? 3)
 const stats = (value: number) => ({ hp: value, atk: value, def: value, spa: value, spd: value, spe: value })
 
 const hasHiddenPower = (moves: readonly string[]) => moves.some(move => move.startsWith('hiddenpower'))
@@ -38,14 +41,15 @@ function hiddenPowerIvs(seed: string): StatsTable {
 
 function battleSet(definition: CampaignBattleDefinition, member: RivalMember, ivs: StatsTable = stats(20)): BattleSet {
   const speciesId = definition.species[member.species]?.simulatorSpecies ?? member.species
-  const species = gen3.species.get(speciesId)
+  const species = dexOf(definition).species.get(speciesId)
   if (!species.exists || !species.abilities[0]) throw new DataError(`Especie de combate desconocida: ${speciesId}.`)
   return {
     species: species.id,
     nameEs: species.name,
     level: member.level,
     item: member.item ?? '',
-    ability: toId(species.abilities[0]),
+    ability: member.ability ?? toId(species.abilities[0]),
+    ...(member.gender ? { gender: member.gender } : {}),
     moves: [...member.moves],
     nature: NEUTRAL_NATURE,
     ivs: { ...ivs },
@@ -76,16 +80,17 @@ function buildCampaignBattleInit(
     const ivs = member.hiddenPowerIvs ?? (hasHiddenPower(moves)
       ? hiddenPowerIvs(deriveSeed(state.seed, 'nuzlocke-hidden-power:v1', 'player', id))
       : undefined)
-    return { ...battleSet(definition, { species: member.species, level: member.level, item: member.item ?? null, moves }, ivs),
-      ...(isEmeraldCampaign(definition) ? { happiness: EMERALD_BATTLE_HAPPINESS } : {}) }
+    const rules = rulesOf(definition)
+    return { ...battleSet(definition, { species: member.species, level: member.level, item: member.item ?? null, moves, gender: member.gender }, ivs),
+      ...(rules ? { happiness: rules.battleHappiness } : {}) }
   })
   const aiLevel = difficultyOf(state).ai
   const lookahead = aiLevel === 'hard' || (aiLevel === 'normal' && encounter.kind !== 'gym')
   const battleSeed = deriveSeed(state.seed, 'nuzlocke-battle:v1', encounter.id,
-    JSON.stringify([state.battleTeam, playerLead, player]), ...(isEmeraldCampaign(definition) ? [EMERALD_RULES_VERSION] : []))
+    JSON.stringify([state.battleTeam, playerLead, player]), ...(rulesOf(definition) ? [rulesOf(definition)!.rulesVersion] : []))
   return {
     battleSeed,
-    generation: 3,
+    generation: rulesOf(definition)?.generation ?? 3,
     player,
     playerLead,
     rival: encounter.team.map((member, slot) => {
@@ -101,7 +106,7 @@ function buildCampaignBattleInit(
     // Lo que cada Pokémon del jugador puede llevar (por nivel y MT desbloqueadas compatibles): de ahí predice la IA sus movimientos.
     ...(!lookahead ? {} : { foeMovePool: Object.fromEntries(state.battleTeam.map((id) => {
       const member = state.members.find((recruit) => recruit.id === id)!
-      return [gen3.species.get(definition.species[member.species]?.simulatorSpecies ?? member.species).id,
+      return [dexOf(definition).species.get(definition.species[member.species]?.simulatorSpecies ?? member.species).id,
         availableMoves(definition.species, member, campaignMachineMoves(definition, state, unlockedMoves))]
     })) }),
   }

@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { campaignInput } from '../../test-utils/campaign'
 import calendar from '../../../data/nuzlocke/hoenn-emerald-calendar.json'
+import { campaignRules } from './rules'
+
+const HOENN = campaignRules('hoenn-emerald')
 import { availableMoves } from './progression'
 import { campaignDraftRequest, chooseRecruit, createCampaign, draftPicks, evolutionFamilies, openDraft } from './campaign'
 import { availableDraftForms } from './draftAvailability'
@@ -11,7 +14,7 @@ import { consumedEvolutionItems } from './calendar'
 const { definition } = campaignInput()
 const requestAt = (index: number) => {
   const raw = campaignDraftRequest(definition, { ...createCampaign(''), encounterIndex: index },
-    availableDraftForms(definition, calendar, index, 'A').map(form => form.species), { below: 0, above: 0 })
+    availableDraftForms(definition, HOENN, index, 'A').map(form => form.species), { below: 0, above: 0 })
   return { ...raw, window: { below: raw.rivalAverage * 0.10, above: raw.rivalAverage * 0.08 } }
 }
 
@@ -146,7 +149,7 @@ describe('política de draft de Esmeralda aprobada por Jose el 11/11/2026', () =
   })
 
   it('recluta la forma ofrecida con su trayectoria legal sin gastar objetos ni perder movimientos previos', () => {
-    const form = availableDraftForms(definition, calendar, 2, 'A').find(form => form.species === 'grovyle')!
+    const form = availableDraftForms(definition, HOENN, 2, 'A').find(form => form.species === 'grovyle')!
     const state = { ...createCampaign('trayectoria'), encounterIndex: 2, offer: ['grovyle', 'rhyhorn', 'onix', 'gligar'] }
     const picked = chooseRecruit(definition, state, 'grovyle')
     expect(picked.members[0]).toMatchObject({ species: 'grovyle', history: form.history, level: 24 })
@@ -186,7 +189,7 @@ describe('draft de Esmeralda: líneas que ya se tienen y garantía inviable', ()
   it('si faltan candidatos, la ventana se amplía solo por abajo', () => {
     const families = evolutionFamilies(definition)
     const index = 0
-    const forms = availableDraftForms(definition, calendar, index, 'A').map(form => form.species)
+    const forms = availableDraftForms(definition, HOENN, index, 'A').map(form => form.species)
     const request = requestAt(index)
     // Se tienen las líneas de la ventana salvo tres: hay que ampliarla, y solo por abajo (nunca por encima de +8 %).
     const inWindow = forms.filter(id => definition.species[id].baseStatTotal >= request.rivalAverage * 0.9 && definition.species[id].baseStatTotal <= request.rivalAverage * 1.08)
@@ -201,7 +204,7 @@ describe('draft de Esmeralda: líneas que ya se tienen y garantía inviable', ()
 
   it('si no queda ningún candidato supereficaz en el último intento, la garantía se salta en vez de fallar', () => {
     const index = definition.encounters.findIndex(encounter => encounter.id === 'erico')
-    const forms = availableDraftForms(definition, calendar, index, 'A').map(form => form.species)
+    const forms = availableDraftForms(definition, HOENN, index, 'A').map(form => form.species)
     const counters = gymCounterSpecies(definition, 'erico', forms)
     const state = { ...createCampaign('erico'), encounterIndex: index, pick: draftPicks(definition, index) - 1, members: counters.map(recruit) }
     const opened = openDraft(definition, state)

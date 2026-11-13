@@ -6,7 +6,7 @@
 import { preloadCampaign } from './campaignPreload'
 import { RevealWhenLoaded } from './RevealWhenLoaded'
 import { availableDraftForms } from '../../core/nuzlocke/draftAvailability'
-import emeraldCalendar from '../../../data/nuzlocke/hoenn-emerald-calendar.json'
+import { campaignRules } from '../../core/nuzlocke/rules'
 import { campaignSteps } from './stepsModel'
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 import { type CampaignDifficulty, chooseRecruit, createCampaign, draftPicks, evolveForLeague, evolveRecruit, lockLeagueRoster, openDraft, specialEvolutionOptions, type CampaignDefinition, type CampaignState } from '../../core/nuzlocke/campaign'
@@ -62,6 +62,8 @@ import './campaign.css'
 const t = esCampaign.route
 const encounters = catalog.encounters as readonly CampaignEncounter[]
 const definition = { encounters, species: progression.species } as unknown as CampaignDefinition
+// Reglas de la campaña de esta pantalla (Hoenn). La de Teselia tendrá su pantalla en la fase 3 (PENDIENTE.md), con maquetas antes.
+const rules = campaignRules('hoenn-emerald')
 
 type CampaignScreenProps = {
   data: GameData
@@ -265,7 +267,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
   // Candidatos del draft con la trayectoria de su forma (para los movimientos con que llegarían).
   const draftCandidates = (current: CampaignState) => {
     const level = Math.max(...encounters[current.encounterIndex].team.map((member) => member.level))
-    const forms = availableDraftForms(definition, emeraldCalendar, current.encounterIndex, 'A')
+    const forms = availableDraftForms(definition, rules, current.encounterIndex, 'A')
     return current.offer.map((id) => candidateOf(id, level, definition, data, forms.find((form) => form.species === id)?.history))
   }
   const badges = state ? badgeCount(state, encounters) : 0
@@ -443,7 +445,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
       onCancel={() => setView('route')}
       onMoves={(id) => { setMovesFor(id); setView('moves') }}
       onGiveItem={(id) => { setMovesFor(id); setView('bag') }}
-      onTakeItem={(id) => { save(equipItem(state, id, null)) }}
+      onTakeItem={(id) => { save(equipItem(rules, state, id, null)) }}
       canEvolve={(id) => !roster && evolveTargets(state, id).length > 0}
       onEvolve={(id) => { setEvolvingId(id); setView('evolveOne') }}
       onLayoutChange={setTeamLayout}
@@ -624,8 +626,8 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     return (
       <ExchangeScreen
         points={state.battlePoints ?? 0}
-        offers={exchangeItems()}
-        onBuy={(item) => { save(buyExchangeItem(state, item)) }}
+        offers={exchangeItems(rules)}
+        onBuy={(item) => { save(buyExchangeItem(rules, state, item)) }}
         onExit={() => setView('route')}
         reservedHeight={150}
       />
@@ -645,7 +647,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
           if (pocket === 'machines') return machineItems(state).map(({ id, move }) => ({ id, name: esCampaign.bag.machineName(machineLabel(id), emeraldMoveName(move, data.names)), text: moveDescription(move), free: 0, view: true }))
           return bagContents(state, pocket, member.id)
         }}
-        onGive={(item) => { save(equipItem(state, member.id, item)); setView('team') }}
+        onGive={(item) => { save(equipItem(rules, state, member.id, item)); setView('team') }}
         onClose={() => setView('team')}
         reservedHeight={150}
       />

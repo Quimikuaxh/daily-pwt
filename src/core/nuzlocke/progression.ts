@@ -14,6 +14,8 @@ export type CampaignMember = {
   species: string
   level: number
   history: readonly { species: string; evolvedAt: number }[]
+  /** Sexo sorteado al reclutarlo en las campañas que lo tienen (Teselia, PRD §0, 13/11/2026); `null`, sin sexo. */
+  gender?: 'M' | 'F' | null
 }
 
 function speciesProgression(dex: ProgressionDex, species: string) {
@@ -33,7 +35,9 @@ export function advanceLevel(dex: ProgressionDex, member: CampaignMember, level:
 
   while (true) {
     const rules = speciesProgression(dex, species).evolutions
-    let evolution = rules.find(rule => rule.method === 'LEVEL' || rule.method === 'LEVEL_NINJASK')
+    // Las de un solo sexo (Burmy, Combee), solo con ese sexo.
+    let evolution = rules.find(rule => rule.method === 'LEVEL' || rule.method === 'LEVEL_NINJASK' ||
+      (rule.method === 'LEVEL_MALE' && member.gender === 'M') || (rule.method === 'LEVEL_FEMALE' && member.gender === 'F'))
     if (!evolution && rules.some(rule => (rule.method === 'LEVEL_SILCOON' || rule.method === 'LEVEL_CASCOON') &&
       typeof rule.parameter === 'number' && rule.parameter <= level)) {
       if (!identity) throw new DataError('La rama de Wurmple necesita semilla e identidad.')

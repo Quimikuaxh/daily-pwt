@@ -4,7 +4,8 @@ import { campaignDraftRequest, createCampaign, draftPicks, type CampaignDefiniti
 import { draftOffer, draftPool } from '../src/core/nuzlocke/draft'
 import { EMERALD_GYM_TYPES, gymCounterSpecies } from '../src/core/nuzlocke/gymDraft'
 
-import { availableDraftForms, type DraftCalendar as Calendar, type Scenario } from '../src/core/nuzlocke/draftAvailability'
+import { availableDraftForms, type Scenario } from '../src/core/nuzlocke/draftAvailability'
+import { campaignRules, type CampaignRules as Calendar } from '../src/core/nuzlocke/rules'
 export { availableDraftForms } from '../src/core/nuzlocke/draftAvailability'
 export type { Scenario } from '../src/core/nuzlocke/draftAvailability'
 
@@ -184,6 +185,6 @@ export function loadSimulationInputs(root: string) {
   const bytes = paths.map(path => readFileSync(`${root}/${path}`))
   const [teams, progression, calendar] = bytes.map(buffer => JSON.parse(buffer.toString('utf8')))
   if (teams.source.revision !== progression.source.revision || teams.source.revision !== calendar.source.revision) throw new Error('Revisiones de fuente distintas')
-  return { definition: { encounters: teams.encounters, species: progression.species } as CampaignDefinition, calendar: calendar as Calendar,
+  return { definition: { encounters: teams.encounters, species: progression.species } as CampaignDefinition, calendar: campaignRules('hoenn-emerald'),
     evidence: paths.map((path, i) => ({ path, sha256: createHash('sha256').update(bytes[i]).digest('hex') })), revision: teams.source.revision }
 }

@@ -8,7 +8,8 @@ const level = (v: unknown): boolean => v === 'easy' || v === 'normal' || v === '
 const stats = (v: unknown) => object(v) && ['hp', 'atk', 'def', 'spa', 'spd', 'spe'].every(k => count(v[k]))
 
 function state(v: unknown): boolean {
-  return object(v) && text(v.seed) && count(v.encounterIndex) && count(v.pick) &&
+  return object(v) && (v.campaign === undefined || v.campaign === 'hoenn-emerald' || v.campaign === 'unova-n2b2') &&
+    text(v.seed) && count(v.encounterIndex) && count(v.pick) &&
     ['draft', 'prepare', 'battle', 'won', 'lost'].includes(String(v.phase)) && list(v.offer) && list(v.previousOffer) &&
     (v.leagueRoster === null || list(v.leagueRoster)) && list(v.battleTeam) &&
     (v.battleSeed === undefined || text(v.battleSeed)) && Array.isArray(v.members) && v.members.every(m =>
@@ -16,7 +17,7 @@ function state(v: unknown): boolean {
       typeof m.fainted === 'boolean' && count(m.victories) && (m.hiddenPowerIvs === undefined || stats(m.hiddenPowerIvs)) &&
       Array.isArray(m.history) && m.history.every(h => object(h) && text(h.species) && count(h.evolvedAt)) &&
       (m.recruitmentHistoryLength === undefined || (count(m.recruitmentHistoryLength) && m.recruitmentHistoryLength <= m.history.length)) &&
-      (m.item === undefined || text(m.item)) &&
+      (m.item === undefined || text(m.item)) && (m.gender === undefined || m.gender === null || m.gender === 'M' || m.gender === 'F') &&
       (m.moves === undefined || (list(m.moves) && m.moves.length >= 1 && m.moves.length <= 4))) &&
     (v.battlePoints === undefined || count(v.battlePoints)) && (v.startedAt === undefined || count(v.startedAt)) && (v.purchases === undefined || list(v.purchases)) && (v.lastTeam === undefined || list(v.lastTeam)) &&
     (v.difficulty === undefined || (object(v.difficulty) && level(v.difficulty.ai) && level(v.difficulty.draft))) &&

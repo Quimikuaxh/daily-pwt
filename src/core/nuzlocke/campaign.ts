@@ -1,13 +1,13 @@
 import { DataError } from '../errors'
 import { draftOffer, draftPool, EMERALD_DRAFT_RATIOS, relativeDraftWindow, type DraftRequest } from './draft'
-import { availableDraftForms, EMERALD_TRADE_LEVEL } from './draftAvailability'
-import emeraldCalendar from '../../../data/nuzlocke/hoenn-emerald-calendar.json'
+import { availableDraftForms } from './draftAvailability'
 import { gymCounterSpecies } from './gymDraft'
 import { battlePointsFor } from './heldItems'
 import type { StatsTable } from '../types'
+import { deriveSeed, Prng } from '../prng'
 import { advanceLevel, type CampaignMember, type ProgressionDex } from './progression'
-import { campaignEvolutionItems, consumedEvolutionItems, emeraldReached, EMERALD_BEAUTY_BEFORE,
-  EMERALD_FRIENDSHIP_WINS, EMERALD_LEAGUE_FRIENDSHIP, isEmeraldCampaign, type ScannerChoice } from './calendar'
+import { campaignEvolutionItems, consumedEvolutionItems, type ScannerChoice } from './calendar'
+import { reached, rulesOf, type CampaignId, type CampaignRules } from './rules'
 
 type Encounter = {
   id: string
@@ -16,8 +16,10 @@ type Encounter = {
 }
 
 export type CampaignDefinition = {
+  /** Campaña (DEC-101): de ella salen sus reglas (`rules.ts`). Sin ella, Hoenn si los encuentros son los de Esmeralda. */
+  campaign?: CampaignId
   encounters: readonly Encounter[]
-  species: Readonly<Record<string, ProgressionDex[string] & { baseStatTotal: number; types?: readonly string[] }>>
+  species: Readonly<Record<string, ProgressionDex[string] & { baseStatTotal: number; types?: readonly string[]; maleRatio?: number | null }>>
 }
 
 type Recruit = CampaignMember & {
@@ -31,6 +33,8 @@ type Recruit = CampaignMember & {
 }
 
 export type CampaignState = {
+  /** Campaña de la partida (PRD §0, 13/11/2026: una sola partida, de Hoenn o de Teselia); sin ella, Hoenn (las de antes). */
+  campaign?: CampaignId
   seed: string
   encounterIndex: number
   phase: 'draft' | 'prepare' | 'battle' | 'won' | 'lost'
@@ -64,8 +68,9 @@ export type CampaignDifficulty = { ai: Difficulty; draft: Difficulty }
 export const DIFFICULTIES: readonly Difficulty[] = ['easy', 'normal', 'hard']
 export const difficultyOf = (state: Pick<CampaignState, 'difficulty'>): CampaignDifficulty => state.difficulty ?? { ai: 'normal', draft: 'normal' }
 
-export function createCampaign(seed: string, difficulty?: CampaignDifficulty): CampaignState {
+export function createCampaign(seed: string, difficulty?: CampaignDifficulty, campaign?: CampaignId): CampaignState {
   return {
+    ...(campaign && campaign !== 'hoenn-emerald' ? { campaign } : {}),
     seed, encounterIndex: 0, phase: 'draft', pick: 0, offer: [], previousOffer: [],
     members: [], leagueRoster: null, battleTeam: [],
     ...(difficulty && (difficulty.ai !== 'normal' || difficulty.draft !== 'normal') ? { difficulty: { ...difficulty } } : {}),
@@ -147,9 +152,10 @@ export function openDraft(
 ): CampaignState {
   if (state.phase !== 'draft') throw new DataError('El draft no está disponible en esta fase.')
   if (state.offer.length) return state
-  if (isEmeraldCampaign(definition)) {
+  const rules = rulesOf(definition)
+  if (rules) {
     // El llamador no puede ampliar el margen ni introducir formas no viables.
-    eligibleSpecies = availableDraftForms(definition, emeraldCalendar, state.encounterIndex, 'A').map(form => form.species)
+    eligibleSpecies = availableDraftForms(definition, rules, state.encounterIndex, 'A').map(form => form.species)
     const { rivalAverage } = campaignDraftRequest(definition, state, eligibleSpecies, { below: 0, above: 0 })
     const ratio = EMERALD_DRAFT_RATIOS[difficultyOf(state).draft]
     window = relativeDraftWindow(rivalAverage, ratio)
@@ -165,7 +171,7 @@ export function openDraft(
   if (!eligibleSpecies || !window) throw new DataError('La campaña necesita sus reglas de draft.')
   const request = campaignDraftRequest(definition, state, eligibleSpecies, window)
   const encounter = encounterAt(definition, state)
-  const counters = isEmeraldCampaign(definition) && encounter.kind === 'gym'
+  const counters = rules && encounter.kind === 'gym'
     ? gymCounterSpecies(definition, encounter.id, eligibleSpecies) : []
   const covered = state.draftTypeCovered === true || (state.pick > 0 && state.previousOffer.some(id => counters.includes(id)))
   const lastPick = state.pick === draftPicks(definition, state.encounterIndex) - 1
@@ -173,7 +179,7 @@ export function openDraft(
   // los suyos ya reclutados), se salta (Jose, 12/11/2026).
   const pool = new Set(draftPool(request))
   const reachable = counters.some(id => pool.has(id))
-  const needsCounter = isEmeraldCampaign(definition) && encounter.kind === 'gym' && !covered && lastPick && reachable
+  const needsCounter = !!rules && encounter.kind === 'gym' && !covered && lastPick && reachable
   const offer = draftOffer({
     ...request,
     ...(needsCounter ? { requiredSpecies: counters } : {}),
@@ -189,12 +195,14 @@ export function chooseRecruit(definition: CampaignDefinition, state: CampaignSta
   let member: Recruit = {
     id: `${encounter.id}:${state.pick}`, species, level: encounterLevel(encounter), history: [], fainted: false, victories: 0,
   }
-  if (isEmeraldCampaign(definition)) {
-    const form = availableDraftForms(definition, emeraldCalendar, state.encounterIndex, 'A').find(form => form.species === species)
+  const rules = rulesOf(definition)
+  if (rules) {
+    const form = availableDraftForms(definition, rules, state.encounterIndex, 'A').find(form => form.species === species)
     member = form ? { ...member, history: form.history, recruitmentHistoryLength: form.history.length } : {
       // Conserva la elección de una oferta persistida anterior a la política A.
       ...member, ...advanceLevel(definition.species, { ...member, level: 1 }, member.level, { seed: state.seed, id: member.id }),
     }
+    if (rules.genders) member = { ...member, gender: recruitGender(definition, state.seed, member) }
   }
   const pick = state.pick + 1
   const required = draftPicks(definition, state.encounterIndex)
@@ -202,6 +210,26 @@ export function chooseRecruit(definition: CampaignDefinition, state: CampaignSta
     ...state, pick, phase: pick === required ? 'prepare' : 'draft',
     previousOffer: state.offer, offer: [], members: [...state.members, member],
   }
+}
+
+/**
+ * Sexo de un recluta (Teselia, PRD §0, 13/11/2026): el que exige su forma si llegó a ella por una evolución de un solo sexo (Gallade,
+ * Froslass, Vespiquen, Mothim, Wormadam) o el de su especie si solo tiene uno; si no, sorteado con la proporción de machos de la especie
+ * y la semilla de la partida y el miembro (reproducible al reanudar).
+ */
+export function recruitGender(definition: CampaignDefinition, seed: string, member: Pick<Recruit, 'id' | 'species' | 'history'>): 'M' | 'F' | null {
+  const stages = [...member.history.map(stage => stage.species), member.species]
+  for (let i = 0; i < stages.length - 1; i++) {
+    const rule = definition.species[stages[i]]?.evolutions.find(candidate => candidate.target === stages[i + 1])
+    if (rule?.method.endsWith('_MALE')) return 'M'
+    if (rule?.method.endsWith('_FEMALE')) return 'F'
+  }
+  const ratio = definition.species[member.species]?.maleRatio
+  if (ratio === null) return null
+  if (ratio === undefined) return null
+  if (ratio >= 1) return 'M'
+  if (ratio <= 0) return 'F'
+  return new Prng(deriveSeed(seed, 'nuzlocke-gender:v1', member.id)).next() < ratio ? 'M' : 'F'
 }
 
 export type EvolutionConditions = {
@@ -226,32 +254,50 @@ export function specialEvolutionOptions(
   conditions: Partial<EvolutionConditions> = {},
 ): string[] {
   const member = recruitForEvolution(state, id)
-  const rules = definition.species[member.species].evolutions
-  const emerald = isEmeraldCampaign(definition)
-  const wins = emerald ? EMERALD_FRIENDSHIP_WINS : conditions.friendshipWins ?? 0
-  const inLeague = emerald && EMERALD_LEAGUE_FRIENDSHIP && encounterAt(definition, state).kind !== 'gym' && !!state.leagueRoster?.includes(member.id)
+  const evolutions = definition.species[member.species].evolutions
+  const rules = rulesOf(definition)
+  const wins = rules ? rules.friendshipWins : conditions.friendshipWins ?? 0
+  const inLeague = !!rules?.leagueFriendship && encounterAt(definition, state).kind !== 'gym' && !!state.leagueRoster?.includes(member.id)
   const friendshipReady = inLeague || (Number.isInteger(wins) && wins > 0 && member.victories >= wins)
-  const unlockedItems = emerald ? campaignEvolutionItems(definition, state) : conditions.unlockedItems ?? new Set<string>()
-  const consumed = emerald ? consumedEvolutionItems(definition, state) : new Set<string>()
+  const unlockedItems = rules ? campaignEvolutionItems(definition, state) : conditions.unlockedItems ?? new Set<string>()
+  const consumed = rules ? consumedEvolutionItems(definition, state) : new Set<string>()
+  const hasItem = (parameter: string | number) => typeof parameter === 'string' && unlockedItems.has(parameter) && !consumed.has(parameter)
+  // Intercambio y lo que la campaña asimila a él (Mantyke): en el nivel de intercambio (Jose, 12/11/2026). Sin reglas, como antes.
+  const tradeReady = !rules || member.level >= rules.tradeLevel
+  const period = conditions.period ?? 'day'
 
-  return rules.filter(rule => {
+  return evolutions.filter(rule => {
     switch (rule.method) {
       case 'ITEM':
-        return typeof rule.parameter === 'string' && unlockedItems.has(rule.parameter) && !consumed.has(rule.parameter)
-      // Intercambio: en el Nv37 (y con el objeto si lo pide; Jose, 12/11/2026). Fuera de Esmeralda, como antes.
+        return hasItem(rule.parameter)
+      case 'ITEM_MALE':
+        return hasItem(rule.parameter) && member.gender === 'M'
+      case 'ITEM_FEMALE':
+        return hasItem(rule.parameter) && member.gender === 'F'
       case 'TRADE_ITEM':
-        return typeof rule.parameter === 'string' && unlockedItems.has(rule.parameter) && !consumed.has(rule.parameter) &&
-          (!emerald || member.level >= EMERALD_TRADE_LEVEL)
+        return hasItem(rule.parameter) && tradeReady
       case 'TRADE':
-        return !emerald || member.level >= EMERALD_TRADE_LEVEL
+      case 'TRADE_SPECIES':
+      case 'LEVEL_PARTY':
+        return tradeReady
+      // Objeto equipado de día o de noche (Chansey, Weavile, Gliscor): el objeto como objeto de evolución y el periodo, a elegir.
+      case 'LEVEL_ITEM_DAY':
+        return hasItem(rule.parameter) && period === 'day'
+      case 'LEVEL_ITEM_NIGHT':
+        return hasItem(rule.parameter) && period === 'night'
+      // Por ataque sabido: basta con poder aprenderlo a su nivel (PRD §0, 13/11/2026).
+      case 'LEVEL_MOVE':
+        return definition.species[member.species].levelUp.some(entry => entry.move === rule.parameter && entry.level <= member.level)
+      case 'LOCATION':
+        return !!rules && typeof rules.locations[String(rule.parameter)] === 'string' && reached(rules, state, rules.locations[String(rule.parameter)] as string)
       case 'FRIENDSHIP':
         return friendshipReady
       case 'FRIENDSHIP_DAY':
-        return friendshipReady && (conditions.period ?? 'day') === 'day'
+        return friendshipReady && period === 'day'
       case 'FRIENDSHIP_NIGHT':
         return friendshipReady && conditions.period === 'night'
       case 'BEAUTY':
-        return emerald && emeraldReached(state, EMERALD_BEAUTY_BEFORE)
+        return !!rules?.beautyBefore && reached(rules, state, rules.beautyBefore)
       case 'LEVEL_ATK_GT_DEF':
       case 'LEVEL_ATK_LT_DEF':
       case 'LEVEL_ATK_EQ_DEF':
@@ -287,20 +333,26 @@ export function evolveRecruit(
  * evolución del miembro.
  */
 const LEAGUE_FREE_EVOLUTIONS = new Set(['LEVEL', 'LEVEL_NINJASK', 'LEVEL_ATK_LT_DEF', 'LEVEL_ATK_GT_DEF', 'LEVEL_ATK_EQ_DEF',
-  'FRIENDSHIP', 'FRIENDSHIP_DAY', 'FRIENDSHIP_NIGHT', 'TRADE', 'BEAUTY'])
+  'FRIENDSHIP', 'FRIENDSHIP_DAY', 'FRIENDSHIP_NIGHT', 'TRADE', 'BEAUTY',
+  // Gen 5 (PRD §0, 13/11/2026): ataque sabido, especie en el equipo, intercambio por especie y lugar (también las rocas de después de la Liga).
+  'LEVEL_MOVE', 'LEVEL_PARTY', 'TRADE_SPECIES', 'LOCATION'])
+
+/** Si la regla vale en la Liga para un miembro de ese sexo: las de un solo sexo, solo con él. */
+const leagueFree = (method: string, gender: CampaignMember['gender']) => LEAGUE_FREE_EVOLUTIONS.has(method) ||
+  (method === 'LEVEL_MALE' && gender === 'M') || (method === 'LEVEL_FEMALE' && gender === 'F')
 
 /** Caminos de evolución sin objeto desde una especie hasta cada forma final (la propia especie si no evoluciona así). */
-function leaguePaths(definition: CampaignDefinition, species: string, seen: ReadonlySet<string> = new Set([species])): string[][] {
+function leaguePaths(definition: CampaignDefinition, species: string, gender?: CampaignMember['gender'], seen: ReadonlySet<string> = new Set([species])): string[][] {
   const next = definition.species[species]?.evolutions.filter(rule =>
-    LEAGUE_FREE_EVOLUTIONS.has(rule.method) && Object.hasOwn(definition.species, rule.target) && !seen.has(rule.target)) ?? []
+    leagueFree(rule.method, gender) && Object.hasOwn(definition.species, rule.target) && !seen.has(rule.target)) ?? []
   if (!next.length) return [[species]]
   const targets = [...new Set(next.map(rule => rule.target))]
-  return targets.flatMap(target => leaguePaths(definition, target, new Set([...seen, target])).map(path => [species, ...path]))
+  return targets.flatMap(target => leaguePaths(definition, target, gender, new Set([...seen, target])).map(path => [species, ...path]))
 }
 
 /** Formas finales a las que puede llegar un miembro en la Liga sin objeto; con más de una, elige el jugador. */
-export function leagueEvolutionTargets(definition: CampaignDefinition, species: string): string[] {
-  return [...new Set(leaguePaths(definition, species).map(path => path[path.length - 1]))].sort()
+export function leagueEvolutionTargets(definition: CampaignDefinition, species: string, gender?: CampaignMember['gender']): string[] {
+  return [...new Set(leaguePaths(definition, species, gender).map(path => path[path.length - 1]))].sort()
 }
 
 /**
@@ -315,7 +367,7 @@ export function evolveForLeague(definition: CampaignDefinition, state: CampaignS
   if (state.leagueEvolved) return state
   const members = state.members.map(member => {
     if (member.fainted) return member
-    const paths = leaguePaths(definition, member.species)
+    const paths = leaguePaths(definition, member.species, member.gender)
     const finals = [...new Set(paths.map(path => path[path.length - 1]))]
     const target = finals.length === 1 ? finals[0] : choices[member.id]
     if (!target || !finals.includes(target)) throw new DataError(`Elige la evolución de ${member.species} para la Liga.`)
@@ -343,7 +395,7 @@ export function lockLeagueRoster(definition: CampaignDefinition, state: Campaign
   if (!selected.length || selected.length > 6 || new Set(selected).size !== selected.length || selected.some(id => !alive.has(id))) {
     throw new DataError('La plantilla de Liga debe tener entre uno y seis miembros vivos distintos.')
   }
-  if (isEmeraldCampaign(definition) && !state.leagueEvolved) throw new DataError('Aplica antes las evoluciones de la Liga.')
+  if (rulesOf(definition) && !state.leagueEvolved) throw new DataError('Aplica antes las evoluciones de la Liga.')
   return { ...state, leagueRoster: [...selected] }
 }
 
@@ -382,8 +434,8 @@ export function finishEncounter(
     if (won && knockedOut === false) return { ...member, victories: member.victories + 1 }
     return member
   })
-  const gymWin = won && isEmeraldCampaign(definition) && encounterAt(definition, state).kind === 'gym'
-  const earned = gymWin ? battlePointsFor(fainted) : 0
+  const rules: CampaignRules | null = rulesOf(definition)
+  const earned = won && rules && encounterAt(definition, state).kind === 'gym' ? battlePointsFor(rules, fainted) : 0
   const finished = { ...state, members, battleTeam: [], lastTeam: [...state.battleTeam], battleSeed: undefined, ...(earned ? { battlePoints: (state.battlePoints ?? 0) + earned } : {}) }
   if (!won) return { ...finished, phase: 'lost' }
 

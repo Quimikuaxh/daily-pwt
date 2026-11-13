@@ -1,6 +1,6 @@
 /**
  * Progresión de la locke de N2/B2 (PRD §0, 13/11/2026): de las 649 especies de la 5.ª generación (formas base, como en Hoenn), sus
- * tipos y suma de estadísticas base, los ataques por nivel, los que aprende por MT/MO de N2/B2 y cómo evoluciona. Sin código fuente del
+ * tipos, suma de estadísticas base y proporción de machos, los ataques por nivel, los que aprende por MT/MO de N2/B2 y cómo evoluciona. Sin código fuente del
  * juego: de los datos de Gen 5 de `@pkmn/dex` (Showdown), con las MT de `unova-n2b2-calendar.json`.
  *
  * Los métodos de evolución usan los nombres de la de Hoenn (`hoenn-emerald-progression.json`) y añaden los de Gen 5:
@@ -78,6 +78,8 @@ export async function buildN2b2Progression() {
     const learnsByMachine = Object.entries(learnset).filter(([move, sources]) => machineMoves.has(move) && sources.includes('5M')).map(([move]) => move).sort()
     species[entry.id] = {
       baseStatTotal: Object.values(entry.baseStats).reduce((sum, value) => sum + value, 0),
+      // Proporción de machos (0 a 1); `null`, sin sexo. Para el sorteo del sexo al reclutar (PRD §0, 13/11/2026).
+      maleRatio: entry.gender === 'N' ? null : entry.gender === 'M' ? 1 : entry.gender === 'F' ? 0 : entry.genderRatio?.M ?? 0.5,
       types: [...entry.types],
       levelUp,
       machines: learnsByMachine,

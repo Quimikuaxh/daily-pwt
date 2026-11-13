@@ -28,6 +28,25 @@ describe('registro local versionado de campaña', () => {
     storage.setItem(CAMPAIGN_STORAGE_KEY, JSON.stringify(raw))
     expect(() => new LocalCampaignStore(storage).read()).toThrow(/conservado/)
   })
+  // DEC-101 (13/11/2026): la partida recuerda su campaña y los reclutas de Teselia llevan sexo.
+  it('conserva la campaña de la partida y el sexo de los reclutas, y rechaza valores que no son', () => {
+    const storage = new MemoryStorage()
+    const store = new LocalCampaignStore(storage)
+    const base = source().state
+    store.write({ ...base, campaign: 'unova-n2b2', members: base.members.map((member) => ({ ...member, gender: 'F' as const })) }, null, 0)
+    const read = new LocalCampaignStore(storage).read()!.state
+    expect(read.campaign).toBe('unova-n2b2')
+    expect(read.members[0].gender).toBe('F')
+    for (const [field, value] of [['campaign', 'kanto'], ['gender', 'X']] as const) {
+      const raw = JSON.parse(storage.getItem(CAMPAIGN_STORAGE_KEY)!)
+      if (field === 'campaign') raw.state.campaign = value
+      else raw.state.members[0].gender = value
+      const broken = new MemoryStorage()
+      broken.setItem(CAMPAIGN_STORAGE_KEY, JSON.stringify(raw))
+      expect(() => new LocalCampaignStore(broken).read()).toThrow(/conservado/)
+    }
+  })
+
   it('guarda preparación y campaña separadas del diario y devuelve copias', () => {
     const storage = new MemoryStorage()
     storage.setItem(STORAGE_KEY, 'diario intacto')
