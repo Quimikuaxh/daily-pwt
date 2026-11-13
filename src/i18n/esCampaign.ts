@@ -103,7 +103,7 @@ export const esCampaign = {
     cancel: 'CANCELAR',
     acceptLabel: 'Aceptar participantes de la Liga',
     fightLabel: 'Combatir contra el siguiente rival de la Liga',
-    cancelLabel: 'Cancelar y volver a la ruta',
+    cancelLabel: 'Cancelar y volver al equipo',
     cardLabel: (name: string) => `Próximo rival de la Liga: ${name}`,
     memberLabel: (name: string, level: number, description: string) => `${name}, nivel ${level}, ${description}`,
     status: (count: number, names: string) => `${count} participantes: ${names || 'ninguno'}.`,

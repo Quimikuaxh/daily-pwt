@@ -39,6 +39,14 @@ describe('Equipo y PC', () => {
     expect(onAccept).toHaveBeenCalledWith(['slakoth', 'machop', 'wingull'])
   })
 
+  it('arrastrando un Pokémon del equipo, su placa sigue con sus datos hasta soltarlo (Jose, 13/11/2026)', () => {
+    mount()
+    const slot = screen.getByRole('button', { name: /^Equipo, puesto 2: MACHOP/ })
+    fireEvent.pointerDown(slot, { button: 0, clientX: 10, clientY: 10, pointerId: 1 })
+    fireEvent.pointerMove(slot, { clientX: 40, clientY: 40, pointerId: 1 })
+    expect(slot.querySelector('img.mon-icon')).not.toBeNull()
+  })
+
   it('Esc suelta lo cogido sin moverlo; los huecos de más avisan del límite', () => {
     mount()
     fireEvent.click(screen.getByRole('button', { name: /^Equipo, puesto 2: MACHOP/ }))

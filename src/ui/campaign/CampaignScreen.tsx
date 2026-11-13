@@ -573,7 +573,8 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
           const locked = state.leagueRoster ? state : save(lockLeagueRoster(definition, state, selected))
           enterBattle((locked.leagueRoster ?? selected).filter((id) => locked.members.some((member) => { return member.id === id && !member.fainted })))
         }}
-        onCancel={() => setView('route')}
+        // CANCELAR vuelve al equipo, de donde se llega a esta pantalla, no a la ruta (Jose, 13/11/2026).
+        onCancel={() => setView('team')}
         reservedHeight={150}
       />
     )

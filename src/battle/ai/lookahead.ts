@@ -34,12 +34,25 @@ const USELESS_FRACTION = 0.1
  * Contra un Pokémon que repite ataque (Cinta Elegida, o simplemente el que más le conviene) el peor caso de todos los ataques posibles
  * hacía que cada cambio pareciera mejor que quedarse y la IA cambiaba sin parar (Jose, 12/11/2026, Tauros contra Sixto). Ahora la
  * puntuación mezcla el peor caso con el ataque que acaba de usar (`LAST_MOVE_WEIGHT`), y un cambio solo gana si supera al mejor
- * ataque por `SWITCH_MARGIN`, salvo que esté atado o en peligro (`stuck`) o que apenas haga daño (`WEAK_FRACTION`).
+ * ataque por `SWITCH_MARGIN`, salvo que esté atado o en peligro (`stuck`).
  */
 const LAST_MOVE_WEIGHT = 0.5
+/**
+ * Un cambio voluntario tiene que suponer una diferencia MUY sustancial (Jose, 13/11/2026), con tres condiciones a la vez, salvo que esté
+ * atado o en peligro (`stuck`):
+ * - superar al mejor ataque por `SWITCH_MARGIN`;
+ * - que quien entra no reciba `MAX_SWITCH_HIT` de sus PS o más con la respuesta del jugador (el peor de sus ataques, o el último que
+ *   usó si lo repite): un golpe muy alto al entrar no compensa;
+ * - que, tras ese golpe, gane con claridad al Pokémon del jugador el turno siguiente (`MIN_SWITCH_EDGE` de `matchup`): el beneficio
+ *   tiene que durar, no ser un poco menos malo. Si quedarse es caer sin actuar (el jugador va antes y le debilita), basta con que quien
+ *   entra no pierda (`matchup` ≥ 0): salvarlo ya es el beneficio.
+ * Se quitó la excepción de «apenas hace daño» (menos del 30 % de los PS, sin margen), que sacaba, p. ej., a un Dusclops inmune a los
+ * ataques de un Machamp para meter a un Banette frágil. Descartado subir el margen a 0,5: ni con el del campo sin hacer nada y otro
+ * que gana de calle llegaba (la ganancia típica de un cambio claro es 0,2-0,3).
+ */
 const SWITCH_MARGIN = 0.2
-/** Si el del campo no le quita ni esta fracción de PS al rival, no se le exige el margen: no hace nada útil quedándose. */
-const WEAK_FRACTION = 0.3
+const MAX_SWITCH_HIT = 0.4
+const MIN_SWITCH_EDGE = 0.5
 
 const side = (mon: AiMon): DamageSide => ({ set: mon.set, hp: mon.hp, boosts: mon.boosts, status: mon.status })
 const priority = (moveId: string, field: DamageField) => Dex.forGen(field.generation ?? 5).moves.get(moveId).priority ?? 0
@@ -62,11 +75,19 @@ function bestHit(attacker: AiMon, defender: AiMon, field: DamageField, onlyUsabl
   return best
 }
 
-/** Ventaja de `mon` (con `hp`) sobre `foe` para el turno siguiente: fracción de PS que le quitaría menos la que perdería. */
+/**
+ * Ventaja de `mon` (con `hp`) sobre `foe` para el turno siguiente: fracción de PS que le quitaría menos la que perdería, con el orden de
+ * velocidad (Jose, 13/11/2026): el más lento que cae de un golpe no llega a pegar, y el más rápido que debilita no recibe nada.
+ */
 function matchup(mon: AiMon, hp: number, foe: AiMon, field: DamageField): number {
   if (hp <= 0) return -1
   const at = { ...mon, hp }
-  return Math.min(1, bestHit(at, foe, field) / Math.max(1, foe.hp)) - Math.min(1, bestHit(foe, at, field) / hp)
+  const out = bestHit(at, foe, field)
+  const inc = bestHit(foe, at, field)
+  const first = effectiveSpeed(side(at), field) > effectiveSpeed(side(foe), field)
+  const dealt = first || inc < hp ? out : 0
+  const taken = !first || out < foe.hp ? inc : 0
+  return Math.min(1, dealt / Math.max(1, foe.hp)) - Math.min(1, taken / hp)
 }
 
 /**
@@ -154,8 +175,25 @@ export function chooseLookaheadAction(state: AiState & { danger?: ActiveDanger; 
     return last ? (1 - LAST_MOVE_WEIGHT) * worst + LAST_MOVE_WEIGHT * turnScore(me, action, foe, last, field, weight) : worst
   })
   const bestMove = Math.max(-Infinity, ...scores.filter((_, i) => options[i].action.kind === 'move'))
-  const weak = bestHit(me, foe, field, true) < foe.hp * WEAK_FRACTION
-  const adjusted = scores.map((score, i) => (options[i].action.kind === 'switch' && !isStuck && !weak && Number.isFinite(bestMove) ? score - SWITCH_MARGIN : score))
+  const hitOnEntry = (mon: AiMon) => {
+    const hits = (last ? [last] : responses).map((response) => {
+      const info = response ? moveInfo(response, field.generation) : null
+      return response && info?.kind === 'attack' ? expected(foe, mon, response, info, field) : 0
+    })
+    return Math.max(0, ...hits) / Math.max(1, mon.hp)
+  }
+  const foeFirst = effectiveSpeed(side(foe), field) >= effectiveSpeed(side(me), field)
+  const doomed = foeFirst && (last ? [last] : responses).some((response) => {
+    const info = response ? moveInfo(response, field.generation) : null
+    return !!response && info?.kind === 'attack' && expected(foe, me, response, info, field) >= me.hp
+  })
+  const adjusted = scores.map((score, i) => {
+    const action = options[i].action
+    if (action.kind !== 'switch' || isStuck || !Number.isFinite(bestMove)) return score
+    const hit = hitOnEntry(action.mon)
+    if (hit >= MAX_SWITCH_HIT || matchup(action.mon, action.mon.hp * (1 - hit), foe, field) < (doomed ? 0 : MIN_SWITCH_EDGE)) return -Infinity
+    return score - SWITCH_MARGIN
+  })
   const top = Math.max(...adjusted)
   return rng.pick(options.filter((_, i) => Math.abs(adjusted[i] - top) < 1e-9)).choice
 }

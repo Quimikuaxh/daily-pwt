@@ -68,11 +68,38 @@ describe('cuándo cambia (Jose, 12/11/2026)', () => {
     expect(choose({ ...hurt, danger: { ...noDanger, leechSeed: true } }, 'x')).toEqual({ type: 'switch', slot: 2 })
   })
 
-  it('si no hace casi nada y otro de su equipo planta cara, cambia a ese', () => {
-    const snorlax = rs('snorlax', 'leftovers', 'thickfat', ['bodyslam', 'return', 'crunch', 'rest'])
-    const foe = mkMon(skarmory, { moves: [{ id: 'bravebird', pp: 10, disabled: false }] })
-    const state = { ...mkState([mkMon(snorlax), mkMon(heatran)], [foe]), danger: noDanger }
-    expect(choose(state, 'x')).toEqual({ type: 'switch', slot: 2 })
+  // Cambio de requisito (Jose, 13/11/2026): antes cambiaba sin margen si lo suyo hacía menos del 30 % (Snorlax contra Skarmory, a
+  // Heatran). Ahora el cambio tiene que ser MUY sustancial y sin recibir un golpe muy alto al entrar.
+  const snorlax = rs('snorlax', 'leftovers', 'thickfat', ['bodyslam', 'return', 'facade', 'doubleedge'])
+  const gengar = rs('gengar', 'lifeorb', 'levitate', ['shadowball', 'focusblast', 'sludgebomb', 'thunderbolt'])
+  const tyranitar = rs('tyranitar', 'leftovers', 'sandstream', ['crunch', 'stoneedge', 'earthquake', 'pursuit'])
+  const knows = (mon: ReturnType<typeof mkMon>, ids: string[]) => ({ ...mon, moves: ids.map((id) => ({ id, pp: 10, disabled: false })) })
+
+  it('si no le hace nada y otro de su equipo gana de largo sin recibir un golpe alto al entrar, cambia a ese', () => {
+    const state = { ...mkState([mkMon(snorlax), mkMon(tyranitar)], [knows(mkMon(gengar), ['sludgebomb'])]), danger: noDanger }
+    expect(SEEDS.map((seed) => choose(state, seed))).toEqual(SEEDS.map(() => ({ type: 'switch', slot: 2 })))
+  })
+
+  it('no mete a quien recibiría un golpe muy alto al entrar, aunque después ganara', () => {
+    const state = { ...mkState([mkMon(snorlax), mkMon(tyranitar)], [knows(mkMon(gengar), ['sludgebomb', 'focusblast'])]), danger: noDanger }
+    for (const seed of SEEDS) expect(choose(state, seed).type).not.toBe('switch')
+  })
+
+  it('inmune a lo que le pega y haciendo poco daño, se queda (Fátima: Dusclops contra un Machamp de lucha, Gen 3)', () => {
+    const r = (species: string, level: number, item: string, ability: string, moves: [string, string, string, string], iv = 30) =>
+      mkResolved(species, item, ability, moves, { level: level as never, ivs: { hp: iv, atk: iv, def: iv, spa: iv, spd: iv, spe: iv }, evs: { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 } })
+    const phoebe = [
+      r('dusclops', 48, '', 'pressure', ['shadowpunch', 'confuseray', 'curse', 'protect']),
+      r('banette', 49, '', 'insomnia', ['shadowball', 'grudge', 'willowisp', 'feintattack']),
+      r('sableye', 50, '', 'keeneye', ['shadowball', 'doubleteam', 'nightshade', 'feintattack']),
+      r('banette', 49, '', 'insomnia', ['shadowball', 'psychic', 'thunderbolt', 'facade']),
+      r('dusclops', 51, 'sitrusberry', 'pressure', ['shadowball', 'icebeam', 'rockslide', 'earthquake'], 31),
+    ]
+    const machamp = r('machamp', 51, 'sitrusberry', 'guts', ['revenge', 'earthquake', 'rocktomb', 'crosschop'], 20)
+    const team = [mkMon(phoebe[0], { hpFraction: 0.4 }), ...phoebe.slice(1).map((set) => mkMon(set))]
+    const state = { ...mkState(team, [mkMon(machamp)], { generation: 3 } as never), danger: noDanger }
+    // Con la excepción de «apenas hace daño», cambiaba.
+    for (const seed of SEEDS) expect(choose(state, seed).type).not.toBe('switch')
   })
 
   // UT-204 (Jose, 12/11/2026): contra un Tauros con Cinta Elegida, Sixto cambiaba cada turno (con el motor: 22 cambios voluntarios en 6

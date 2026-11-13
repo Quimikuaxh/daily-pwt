@@ -175,6 +175,18 @@ describe('Campaña de Hoenn', () => {
     expect(store.read()!.state.leagueRoster).toEqual(['a', 'b'])
   })
 
+  it('en la ficha del rival de la Liga, CANCELAR vuelve a Equipo y PC, no a la ruta (Jose, 13/11/2026)', async () => {
+    const store = new LocalCampaignStore(new MemoryStorage())
+    const member = (id: string, species: string) => ({ id, species, level: 50, history: [], fainted: false, victories: 0 })
+    store.write({ ...createCampaign('liga'), phase: 'prepare', encounterIndex: 9, pick: 0, offer: [], leagueEvolved: true, leagueRoster: ['a', 'b'],
+      members: [member('a', 'grovyle'), member('b', 'machop')] }, null, 0)
+    const { user } = mount(store)
+    await user.click(screen.getByRole('button', { name: /^Continuar/ }))
+    await user.click(screen.getByRole('button', { name: /^Aceptar/ }))
+    await user.click(screen.getByRole('button', { name: 'Cancelar y volver al equipo' }))
+    expect(screen.getByRole('button', { name: /^Equipo, puesto 1: GROVYLE/ })).toBeInTheDocument()
+  })
+
   // UT-212 (Jose, 13/11/2026): la campaña tiene su botón Sonido con el volumen, guardado en los mismos ajustes.
   it('Sonido abre el volumen y lo cambia', async () => {
     const onSoundChange = vi.fn()

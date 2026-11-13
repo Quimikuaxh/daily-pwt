@@ -115,6 +115,17 @@ test('T4 combate de campaña contra Petra con el motor: se reanuda tras recargar
   await page.getByRole('button', { name: /^Continuar/ }).click()
   await page.getByRole('button', { name: 'Aceptar el equipo y preparar los movimientos' }).click()
   await expect(page.getByRole('status').filter({ hasText: /petra/i })).toBeVisible()
+  // Jose, 13/11/2026: con el menú de un Pokémon del equipo abierto, elegir ataque lo cierra.
+  const battle = page.locator('.emerald-battle')
+  await expect(battle.getByRole('button', { name: 'LUCHAR' })).toBeVisible({ timeout: 60_000 })
+  await battle.locator('.battle-party .team-cell:not([disabled])').filter({ hasNotText: /activo/ }).nth(1).click()
+  await expect(battle.getByRole('button', { name: 'Cerrar el menú' })).toBeVisible()
+  // LUCHAR se ve ya durante la entrada, pero hasta que acaba no recibe el clic: se insiste hasta que sale la lista de movimientos.
+  await expect(async () => {
+    await battle.getByRole('button', { name: 'LUCHAR' }).click({ timeout: 1000 })
+    await battle.getByRole('button', { name: / de \d+ PP$/ }).first().click({ timeout: 1000 })
+  }).toPass({ timeout: 30_000 })
+  await expect(battle.getByRole('button', { name: 'Cerrar el menú' })).toHaveCount(0)
   await playCampaignBattle(page, { reloadAt: 6 })
   // Resultado (medalla y Ficha, o derrota): se toca hasta volver a la Ruta.
   await expect(page.locator('.result-screen')).toBeVisible()

@@ -225,8 +225,9 @@ export function TeamScreen({ readOnly = false, canEvolve, onEvolve, mons, initia
               <button key={i} type="button" className="team-cell" data-place={placeKey(place)} style={{ left: r.x, top: r.y, width: r.w, height: r.h }}
                 aria-label={slotLabel(place, id)} aria-disabled={i >= limit || undefined} {...drag.handlers(place)}
                 onPointerEnter={() => { if (!menu) setHover(place) }} onFocus={() => { if (!menu) setHover(place) }}>
-                {/* Cogido con un toque, el equipo no tiene mano que lo lleve: sigue con sus datos, marcado, hasta soltarlo (Jose, 12/11/2026). */}
-                <PartySlot i={i} mon={mon && { ...mon, maxHp: mon.hp }} state={active ? 'activa' : 'normal'} held={id === draggingId} bounce={active} />
+                {/* Cogido con un toque o arrastrándolo, la placa sigue con sus datos hasta soltarlo: el equipo no tiene mano que lo lleve y vaciarla
+                    al empezar el arrastre parecía que el Pokémon ya se había movido (Jose, 12 y 13/11/2026). */}
+                <PartySlot i={i} mon={mon && { ...mon, maxHp: mon.hp }} state={active ? 'activa' : 'normal'} bounce={active} />
               </button>
             )
           })}

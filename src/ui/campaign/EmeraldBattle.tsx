@@ -214,6 +214,8 @@ export function EmeraldBattle({ session, start, data, trainer, trainerId, resume
   const chooseMove = (i: number) => {
     playSfx('emerald-select')
     setMenu('actions')
+    // Con el menú de un Pokémon del equipo abierto (para cambiarlo o mirarlo), elegir ataque lo cierra (Jose, 13/11/2026).
+    setMemberMenu(null)
     setAnswered(battle.request)
     battle.choose({ type: 'move', slot: i + 1 })
   }
