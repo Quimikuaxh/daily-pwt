@@ -10,6 +10,15 @@ const OFFER_SIZE = 4
  * 12/11/2026 Jose amplió el margen por abajo a −10 % (más variedad, con Pokémon algo más flojos; por arriba sigue +8 %).
  */
 export const EMERALD_DRAFT_RATIO = Object.freeze({ below: 0.10, above: 0.08 })
+/**
+ * Ventana según la dificultad de los Pokémon (PRD §0, 13/11/2026): Fácil deja salir candidatos más fuertes y pocos más flojos; Difícil,
+ * al revés. Normal es la de arriba.
+ */
+export const EMERALD_DRAFT_RATIOS = Object.freeze({
+  easy: Object.freeze({ below: 0.05, above: 0.15 }),
+  normal: EMERALD_DRAFT_RATIO,
+  hard: Object.freeze({ below: 0.15, above: 0.03 }),
+})
 
 /** Ventana absoluta para una media del rival según una ventana proporcional. */
 export const relativeDraftWindow = (rivalAverage: number, ratio: { below: number; above: number }): DraftRequest['window'] =>

@@ -1,3 +1,4 @@
+import hoenn from '../../../../data/nuzlocke/hoenn-emerald.json'
 import { describe, expect, it } from 'vitest'
 import moveFxKinds from '../../../generated/move-fx.json'
 import { Prng } from '../../../core/prng'
@@ -80,14 +81,16 @@ describe('efectos de movimientos', () => {
 
   // Cambio de requisito del 30/10/2026 (Jose): cuarta tanda con los cuatro climas propios (la lluvia ya lo era) y 20 movimientos más, y
   // de la quinta a la octava, los 20 siguientes por uso en cada una.
-  it('164 movimientos con animación propia (ocho tandas de 20, Maldición y tres climas); el resto usa la genérica de su clase (Poder Oculto de cualquier tipo, la suya)', () => {
-    expect(Object.keys(CUSTOM_EFFECTS)).toHaveLength(164)
+  // Cambio de requisito (Jose, 13/11/2026): tanda 9 con los 57 de los rivales de la campaña de Hoenn que faltaban.
+  it('221 movimientos con animación propia (ocho tandas de 20, Maldición, tres climas y 57 de la campaña); el resto usa la genérica de su clase (Poder Oculto de cualquier tipo, la suya)', () => {
+    expect(Object.keys(CUSTOM_EFFECTS)).toHaveLength(221)
     for (const id of ['sunnyday', 'raindance', 'sandstorm', 'hail', 'trick', 'dragondance', 'lightscreen', 'reflect']) expect(effectFor(id, 'foe'), id).toBe(CUSTOM_EFFECTS[id])
     expect(effectFor('flamethrower', 'shot', 'Fire')).toBe(CUSTOM_EFFECTS.flamethrower)
     expect(effectFor('crunch', 'bite', 'Dark')).toBe(CUSTOM_EFFECTS.crunch)
     expect(effectFor('earthquake', 'hit')).toBe(CUSTOM_EFFECTS.earthquake)
     expect(effectFor('hiddenpowerfire', 'shot')).toBe(CUSTOM_EFFECTS.hiddenpower)
-    expect(effectFor('tackle', 'hit')).toBe(GENERIC_EFFECTS.hit)
+    expect(effectFor('tackle', 'hit')).toBe(CUSTOM_EFFECTS.tackle)
+    expect(effectFor('megapunch', 'punch')).toBe(GENERIC_EFFECTS.punch)
     expect(effectFor('calmmind', 'boost')).not.toBe(GENERIC_EFFECTS.boost)
     expect(effectFor('growth', 'boost')).toBe(GENERIC_EFFECTS.boost)
     expect(effectFor('thunderfang', 'bite', 'Electric')).toBe(GENERIC_EFFECTS.bite)
@@ -131,4 +134,11 @@ describe('efectos de movimientos', () => {
     // Físicos según cómo golpean: muerden, puñetazo, patada, corte; el resto, golpe.
     expect(kinds).toMatchObject({ crunch: 'bite', icepunch: 'punch', highjumpkick: 'kick', xscissor: 'slash', closecombat: 'hit', flamethrower: 'shot' })
   })
+
+  // UT-213 (Jose, 13/11/2026): todo ataque de los rivales de la campaña tiene animación propia (y sirve igual en el diario).
+  it('los movimientos de los rivales de la campaña de Hoenn tienen animación propia', () => {
+    const rivalMoves = new Set((hoenn.encounters as { team: { moves: string[] }[] }[]).flatMap((encounter) => encounter.team.flatMap((member) => member.moves)))
+    for (const move of rivalMoves) expect(CUSTOM_EFFECTS[move], move).toBeDefined()
+  })
 })
+

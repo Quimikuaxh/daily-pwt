@@ -4,7 +4,7 @@ import calendar from '../../../data/nuzlocke/hoenn-emerald-calendar.json'
 import { availableMoves } from './progression'
 import { campaignDraftRequest, chooseRecruit, createCampaign, draftPicks, evolutionFamilies, openDraft } from './campaign'
 import { availableDraftForms } from './draftAvailability'
-import { draftOffer, draftPool, EMERALD_DRAFT_RATIO, relativeDraftWindow } from './draft'
+import { draftOffer, draftPool, EMERALD_DRAFT_RATIO, EMERALD_DRAFT_RATIOS, relativeDraftWindow } from './draft'
 import { gymCounterSpecies } from './gymDraft'
 import { consumedEvolutionItems } from './calendar'
 
@@ -18,6 +18,8 @@ const requestAt = (index: number) => {
 describe('política de draft de Esmeralda aprobada por Jose el 11/11/2026', () => {
   it('UT-162: fija −10 %/+8 % (por abajo, −6 % hasta el 12/11/2026) y conserva decimales al convertir la ventana', () => {
     expect(EMERALD_DRAFT_RATIO).toEqual({ below: 0.10, above: 0.08 })
+    // UT-211 (Jose, 13/11/2026): Fácil −5 % / +15 %, Difícil −15 % / +3 %.
+    expect(EMERALD_DRAFT_RATIOS).toEqual({ easy: { below: 0.05, above: 0.15 }, normal: EMERALD_DRAFT_RATIO, hard: { below: 0.15, above: 0.03 } })
     expect(relativeDraftWindow(325, EMERALD_DRAFT_RATIO)).toEqual({ below: 32.5, above: 26 })
     expect(relativeDraftWindow(500.5, EMERALD_DRAFT_RATIO).below).toBeCloseTo(50.05, 10)
     expect(relativeDraftWindow(500.5, EMERALD_DRAFT_RATIO).above).toBeCloseTo(40.04, 10)
@@ -43,6 +45,14 @@ describe('política de draft de Esmeralda aprobada por Jose el 11/11/2026', () =
       const offer = openDraft(definition, { ...state, seed: String(seed) }).offer
       expect(offer.every(id => pool.has(id))).toBe(true)
     }
+  })
+
+  // UT-211 (Jose, 13/11/2026): la dificultad de los Pokémon cambia la ventana del draft.
+  it.each([['easy', 0.05, 0.15], ['hard', 0.15, 0.03]] as const)('con dificultad %s, las ofertas salen de su ventana', (draft, below, above) => {
+    const state = { ...createCampaign('dificultad', { ai: 'normal', draft }), encounterIndex: 8, draftTypeCovered: true }
+    const raw = requestAt(8)
+    const pool = new Set(draftPool({ ...raw, window: { below: raw.rivalAverage * below, above: raw.rivalAverage * above } }))
+    for (let seed = 0; seed < 15; seed++) expect(openDraft(definition, { ...state, seed: String(seed) }).offer.every(id => pool.has(id))).toBe(true)
   })
 
   it.each([0, 8])('UT-163: openDraft incluye los extremos y excluye los vecinos en el hito %i', encounterIndex => {

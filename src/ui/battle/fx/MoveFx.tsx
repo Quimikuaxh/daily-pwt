@@ -19,6 +19,11 @@ type MoveFxProps = {
   speed: number
   /** Campo (pantalla de arriba): de él se mueven los sprites o la pantalla entera cuando el efecto tiembla. */
   fieldRef: { current: HTMLElement | null }
+  /** Tamaño del lienzo (por defecto la pantalla de la DS); la campaña de Esmeralda usa 240 x 160. */
+  width?: number
+  height?: number
+  /** Selector del sprite de cada bando dentro del campo, para el temblor (por defecto, el del combate del diario). */
+  spriteSelector?: (side: 'player' | 'rival') => string
 }
 
 const WIDTH = 256
@@ -37,23 +42,25 @@ function painterFor(context: CanvasRenderingContext2D): Painter {
   }
 }
 
-function shakeTargetElement(field: HTMLElement | null, who: 'user' | 'target' | 'screen', user: 'player' | 'rival'): HTMLElement | null {
+const DAILY_SPRITE = (side: 'player' | 'rival') => `.bt-mon-${side} .bt-sprite`
+
+function shakeTargetElement(field: HTMLElement | null, who: 'user' | 'target' | 'screen', user: 'player' | 'rival', selector = DAILY_SPRITE): HTMLElement | null {
   if (!field) return null
   if (who === 'screen') return field
   const side = who === 'user' ? user : user === 'player' ? 'rival' : 'player'
-  return field.querySelector<HTMLElement>(`.bt-mon-${side} .bt-sprite`)
+  return field.querySelector<HTMLElement>(selector(side))
 }
 
 /**
  * Lienzo de las animaciones de movimientos (DEC-53) sobre los Pokémon y bajo la caja de mensajes. Reproduce el efecto del movimiento con
  * requestAnimationFrame durante su duración (dividida por la velocidad del combate) y se borra al terminar.
  */
-export function MoveFx({ event, type, points, speed, fieldRef }: MoveFxProps) {
+export function MoveFx({ event, type, points, speed, fieldRef, width = WIDTH, height = HEIGHT, spriteSelector = DAILY_SPRITE }: MoveFxProps) {
   const canvasRef = useRef(null as HTMLCanvasElement | null)
   // Posiciones, velocidad y tipo del momento en que empieza el efecto (no lo reinician si cambian a mitad).
-  const latest = useRef({ points, speed, type })
+  const latest = useRef({ points, speed, type, width, height, spriteSelector })
   useLayoutEffect(() => {
-    latest.current = { points, speed, type }
+    latest.current = { points, speed, type, width, height, spriteSelector }
   })
 
   useEffect(() => {
@@ -61,7 +68,7 @@ export function MoveFx({ event, type, points, speed, fieldRef }: MoveFxProps) {
     const context = canvas?.getContext('2d')
     if (!event || !canvas || !context) return
     const kind = kindOf(event.moveId)
-    const { points: at, speed: rate, type: moveType } = latest.current
+    const { points: at, speed: rate, type: moveType, width: w, height: h, spriteSelector: selector } = latest.current
     const effect = effectFor(event.moveId, kind, moveType ?? undefined)
     const opponent = event.user === 'player' ? 'rival' : 'player'
     const user = at[event.user]
@@ -79,27 +86,27 @@ export function MoveFx({ event, type, points, speed, fieldRef }: MoveFxProps) {
     }
     const render = (now: number) => {
       const progress = Math.min(1, (now - start) / duration)
-      context.clearRect(0, 0, WIDTH, HEIGHT)
+      context.clearRect(0, 0, w, h)
       const fx: FxContext = { user, target, type: moveType ?? 'Normal', ...colors, random: seeded(event.moveId) }
       effect.draw(paint, progress, fx)
       const shake = effect.shake?.(progress) ?? null
       clearShake()
       if (shake) {
-        shaken = shakeTargetElement(fieldRef.current, shake.who, event.user)
+        shaken = shakeTargetElement(fieldRef.current, shake.who, event.user, selector)
         if (shaken) shaken.style.translate = `${shake.dx}px ${shake.dy}px`
       }
       if (progress < 1) frame = requestAnimationFrame(render)
-      else context.clearRect(0, 0, WIDTH, HEIGHT)
+      else context.clearRect(0, 0, w, h)
     }
     frame = requestAnimationFrame(render)
     return () => {
       cancelAnimationFrame(frame)
       clearShake()
-      context.clearRect(0, 0, WIDTH, HEIGHT)
+      context.clearRect(0, 0, w, h)
     }
   }, [event, fieldRef])
 
-  return <canvas ref={canvasRef} className="bt-fx" width={WIDTH} height={HEIGHT} aria-hidden="true" data-move={event?.moveId} />
+  return <canvas ref={canvasRef} className="bt-fx" width={width} height={height} aria-hidden="true" data-move={event?.moveId} />
 }
 
 /** Azar determinista por movimiento, nuevo en cada fotograma (mismas posiciones fotograma a fotograma). */

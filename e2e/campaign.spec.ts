@@ -9,6 +9,8 @@ test('T3 Hoy → Modos → Ruta → cuatro elecciones de Petra → Ruta → Hoy'
   await expect(page.getByRole('button', { name: /Reto diario/ })).toHaveAttribute('aria-current', 'page')
   await page.getByRole('button', { name: 'Nuzlocke de Hoenn' }).click()
   await page.getByRole('button', { name: 'Empezar campaña', exact: true }).click()
+  // Cambio de requisito (Jose, 13/11/2026): dificultad al empezar (Normal de entrada).
+  await page.getByRole('button', { name: 'Empezar', exact: true }).click()
   const petra = page.getByRole('region', { name: 'Ficha de Petra' })
   await expect(petra).toContainText('LÍDER PETRA')
   // Cambio de requisito (Jose, 12/11/2026): en escritorio las medallas van en el panel «Tu campaña»; en móvil, en la barra.
@@ -103,6 +105,8 @@ test('T4 combate de campaña contra Petra con el motor: se reanuda tras recargar
   await page.getByRole('button', { name: 'Modos de juego' }).click()
   await page.getByRole('button', { name: 'Nuzlocke de Hoenn' }).click()
   await page.getByRole('button', { name: 'Empezar campaña', exact: true }).click()
+  // Cambio de requisito (Jose, 13/11/2026): dificultad al empezar (Normal de entrada).
+  await page.getByRole('button', { name: 'Empezar', exact: true }).click()
   await page.getByRole('button', { name: /^Continuar/ }).click()
   for (let pick = 1; pick <= 4; pick++) {
     await page.getByRole('button', { name: /^Candidato/ }).first().click()

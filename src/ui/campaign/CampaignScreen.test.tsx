@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { render, screen, cleanup } from '@testing-library/react'
+import { render, screen, cleanup, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createCampaign, openDraft } from '../../core/nuzlocke/campaign'
 import { loadGameData } from '../../data/gameData'
@@ -22,6 +22,8 @@ describe('Campaña de Hoenn', () => {
     const { store, user, onExit } = mount()
     expect(screen.queryByRole('button', { name: /^Continuar/ })).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Empezar campaña' }))
+    // Cambio de requisito (Jose, 13/11/2026): antes de empezar se elige la dificultad (Normal de entrada).
+    await user.click(await screen.findByRole('button', { name: 'Empezar' }))
     expect(store.read()?.state).toEqual({ ...createCampaign('t3-petra'), startedAt: expect.any(Number) })
     // Cambio de requisito (Jose, 12/11/2026): el botón dice lo que viene y una línea marca el paso del tramo.
     expect(screen.getByRole('button', { name: 'Continuar: reclutar (1 de 4) · preparar el gimnasio 1' })).toHaveTextContent('Reclutar (1 de 4)')
@@ -37,10 +39,13 @@ describe('Campaña de Hoenn', () => {
     const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false)
     // Cambio de requisito (Jose, 12/11/2026): con una campaña en curso el botón se llama «Nueva partida».
     await user.click(screen.getByRole('button', { name: 'Nueva partida' }))
+    expect(screen.queryByRole('dialog', { name: 'Dificultad de la campaña' })).not.toBeInTheDocument()
     expect(confirm).toHaveBeenCalledWith('Ya tienes una campaña en curso. ¿Empezar otra? Se perderá la actual.')
     expect(store.read()?.state.seed).toBe('anterior')
     confirm.mockReturnValue(true)
     await user.click(screen.getByRole('button', { name: 'Nueva partida' }))
+    // Cambio de requisito (Jose, 13/11/2026): antes de empezar se elige la dificultad (Normal de entrada).
+    await user.click(await screen.findByRole('button', { name: 'Empezar' }))
     expect(store.read()?.state).toEqual({ ...createCampaign('t3-petra'), startedAt: expect.any(Number) })
   })
 
@@ -59,6 +64,8 @@ describe('Campaña de Hoenn', () => {
     const { user, store } = mount(new LocalCampaignStore(null))
     expect(screen.getByRole('status')).toHaveTextContent('Sin almacenamiento disponible: la campaña no se guardará al cerrar la página.')
     await user.click(screen.getByRole('button', { name: 'Empezar campaña' }))
+    // Cambio de requisito (Jose, 13/11/2026): antes de empezar se elige la dificultad (Normal de entrada).
+    await user.click(await screen.findByRole('button', { name: 'Empezar' }))
     expect(store.read()?.state.seed).toBe('t3-petra')
   })
 
@@ -86,6 +93,8 @@ describe('Campaña de Hoenn', () => {
   it('OTROS en el draft enseña el equipo y la caja solo para mirar y CANCELAR vuelve a la oferta', async () => {
     const { user, store } = mount()
     await user.click(screen.getByRole('button', { name: 'Empezar campaña' }))
+    // Cambio de requisito (Jose, 13/11/2026): antes de empezar se elige la dificultad (Normal de entrada).
+    await user.click(await screen.findByRole('button', { name: 'Empezar' }))
     await user.click(screen.getByRole('button', { name: /^Continuar/ }))
     await user.click(candidates()[0])
     await user.click(screen.getByRole('button', { name: /^Reclutar a/ }))
@@ -124,6 +133,8 @@ describe('Campaña de Hoenn', () => {
   it('recluta las cuatro elecciones de Petra, guarda cada una y vuelve a Ruta en preparación', async () => {
     const { user, store } = mount()
     await user.click(screen.getByRole('button', { name: 'Empezar campaña' }))
+    // Cambio de requisito (Jose, 13/11/2026): antes de empezar se elige la dificultad (Normal de entrada).
+    await user.click(await screen.findByRole('button', { name: 'Empezar' }))
     await user.click(screen.getByRole('button', { name: /^Continuar/ }))
     for (let pick = 0; pick < 4; pick++) {
       const before = store.read()!
@@ -162,6 +173,26 @@ describe('Campaña de Hoenn', () => {
     expect(screen.queryByRole('button', { name: /WINGULL/ })).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: /^Aceptar/ }))
     expect(store.read()!.state.leagueRoster).toEqual(['a', 'b'])
+  })
+
+  // UT-212 (Jose, 13/11/2026): la campaña tiene su botón Sonido con el volumen, guardado en los mismos ajustes.
+  it('Sonido abre el volumen y lo cambia', async () => {
+    const onSoundChange = vi.fn()
+    render(<CampaignScreen data={data} store={new LocalCampaignStore(new MemoryStorage())} onExit={() => undefined}
+      sound={{ sound: true, volume: 70, pinchMusic: true, lastPokemonMusic: true }} onSoundChange={onSoundChange} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Sonido' }))
+    fireEvent.change(screen.getByRole('slider', { name: /Volumen/ }), { target: { value: '40' } })
+    expect(onSoundChange).toHaveBeenCalledWith(expect.objectContaining({ volume: 40 }))
+  })
+
+  // UT-211 (Jose, 13/11/2026): la dificultad elegida se guarda en la campaña.
+  it('Empezar pide la dificultad y la guarda', async () => {
+    const { user, store } = mount()
+    await user.click(screen.getByRole('button', { name: 'Empezar campaña' }))
+    await user.click(screen.getAllByRole('button', { name: 'DIFÍCIL' })[0])
+    await user.click(screen.getAllByRole('button', { name: 'FÁCIL' })[1])
+    await user.click(screen.getByRole('button', { name: 'Empezar' }))
+    expect(store.read()?.state.difficulty).toEqual({ ai: 'hard', draft: 'easy' })
   })
 })
 

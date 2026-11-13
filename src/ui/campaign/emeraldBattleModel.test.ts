@@ -107,3 +107,4 @@ describe('entrada al combate', () => {
     expect(trainerX('done', 0)).toBeNull()
   })
 })
+

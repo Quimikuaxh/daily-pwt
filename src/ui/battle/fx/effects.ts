@@ -3576,7 +3576,529 @@ export const CONDITION_EFFECTS: Record<string, Effect> = {
 }
 
 /** Los movimientos con animación propia: los 60 más usados entre rivales y pool del jugador (tres tandas de 20, 22 y 23/10/2026) y Maldición. */
+
+// ---------- tanda 9: los que usan los rivales de la campaña de Hoenn (Jose, 13/11/2026); valen también en el diario ----------
+
+const shakeUser = (start: number, end: number, amplitude = 2) => (progress: number): Shake | null =>
+  inPhase(progress, start, end) ? { who: 'user', dx: Math.round(Math.sin(progress * 90) * amplitude), dy: 0 } : null
+const shakeScreen = (start: number, end: number, amplitude = 3) => (progress: number): Shake | null =>
+  inPhase(progress, start, end) ? { who: 'screen', dx: Math.round(Math.sin(progress * 70) * amplitude), dy: Math.round(Math.cos(progress * 53) * 1) } : null
+
+/** Golpe de cuerpo: el impacto crece según `size` y salta en `rays` rayos; con `screen`, tiembla la pantalla. */
+const bodyHit = (size: number, rays: number, color: string, light: string, screen = false): Effect => ({
+  duration: 650,
+  draw(paint, progress, c) {
+    if (inPhase(progress, 0.1, 0.35)) orb(paint, c.target, Math.round(size * (0.5 + phase(progress, 0.1, 0.35))), light, '#ffffff')
+    burst(paint, c.target, phase(progress, 0.25, 0.8), color, light, rays, size * 3)
+    shards(paint, c.target, phase(progress, 0.35, 0.95), seedsFor(c, 12), color, size * 3)
+  },
+  shake: screen ? shakeScreen(0.25, 0.7) : shakeTarget(0.25, 0.7, Math.min(4, Math.round(size / 4))),
+})
+
+/** Placaje: un impacto blanco seco. */
+const tackle = bodyHit(8, 6, '#f8f8f8', '#ffffff')
+/** Golpe Cabeza: impacto con estrellitas que giran. */
+const headbutt: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    bodyHit(9, 6, '#f8d850', '#f8f8d8').draw(paint, progress, c)
+    if (progress > 0.4) for (let i = 0; i < 3; i += 1) star(paint, { x: c.target.x + Math.cos(progress * 12 + i * 2.1) * 18, y: c.target.y - 22 + Math.sin(progress * 12 + i * 2.1) * 5 }, 3, '#f8e070')
+  },
+  shake: shakeTarget(0.25, 0.7, 3),
+}
+const bodyslam = bodyHit(12, 10, '#d0d0d8', '#ffffff')
+const takedown = bodyHit(11, 8, '#e8a868', '#f8e0c0')
+const strength = bodyHit(14, 10, '#c08048', '#f0c890', true)
+const steelwing: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    const wing = phase(progress, 0, 0.45)
+    for (let k = 0; k < 4; k += 1) crescent(paint, along(c, Math.max(0, wing - k * 0.08), 6), Math.atan2(c.target.y - c.user.y, c.target.x - c.user.x), 10 + k * 2, '#a8a8c8', '#f0f0f8')
+    bodyHit(9, 6, '#b8b8d0', '#ffffff').draw(paint, Math.max(0, (progress - 0.35) / 0.65), c)
+  },
+  shake: shakeTarget(0.45, 0.8),
+}
+const spark: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    sparks(paint, c.user, phase(progress, 0, 0.35), 5)
+    bodyHit(9, 8, '#f8d030', '#f8f8a0').draw(paint, Math.max(0, (progress - 0.3) / 0.7), c)
+    sparks(paint, c.target, phase(progress, 0.45, 0.95), 7)
+  },
+  shake: shakeTarget(0.45, 0.85),
+}
+
+/** Varios golpes pequeños seguidos sobre el objetivo, dibujando `mark` en cada uno. */
+const flurry = (hits: number, mark: (paint: Painter, at: Point, t: number, c: FxContext) => void, duration = 750): Effect => ({
+  duration,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, hits * 2)
+    for (let i = 0; i < hits; i += 1) {
+      const t = phase(progress, i / (hits + 1), (i + 1.6) / (hits + 1))
+      if (t <= 0 || t >= 1) continue
+      mark(paint, { x: c.target.x - 14 + seeds[i] * 28, y: c.target.y - 14 + seeds[i + hits] * 28 }, t, c)
+    }
+  },
+  shake: shakeTarget(0.1, 0.85),
+})
+const furyattack = flurry(4, (paint, at, t) => { for (let k = 0; k < 4; k += 1) paint.dot(at.x - 6 + k * 3 + t * 4, at.y - 6 + k * 3 + t * 4, 3, k % 2 ? '#f8f8f8' : '#c8c8c8') })
+const armthrust = flurry(4, (paint, at, t) => fist(paint, at, 0.6 + t * 0.3, '#f8c890', '#f8f0d8'))
+const crabhammer = flurry(2, (paint, at, t) => { fist(paint, at, 0.9, '#e86040', '#f8b090'); ring(paint, at, 6 + t * 10, '#6890f0', 2, 10) }, 700)
+
+/** Golpe de mano en vertical (Golpe Kárate, Sísmico). */
+const karatechop: Effect = {
+  duration: 650,
+  draw(paint, progress, c) {
+    const t = phase(progress, 0.05, 0.4)
+    for (let k = 0; k < 8; k += 1) paint.dot(c.target.x - 10 + k * 3, c.target.y - 26 + t * 26 + k * 2, 3, k % 2 ? '#f8f8f8' : '#f8c890')
+    burst(paint, c.target, phase(progress, 0.35, 0.8), '#c03028', '#f8a8a0', 6, 22)
+  },
+  shake: shakeTarget(0.35, 0.7, 3),
+}
+const vitalthrow: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    const spin = phase(progress, 0, 0.5)
+    for (let i = 0; i < 6; i += 1) paint.dot(c.target.x + Math.cos(spin * 9 + i) * 20, c.target.y + Math.sin(spin * 9 + i) * 12, 3, '#f8f8f8')
+    burst(paint, { x: c.target.x, y: c.target.y + 8 }, phase(progress, 0.45, 0.9), '#c03028', '#f8a8a0', 8, 26)
+  },
+  shake: shakeTarget(0.45, 0.85, 3),
+}
+const seismictoss: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    const up = phase(progress, 0, 0.4)
+    const down = phase(progress, 0.4, 0.6)
+    const y = c.target.y - up * 30 + down * 30
+    ring(paint, { x: c.target.x, y }, 8, '#c8c8f8', 2, 12, progress * 20)
+    if (progress > 0.55) burst(paint, { x: c.target.x, y: c.target.y + 10 }, phase(progress, 0.55, 0.95), '#a08848', '#e0c890', 10, 30)
+  },
+  shake: shakeScreen(0.55, 0.85),
+}
+const counter: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    if (inPhase(progress, 0, 0.3)) ring(paint, c.user, 14 - phase(progress, 0, 0.3) * 8, '#f8a8a0', 2, 12)
+    if (inPhase(progress, 0.3, 0.55)) beam(paint, c.user, c.target, phase(progress, 0.3, 0.55), '#c03028', '#f8a8a0', 3)
+    fist(paint, c.target, 0.9, '#c03028', '#f8c8c0')
+    burst(paint, c.target, phase(progress, 0.5, 0.95), '#c03028', '#f8a8a0', 8, 26)
+  },
+  shake: shakeTarget(0.5, 0.85, 3),
+}
+const reversal: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    for (let i = 0; i < 6; i += 1) paint.dot(c.user.x + Math.cos(progress * 10 + i) * (24 - progress * 18), c.user.y + Math.sin(progress * 10 + i) * (24 - progress * 18), 3, '#f8f8f8')
+    if (progress > 0.45) { fist(paint, c.target, 1, '#c03028', '#f8c8c0'); burst(paint, c.target, phase(progress, 0.45, 0.95), '#c03028', '#f8a8a0', 10, 30) }
+  },
+  shake: shakeTarget(0.45, 0.85, 3),
+}
+const flail: Effect = { ...flurry(5, (paint, at, t) => burst(paint, at, t, '#f8f8f8', '#f8d850', 6, 12), 800) }
+const shadowpunch: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    const t = phase(progress, 0, 0.5)
+    if (progress < 0.5) for (let k = 0; k < 3; k += 1) fist(paint, along(c, Math.max(0, t - k * 0.12)), 0.8, '#705898', '#a890f0')
+    burst(paint, c.target, phase(progress, 0.45, 0.9), '#705898', '#c8b0f8', 8, 24)
+  },
+  shake: shakeTarget(0.45, 0.8),
+}
+const needlearm = flurry(5, (paint, at, t) => { for (let k = 0; k < 4; k += 1) paint.dot(at.x + k * 2 - t * 6, at.y - k * 2 + t * 6, 2, k % 2 ? '#78c850' : '#c8f0a0') }, 750)
+const feintattack: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    if (inPhase(progress, 0.05, 0.4) && Math.floor(progress * 30) % 2 === 0) orb(paint, c.user, 10, '#705848', '#a89080')
+    if (progress > 0.4) { burst(paint, c.target, phase(progress, 0.4, 0.85), '#705848', '#c8b0a0', 6, 22); shards(paint, c.target, phase(progress, 0.45, 0.95), seedsFor(c, 10), '#403028') }
+  },
+  shake: shakeTarget(0.4, 0.75),
+}
+const slashMove: Effect = {
+  duration: 650,
+  draw(paint, progress, c) {
+    for (let line = 0; line < 3; line += 1) {
+      const t = phase(progress, line * 0.12, 0.35 + line * 0.12)
+      if (t <= 0 || t >= 1) continue
+      for (let k = 0; k < 10 * t; k += 1) paint.dot(c.target.x - 18 + line * 8 + k * 3, c.target.y - 20 + k * 3, 2, k % 3 ? '#f8f8f8' : '#c8c8d8')
+    }
+  },
+  shake: shakeTarget(0.3, 0.75),
+}
+
+/** Rodadas (Desenrollar, Bola Hielo): el usuario rueda hacia el objetivo dejando polvo o escarcha. */
+const rolling = (color: string, light: string, trail: string): Effect => ({
+  duration: 750,
+  draw(paint, progress, c) {
+    const t = phase(progress, 0, 0.55)
+    const at = along(c, t, 4)
+    if (progress < 0.6) { orb(paint, at, 9, color, light); for (let k = 1; k < 5; k += 1) paint.dot(lerp(c.user.x, at.x, 1 - k * 0.15), lerp(c.user.y, at.y, 1 - k * 0.15) + 8, 2, trail) }
+    burst(paint, c.target, phase(progress, 0.5, 0.95), color, light, 8, 24)
+  },
+  shake: shakeTarget(0.5, 0.85, 3),
+})
+const rollout = rolling('#b8a038', '#e8d890', '#c8b890')
+const iceball = rolling('#98d8d8', '#f0f8f8', '#d8f0f8')
+
+/** Rocas que caen sobre el objetivo (Lanzarrocas, Tumba Rocas) o que lo rodean al final. */
+const fallingRocks = (count: number, ring_ = false): Effect => ({
+  duration: 800,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, count * 2)
+    for (let i = 0; i < count; i += 1) {
+      const t = phase(progress, i * 0.08, 0.4 + i * 0.08)
+      if (t <= 0) continue
+      const x = c.target.x - 18 + seeds[i] * 36
+      const y = Math.min(c.target.y + (ring_ ? 18 : 6), c.target.y - 50 + t * 56)
+      rock(paint, { x, y }, ring_ && t >= 1 ? 6 : 5)
+    }
+    if (progress > 0.5) shards(paint, c.target, phase(progress, 0.5, 0.95), seeds, '#a08848', 24)
+  },
+  shake: shakeTarget(0.35, 0.8, 3),
+})
+const rockthrow = fallingRocks(3)
+const rocktomb = fallingRocks(6, true)
+const magnitude: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    const t = phase(progress, 0, 0.8)
+    for (let k = 0; k < 10; k += 1) paint.dot(c.target.x - 40 + k * 9, c.target.y + 24 + Math.sin(k + progress * 20) * 3 * t, 3, k % 2 ? '#e0c068' : '#a08848')
+    shards(paint, { x: c.target.x, y: c.target.y + 20 }, phase(progress, 0.3, 0.95), seedsFor(c, 10), '#a08848', 30)
+  },
+  shake: shakeScreen(0.05, 0.85, 4),
+}
+const explosionAt = (big: boolean): Effect => ({
+  duration: 800,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 16)
+    if (inPhase(progress, 0.05, 0.25)) orb(paint, c.user, big ? 16 : 12, '#f8f8f8', '#ffffff')
+    burst(paint, c.user, phase(progress, 0.15, 0.7), '#f08030', '#f8d850', big ? 14 : 10, big ? 60 : 44)
+    flames(paint, c.user, phase(progress, 0.2, 0.9), seeds)
+    if (progress > 0.35) burst(paint, c.target, phase(progress, 0.35, 0.9), '#f08030', '#f8f8a0', 8, 26)
+  },
+  shake: shakeScreen(0.15, 0.8, big ? 5 : 4),
+})
+const selfdestruct = explosionAt(false)
+
+// Especiales.
+const watergun: Effect = {
+  duration: 650,
+  draw(paint, progress, c) {
+    const t = phase(progress, 0, 0.6)
+    for (let k = 0; k < 6; k += 1) { const at = along(c, Math.max(0, t - k * 0.06), 10); if (progress < 0.7) orb(paint, at, 3, '#6890f0', '#c8e0f8') }
+    if (progress > 0.55) ring(paint, c.target, 6 + phase(progress, 0.55, 1) * 16, '#6890f0', 2, 12)
+  },
+  shake: shakeTarget(0.55, 0.85),
+}
+const waterpulse: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    const t = phase(progress, 0, 0.6)
+    if (progress < 0.65) for (let r = 0; r < 3; r += 1) ring(paint, along(c, t), 4 + r * 4 + Math.sin(progress * 30) * 1, r % 2 ? '#a8c8f8' : '#6890f0', 2, 12)
+    for (let r = 0; r < 3; r += 1) ring(paint, c.target, phase(progress, 0.55 + r * 0.08, 1) * 26, '#6890f0', 2, 16)
+  },
+  shake: shakeTarget(0.55, 0.85),
+}
+const waterspout: Effect = {
+  duration: 850,
+  draw(paint, progress, c) {
+    const up = phase(progress, 0, 0.35)
+    for (let k = 0; k < 8; k += 1) paint.dot(c.user.x - 6 + (k % 3) * 6, c.user.y - up * 50 + k * 4, 3, k % 2 ? '#c8e0f8' : '#6890f0')
+    const seeds = seedsFor(c, 12)
+    for (let i = 0; i < 8; i += 1) { const t = phase(progress, 0.35 + i * 0.04, 0.75 + i * 0.03); if (t > 0 && t < 1) orb(paint, { x: c.target.x - 24 + seeds[i] * 48, y: c.target.y - 50 + t * 56 }, 4, '#6890f0', '#c8e0f8') }
+  },
+  shake: shakeTarget(0.45, 0.9, 3),
+}
+const aurorabeam: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    const colors = ['#f87878', '#f8e070', '#78f878', '#78c8f8', '#c878f8']
+    const t = phase(progress, 0.05, 0.6)
+    if (t > 0 && progress < 0.8) beam(paint, c.user, lerpPoint(c.user, c.target, t), 1, colors[Math.floor(progress * 15) % 5], '#ffffff', 4, 3)
+    ring(paint, c.target, phase(progress, 0.55, 0.95) * 20, '#98d8d8', 2, 12)
+  },
+  shake: shakeTarget(0.55, 0.85),
+}
+const psybeam: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    const t = phase(progress, 0.05, 0.6)
+    for (let k = 0; k < 6; k += 1) { const at = along(c, Math.max(0, t - k * 0.08)); if (progress < 0.75) ring(paint, at, 5 + Math.sin(progress * 20 + k) * 2, k % 2 ? '#f8a8c8' : '#f85888', 2, 10) }
+  },
+  shake: shakeTarget(0.55, 0.85),
+}
+const extrasensory: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    for (let r = 0; r < 3; r += 1) ring(paint, c.target, 30 - phase(progress, r * 0.15, 0.6 + r * 0.1) * 26, r % 2 ? '#f8a8c8' : '#f85888', 2, 14, progress * 10)
+    if (inPhase(progress, 0.55, 0.75)) orb(paint, c.target, 9, '#f8c8e0', '#ffffff')
+  },
+  shake: shakeTarget(0.55, 0.85),
+}
+const nightshade: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    const grow = phase(progress, 0, 0.5)
+    for (let i = 0; i < 10; i += 1) paint.dot(c.target.x + Math.cos(i * 0.63 + progress * 4) * 26 * grow, c.target.y + Math.sin(i * 0.63 + progress * 4) * 20 * grow, 4, i % 2 ? '#403050' : '#705898')
+    if (progress > 0.5) orb(paint, c.target, 6, '#202030', '#705898')
+  },
+  shake: shakeTarget(0.5, 0.85),
+}
+const dragonbreath: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    const t = phase(progress, 0, 0.6)
+    const seeds = seedsFor(c, 12)
+    for (let k = 0; k < 10; k += 1) { const at = along(c, Math.max(0, t - k * 0.04)); if (progress < 0.75) paint.dot(at.x + (seeds[k] - 0.5) * 10, at.y + (seeds[k + 1] - 0.5) * 10, 3, k % 3 ? '#7038f8' : '#78f878') }
+    burst(paint, c.target, phase(progress, 0.55, 0.95), '#7038f8', '#a890f8', 8, 22)
+  },
+  shake: shakeTarget(0.55, 0.85),
+}
+const smog: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 12)
+    for (let i = 0; i < 8; i += 1) { const t = phase(progress, i * 0.04, 0.6 + i * 0.03); if (t > 0) orb(paint, { x: lerp(c.user.x, c.target.x, t) + (seeds[i] - 0.5) * 24, y: lerp(c.user.y, c.target.y, t) + (seeds[i + 4] - 0.5) * 18 }, 5, '#806080', '#a888a8') }
+  },
+  shake: shakeTarget(0.5, 0.85),
+}
+const sonicboom: Effect = {
+  duration: 650,
+  draw(paint, progress, c) {
+    const t = phase(progress, 0, 0.6)
+    const heading = Math.atan2(c.target.y - c.user.y, c.target.x - c.user.x)
+    if (progress < 0.65) for (let k = 0; k < 3; k += 1) crescent(paint, along(c, Math.max(0, t - k * 0.1)), heading, 8 + k * 3, '#c8c8c8', '#f8f8f8')
+    ring(paint, c.target, phase(progress, 0.55, 0.95) * 22, '#f8f8f8', 2, 14)
+  },
+  shake: shakeTarget(0.55, 0.85),
+}
+const shockwave: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    for (let r = 0; r < 3; r += 1) ring(paint, c.user, phase(progress, r * 0.1, 0.5 + r * 0.1) * 40, '#f8d030', 2, 16)
+    const t = phase(progress, 0.3, 0.6)
+    if (t > 0 && progress < 0.75) beam(paint, c.user, lerpPoint(c.user, c.target, t), 1, '#f8d030', '#f8f8a0', 3, 5)
+    sparks(paint, c.target, phase(progress, 0.55, 0.95), 7)
+  },
+  shake: shakeTarget(0.55, 0.85),
+}
+const hyperbeam: Effect = {
+  duration: 850,
+  draw(paint, progress, c) {
+    if (inPhase(progress, 0, 0.25)) for (let i = 0; i < 8; i += 1) paint.dot(c.user.x + Math.cos(i) * 20 * (1 - phase(progress, 0, 0.25)), c.user.y + Math.sin(i) * 20 * (1 - phase(progress, 0, 0.25)), 3, '#f8d850')
+    const t = phase(progress, 0.2, 0.45)
+    if (t > 0 && progress < 0.85) { beam(paint, c.user, lerpPoint(c.user, c.target, t), 1, '#f8f8f8', '#f8d850', 7); beam(paint, c.user, lerpPoint(c.user, c.target, t), 1, '#f8a030', '#f8f8f8', 3) }
+    burst(paint, c.target, phase(progress, 0.45, 0.95), '#f8a030', '#f8f8a0', 12, 36)
+  },
+  shake: shakeScreen(0.45, 0.9, 4),
+}
+
+// De estado.
+const statPulse = (who: 'user' | 'target', color: string, light: string, up: boolean): Effect => ({
+  duration: 700,
+  draw(paint, progress, c) {
+    const center = who === 'user' ? c.user : c.target
+    ring(paint, center, 8 + Math.sin(progress * Math.PI) * 16, color, 2, 16, progress * 6)
+    for (let i = 0; i < 3; i += 1) arrow(paint, { x: center.x - 16 + i * 16, y: center.y + (up ? 18 - progress * 36 : -18 + progress * 36) }, up, light)
+  },
+})
+const harden = statPulse('user', '#b8b8d0', '#f0f0f8', true)
+const defensecurl: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    ring(paint, c.user, 24 - phase(progress, 0, 0.6) * 12, '#e8c890', 3, 14)
+    if (progress > 0.5) ring(paint, c.user, 12, '#f8f0d8', 2, 12, progress * 10)
+  },
+}
+const amnesia: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    const y = c.user.y - 30 - Math.sin(progress * 6) * 3
+    if (progress > 0.1) for (let k = 0; k < 5; k += 1) paint.dot(c.user.x + 10 + k * 2, y + (k < 3 ? k * 2 : 4 - (k - 3) * 2), 3, '#f85888')
+    if (progress > 0.3) paint.dot(c.user.x + 14, y + 12, 3, '#f85888')
+    ring(paint, c.user, 14 + progress * 6, '#f8a8c8', 2, 12, progress * 8)
+  },
+}
+const bellydrum: Effect = {
+  duration: 850,
+  draw(paint, progress, c) {
+    const beat = Math.floor(progress * 8)
+    if (beat % 2 === 0) ring(paint, c.user, 10 + (progress * 8 - beat) * 10, '#f8f8f8', 2, 12)
+    for (let i = 0; i < 3; i += 1) arrow(paint, { x: c.user.x - 16 + i * 16, y: c.user.y + 18 - progress * 36 }, true, '#f87878')
+  },
+  shake: shakeUser(0, 0.8, 2),
+}
+const howl: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    for (let r = 0; r < 3; r += 1) { const t = phase(progress, r * 0.15, 0.6 + r * 0.15); if (t > 0 && t < 1) crescent(paint, { x: c.user.x, y: c.user.y - 10 }, -Math.PI / 2, 8 + t * 22, '#f8f8f8', '#f8d850') }
+    for (let i = 0; i < 2; i += 1) arrow(paint, { x: c.user.x - 10 + i * 20, y: c.user.y + 18 - progress * 36 }, true, '#f87878')
+  },
+}
+const safeguard: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    wall(paint, c, progress, '#78c8f8', '#e0f0f8')
+    for (let i = 0; i < 4; i += 1) if ((progress * 4 + i * 0.25) % 1 < 0.5) star(paint, { x: c.user.x - 20 + i * 13, y: c.user.y - 24 + (i % 2) * 10 }, 3, '#f8f8f8')
+  },
+}
+const grudge: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    for (let i = 0; i < 3; i += 1) wisp(paint, { x: c.user.x - 16 + i * 16, y: c.user.y - 10 - phase(progress, i * 0.1, 0.8) * 24 }, Math.floor(progress * 20) + i, '#705898', '#c8b0f8')
+  },
+}
+const leer: Effect = {
+  duration: 650,
+  draw(paint, progress, c) {
+    if (inPhase(progress, 0.1, 0.6)) for (const dx of [-8, 8]) { paint.dot(c.user.x + dx - 3, c.user.y - 12, 3, '#f83030'); paint.dot(c.user.x + dx, c.user.y - 12, 3, '#f8f8f8'); paint.dot(c.user.x + dx + 3, c.user.y - 12, 3, '#f83030') }
+    for (let i = 0; i < 3; i += 1) arrow(paint, { x: c.target.x - 16 + i * 16, y: c.target.y - 18 + progress * 36 }, false, '#6890f0')
+  },
+  shake: shakeTarget(0.4, 0.7, 1),
+}
+const sandattack: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 16)
+    for (let i = 0; i < 12; i += 1) { const t = phase(progress, i * 0.02, 0.55 + i * 0.02); if (t > 0 && t < 1) paint.dot(lerp(c.user.x, c.target.x, t) + (seeds[i] - 0.5) * 20, lerp(c.user.y + 16, c.target.y, t) + (seeds[i + 4] - 0.5) * 14, 2, i % 2 ? '#e0c068' : '#c0a050') }
+  },
+}
+const smokescreen: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    const t = phase(progress, 0, 0.45)
+    if (progress < 0.5) orb(paint, along(c, t, 18), 4, '#505050', '#808080')
+    const grow = phase(progress, 0.45, 0.9)
+    for (let i = 0; i < 7; i += 1) orb(paint, { x: c.target.x + Math.cos(i * 0.9) * 18 * grow, y: c.target.y + Math.sin(i * 0.9) * 14 * grow }, Math.round(4 + grow * 4), '#303030', '#606060')
+  },
+}
+const cottonspore: Effect = {
+  duration: 850,
+  draw(paint, progress, c) {
+    const seeds = seedsFor(c, 16)
+    for (let i = 0; i < 10; i += 1) { const t = phase(progress, i * 0.03, 0.75 + i * 0.02); if (t > 0 && t < 1) orb(paint, { x: lerp(c.user.x, c.target.x, t) + Math.sin(t * 8 + i) * 8, y: lerp(c.user.y, c.target.y, t) - 10 + (seeds[i] - 0.5) * 20 }, 3, '#f8f8f8', '#ffffff') }
+  },
+}
+const supersonic: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    const heading = Math.atan2(c.target.y - c.user.y, c.target.x - c.user.x)
+    for (let k = 0; k < 4; k += 1) { const t = phase(progress, k * 0.1, 0.55 + k * 0.1); if (t > 0 && t < 1) crescent(paint, along(c, t), heading, 6 + t * 6, '#f8d850', '#f8f8c0') }
+  },
+}
+const swagger: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    if (inPhase(progress, 0, 0.5)) for (let i = 0; i < 2; i += 1) star(paint, { x: c.user.x - 10 + i * 20, y: c.user.y - 24 }, 3, '#f8d850')
+    for (let i = 0; i < 3; i += 1) arrow(paint, { x: c.target.x - 16 + i * 16, y: c.target.y + 18 - progress * 36 }, true, '#f87878')
+    if (progress > 0.5) for (let i = 0; i < 3; i += 1) paint.dot(c.target.x + Math.cos(progress * 16 + i * 2.1) * 14, c.target.y - 26 + Math.sin(progress * 16 + i * 2.1) * 4, 3, '#f8f8a0')
+  },
+}
+const sweetkiss: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    const t = phase(progress, 0, 0.6)
+    const heart = (at: Point, color: string) => { for (const [dx, dy] of [[-3, -2], [3, -2], [-5, 0], [5, 0], [0, 0], [-3, 2], [3, 2], [0, 4]]) paint.dot(at.x + dx, at.y + dy, 3, color) }
+    if (progress < 0.7) heart(along(c, t, 12), '#f878a8')
+    if (progress > 0.55) for (let i = 0; i < 3; i += 1) paint.dot(c.target.x + Math.cos(progress * 16 + i * 2.1) * 14, c.target.y - 26 + Math.sin(progress * 16 + i * 2.1) * 4, 3, '#f8f8a0')
+  },
+}
+const teeterdance: Effect = {
+  duration: 850,
+  draw(paint, progress, c) {
+    for (const center of [c.user, c.target]) for (let i = 0; i < 3; i += 1) paint.dot(center.x + Math.cos(progress * 14 + i * 2.1) * 14, center.y - 26 + Math.sin(progress * 14 + i * 2.1) * 4, 3, '#f8f8a0')
+  },
+  shake: shakeTarget(0, 0.9, 3),
+}
+const attract: Effect = {
+  duration: 800,
+  draw(paint, progress, c) {
+    const heart = (at: Point, color: string) => { for (const [dx, dy] of [[-3, -2], [3, -2], [-5, 0], [5, 0], [0, 0], [-3, 2], [3, 2], [0, 4]]) paint.dot(at.x + dx, at.y + dy, 3, color) }
+    for (let k = 0; k < 3; k += 1) { const t = phase(progress, k * 0.12, 0.55 + k * 0.12); if (t > 0 && t < 1) heart(along(c, t, 10 + k * 4), k % 2 ? '#f8a8c8' : '#f85888') }
+    if (progress > 0.6) for (let i = 0; i < 4; i += 1) heart({ x: c.target.x + Math.cos(i * 1.6 + progress * 6) * 20, y: c.target.y + Math.sin(i * 1.6 + progress * 6) * 14 }, '#f85888')
+  },
+}
+const torment: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    for (let i = 0; i < 4; i += 1) if ((progress * 3 + i * 0.25) % 1 < 0.6) { const at = { x: c.target.x - 18 + i * 12, y: c.target.y - 26 + (i % 2) * 6 }; paint.dot(at.x, at.y, 3, '#c03028'); paint.dot(at.x + 3, at.y + 3, 3, '#c03028'); paint.dot(at.x + 3, at.y - 3, 3, '#c03028') }
+  },
+  shake: shakeTarget(0.2, 0.8, 1),
+}
+const block: Effect = {
+  duration: 750,
+  draw(paint, progress, c) {
+    const t = phase(progress, 0, 0.5)
+    for (let k = -3; k <= 3; k += 1) { paint.dot(c.target.x + k * 4, c.target.y - 20 + t * 20, 3, '#c03028'); paint.dot(c.target.x - 14 + t * 14 + k, c.target.y + k * 4, 3, '#c03028') }
+    if (progress > 0.5) ring(paint, c.target, 22, '#c03028', 2, 16)
+  },
+}
+const mirrormove: Effect = {
+  duration: 700,
+  draw(paint, progress, c) {
+    for (let k = 0; k < 6; k += 1) paint.dot(c.user.x - 10 + k * 4, c.user.y - 20 + k * 4, 3, (Math.floor(progress * 12) + k) % 3 ? '#c8e0f8' : '#ffffff')
+    if (progress > 0.4) ring(paint, c.user, phase(progress, 0.4, 1) * 24, '#f8f8f8', 2, 14)
+  },
+}
+
+
 export const CUSTOM_EFFECTS: Record<string, Effect> = {
+  // Tanda 9 (Jose, 13/11/2026): los de los rivales de la campaña de Hoenn.
+  tackle,
+  headbutt,
+  bodyslam,
+  takedown,
+  strength,
+  steelwing,
+  spark,
+  furyattack,
+  armthrust,
+  crabhammer,
+  karatechop,
+  vitalthrow,
+  seismictoss,
+  counter,
+  reversal,
+  flail,
+  shadowpunch,
+  needlearm,
+  feintattack,
+  slash: slashMove,
+  rollout,
+  iceball,
+  rockthrow,
+  rocktomb,
+  magnitude,
+  selfdestruct,
+  watergun,
+  waterpulse,
+  waterspout,
+  aurorabeam,
+  psybeam,
+  extrasensory,
+  nightshade,
+  dragonbreath,
+  smog,
+  sonicboom,
+  shockwave,
+  hyperbeam,
+  harden,
+  defensecurl,
+  amnesia,
+  bellydrum,
+  howl,
+  safeguard,
+  grudge,
+  leer,
+  sandattack,
+  smokescreen,
+  cottonspore,
+  supersonic,
+  swagger,
+  sweetkiss,
+  teeterdance,
+  attract,
+  torment,
+  block,
+  mirrormove,
   icefang,
   powergem,
   quiverdance,

@@ -4,6 +4,7 @@ const object = (v: unknown): v is Record<string, unknown> => !!v && typeof v ===
 const count = (v: unknown): v is number => typeof v === 'number' && Number.isSafeInteger(v) && v >= 0
 const text = (v: unknown): v is string => typeof v === 'string'
 const list = (v: unknown): v is string[] => Array.isArray(v) && v.every(text)
+const level = (v: unknown): boolean => v === 'easy' || v === 'normal' || v === 'hard'
 const stats = (v: unknown) => object(v) && ['hp', 'atk', 'def', 'spa', 'spd', 'spe'].every(k => count(v[k]))
 
 function state(v: unknown): boolean {
@@ -18,6 +19,7 @@ function state(v: unknown): boolean {
       (m.item === undefined || text(m.item)) &&
       (m.moves === undefined || (list(m.moves) && m.moves.length >= 1 && m.moves.length <= 4))) &&
     (v.battlePoints === undefined || count(v.battlePoints)) && (v.startedAt === undefined || count(v.startedAt)) && (v.purchases === undefined || list(v.purchases)) && (v.lastTeam === undefined || list(v.lastTeam)) &&
+    (v.difficulty === undefined || (object(v.difficulty) && level(v.difficulty.ai) && level(v.difficulty.draft))) &&
     (v.scannerChoice === undefined || v.scannerChoice === 'deepseatooth' || v.scannerChoice === 'deepseascale') &&
     (v.draftTypeCovered === undefined || typeof v.draftTypeCovered === 'boolean') &&
     (v.leagueEvolved === undefined || typeof v.leagueEvolved === 'boolean')

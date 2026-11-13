@@ -254,6 +254,7 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
     return (
       <Suspense fallback={null}>
         <CampaignScreen data={data} playerName={campaignName} onExit={() => setScreen({ name: 'today' })}
+          sound={settings} onSoundChange={(sound) => changeSettings({ ...settings, ...sound })}
           cloud={account && accountState.status === 'signedIn' ? account.campaign : undefined} />
       </Suspense>
     )

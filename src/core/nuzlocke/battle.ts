@@ -6,7 +6,7 @@ import { DataError } from '../errors'
 import { toId } from '../id'
 import { deriveSeed, Prng } from '../prng'
 import type { StatsTable } from '../types'
-import { finishEncounter, startEncounter, type CampaignDefinition, type CampaignState } from './campaign'
+import { difficultyOf, finishEncounter, startEncounter, type CampaignDefinition, type CampaignState } from './campaign'
 import { availableMoves, validateCampaignMoveSelection } from './progression'
 import { campaignMachineMoves, EMERALD_BATTLE_HAPPINESS, EMERALD_RULES_VERSION, isEmeraldCampaign } from './calendar'
 
@@ -79,6 +79,8 @@ function buildCampaignBattleInit(
     return { ...battleSet(definition, { species: member.species, level: member.level, item: member.item ?? null, moves }, ivs),
       ...(isEmeraldCampaign(definition) ? { happiness: EMERALD_BATTLE_HAPPINESS } : {}) }
   })
+  const aiLevel = difficultyOf(state).ai
+  const lookahead = aiLevel === 'hard' || (aiLevel === 'normal' && encounter.kind !== 'gym')
   const battleSeed = deriveSeed(state.seed, 'nuzlocke-battle:v1', encounter.id,
     JSON.stringify([state.battleTeam, playerLead, player]), ...(isEmeraldCampaign(definition) ? [EMERALD_RULES_VERSION] : []))
   return {
@@ -92,11 +94,12 @@ function buildCampaignBattleInit(
         : undefined
       return battleSet(definition, member, ivs)
     }),
-    // El Alto Mando y el campeón miran un turno por delante con lo que han visto; los gimnasios, la heurística (Jose, 12/11/2026).
-    ai: encounter.kind === 'gym' ? 'heuristic' : 'lookahead',
+    // Según la dificultad de la IA (PRD §0, 13/11/2026): Normal, el Alto Mando y el campeón miran un turno por delante con lo que han
+    // visto y los gimnasios usan la heurística (Jose, 12/11/2026); Fácil, la heurística en todos; Difícil, mirar por delante en todos.
+    ai: lookahead ? 'lookahead' : 'heuristic',
     maxTurns: MAX_TURNS,
     // Lo que cada Pokémon del jugador puede llevar (por nivel y MT desbloqueadas compatibles): de ahí predice la IA sus movimientos.
-    ...(encounter.kind === 'gym' ? {} : { foeMovePool: Object.fromEntries(state.battleTeam.map((id) => {
+    ...(!lookahead ? {} : { foeMovePool: Object.fromEntries(state.battleTeam.map((id) => {
       const member = state.members.find((recruit) => recruit.id === id)!
       return [gen3.species.get(definition.species[member.species]?.simulatorSpecies ?? member.species).id,
         availableMoves(definition.species, member, campaignMachineMoves(definition, state, unlockedMoves))]

@@ -1,5 +1,5 @@
 import { DataError } from '../errors'
-import { draftOffer, draftPool, EMERALD_DRAFT_RATIO, relativeDraftWindow, type DraftRequest } from './draft'
+import { draftOffer, draftPool, EMERALD_DRAFT_RATIOS, relativeDraftWindow, type DraftRequest } from './draft'
 import { availableDraftForms, EMERALD_TRADE_LEVEL } from './draftAvailability'
 import emeraldCalendar from '../../../data/nuzlocke/hoenn-emerald-calendar.json'
 import { gymCounterSpecies } from './gymDraft'
@@ -49,16 +49,26 @@ export type CampaignState = {
   /** Puntos Batalla por gastar y objetos comprados en el canje (heldItems.ts). */
   battlePoints?: number
   purchases?: readonly string[]
+  /** Dificultad elegida al empezar (13/11/2026); sin ella, Normal en las dos (las campañas de antes). */
+  difficulty?: CampaignDifficulty
   /** Alineación del último combate (Jose, 12/11/2026): el equipo del tramo siguiente arranca con los que fueron y siguen en pie. */
   lastTeam?: readonly string[]
   /** Momento (ms desde 1970) en que empezó; lo pone la interfaz al crearla, para el TIEMPO de la Ficha de Entrenador. */
   startedAt?: number
 }
 
-export function createCampaign(seed: string): CampaignState {
+/** Nivel de dificultad (PRD §0, 13/11/2026). */
+export type Difficulty = 'easy' | 'normal' | 'hard'
+/** `ai`: qué IA usan gimnasios y Liga; `draft`: la ventana de estadísticas base de los candidatos. */
+export type CampaignDifficulty = { ai: Difficulty; draft: Difficulty }
+export const DIFFICULTIES: readonly Difficulty[] = ['easy', 'normal', 'hard']
+export const difficultyOf = (state: Pick<CampaignState, 'difficulty'>): CampaignDifficulty => state.difficulty ?? { ai: 'normal', draft: 'normal' }
+
+export function createCampaign(seed: string, difficulty?: CampaignDifficulty): CampaignState {
   return {
     seed, encounterIndex: 0, phase: 'draft', pick: 0, offer: [], previousOffer: [],
     members: [], leagueRoster: null, battleTeam: [],
+    ...(difficulty && (difficulty.ai !== 'normal' || difficulty.draft !== 'normal') ? { difficulty: { ...difficulty } } : {}),
   }
 }
 
@@ -141,14 +151,15 @@ export function openDraft(
     // El llamador no puede ampliar el margen ni introducir formas no viables.
     eligibleSpecies = availableDraftForms(definition, emeraldCalendar, state.encounterIndex, 'A').map(form => form.species)
     const { rivalAverage } = campaignDraftRequest(definition, state, eligibleSpecies, { below: 0, above: 0 })
-    window = relativeDraftWindow(rivalAverage, EMERALD_DRAFT_RATIO)
+    const ratio = EMERALD_DRAFT_RATIOS[difficultyOf(state).draft]
+    window = relativeDraftWindow(rivalAverage, ratio)
     // No salen especies ni líneas evolutivas que ya se tienen, también las de los caídos (Jose, 12/11/2026; cláusula de repetidos).
     const families = evolutionFamilies(definition)
     const owned = new Set(state.members.map(member => families.get(member.species) ?? member.species))
     eligibleSpecies = eligibleSpecies.filter(id => !owned.has(families.get(id) ?? id))
     // Si no quedan cuatro, se amplía la ventana por abajo (Jose, 12/11/2026: si la norma es inviable tras varios intentos, se salta).
     for (let attempt = 1; attempt <= WINDOW_ATTEMPTS && draftPool(campaignDraftRequest(definition, state, eligibleSpecies, window)).length < 4; attempt++) {
-      window = relativeDraftWindow(rivalAverage, { below: EMERALD_DRAFT_RATIO.below * (1 + attempt / 2), above: EMERALD_DRAFT_RATIO.above })
+      window = relativeDraftWindow(rivalAverage, { below: ratio.below * (1 + attempt / 2), above: ratio.above })
     }
   }
   if (!eligibleSpecies || !window) throw new DataError('La campaña necesita sus reglas de draft.')

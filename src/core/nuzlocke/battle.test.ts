@@ -28,6 +28,15 @@ describe('combates de la campaña de Hoenn', () => {
     expect(beginCampaignBattle(definition, ready, options, ['treecko']).init).toEqual(init)
   })
 
+  // UT-211 (Jose, 13/11/2026): dificultad de la IA elegida al empezar la campaña.
+  it('Fácil usa la heurística en todos; Difícil mira un turno por delante también en los gimnasios', () => {
+    const at = (encounterIndex: number, ai: 'easy' | 'hard') => beginCampaignBattle(definition, { ...ready, encounterIndex, difficulty: { ai, draft: 'normal' } }, options, ['treecko']).init
+    expect(at(0, 'easy').ai).toBe('heuristic')
+    expect(at(12, 'easy').ai).toBe('heuristic')
+    expect(at(0, 'hard').ai).toBe('lookahead')
+    expect(at(0, 'hard').foeMovePool).toBeDefined()
+  })
+
   // UT-195 (Jose, 12/11/2026): los gimnasios siguen con la heurística; el Alto Mando y el campeón miran un turno por delante.
   it('usa la IA de un turno por delante solo con el Alto Mando y el campeón', () => {
     const at = (encounterIndex: number) => beginCampaignBattle(definition, { ...ready, encounterIndex }, options, ['treecko']).init.ai

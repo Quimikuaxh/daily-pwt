@@ -8,7 +8,7 @@ import { availableDraftForms } from '../../core/nuzlocke/draftAvailability'
 import emeraldCalendar from '../../../data/nuzlocke/hoenn-emerald-calendar.json'
 import { campaignSteps } from './stepsModel'
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react'
-import { chooseRecruit, createCampaign, draftPicks, evolveForLeague, evolveRecruit, lockLeagueRoster, openDraft, specialEvolutionOptions, type CampaignDefinition, type CampaignState } from '../../core/nuzlocke/campaign'
+import { type CampaignDifficulty, chooseRecruit, createCampaign, draftPicks, evolveForLeague, evolveRecruit, lockLeagueRoster, openDraft, specialEvolutionOptions, type CampaignDefinition, type CampaignState } from '../../core/nuzlocke/campaign'
 import type { GameData } from '../../core/types'
 import { LocalCampaignStore } from '../../storage/campaignStore'
 import type { AccountCampaign } from '../../cloud/campaign'
@@ -47,6 +47,10 @@ import { type CampaignResult, minutesSince, playerNameOf, protagonistOf, recruit
 import { TeamScreen } from './TeamScreen'
 import { battleMusic, townMusic, useCampaignMusic } from './campaignMusic'
 import { ShareScreen } from './ShareScreen'
+import { DifficultyDialog } from './DifficultyDialog'
+import { Modal } from '../common/Modal'
+import { SoundSettings } from '../menu/SoundSettings'
+import type { SoundPrefs } from '../../storage/settings'
 import { CampaignCard, SideColumn, TeamPanel, useSidePanelOffset } from './CampaignSide'
 import { CAMPAIGN_PANEL, type SideSets } from './sidePanelsModel'
 import { toId } from '../../core/id'
@@ -74,6 +78,9 @@ type CampaignScreenProps = {
    * pantalla avisa de los conflictos («Recargar campaña») y de los fallos de conexión («Reintentar»). Sin él, el almacén local.
    */
   cloud?: AccountCampaign
+  /** Sonido y volumen de Ajustes; con `onSoundChange`, el botón Sonido de la cabecera los cambia (Jose, 13/11/2026). */
+  sound?: SoundPrefs
+  onSoundChange?: (sound: SoundPrefs) => void
 }
 
 type CampaignViewProps = Omit<CampaignScreenProps, 'store' | 'cloud'> & {
@@ -149,7 +156,8 @@ function CloudCampaign({ cloud, ...props }: Omit<CampaignScreenProps, 'store'> &
   )
 }
 
-function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, createBattleClient = createCampaignWorkerClient, playerName }: CampaignViewProps) {
+function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, createBattleClient = createCampaignWorkerClient, playerName, sound, onSoundChange }: CampaignViewProps) {
+  const [soundOpen, setSoundOpen] = useState(false)
   const [state, setState] = useState(() => store.read()?.state ?? null as CampaignState | null)
   // Resultado del último combate: el encuentro jugado, la alineación (para enseñar sus bajas), el estado al cerrarlo y los minutos.
   const [result, setResult] = useState(null as CampaignResult | null)
@@ -308,11 +316,16 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
     )
   }
 
+  // Empezar: primero la dificultad (PRD §0, 13/11/2026) y, con una campaña en curso, la confirmación de perderla.
+  const [choosingDifficulty, setChoosingDifficulty] = useState(false)
   const start = () => {
     if (state && !window.confirm(esCampaign.newCampaignConfirm)) return
+    setChoosingDifficulty(true)
+  }
+  const startWith = (difficulty: CampaignDifficulty) => {
+    setChoosingDifficulty(false)
     // Cuándo empezó: el TIEMPO de la Ficha de Entrenador.
-    const created = { ...createCampaign(newSeed()), startedAt: Date.now() }
-    save(created)
+    save({ ...createCampaign(newSeed(), difficulty), startedAt: Date.now() })
   }
 
   // EVOLUCIONAR en el PC antes de la Liga (Jose, 12/11/2026): las formas a las que puede llegar ahora (de día y de noche, para Eevee).
@@ -627,7 +640,13 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
             <span className="logo-text">{es.app.name}</span>
           </h1>
           <p className="campaign-mode">{esCampaign.modeLabel}</p>
-          <button type="button" className="btn btn-secondary campaign-back" onClick={onExit}>{esCampaign.back}</button>
+          {/* Un solo hueco de la rejilla de la cabecera para los dos botones. */}
+          <div className="campaign-header-actions">
+            {sound && onSoundChange && (
+              <button type="button" className="btn btn-secondary campaign-sound" onClick={() => setSoundOpen(true)}>{es.battle.sound}</button>
+            )}
+            <button type="button" className="btn btn-secondary campaign-back" onClick={onExit}>{esCampaign.back}</button>
+          </div>
         </div>
       </header>
       <main id="main" tabIndex={-1} className="campaign-main">
@@ -687,6 +706,12 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
         </div>
         {/* Botones secundarios en una fila (Jose, 12/11/2026: apilados no gustaban); con los paneles, junto al principal. */}
         {!panels && state && view === 'route' && <div className="campaign-secondary">{secondary()}</div>}
+        {soundOpen && sound && onSoundChange && (
+          <Modal title={es.settings.soundTitle} onClose={() => setSoundOpen(false)} className="settings-dialog">
+            <SoundSettings settings={sound} onChange={onSoundChange} showTitle={false} />
+          </Modal>
+        )}
+        {choosingDifficulty && <DifficultyDialog onStart={startWith} onCancel={() => setChoosingDifficulty(false)} />}
         {store instanceof LocalCampaignStore && !store.persistent && <p className="fight-hint" role="status">{esCampaign.notSaved}</p>}
       </main>
     </div>

@@ -332,3 +332,4 @@ export const openingFrame = (frame: number): { white: boolean; bars: number } | 
 /** Color del recuadro de cada estado (iconos de estado de la caja de PS de Gen 3). */
 /** Color de cada icono de estado (sStatusIconColors de battle_interface.c, de RGB de 5 bits a 8). */
 export const STATUS_COLORS: Readonly<Record<string, string>> = { psn: '#c562c5', tox: '#c562c5', par: '#bdbd18', slp: '#a4a48b', frz: '#8bb4e6', brn: '#e67352' }
+

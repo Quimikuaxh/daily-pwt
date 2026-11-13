@@ -7,6 +7,7 @@
  */
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { ConsoleStage } from '../console/ConsoleStage'
+import { MoveFx } from '../battle/fx/MoveFx'
 import { GameText } from '../console/GameText'
 import { GameWindow } from '../console/GameWindow'
 import { padNumber, textWidth } from '../console/glyphs'
@@ -40,7 +41,7 @@ const t = esCampaign.battle
 /** El cursor ▶ sigue al foco y pasar el puntero lleva el foco: un solo ▶ aunque el ratón y el teclado apunten a opciones distintas. */
 const focusOnHover = (event: { currentTarget: HTMLElement }) => { event.currentTarget.focus() }
 const font = emeraldTheme.font as BitmapFont
-const moves = moveData as Record<string, { type: string }>
+const moves = moveData as Record<string, { type: string; category: string }>
 /** Columnas de LUCHAR/POKéMON y MOCHILA/HUIR: la segunda en x 188 (la edición inglesa, a 56 px: 192), para que MOCHILA no roce el
     borde derecho (Jose, 11/11/2026); el cursor de HUIR (x 180) aún no pisa POKéMON, que acaba en x 178. */
 const ACTION_X = [136, 188] as const
@@ -127,6 +128,9 @@ export function EmeraldBattle({ session, start, data, trainer, trainerId, resume
   useEffect(() => { if (movesKey) preloadSfx(moveSoundIds(movesKey.split(','))) }, [movesKey])
   const moveFx = battle.moveFx
   const speedRef = useRef(battle.speed)
+  // Animaciones de los ataques: las del reto diario (DEC-53), sobre los Pokémon y bajo las cajas (Jose, 13/11/2026: en Esmeralda el
+  // atacante no se mueve; se descartaron la embestida y el impacto propios).
+  const fieldRef = useRef(null as HTMLDivElement | null)
   useEffect(() => { speedRef.current = battle.speed }, [battle.speed])
   useEffect(() => (moveFx ? playMoveSounds(moveFx.moveId, speedRef.current) : undefined), [moveFx])
   const [menu, setMenu] = useState('actions' as Menu)
@@ -292,7 +296,7 @@ export function EmeraldBattle({ session, start, data, trainer, trainerId, resume
   return (
     <div className="emerald-battle" onKeyDown={onKey}>
       <ConsoleStage theme={emeraldTheme} scale={scale} reservedHeight={reservedHeight} screens={[(
-        <div key="field" className="battle-field">
+        <div key="field" className="battle-field" ref={fieldRef}>
           <img src={emeraldTheme.asset('combate-escenario')} alt="" style={{ left: 0, top: 0 }} />
           {introTrainer !== null && trainerId && <img src={emeraldTheme.asset(`lider-${trainerId}`)} alt="" style={{ left: introTrainer, top: TRAINER_SPOT.y }} />}
           {rival && (
@@ -305,6 +309,11 @@ export function EmeraldBattle({ session, start, data, trainer, trainerId, resume
           {player && (
             <MonSprite key={`${view?.player.active}-${player.species}`} kind="back" species={player.species} left={backSpot(player.species).x} top={backSpot(player.species).y}
               hidden={playerHidden} motion={playerMotion} faint={player.fainted ? faintStyle(true, player.species, battle.speed) : undefined} />
+          )}
+          {moveFx && (rival || player) && (
+            <MoveFx event={moveFx} type={moves[moveFx.moveId]?.type ?? null} speed={battle.speed} fieldRef={fieldRef} width={240} height={160}
+              points={{ player: player ? { x: backSpot(player.species).x + 32, y: backSpot(player.species).y + 32 } : { x: 72, y: 80 }, rival: rival ? { x: frontSpot(rival.species).x + 32, y: frontSpot(rival.species).y + 28 } : { x: 172, y: 36 } }}
+              spriteSelector={(side) => (side === 'player' ? '.mon-back' : '.mon-front')} />
           )}
           {[rivalSend?.ball, playerSend?.ball].map((ball, i) => {
             if (!ball) return null

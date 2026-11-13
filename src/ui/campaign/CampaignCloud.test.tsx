@@ -27,6 +27,8 @@ describe('campaña en la cuenta', () => {
   it('carga la campaña de la cuenta al abrir y guarda las decisiones en ella', async () => {
     const { api, user } = mount(fakeApi({ getCampaign: vi.fn(async () => null) }))
     await user.click(await screen.findByRole('button', { name: 'Empezar campaña' }))
+    // Cambio de requisito (Jose, 13/11/2026): antes de empezar se elige la dificultad (Normal de entrada).
+    await user.click(await screen.findByRole('button', { name: 'Empezar' }))
     await waitFor(() => expect(api.saveCampaign).toHaveBeenCalledOnce())
     expect(api.saveCampaign.mock.calls[0][0]).toMatchObject({ expectedRevision: 0, record: { revision: 1, state: { seed: 'cuenta' } } })
     expect(await screen.findByRole('button', { name: 'Continuar: reclutar (1 de 4) · preparar el gimnasio 1' })).toBeEnabled()
@@ -41,6 +43,8 @@ describe('campaña en la cuenta', () => {
     const api = fakeApi({ getCampaign: vi.fn(async () => null), saveCampaign: vi.fn(async () => { throw new CloudError('campaign_revision_conflict', true) }) })
     const { user } = mount(api)
     await user.click(await screen.findByRole('button', { name: 'Empezar campaña' }))
+    // Cambio de requisito (Jose, 13/11/2026): antes de empezar se elige la dificultad (Normal de entrada).
+    await user.click(await screen.findByRole('button', { name: 'Empezar' }))
     expect(await screen.findByRole('alert')).toHaveTextContent('La campaña ha cambiado en otra pestaña o dispositivo')
     expect(api.getCampaign).toHaveBeenCalledOnce()
     api.getCampaign.mockResolvedValue(remote('otra', 2))
@@ -55,6 +59,8 @@ describe('campaña en la cuenta', () => {
     api.saveCampaign.mockRejectedValueOnce(networkError())
     const { user } = mount(api)
     await user.click(await screen.findByRole('button', { name: 'Empezar campaña' }))
+    // Cambio de requisito (Jose, 13/11/2026): antes de empezar se elige la dificultad (Normal de entrada).
+    await user.click(await screen.findByRole('button', { name: 'Empezar' }))
     expect(await screen.findByRole('alert')).toHaveTextContent('No se ha podido guardar la campaña en tu cuenta')
     await user.click(screen.getByRole('button', { name: 'Reintentar' }))
     await waitFor(() => expect(screen.queryByRole('alert')).not.toBeInTheDocument())

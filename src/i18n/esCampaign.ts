@@ -25,6 +25,26 @@ export const esCampaign = {
   restartCampaign: 'Nueva partida',
   newCampaignConfirm: 'Ya tienes una campaña en curso. ¿Empezar otra? Se perderá la actual.',
   notSaved: 'Sin almacenamiento disponible: la campaña no se guardará al cerrar la página.',
+  // Dificultad al empezar (DifficultyDialog.tsx; PRD §0, 13/11/2026).
+  difficulty: {
+    title: 'Dificultad de la campaña',
+    groups: { ai: 'IA de los rivales', draft: 'Pokémon del draft' },
+    levels: { easy: 'FÁCIL', normal: 'NORMAL', hard: 'DIFÍCIL' },
+    hints: {
+      ai: {
+        easy: 'Todos los rivales usan la IA sencilla del reto diario.',
+        normal: 'Gimnasios con la IA sencilla; el Alto Mando y el campeón piensan un turno por delante.',
+        hard: 'Todos los rivales piensan un turno por delante.',
+      },
+      draft: {
+        easy: 'Candidatos de hasta un 15 % más de estadísticas que el rival (y un 5 % menos).',
+        normal: 'Candidatos de entre un 10 % menos y un 8 % más de estadísticas que el rival.',
+        hard: 'Candidatos de hasta un 15 % menos de estadísticas que el rival (y un 3 % más).',
+      },
+    },
+    start: 'Empezar',
+    cancel: 'Cancelar',
+  },
   // Paneles laterales en escritorio (CampaignSide.tsx): Ficha de Entrenador, pantalla de equipo y fichas del Domo Batalla en el combate.
   side: {
     campaignLabel: 'Tu campaña',

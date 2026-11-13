@@ -44,6 +44,8 @@ function usedMoveIds() {
   const ids = new Set()
   for (const trainer of trainers) for (const variant of trainer.variants) for (const set of variant.team) for (const move of set.moves) ids.add(move)
   for (const set of pool) for (const move of set.moves) ids.add(move)
+  // Y los de la campaña de Hoenn, que usa las mismas animaciones en su combate (Jose, 13/11/2026: en Esmeralda el atacante no se mueve).
+  for (const move of Object.keys(JSON.parse(readFileSync(fromRoot('src', 'generated', 'emerald', 'moves.json'), 'utf8')))) ids.add(move)
   return [...ids].sort()
 }
 
