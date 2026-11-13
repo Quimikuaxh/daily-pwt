@@ -10,6 +10,8 @@ import { MemoryStorage } from '../../test-utils/memoryStorage'
 import { mockCampaignCanvas } from '../../test-utils/campaignUi'
 import type { CampaignRecord } from '../../storage/campaignStore'
 import CampaignScreen from './CampaignScreen'
+import { campaignAccountKey } from '../../cloud/campaign'
+import type { CampaignBattleClient } from '../../battle/client'
 
 // UT-193 · Campaña guardada en la cuenta (D4 en D7, GUARDADO.md y PRD §0): carga, guarda en la cuenta, conflicto con «Recargar
 // campaña» (sin recargar solo) y sin conexión con «Reintentar».
@@ -66,5 +68,34 @@ describe('campaña en la cuenta', () => {
     await waitFor(() => expect(screen.queryByRole('alert')).not.toBeInTheDocument())
     expect(api.saveCampaign).toHaveBeenCalledTimes(2)
     expect(api.saveCampaign.mock.calls[1][0].operationId).toBe(api.saveCampaign.mock.calls[0][0].operationId)
+  })
+  // Producción, 13/11/2026: con una intención de guardado pendiente en caché que lleva un combate, al abrir se reenvía (estado `saving`
+  // con ese registro), la pantalla se montaba y `createSession` lanzaba («Espera a que termine el guardado»): página en blanco.
+  it('con un guardado pendiente que lleva un combate, espera a que termine para crear el combate', async () => {
+    // Como `campaignInput` (test-utils/campaign, que lee ficheros y no carga en jsdom), sin la definición: la caché no la guarda.
+    const state = { ...createCampaign('local-campaign'), phase: 'prepare' as const, encounterIndex: 0,
+      members: [{ id: 'starter', species: 'treecko', level: 15, history: [], fainted: false, victories: 0 }] }
+    const preparation = { unlockedMoves: [], movesByMember: { starter: ['absorb'] }, leadId: 'starter' }
+    const saved: CampaignRecord = { version: 1, revision: 3, state, battle: null }
+    const pending: CampaignRecord = { version: 1, revision: 4, state,
+      battle: { source: { state, preparation, selected: ['starter'] }, init: null, decisions: [], checkpoint: null } }
+    const storage = new MemoryStorage()
+    const operationId = '00000000-0000-4000-8000-000000000001'
+    storage.setItem(campaignAccountKey('g1'), JSON.stringify({ version: 1, record: saved, pending: { operationId, expectedRevision: 3, record: pending }, conflict: false }))
+    let confirm = () => {}
+    const api = fakeApi({
+      saveCampaign: vi.fn(() => new Promise<{ revision: number; operationId: string }>((resolve) => { confirm = () => resolve({ revision: 4, operationId }) })),
+      getCampaign: vi.fn(async () => pending),
+    })
+    const cloud = new AccountCampaign(storage)
+    cloud.setAccount(api, 'g1')
+    const client = { prepare: vi.fn(), resume: vi.fn(), choose: vi.fn(), forfeit: vi.fn(), finish: vi.fn(), subscribe: vi.fn(() => () => {}), terminate: vi.fn() }
+    const createBattleClient = vi.fn(() => client as unknown as CampaignBattleClient)
+    render(<CampaignScreen data={data} cloud={cloud} newSeed={() => 'cuenta'} onExit={vi.fn()} createBattleClient={createBattleClient} />)
+    await waitFor(() => expect(cloud.getState().status).toBe('saving'))
+    expect(createBattleClient).not.toHaveBeenCalled()
+    confirm()
+    await waitFor(() => expect(cloud.getState().status).toBe('ready'))
+    await waitFor(() => expect(createBattleClient).toHaveBeenCalledTimes(1))
   })
 })

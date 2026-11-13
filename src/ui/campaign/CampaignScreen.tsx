@@ -87,6 +87,13 @@ type CampaignViewProps = Omit<CampaignScreenProps, 'store' | 'cloud'> & {
   store: LocalCampaignStore | AccountCampaign
   /** Sesión de combate sobre el almacén (la cuenta registra las suyas para pararlas al cerrar sesión o en un conflicto). */
   newSession: (client: CampaignBattleClient) => LocalCampaignSession
+  /**
+   * Si ya se puede crear la sesión de combate. En la cuenta, solo con el guardado listo: mientras carga o guarda, `createSession` lanza
+   * y, llamado al montar con un combate guardado en caché, dejaba la página en blanco. El combate se crea en cuanto esté listo.
+   */
+  canStartBattle?: () => boolean
+  /** Avisa de cada cambio de estado del guardado (para crear entonces la sesión que no se pudo crear). */
+  subscribeStore?: (listener: () => void) => () => void
 }
 
 /** Plazas del equipo: las del líder en los gimnasios; seis en la Liga. */
@@ -150,13 +157,14 @@ function CloudCampaign({ cloud, ...props }: Omit<CampaignScreenProps, 'store'> &
       )}
       {status === 'error' && <p className="campaign-cloud-alert" role="alert">{message ?? esCampaign.invalid}</p>}
       <div className="campaign-cloud" inert={blocked} aria-busy={status === 'saving' || status === 'loading'}>
-        <CampaignView key={generation} {...props} store={cloud} newSession={(client) => { return cloud.createSession(client) }} />
+        <CampaignView key={generation} {...props} store={cloud} newSession={(client) => { return cloud.createSession(client) }}
+          canStartBattle={() => { return cloud.getState().status === 'ready' }} subscribeStore={cloud.subscribe} />
       </div>
     </>
   )
 }
 
-function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, createBattleClient = createCampaignWorkerClient, playerName, sound, onSoundChange }: CampaignViewProps) {
+function CampaignView({ data, onExit, store, newSession, canStartBattle = () => true, subscribeStore, newSeed = randomSeed, createBattleClient = createCampaignWorkerClient, playerName, sound, onSoundChange }: CampaignViewProps) {
   const [soundOpen, setSoundOpen] = useState(false)
   const [state, setState] = useState(() => store.read()?.state ?? null as CampaignState | null)
   // Resultado del último combate: el encuentro jugado, la alineación (para enseñar sus bajas), el estado al cerrarlo y los minutos.
@@ -169,15 +177,26 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
   // Con un combate guardado (recarga a mitad), se vuelve a él.
   const [view, setView] = useState(() => (store.read()?.battle ? 'battle' : 'route') as 'route' | 'draft' | 'team' | 'teamView' | 'evolveOne' | 'moves' | 'battle' | 'result' | 'share' | 'evolution' | 'league' | 'bag' | 'exchange')
   // El worker de combate (y su sesión) solo se crea al entrar en combate: Ruta, Draft y Equipo no lo necesitan.
-  const [session, setSession] = useState(() => (store.read()?.battle ? newSession(createBattleClient()) : null))
+  const startSession = () => (canStartBattle() ? newSession(createBattleClient()) : null)
+  const [session, setSession] = useState(() => (store.read()?.battle ? startSession() : null))
   // Combate guardado al abrir la campaña: se retoma donde estaba, sin la entrada (Jose, 12/11/2026). Uno nuevo, con ella.
   const [resumedBattle, setResumedBattle] = useState(() => !!store.read()?.battle)
   const enterBattle = (lineup: readonly string[]) => {
     setResumedBattle(false)
     if (state) setBattleContext({ before: state, lineup })
-    if (!session) setSession(newSession(createBattleClient()))
+    if (!session) setSession(startSession())
     setView('battle')
   }
+  // En combate sin sesión (la cuenta aún cargaba o guardaba al entrar): se crea cuando el guardado pase a listo, una sola vez.
+  useEffect(() => {
+    if (view !== 'battle' || session || !subscribeStore) return
+    let started = false
+    return subscribeStore(() => {
+      if (started || !canStartBattle()) return
+      started = true
+      setSession(newSession(createBattleClient()))
+    })
+  }, [view, session, subscribeStore, canStartBattle, newSession, createBattleClient])
   useEffect(() => () => session?.stop(), [session])
   useEffect(() => session?.subscribe((message) => {
     if (message.type !== 'campaign-finished') return

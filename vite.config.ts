@@ -8,5 +8,11 @@ export default defineConfig({
   base: './',
   plugins: [react(), tailwindcss()],
   worker: { format: 'es' },
-  build: { target: 'es2022' },
+  build: {
+    target: 'es2022',
+    // Sin `modulepreload` para las importaciones dinámicas (las del HTML inicial se quedan): los trozos que se traen en reposo
+    // (combate, ventanas, campaña) llevaban sus dependencias precargadas y, con la máquina cargada, WebKit avisaba en consola de
+    // «preloaded but not used within a few seconds» (E2E-01 y E2E-19 fallaban a ratos, también en main). Se piden igual al importar.
+    modulePreload: { resolveDependencies: (_file, deps, { hostType }) => (hostType === 'html' ? deps : []) },
+  },
 })
