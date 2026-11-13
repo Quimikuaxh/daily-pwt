@@ -26,4 +26,20 @@ describe('RPC de campaña', () => {
     await expect(api.getCampaign()).rejects.toEqual(new CloudError('campaign_revision_conflict', true))
     await expect(api.getCampaign()).rejects.toEqual(new CloudError('Failed to fetch', false))
   })
+
+  // Producción, 13/11/2026: la semilla del combate lleva U+0000, que `jsonb` rechaza (400 a todos al guardar el combate preparado).
+  it('no manda U+0000 a la base de datos y lo restaura al leer', async () => {
+    const nul = String.fromCharCode(0)
+    const state = { ...createCampaign('rpc'), battleSeed: `semilla${nul}nuzlocke-battle:v1${nul}petra` }
+    const record = { version: 1 as const, revision: 4, state, battle: null }
+    const receipt = { revision: 4, operationId: crypto.randomUUID() }
+    const rpc = vi.fn().mockResolvedValueOnce({ data: receipt }).mockImplementationOnce(async () => ({ data: JSON.parse(JSON.stringify(sent)) }))
+    let sent: unknown = null
+    const api = supabaseApi({ rpc } as unknown as SupabaseClient, 'http://unused/functions/v1')
+    await api.saveCampaign({ record, expectedRevision: 3, operationId: receipt.operationId })
+    const args = rpc.mock.calls[0][1] as { p_state: unknown }
+    expect(JSON.stringify(args)).not.toContain('\\u0000')
+    sent = { ...record, state: args.p_state }
+    expect(await api.getCampaign()).toEqual(record)
+  })
 })

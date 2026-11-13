@@ -12,6 +12,23 @@ function toCloudError(error: { message?: string; code?: string } | null | undefi
   return new CloudError(permanent && code === 'P0001' ? (error?.message ?? code) : code || (error?.message ?? 'network'), permanent)
 }
 
+/**
+ * Postgres no admite U+0000 en `jsonb` (rechaza la petición con 400), y la semilla de cada combate de campaña (`battleSeed`) lo usa de
+ * separador: guardar un combate preparado fallaba para todos (13/11/2026). Al guardar se cambia por U+2400 («␀», que no aparece en los
+ * datos del juego) y al leer se deshace, así la semilla vuelve a ser la misma. Va en el transporte, no en la semilla: cambiarla
+ * dejaría inservibles los guardados pendientes que ya tienen los jugadores, que se reenvían igual. Recorre solo las cadenas.
+ */
+const NUL = String.fromCharCode(0)
+const NUL_STAND_IN = '\u2400'
+function mapStrings(value: unknown, map: (text: string) => string): unknown {
+  if (typeof value === 'string') return map(value)
+  if (Array.isArray(value)) return value.map((item) => mapStrings(item, map))
+  if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([key, item]) => [map(key), mapStrings(item, map)]))
+  return value
+}
+export const toCloudJson = <T>(value: T): T => mapStrings(value, (text) => text.replaceAll(NUL, NUL_STAND_IN)) as T
+export const fromCloudJson = <T>(value: T): T => mapStrings(value, (text) => text.replaceAll(NUL_STAND_IN, NUL)) as T
+
 /** `functionsUrl`: las Edge Functions del proyecto (`…/functions/v1`), para el aviso por Discord. */
 export function supabaseApi(client: SupabaseClient, functionsUrl: string): CloudApi {
   async function rpc<T>(name: string, args: Record<string, unknown> = {}): Promise<T> {
@@ -27,10 +44,10 @@ export function supabaseApi(client: SupabaseClient, functionsUrl: string): Cloud
   const numeric = <T extends Record<string, unknown>>(rows: T[], key: keyof T) => rows.map((row) => ({ ...row, [key]: Number(row[key]) }))
 
   return {
-    getCampaign: () => rpc('get_campaign'),
+    getCampaign: async () => fromCloudJson(await rpc('get_campaign')),
     saveCampaign: ({ operationId, expectedRevision, record }) => rpc('save_campaign', {
       p_operation_id: operationId, p_expected_revision: expectedRevision,
-      p_version: record.version, p_state: record.state, p_battle: record.battle,
+      p_version: record.version, p_state: toCloudJson(record.state), p_battle: toCloudJson(record.battle),
     }),
     ensureProfile: () => rpc('ensure_profile'),
     setNickname: (nickname) => rpc('set_nickname', { p_nickname: nickname }),
