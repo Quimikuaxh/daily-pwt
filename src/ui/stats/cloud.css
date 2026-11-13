@@ -283,6 +283,13 @@
   outline-offset: 2px;
 }
 
+/* En los rankings, el nombre pulsable ocupa lo mismo que el de la fila propia (que no es botón): sin el alto mínimo de 44 px ni `flex: 1`,
+   todas las filas miden igual y el tick queda junto al nombre (Jose, 13/11/2026). */
+.ranking-name.friend-open {
+  flex: 0 1 auto;
+  min-height: 0;
+}
+
 /* Vista de un amigo: «‹ Amigos» y su nickname arriba; ocupa el alto de la ventana (la carga se centra en el hueco). */
 .friend-view {
   flex: 1;

@@ -10,6 +10,8 @@ import './cloud.css'
 const text = esCloud.friends
 
 type FriendViewProps = {
+  /** Texto del botón de volver (por defecto, a Amigos; desde los rankings, a Rankings). */
+  backLabel?: string
   api: CloudApi
   nickname: string
   today: string
@@ -24,13 +26,13 @@ type FriendViewProps = {
  * Vista de un amigo (decisión de Jose, 29/10/2026): sus estadísticas, iguales que las de «Yo», y su historial con sus repeticiones, solo
  * para ver (sin compartir ni borrar). El servidor solo da los días ya cerrados: su combate de hoy no se ve hasta la medianoche de Madrid.
  */
-export function FriendView({ api, nickname, today, onBack, trainerName, art, onWatch }: FriendViewProps) {
+export function FriendView({ api, nickname, today, onBack, backLabel, trainerName, art, onWatch }: FriendViewProps) {
   const [profile, setProfile] = useState(null as FriendProfile | null)
   const [failed, setFailed] = useState(false)
 
   useEffect(() => {
     let active = true
-    api.friendProfile(nickname).then(
+    api.playerProfile(nickname).then(
       (loaded) => active && setProfile(loaded),
       () => active && setFailed(true),
     )
@@ -42,7 +44,7 @@ export function FriendView({ api, nickname, today, onBack, trainerName, art, onW
   return (
     <div className="friend-view">
       <div className="friend-view-head">
-        <button type="button" className="btn btn-small" onClick={onBack}>{text.back}</button>
+        <button type="button" className="btn btn-small" onClick={onBack}>{backLabel ?? text.back}</button>
         <h3 className="friend-view-name">{profile?.nickname ?? nickname}</h3>
       </div>
       <FriendBody profile={profile} failed={failed} today={today} trainerName={trainerName} art={art} onWatch={onWatch} />

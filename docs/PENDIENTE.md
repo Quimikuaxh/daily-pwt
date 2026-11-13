@@ -69,6 +69,9 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 ## Bostezo y paneles más grandes (06/11/2026)
 - **Hecho:** los `-end` silenciosos del motor no se traducen (UT-156); los paneles laterales crecen hasta ×1,3 con sitio (RF-44c, DEC-81, UT-157).
 
+## Rama `feature/perfil-jugadores` (13/11/2026)
+- **Hecho:** RF-111d: estadísticas e historial de cualquier jugador desde los rankings y la búsqueda (UT-214). **Antes de desplegar:** aplicar en producción la migración `20261113000000_pwt_perfil_jugadores.sql` (con autorización de Jose) y después publicar la web: sin la migración, abrir un jugador fallaría.
+
 ## Icono del objeto en su ficha y texto centrado en los recuadros (06/11/2026, directo a `main`)
 - **Hecho:** icono de la bolsa en la ficha del objeto (RF-44c, UT-153); texto centrado (o 1 px más abajo) en OFICIAL/PRÁCTICA/EN DIRECTO, «Objeto» y los tipos (PRD §0); `npm run gen:item-icons` baja los 80 de los sets a `public/sprites/items/` y `validate:data` exige que estén.
 

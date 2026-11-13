@@ -75,6 +75,7 @@ export function FriendsPanel({ api, onChange, onOpen, onWatchLive }: { api: Clou
           {results.map((row) => (
             <li key={row.nickname}>
               <span>{row.nickname}</span>
+              {onOpen && <button type="button" className="btn btn-small" aria-label={text.open(row.nickname)} onClick={() => onOpen(row.nickname)}>{text.view}</button>}
               {row.relation === 'none' && <button type="button" className="btn btn-small" onClick={() => run(() => api.sendFriendRequest(row.nickname))}>{text.add}</button>}
               {row.relation === 'outgoing' && <span className="settings-hint">{text.requested}</span>}
               {row.relation === 'incoming' && <button type="button" className="btn btn-small" onClick={() => run(() => api.respondFriendRequest(row.nickname, true))}>{text.accept}</button>}

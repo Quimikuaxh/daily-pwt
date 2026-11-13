@@ -23,7 +23,8 @@ export function monthStart(date: string, offset = 0): string {
  * jugador (decisión de Jose, 28/10/2026). Empates con la misma posición. Los jugadores con cuenta llevan el tick de verificado; sin
  * cuenta (`member` falso) se aparece en el global, pero no hay vista de amigos.
  */
-export function RankingsPanel({ api, today, member }: { api: CloudApi | null; today: string; member: boolean }) {
+/** `onOpen`: abre las estadísticas e historial de un jugador del ranking (cualquiera, no solo amigos; Jose, 13/11/2026). */
+export function RankingsPanel({ api, today, member, onOpen }: { api: CloudApi | null; today: string; member: boolean; onOpen?: (nickname: string) => void }) {
   const [kind, setKind] = useState('points' as Kind)
   const [scope, setScope] = useState('global' as RankingScope)
   const [monthOffset, setMonthOffset] = useState(0)
@@ -83,14 +84,14 @@ export function RankingsPanel({ api, today, member }: { api: CloudApi | null; to
         </div>
       )}
       {!member && <p className="settings-hint">{text.signInToAppear}</p>}
-      <RankingBody available={api !== null} loading={loading} rows={rows} />
+      <RankingBody available={api !== null} loading={loading} rows={rows} onOpen={onOpen} />
       {rows && <Pagination rows={rows} onPage={setPage} />}
       {kind === 'points' && monthOffset === 0 && <p className="stats-note">{text.closedOnly}</p>}
     </div>
   )
 }
 
-function RankingBody({ available, loading, rows }: { available: boolean; loading: boolean; rows: Rows | null }) {
+function RankingBody({ available, loading, rows, onOpen }: { available: boolean; loading: boolean; rows: Rows | null; onOpen?: (nickname: string) => void }) {
   if (!available) {
     return <p className="settings-hint">{esCloud.account.offline}</p>
   }
@@ -103,7 +104,7 @@ function RankingBody({ available, loading, rows }: { available: boolean; loading
   if (rows.rows.length === 0) {
     return <p className="settings-hint">{text.empty}</p>
   }
-  return <RankingTable rows={rows} />
+  return <RankingTable rows={rows} onOpen={onOpen} />
 }
 
 /** «‹ Página 2 de 4 ›» y, si el jugador está en otra página, «Ir a mi posición». Nada con una sola página. */
@@ -124,7 +125,7 @@ function Pagination({ rows, onPage }: { rows: Rows; onPage: (page: number) => vo
 }
 
 
-function RankingTable({ rows }: { rows: Rows }) {
+function RankingTable({ rows, onOpen }: { rows: Rows; onOpen?: (nickname: string) => void }) {
   return (
     <>
       <table className="ranking-table">
@@ -141,7 +142,11 @@ function RankingTable({ rows }: { rows: Rows }) {
               <td>{row.rank}</td>
               <td className="ranking-player">
                 <span className="ranking-player-line">
-                  <span className="ranking-name">{row.nickname ?? text.noName}</span>
+                  {onOpen && row.nickname && !row.me ? (
+                    <button type="button" className="friend-open ranking-name" aria-label={text.openPlayer(row.nickname)} onClick={() => onOpen(row.nickname as string)}>{row.nickname}</button>
+                  ) : (
+                    <span className="ranking-name">{row.nickname ?? text.noName}</span>
+                  )}
                   {row.verified && <VerifiedIcon className="ranking-verified" />}
                   {row.me && <span className="ranking-you">{text.you}</span>}
                 </span>
