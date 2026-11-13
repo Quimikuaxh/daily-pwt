@@ -32,6 +32,34 @@ describe('Campaña de Hoenn', () => {
     expect(onExit).toHaveBeenCalledOnce()
   })
 
+  // Jose, 13/11/2026: una campaña perdida no se vuelve a abrir; al entrar sale la pantalla para empezar otra, sin confirmación.
+  it('con la campaña perdida, al entrar ofrece empezar otra y la empieza sin pedir confirmación', async () => {
+    const store = new LocalCampaignStore(new MemoryStorage())
+    store.write({ ...createCampaign('perdida'), phase: 'lost' }, null, 0)
+    const { user } = mount(store)
+    const confirm = vi.spyOn(window, 'confirm')
+    expect(screen.queryByRole('button', { name: /^Continuar/ })).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Empezar campaña' }))
+    await user.click(await screen.findByRole('button', { name: 'Empezar' }))
+    expect(confirm).not.toHaveBeenCalled()
+    expect(store.read()?.state).toEqual({ ...createCampaign('t3-petra'), startedAt: expect.any(Number) })
+  })
+
+  // Jose, 13/11/2026: al empezar otra desde la Ruta seguía elegida la ciudad de la partida anterior.
+  it('al empezar otra partida, la Ruta vuelve a señalar el primer gimnasio', async () => {
+    const store = new LocalCampaignStore(new MemoryStorage())
+    store.write({ ...createCampaign('avanzada'), phase: 'prepare', encounterIndex: 2, pick: 0, offer: [] }, null, 0)
+    const { user } = mount(store)
+    const pressed = () => document.querySelector('.route-place[aria-pressed="true"]')?.getAttribute('data-place')
+    const before = pressed()
+    expect(before).not.toBe('ferrica')
+    vi.spyOn(window, 'confirm').mockReturnValue(true)
+    await user.click(screen.getByRole('button', { name: 'Nueva partida' }))
+    await user.click(await screen.findByRole('button', { name: 'Empezar' }))
+    expect(pressed()).toBe(document.querySelector('.route-place')?.getAttribute('data-place'))
+    expect(pressed()).not.toBe(before)
+  })
+
   it('empezar otra pide confirmación; cancelar conserva y aceptar reemplaza el estado', async () => {
     const store = new LocalCampaignStore(new MemoryStorage())
     store.write(createCampaign('anterior'), null, 0)

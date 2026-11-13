@@ -12,6 +12,7 @@ import { GameText } from '../console/GameText'
 import { GameWindow } from '../console/GameWindow'
 import { padNumber, textWidth } from '../console/glyphs'
 import { emeraldSprite, emeraldTheme } from '../console/themes/emerald'
+import { usePreloadImages } from './usePreloadImages'
 import type { BitmapFont } from '../console/theme'
 import { esCampaign } from '../../i18n/esCampaign'
 import { useBattle } from '../../hooks/useBattle'
@@ -19,7 +20,7 @@ import type { LocalCampaignSession } from '../../battle/campaignSession'
 import type { BattleSet, EngineEnd } from '../../battle/protocol'
 import { calcStats } from '../../core/stats'
 import { BattlePanel, SideColumn, useSidePanelOffset } from './CampaignSide'
-import { BATTLE_PANEL, sideMons, STATUS_SHORT, type SideSets } from './sidePanelsModel'
+import { BATTLE_PANEL, sideMons, type SideSets } from './sidePanelsModel'
 import { emeraldAbilityName, emeraldItemName } from './emeraldNames'
 import type { GameData } from '../../core/types'
 import { toId } from '../../core/id'
@@ -28,7 +29,7 @@ import { emeraldLog } from '../../i18n/esEmeraldLog'
 import { PartySlot } from './PartySlot'
 import { slotBox } from './partySlotModel'
 import { EMERALD_INTRO, EMERALD_SWITCH, sessionBattleClient, UNUSED_INIT, type StartBattle } from './campaignBattle'
-import { STATUS_COLORS, openingFrame, TRANSITION_BARS, TRAINER_SPOT, trainerX, transitionFrame, type PartyMember, activeOf, backSpot, BALL_TINT, barHpAt, barImage, faintDrop, frontSpot, healthbox, hpPauseMs, messagePages, partyFromRequest, ppColor, recallFrame, releaseFrame, sendOutFrame, viewHp, type SendOutState } from './emeraldBattleModel'
+import { STATUS_ICON, openingFrame, TRANSITION_BARS, TRAINER_SPOT, trainerX, transitionFrame, type PartyMember, activeOf, backSpot, BALL_TINT, barHpAt, barImage, faintDrop, frontSpot, healthbox, hpPauseMs, messagePages, partyFromRequest, ppColor, recallFrame, releaseFrame, sendOutFrame, viewHp, type SendOutState } from './emeraldBattleModel'
 import { statAt } from './draftModel'
 import { typeIconId } from './movesModel'
 import { SummaryPages } from './SummaryPages'
@@ -124,6 +125,11 @@ export function EmeraldBattle({ session, start, data, trainer, trainerId, resume
   useEffect(() => preloadSfx(BATTLE_SFX_IDS), [])
   // Sonidos de los ataques: se descargan los de los movimientos de los dos equipos al entrar y suenan con «X usó Y».
   const sideSets = sides?.sets() ?? null
+  // Los que pueden salir al campo (frente del rival, espalda propia), sus iconos y la ficha de DATOS, listos antes de cada cambio.
+  usePreloadImages(sideSets ? [
+    ...sideSets.rival.flatMap((set) => [emeraldSprite('front', set.species), emeraldSprite('icon', set.species)]),
+    ...sideSets.player.flatMap((set) => [emeraldSprite('back', set.species), emeraldSprite('front', set.species), emeraldSprite('icon', set.species)]),
+  ] : [])
   const movesKey = sideSets ? [...sideSets.player, ...sideSets.rival].flatMap((set) => set.moves).join(',') : ''
   useEffect(() => { if (movesKey) preloadSfx(moveSoundIds(movesKey.split(','))) }, [movesKey])
   const moveFx = battle.moveFx
@@ -390,7 +396,8 @@ export function EmeraldBattle({ session, start, data, trainer, trainerId, resume
                   aria-label={t.moveLabel(emeraldMoveName(move.id, data.names), move.pp ?? 0, move.maxpp ?? 0)} disabled={move.disabled || move.pp === 0}
                   autoFocus={i === 0} onClick={() => chooseMove(i)} onFocus={() => setMoveCursor(i)} onPointerEnter={focusOnHover}>
                   <GameText text={'▶'} x={-8} y={1} color="combate-menu" hidden />
-                  <GameText text={emeraldMoveName(move.id, data.names)} y={1} width={64} fit color="combate-menu" hidden />
+                  {/* Fuente estrecha, como el juego (B_WIN_MOVE_NAME_*, FONT_NARROW). */}
+                  <GameText text={emeraldMoveName(move.id, data.names)} y={1} width={64} fit face="narrow" color="combate-menu" hidden />
                 </button>
               ))}
               {/* Los huecos sin movimiento muestran «-», como el juego. */}
@@ -460,16 +467,19 @@ export function EmeraldBattle({ session, start, data, trainer, trainerId, resume
   )
 }
 
-/** Estado alterado en la caja de PS (Jose, 12/11/2026: no se pintaban): recuadro de color con la abreviatura de Esmeralda. */
+/**
+ * Estado alterado en la caja de PS: el icono de 24 x 8 de Esmeralda con las letras de la edición española (`estado-*`, de
+ * `status_icons` en la receta del decompilado). La etiqueta de colores con el texto encima se salía de la píldora y pisaba la barra
+ * del rival (Jose, 13/11/2026).
+ */
 export function StatusBadge({ status, x, y, coverLabel = false }: { status: string | null; x: number; y: number; coverLabel?: boolean }) {
-  if (!status || !STATUS_SHORT[status]) return null
+  const icon = status ? STATUS_ICON[status] : undefined
+  if (!icon) return null
   return (
     <>
       {/* En la caja del rival el icono ocupa el sitio del rótulo PS: se tapa el resto con el fondo de la caja, como el juego. */}
       {coverLabel && <div style={{ left: x + 24, top: y, width: 8, height: 8, background: '#ffffde' }} />}
-      <div style={{ left: x, top: y, width: 24, height: 8, background: STATUS_COLORS[status] ?? '#a4a48b', borderRadius: 3 }}>
-        <GameText text={STATUS_SHORT[status]} y={-4} width={24} align="center" face="small" color="blanco" hidden />
-      </div>
+      <img src={emeraldTheme.asset(`estado-${icon}`)} alt="" style={{ left: x, top: y }} />
     </>
   )
 }

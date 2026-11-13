@@ -31,6 +31,18 @@ def review(im, name):
 
 
 # ---------- Fuentes: máscaras de glifos y anchos ----------
+def half_cells(sheet, widths):
+    """Vacía la mitad derecha de cada celda de 16 x 16 cuyo glifo mide 8 px o menos: el juego solo copia esa mitad (text.c,
+    DecompressGlyph_*: con `width <= 8`, dos teselas en vez de cuatro) y en la otra el PNG trae restos de otro glifo. Sin esto, en la
+    fuente estrecha la «S» arrastraba media «T» y «PISTOLA AGUA» o «PERSECUCIÓN» salían pisadas (Jose, 13/11/2026)."""
+    out = sheet.copy()
+    blank = Image.new('RGBA', (8, 16))
+    for code, width in enumerate(widths):
+        if width <= 8:
+            out.paste(blank, (code % 16 * 16 + 8, code // 16 * 16))
+    return out
+
+
 def fonts():
     src = (SRC / 'src/fonts.c').read_text()
     charmap = {}
@@ -64,7 +76,7 @@ def fonts():
         for layer, index in [('tinta', 1), ('sombra', 2)]:
             out = Image.new('RGBA', im.size)
             out.putdata([(0, 0, 0, 255 if c == index else 0) for c in im.getdata()])
-            save(out, f'fuente-{key}-{layer}.png')
+            save(half_cells(out, meta['fonts'][key]), f'fuente-{key}-{layer}.png')
     review(comparison, 'simbolos-comparacion.png')
     write_json(f'{DATA}/font.json', meta)
 
@@ -628,6 +640,58 @@ def evolution_bg():
     save(strip, 'combate-chispas-bola.png')
 
 
+def move_selector():
+    # Marco que señala el movimiento elegido en la página de movimientos (pokemon_summary_screen.c, CreateMoveSelectorSprites):
+    # 10 sprites de 16x16 desde x 81 (centro en i*16 + 89), izquierda = fotograma 4, centro = 5 y derecha = el 4 volteado. Una tira
+    # de 160x16; la pantalla la pone en (81, 32 + 16 * fila) y la hace parpadear (visible 25 de cada 32 fotogramas).
+    sheet = sprite(G / 'summary_screen/move_select.png')
+    left = sheet.crop((0, 64, 16, 80))
+    middle = sheet.crop((0, 80, 16, 96))
+    strip = Image.new('RGBA', (160, 16))
+    strip.paste(left, (0, 0))
+    for i in range(1, 9):
+        strip.paste(middle, (16 * i, 0))
+    strip.paste(left.transpose(Image.Transpose.FLIP_LEFT_RIGHT), (144, 0))
+    save(strip, 'datos-selector.png')
+
+
+# Letras de 4 x 6 de los iconos de estado. P, A, R y N son las del juego (status.png); el resto, en el mismo estilo, para la edición
+# española (DOR, ENV, PAR, QUE, CON): el decompilado solo trae los iconos ingleses.
+STATUS_GLYPHS = {
+    'P': ('ooo.', 'o..o', 'o..o', 'ooo.', 'o...', 'o...'),
+    'A': ('.oo.', 'o..o', 'o..o', 'oooo', 'o..o', 'o..o'),
+    'R': ('ooo.', 'o..o', 'o..o', 'ooo.', 'o.o.', 'o..o'),
+    'N': ('o..o', 'oo.o', 'o.oo', 'o..o', 'o..o', 'o..o'),
+    'D': ('ooo.', 'o..o', 'o..o', 'o..o', 'o..o', 'ooo.'),
+    'O': ('.oo.', 'o..o', 'o..o', 'o..o', 'o..o', '.oo.'),
+    'E': ('oooo', 'o...', 'ooo.', 'o...', 'o...', 'oooo'),
+    'V': ('o..o', 'o..o', 'o..o', 'o..o', '.oo.', '.oo.'),
+    'Q': ('.oo.', 'o..o', 'o..o', 'o..o', 'o.o.', '.o.o'),
+    'U': ('o..o', 'o..o', 'o..o', 'o..o', 'o..o', '.oo.'),
+    'C': ('.oo.', 'o..o', 'o...', 'o...', 'o..o', '.oo.'),
+}
+
+
+def status_icons():
+    # Iconos de estado de la caja de PS (UpdateStatusIconInHealthbox): píldoras de 24 x 8 de status.png (PSN, PAR, SLP, FRZ, BRN, de
+    # arriba abajo) con las letras en x 3, 8 y 13, filas 1 a 6. Se vacían las inglesas con el color de la píldora y se escriben las españolas.
+    sheet = sprite(G / 'battle_interface/status.png')
+    ink = sheet.getpixel((3, 9))  # la P de PAR
+    for row, (name, text) in enumerate([('env', 'ENV'), ('par', 'PAR'), ('dor', 'DOR'), ('con', 'CON'), ('que', 'QUE')]):
+        pill = sheet.crop((0, 8 * row, 24, 8 * row + 8))
+        fill = pill.getpixel((2, 3))
+        px = pill.load()
+        for y in range(1, 7):
+            for x in range(3, 17):
+                px[x, y] = fill
+        for k, letter in enumerate(text):
+            for y, line in enumerate(STATUS_GLYPHS[letter]):
+                for x, c in enumerate(line):
+                    if c == 'o':
+                        px[3 + 5 * k + x, 1 + y] = ink
+        save(pill, f'estado-{name}.png')
+
+
 def asset_list():
     # Lista de la interfaz para precargarla al entrar en la campaña (Jose, 12/11/2026: no conforme se necesita). Va la última:
     # recoge todo lo que han escrito los pasos anteriores.
@@ -636,4 +700,4 @@ def asset_list():
 
 
 comun.terminar((fonts, window_frames, region_map, dome_card, badges, portraits, species, factory, summary_pages, ball_display,
-                storage, party_screen, moves_page, type_icons, list_arrows, battle_screen, final_screens, item_icons, bag, evolution_bg, asset_list))
+                storage, party_screen, moves_page, type_icons, list_arrows, battle_screen, final_screens, item_icons, bag, evolution_bg, move_selector, status_icons, asset_list))

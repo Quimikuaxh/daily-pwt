@@ -7,7 +7,8 @@
 import { useState, type KeyboardEvent } from 'react'
 import { ConsoleStage } from '../console/ConsoleStage'
 import { GameText } from '../console/GameText'
-import { emeraldTheme } from '../console/themes/emerald'
+import { emeraldSprite, emeraldTheme } from '../console/themes/emerald'
+import { usePreloadImages } from './usePreloadImages'
 import { esCampaign } from '../../i18n/esCampaign'
 import type { Candidate } from './draftModel'
 import { SummaryPages } from './SummaryPages'
@@ -36,6 +37,8 @@ export function DraftScreen({ candidates, pick, picks, level, rivalName, onRecru
   const [page, setPage] = useState(0)
   const [option, setOption] = useState(0)
   const mon = candidates[cursor] ?? candidates[0]
+  // La ficha de cada candidato, lista antes de pasar a él.
+  usePreloadImages(candidates.map((candidate) => emeraldSprite('front', candidate.id)))
   const recruit = () => { setMenu(false); setCursor(0); setPage(0); onRecruit(mon.id) }
   const options = [
     { label: t.summary, name: t.summaryLabel(page), action: () => setPage((page + 1) % 3) },

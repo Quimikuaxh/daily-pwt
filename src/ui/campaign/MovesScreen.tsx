@@ -44,7 +44,8 @@ export function MovesScreen({ mon, legal, equipped, onChange, onExit, scale, res
   const [note, setNote] = useState(null as string | null)
   const byId = Object.fromEntries(legal.map((move) => [move.id, move]))
   const items = legal.length + 1 // la última fila es SALIR
-  const selected = learning ? byId[learning] : slot !== null ? byId[equipped[slot]] : byId[legal[cursor]?.id]
+  // Lo que se describe abajo: el hueco señalado (también mientras se elige cuál olvidar), si no el movimiento por aprender o el de la lista.
+  const selected = slot !== null && equipped[slot] ? byId[equipped[slot]] : learning ? byId[learning] : byId[legal[cursor]?.id]
 
   const moveCursor = (i: number) => {
     const next = Math.max(0, Math.min(items - 1, i))
@@ -61,6 +62,7 @@ export function MovesScreen({ mon, legal, equipped, onChange, onExit, scale, res
     const added = learnMove(equipped, move.id)
     if (added) { onChange(added); setNote(t.learned(mon.name, move.name)); return }
     setLearning(move.id)
+    setSlot(0)
     setNote(null)
   }
   const forget = (i: number) => {
@@ -68,6 +70,11 @@ export function MovesScreen({ mon, legal, equipped, onChange, onExit, scale, res
     const next = learnMove(equipped, learning, i)
     if (next) { onChange(next); setNote(t.swapped(mon.name, byId[equipped[i]]?.name ?? equipped[i], byId[learning].name)) }
     setLearning(null)
+    setSlot(null)
+  }
+  const cancelLearning = () => {
+    setLearning(null)
+    setSlot(null)
   }
   const scrollBy = (rows: number) => {
     const next = scrollList(scroll, cursor, items, VISIBLE, rows)
@@ -76,7 +83,7 @@ export function MovesScreen({ mon, legal, equipped, onChange, onExit, scale, res
     setSlot(null)
   }
   const onKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'Escape' && learning) { event.preventDefault(); setLearning(null); return }
+    if (event.key === 'Escape' && learning) { event.preventDefault(); cancelLearning(); return }
     // Salida rápida sin bajar hasta SALIR (Jose, 12/11/2026).
     if (event.key === 'Escape') { event.preventDefault(); onExit(); return }
     const row = (event.target as HTMLElement).dataset.row
@@ -106,7 +113,8 @@ export function MovesScreen({ mon, legal, equipped, onChange, onExit, scale, res
               <GameText text={t.accuracy} y={41} width={106} align="right" hidden />
               {selected && (
                 <>
-                  <GameText text={selected.typeName} x={4} y={25} width={54} fit hidden />
+                  {/* Hasta 2 px antes de «POTENCIA/» (alineado a la derecha en 106): con 54 de ancho, «ELÉCTRICO» lo pisaba (Jose, 13/11/2026). */}
+                  <GameText text={selected.typeName} x={4} y={25} width={106 - textWidth(font, t.power) - 6} fit hidden />
                   <GameText text={String(selected.pp)} x={4 + textWidth(font, t.pp)} y={41} hidden />
                   <GameText text={selected.power ? String(selected.power) : t.none} x={106} y={25} hidden />
                   <GameText text={selected.accuracy ? String(selected.accuracy) : t.none} x={106} y={41} hidden />
@@ -122,10 +130,10 @@ export function MovesScreen({ mon, legal, equipped, onChange, onExit, scale, res
               const move = legal[i]
               return (
                 <button key={i} type="button" className="moves-row" data-row={i} style={{ left: 0, top: k * 16, width: 80, height: 16 }}
-                  aria-current={i === cursor && slot === null ? true : undefined}
+                  aria-current={i === cursor && (slot === null || learning !== null) ? true : undefined}
                   aria-label={move ? t.rowLabel(move.name, move.typeName, t.categories[move.category], sourceLabel(move), equipped.includes(move.id)) : t.exitLabel}
                   onClick={() => pick(i)} onFocus={() => { if (!learning) moveCursor(i) }} onPointerEnter={() => { if (!learning) moveCursor(i) }}>
-                  {i === cursor && slot === null && <GameText text="▶" y={1} hidden />}
+                  {i === cursor && (slot === null || learning !== null) && <GameText text="▶" y={1} hidden />}
                   <GameText text={move ? move.name : t.exit} x={8} y={1} width={72} fit hidden />
                 </button>
               )
@@ -165,9 +173,9 @@ export function MovesScreen({ mon, legal, equipped, onChange, onExit, scale, res
             const move = byId[equipped[i]]
             return (
               <button key={i} type="button" className="moves-slot" style={{ left: 84, top: 32 + 16 * i, width: 154, height: 16 }}
-                aria-current={slot === i || (learning !== null && i === 0) ? true : undefined}
+                aria-current={slot === i ? true : undefined}
                 aria-label={t.slotLabel(learning !== null, move?.name ?? null, move?.typeName ?? '', move?.pp ?? 0, i + 1)}
-                onClick={() => forget(i)} onFocus={() => { if (!learning) setSlot(i) }} onPointerEnter={() => { if (!learning) setSlot(i) }}>
+                onClick={() => forget(i)} onFocus={() => setSlot(i)} onPointerEnter={() => setSlot(i)}>
                 {move ? (
                   <>
                     <img src={emeraldTheme.asset(`tipo-${move.type}`)} alt="" style={{ left: 1, top: 0 }} />
@@ -183,6 +191,9 @@ export function MovesScreen({ mon, legal, equipped, onChange, onExit, scale, res
               </button>
             )
           })}
+          {/* Marco del juego sobre el hueco señalado (CreateMoveSelectorSprites: desde x 81, parpadea): sin él, al elegir cuál olvidar no
+              se sabía cuál estaba elegido (Jose, 13/11/2026). */}
+          {slot !== null && <img className="moves-selector" src={emeraldTheme.asset('datos-selector')} alt="" style={{ left: 81, top: 32 + 16 * slot }} />}
           {selected && (
             <div aria-hidden="true">
               <GameText text={t.powerLabel} x={8} y={121} width={52} fit color="datos-rotulo" hidden />
@@ -193,9 +204,10 @@ export function MovesScreen({ mon, legal, equipped, onChange, onExit, scale, res
             </div>
           )}
           {/* SALIR fijo, sin bajar hasta el final de la lista (Jose, 12/11/2026); como ACEPTAR y CANCELAR del equipo. */}
-          <button type="button" className="team-button" style={{ left: 184, top: 0, width: 56, height: 16 }} aria-label={t.quickExitLabel} onClick={onExit}>
+          <button type="button" className="team-button" style={{ left: 184, top: 0, width: 56, height: 16 }}
+            aria-label={learning ? t.cancelLearnLabel(byId[learning].name) : t.quickExitLabel} onClick={learning ? cancelLearning : onExit}>
             <img src={emeraldTheme.asset('boton-pildora')} alt="" style={{ left: 0, top: 0 }} />
-            <GameText text={t.exit} x={5} y={1} width={48} align="center" face="small" color="equipo" hidden />
+            <GameText text={learning ? t.cancelLearn : t.exit} x={5} y={1} width={48} align="center" face="small" color="equipo" hidden />
           </button>
           <section className="sr-only" aria-label={t.screen}>
             <h3>{t.heading(mon.name, mon.level)}</h3>

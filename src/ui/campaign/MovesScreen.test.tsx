@@ -37,6 +37,24 @@ describe('Movimientos', () => {
     expect(onChange).toHaveBeenCalledWith(['tackle', 'growl', 'rage', 'leer'])
   })
 
+  // Jose, 13/11/2026: al elegir cuál olvidar no se sabía cuál estaba elegido ni había cómo arrepentirse sin teclado.
+  it('al elegir cuál olvidar, el marco señala el hueco y lo sigue; CANCELAR anula el cambio', () => {
+    const { onChange, onExit } = mount(['tackle', 'growl', 'bite', 'leer'])
+    const selector = () => document.querySelector('.moves-selector') as HTMLElement | null
+    expect(selector()).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: /^FURIA/ }))
+    expect(selector()?.style.top).toBe('32px')
+    fireEvent.pointerEnter(screen.getByRole('button', { name: 'Olvidar MORDISCO' }))
+    expect(selector()?.style.top).toBe('64px')
+    expect(screen.getByRole('button', { name: 'Olvidar MORDISCO' })).toHaveAttribute('aria-current', 'true')
+    fireEvent.click(screen.getByRole('button', { name: 'Cancelar: no aprender FURIA' }))
+    expect(onExit).not.toHaveBeenCalled()
+    expect(onChange).not.toHaveBeenCalled()
+    expect(selector()).toBeNull()
+    expect(status()).toBe('¿Qué movimiento debería aprender TOTODILE?')
+    expect(screen.getByRole('button', { name: 'Salir de Movimientos y volver al equipo' })).toBeInTheDocument()
+  })
+
   it('uno ya equipado lo dice y no cambia nada; SALIR vuelve al equipo', () => {
     const { onChange, onExit } = mount(['tackle'])
     fireEvent.click(screen.getByRole('button', { name: /^PLACAJE.*ya equipado$/ }))

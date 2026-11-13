@@ -4,6 +4,7 @@
  * guardada, la barra ofrece empezarla; empezar otra sobre una en curso pide confirmación. Se carga aparte (lazy) desde App.
  */
 import { preloadCampaign } from './campaignPreload'
+import { RevealWhenLoaded } from './RevealWhenLoaded'
 import { availableDraftForms } from '../../core/nuzlocke/draftAvailability'
 import emeraldCalendar from '../../../data/nuzlocke/hoenn-emerald-calendar.json'
 import { campaignSteps } from './stepsModel'
@@ -166,7 +167,12 @@ function CloudCampaign({ cloud, ...props }: Omit<CampaignScreenProps, 'store'> &
 
 function CampaignView({ data, onExit, store, newSession, canStartBattle = () => true, subscribeStore, newSeed = randomSeed, createBattleClient = createCampaignWorkerClient, playerName, sound, onSoundChange }: CampaignViewProps) {
   const [soundOpen, setSoundOpen] = useState(false)
-  const [state, setState] = useState(() => store.read()?.state ?? null as CampaignState | null)
+  // Una campaña perdida no se vuelve a abrir: al entrar sale directamente la pantalla para empezar otra (Jose, 13/11/2026). El registro
+  // se queda guardado hasta que se empiece la nueva, que lo sustituye.
+  const [state, setState] = useState(() => {
+    const saved = store.read()?.state ?? null
+    return saved?.phase === 'lost' ? null : saved
+  })
   // Resultado del último combate: el encuentro jugado, la alineación (para enseñar sus bajas), el estado al cerrarlo y los minutos.
   const [result, setResult] = useState(null as CampaignResult | null)
   // Estado y alineación con los que se entró en el combate en curso.
@@ -320,6 +326,16 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     )
   }
 
+  // Salida de los menús y de la pantalla final. Tras perder, la pantalla final ofrece empezar otra en lugar de volver a una Ruta que ya
+  // no sirve (Jose, 13/11/2026).
+  const exitButton = () => {
+    if (OWN_EXIT.includes(view)) return null
+    if (view === 'share' && state?.phase === 'lost') {
+      return <button type="button" className="campaign-action" onClick={start}>{esCampaign.restartCampaign}</button>
+    }
+    return <button type="button" className="campaign-action" onClick={() => { if (view === 'share') setResult(null); setView('route') }}>{esCampaign.draft.back}</button>
+  }
+
   // Solo en la Ruta: en el draft, el equipo o el combate era fácil pulsarlo sin querer (Jose, 12/11/2026).
   const secondary = () => {
     if (!state || view !== 'route') return null
@@ -339,11 +355,15 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
   // Empezar: primero la dificultad (PRD §0, 13/11/2026) y, con una campaña en curso, la confirmación de perderla.
   const [choosingDifficulty, setChoosingDifficulty] = useState(false)
   const start = () => {
-    if (state && !window.confirm(esCampaign.newCampaignConfirm)) return
+    // Perdida, no hay nada que conservar: sin confirmación.
+    if (state && state.phase !== 'lost' && !window.confirm(esCampaign.newCampaignConfirm)) return
     setChoosingDifficulty(true)
   }
   const startWith = (difficulty: CampaignDifficulty) => {
     setChoosingDifficulty(false)
+    // Desde la pantalla final de una derrota, la nueva empieza en la Ruta.
+    setResult(null)
+    setView('route')
     // Cuándo empezó: el TIEMPO de la Ficha de Entrenador.
     save({ ...createCampaign(newSeed(), difficulty), startedAt: Date.now() })
   }
@@ -672,6 +692,9 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
       </header>
       <main id="main" tabIndex={-1} className="campaign-main">
         <h2 className="visually-hidden">{t.screen}</h2>
+        {/* Cada pantalla se enseña cuando sus imágenes han cargado (como mucho 1,5 s): la primera vez, el fondo de Equipo y PC o del combate
+            llegaba después que el resto (Jose, 13/11/2026). */}
+        <RevealWhenLoaded key={view}>
         {shareScreen() ?? teamView() ?? evolveOneScreen() ?? resultScreen() ?? battleScreen() ?? evolutionScreen() ?? leagueScreen() ?? teamScreen() ?? exchangeScreen() ?? bagScreen() ?? movesScreen() ?? (view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
           <DraftScreen
             candidates={draftCandidates(state)}
@@ -684,9 +707,11 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
             reservedHeight={150}
           />
         ) : (
-          <RouteScreen places={places} badges={badges} speciesName={speciesName} reservedHeight={150}
+          // Una partida nueva vuelve a montar la Ruta: si no, seguía elegida la ciudad de la anterior en vez del primer gimnasio (Jose, 13/11/2026).
+          <RouteScreen key={state?.seed ?? 'sin-campaña'} places={places} badges={badges} speciesName={speciesName} reservedHeight={150}
             league={{ rivals: leagueRivals, next: Math.max(0, Math.min(leagueRivals.length, (state?.encounterIndex ?? 0) - encounters.findIndex((encounter) => encounter.kind !== 'gym') + (state?.phase === 'won' ? 1 : 0))) }} />
         ))}
+        </RevealWhenLoaded>
         {steps && view === 'route' && (
           <ol className="campaign-steps" aria-label={t.stepsLabel(t.steps[steps.current])}>
             {steps.steps.map((id) => (
@@ -713,7 +738,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
             view !== 'route' ? (
               // Solo en los menús y en la pantalla final, que no tiene otra salida (Jose, 12/11/2026, opción A): el combate, el resultado
               // y la evolución tienen su propio camino y ahí se pulsaba sin querer.
-              !OWN_EXIT.includes(view) && <button type="button" className="campaign-action" onClick={() => { if (view === 'share') setResult(null); setView('route') }}>{esCampaign.draft.back}</button>
+              exitButton()
             ) : (
               <button type="button" className="campaign-action" disabled={state.phase !== 'draft' && state.phase !== 'prepare'} onClick={continueCampaign}
                 aria-label={t.actionLabel(action, next.gym === null ? t.continueLeague.replace('Continuar: ', '') : t.continueLabel(next.gym).replace('Continuar: ', ''))}>

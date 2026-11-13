@@ -13,6 +13,7 @@ import { ConsoleStage } from '../console/ConsoleStage'
 import { GameText } from '../console/GameText'
 import { GameWindow } from '../console/GameWindow'
 import { emeraldSprite, emeraldTheme } from '../console/themes/emerald'
+import { usePreloadImages } from './usePreloadImages'
 import { esCampaign } from '../../i18n/esCampaign'
 import { PartySlot } from './PartySlot'
 import { SummaryPages } from './SummaryPages'
@@ -59,6 +60,8 @@ const boxCell = (i: number) => ({ x: 100 + 24 * (i % 6), y: 44 + 24 * Math.floor
 
 export function TeamScreen({ readOnly = false, canEvolve, onEvolve, mons, initial, limit, rivalName, itemName, onAccept, onCancel, onMoves, onGiveItem, onTakeItem, onLayoutChange, summaryOf, scale, reservedHeight }: TeamScreenProps) {
   const [layout, setLayout] = useState(initial)
+  // DATOS cambia de Pokémon al pasar el puntero, y los iconos, de caja en caja: los de todos, listos de antemano.
+  usePreloadImages(Object.values(mons).flatMap((mon) => [emeraldSprite('front', mon.species), emeraldSprite('icon', mon.species)]))
   const [box, setBox] = useState(0)
   const [held, setHeld] = useState(null as Place | null)
   const [summaryId, setSummaryId] = useState(null as string | null)

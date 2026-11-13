@@ -133,7 +133,16 @@
 .console-screen .blink-a { animation: campaign-blink 0.53s steps(1) infinite; }
 .console-screen .blink-b { animation: campaign-blink 0.53s steps(1) infinite reverse; }
 
+/* Marco de la página de movimientos: visible 25 de cada 32 fotogramas a 60 Hz (SpriteCB_MoveSelector), es decir, 0,53 s con el último
+   22 % oculto. */
+@keyframes moves-selector-blink {
+  78% { opacity: 1; }
+  79%, 100% { opacity: 0; }
+}
+.console-screen .moves-selector { pointer-events: none; animation: moves-selector-blink 0.533s steps(1) infinite; }
+
 @media (prefers-reduced-motion: reduce) {
+  .console-screen .moves-selector { animation: none; }
   .console-screen .blink-a { animation: none; }
   .console-screen .blink-b { animation: none; opacity: 0; }
 }

@@ -10,6 +10,10 @@ export const campaignPlaces = routePlaces(campaignEncounters)
 
 /** jsdom no pinta el texto bitmap: comprobar roles y textos accesibles como console.test.tsx. */
 export function mockCampaignCanvas() {
-  beforeEach(() => { vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null) })
+  beforeEach(() => {
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
+    // jsdom no descarga imágenes (`complete` siempre es false): sin esto, cada pantalla esperaría 1,5 s oculta (`RevealWhenLoaded`).
+    vi.spyOn(HTMLImageElement.prototype, 'complete', 'get').mockReturnValue(true)
+  })
   afterEach(() => { vi.restoreAllMocks() })
 }

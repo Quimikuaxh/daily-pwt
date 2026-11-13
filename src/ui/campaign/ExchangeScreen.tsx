@@ -11,6 +11,7 @@ import { GameText } from '../console/GameText'
 import { GameWindow } from '../console/GameWindow'
 import { textWidth } from '../console/glyphs'
 import { emeraldTheme } from '../console/themes/emerald'
+import { usePreloadImages } from './usePreloadImages'
 import type { BitmapFont } from '../console/theme'
 import { esCampaign } from '../../i18n/esCampaign'
 import { wrapText } from './draftModel'
@@ -35,6 +36,7 @@ export function ExchangeScreen({ points, offers, onBuy, onExit, scale, reservedH
   const [asking, setAsking] = useState(null as string | null)
   const [note, setNote] = useState(null as string | null)
   const rows = offers.length + 1
+  usePreloadImages(offers.map((offer) => emeraldTheme.asset(`objeto-${offer.item}`)))
   const selected = offers[cursor] ?? null
   const message = note ?? (asking ? t.confirm(itemName(asking), offers.find((offer) => { return offer.item === asking })?.price ?? 0) : null)
   const description = message ?? (selected ? itemText(selected.item).replace(/\n/g, ' ') : t.choose)

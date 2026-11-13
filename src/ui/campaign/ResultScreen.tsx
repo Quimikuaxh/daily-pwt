@@ -13,6 +13,7 @@ import { GameWindow } from '../console/GameWindow'
 import { emeraldSprite, emeraldTheme } from '../console/themes/emerald'
 import { esCampaign } from '../../i18n/esCampaign'
 import { PartySlot } from './PartySlot'
+import { RevealWhenLoaded } from './RevealWhenLoaded'
 import { slotBox } from './partySlotModel'
 import { messagePages } from './emeraldBattleModel'
 import { hallOfFameOrder, hallOfFameSpots, type Protagonist, type ResultMode } from './resultModel'
@@ -104,10 +105,11 @@ export function ResultScreen({ mode, message, player, protagonist, badges, badge
       </>
     )
   }
+  // La Ficha sale en mitad de esta pantalla: espera a sus imágenes como cualquier pantalla nueva (Jose, 13/11/2026: tardaba el fondo).
   const topContent = () => {
-    if (mode === 'hallOfFame') return hallOfFame()
-    if (showCard) return trainerCard()
-    return battleMessage()
+    const step = mode === 'hallOfFame' ? 'salon' : showCard ? 'ficha' : 'mensaje'
+    const content = mode === 'hallOfFame' ? hallOfFame() : showCard ? trainerCard() : battleMessage()
+    return <RevealWhenLoaded key={step}>{content}</RevealWhenLoaded>
   }
 
   return (

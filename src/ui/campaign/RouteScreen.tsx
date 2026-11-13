@@ -4,11 +4,13 @@
  * gimnasio o Liga es un botón y el cursor del mapa marca la elegida. Abajo, la ficha del rival (DomeCard). Las medallas y «Continuar» van
  * en la barra del portal, fuera del lienzo (CampaignScreen).
  */
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { ConsoleStage } from '../console/ConsoleStage'
 import { GameText } from '../console/GameText'
 import { GameWindow } from '../console/GameWindow'
-import { emeraldTheme } from '../console/themes/emerald'
+import { emeraldSprite, emeraldTheme } from '../console/themes/emerald'
+import { imagesReady } from '../battle/preloadAssets'
+import { usePreloadImages } from './usePreloadImages'
 import { esCampaign } from '../../i18n/esCampaign'
 import { DomeCard } from './DomeCard'
 import { placeState, playerSpot, type CampaignEncounter, type RoutePlace } from './hoennRoute'
@@ -44,12 +46,27 @@ function leagueStateOf(index: number, next: number, badges: number): 'won' | 'ne
   return index === next && badges >= 8 ? 'next' : 'pending'
 }
 
+/** Imágenes de la ficha de un rival: su retrato y los iconos de su equipo. */
+function cardImages(rival: CampaignEncounter): string[] {
+  return [emeraldTheme.asset(`lider-${rival.id}`), ...rival.team.map((member) => emeraldSprite('icon', member.species))]
+}
+
 export function RouteScreen({ places, badges, speciesName, league, scale, reservedHeight }: RouteScreenProps) {
   const next = places.find((place) => placeState(place, badges) === 'next') ?? places[places.length - 1]
   const [selectedId, setSelectedId] = useState(next.id)
   const [page, setPage] = useState(0)
   // Liga: la ficha enseña al rival que toca y se pasa por los cinco con flechas (Jose, 12/11/2026: solo salía Plubio).
   const [leagueIndex, setLeagueIndex] = useState(Math.min(league?.next ?? 0, (league?.rivals.length ?? 1) - 1))
+  // La ficha se enseña entera de una vez (Jose, 13/11/2026: los Pokémon llegaban unos milisegundos después que la ficha). Al abrir la
+  // Ruta se piden los retratos y los iconos de todos sus rivales (unas 50 imágenes pequeñas; nunca las del resto de especies) y, al
+  // elegir otra ciudad o rival de la Liga, el cambio espera a que estén decodificadas (al momento si ya lo estaban; como mucho, 0,8 s).
+  const rivals = [...places.map((candidate) => candidate.rival), ...(league?.rivals ?? [])]
+  usePreloadImages(rivals.flatMap(cardImages))
+  const choice = useRef(0)
+  const whenReady = (rival: CampaignEncounter, apply: () => void) => {
+    const ticket = ++choice.current
+    void imagesReady(cardImages(rival), 800, undefined, 'high').then(() => { if (ticket === choice.current) apply() })
+  }
   const basePlace = places.find((candidate) => candidate.id === selectedId) ?? next
   const leagueRival = basePlace.gym === null && league ? league.rivals[leagueIndex] : null
   const place = leagueRival ? { ...basePlace, rival: leagueRival } : basePlace
@@ -67,7 +84,10 @@ export function RouteScreen({ places, badges, speciesName, league, scale, reserv
           style={{ left: candidate.x * 8 - 4, top: candidate.y * 8 - 4, width: 16, height: 16 }}
           aria-pressed={candidate.id === place.id}
           aria-label={t.placeLabel(t.cities[candidate.id], candidate.gym, t.states[placeState(candidate, badges)])}
-          onClick={() => { setSelectedId(candidate.id); setPage(0) }} />
+          onClick={() => {
+            const rival = candidate.gym === null && league ? league.rivals[leagueIndex] : candidate.rival
+            whenReady(rival, () => { setSelectedId(candidate.id); setPage(0) })
+          }} />
       ))}
       {/* Icono del protagonista (region_map.c, brendan_icon) en la ciudad donde está; el cursor va encima, como en el juego. */}
       <img src={emeraldTheme.asset('mapa-jugador')} alt="" style={{ left: playerSpot(places, badges, league?.next ?? 0).x * 8 - 4, top: playerSpot(places, badges, league?.next ?? 0).y * 8 - 4 }} />
@@ -89,7 +109,7 @@ export function RouteScreen({ places, badges, speciesName, league, scale, reserv
       page={page}
       onPage={setPage}
       lines={() => cardLines(place, badges, leagueState)}
-      rivals={leagueRival && league ? { index: leagueIndex, total: league.rivals.length, onStep: (step) => { setLeagueIndex(leagueIndex + step); setPage(0) }, label: (step) => t.leagueRivalLabel(league.rivals[leagueIndex + step].nameEs) } : undefined}
+      rivals={leagueRival && league ? { index: leagueIndex, total: league.rivals.length, onStep: (step) => { whenReady(league.rivals[leagueIndex + step], () => { setLeagueIndex(leagueIndex + step); setPage(0) }) }, label: (step) => t.leagueRivalLabel(league.rivals[leagueIndex + step].nameEs) } : undefined}
       accessibleName={t.cardLabel(place.rival.nameEs)}
       accessibleText={`${title}. ${t.medals(badges)}. ${cardLines(place, badges, leagueState).join(' ')}`}
     />

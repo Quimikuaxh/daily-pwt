@@ -10,6 +10,7 @@ import { ConsoleStage } from '../console/ConsoleStage'
 import { GameText } from '../console/GameText'
 import { GameWindow } from '../console/GameWindow'
 import { emeraldTheme } from '../console/themes/emerald'
+import { usePreloadImages } from './usePreloadImages'
 import { esCampaign } from '../../i18n/esCampaign'
 import { PartySlot } from './PartySlot'
 import { messagePages } from './emeraldBattleModel'
@@ -36,6 +37,8 @@ export function BagScreen({ protagonist, member, contents, onGive, onClose, scal
   const [scroll, setScroll] = useState(0)
   const [asking, setAsking] = useState(null as string | null)
   const items = contents(pocket)
+  // El icono de cada objeto de los cuatro bolsillos, listo antes de pasar por él.
+  usePreloadImages(POCKETS.flatMap((each) => contents(each).map((item) => emeraldTheme.asset(`objeto-${item.id}`))))
   const rows = items.length + 1
   const selected = items[cursor] ?? null
   const message = asking && member.item ? t.swap(member.name, itemName(member.item)) : t.give(member.name)

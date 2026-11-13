@@ -269,6 +269,9 @@ export const esCampaign = {
     known: (name: string, move: string) => `${name} ya conoce ${move}.`,
     exitLabel: 'Volver al equipo',
     quickExitLabel: 'Salir de Movimientos y volver al equipo',
+    // Mientras se elige cuál olvidar, el botón de arriba anula el cambio (Jose, 13/11/2026: antes solo se podía con Esc).
+    cancelLearn: 'CANCELAR',
+    cancelLearnLabel: (move: string) => `Cancelar: no aprender ${move}`,
     scroll: (down: boolean) => `Desplazar movimientos hacia ${down ? 'abajo' : 'arriba'}`,
     rowLabel: (move: string, type: string, category: string, source: string, known: boolean) => `${move}, ${type}, ${category}, ${source}${known ? ', ya equipado' : ''}`,
     level: (level: number) => `nivel ${level}`,

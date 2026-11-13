@@ -12,6 +12,7 @@ import { ConsoleStage } from '../console/ConsoleStage'
 import { GameText } from '../console/GameText'
 import { GameWindow } from '../console/GameWindow'
 import { emeraldSprite, emeraldTheme } from '../console/themes/emerald'
+import { usePreloadImages } from './usePreloadImages'
 import { esCampaign } from '../../i18n/esCampaign'
 import { PartySlot } from './PartySlot'
 import { messagePages } from './emeraldBattleModel'
@@ -37,6 +38,8 @@ type EvolutionSceneProps = {
 export function EvolutionScene({ evolutions, nameOf, hpOf, onDone, scale, reservedHeight }: EvolutionSceneProps) {
   const [index, setIndex] = useState(0)
   const [step, setStep] = useState(firstStep)
+  // Las formas de antes y de después de todos, listas antes de la animación.
+  usePreloadImages(evolutions.flatMap((evolution) => [evolution.species, ...evolution.targets].map((species) => emeraldSprite('front', species))))
   const [choices, setChoices] = useState({} as EvolutionChoices)
   const [cursor, setCursor] = useState(0)
   // Fotograma de la animación de evolución (60 Hz); con movimiento reducido no se anima.

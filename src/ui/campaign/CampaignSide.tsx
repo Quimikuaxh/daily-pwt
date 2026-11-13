@@ -9,6 +9,7 @@ import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
 import { ConsoleStage } from '../console/ConsoleStage'
 import { GameText } from '../console/GameText'
 import { emeraldSprite, emeraldTheme } from '../console/themes/emerald'
+import { usePreloadImages } from './usePreloadImages'
 import { esCampaign } from '../../i18n/esCampaign'
 import type { Boosts } from '../../battle/fieldState'
 import type { StatsTable } from '../../core/types'
@@ -94,6 +95,8 @@ export function TeamPanel({ party, box = [], limit = party.length, itemName }: {
   // La caja por páginas de BOX_PER_ROW * BOX_ROWS, con flechas (Jose, 13/11/2026: con «Y 5 MÁS» no había forma de verlos).
   const perPage = BOX_PER_ROW * BOX_ROWS
   const pages = Math.max(1, Math.ceil(box.length / perPage))
+  // Los iconos de todas las páginas de la caja, listos antes de pasar de página.
+  usePreloadImages(box.map((mon) => emeraldSprite('icon', mon.species)))
   const [boxPage, setBoxPage] = useState(0)
   const page = Math.min(boxPage, pages - 1)
   const shownBox = box.slice(page * perPage, (page + 1) * perPage)

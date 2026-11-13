@@ -10,11 +10,19 @@ type Preloadable = { members: readonly { species: string; fainted?: boolean }[];
 type ImageFactory = () => { src: string; decode?: () => Promise<void> }
 
 const requested = new Set<string>()
+const BACKGROUND = /fondo|escenario|ficha|mapa|combate-caja|datos-|resultado|^mochila-(brendan|may)$/
+/**
+ * Fondos de todas las pantallas de la campaña, también los que cambian dentro de una (páginas de DATOS, cajas del combate, la Ficha
+ * del resultado, la Mochila de cada bolsillo): unos 260 KB. Se piden los primeros y cada pantalla espera a tenerlos (`RevealWhenLoaded`),
+ * para que ninguno llegue tarde la primera vez (Jose, 13/11/2026).
+ */
+export const SCREEN_BACKGROUNDS: readonly string[] = (uiAssets as string[]).filter((name) => BACKGROUND.test(name)).map((name) => emeraldTheme.asset(name))
 
 export function campaignPreloadUrls(state: Preloadable | null, rivalSpecies: readonly string[]): string[] {
   const team = (state?.members ?? []).filter((member) => !member.fainted).map((member) => member.species)
   return [
-    ...(uiAssets as string[]).map((name) => emeraldTheme.asset(name)),
+    // Primero los fondos de cada pantalla: si se entra enseguida en una, es lo que más se nota que falta (Jose, 13/11/2026).
+    ...[...(uiAssets as string[])].sort((a, b) => Number(!BACKGROUND.test(a)) - Number(!BACKGROUND.test(b))).map((name) => emeraldTheme.asset(name)),
     ...team.flatMap((species) => [emeraldSprite('front', species), emeraldSprite('back', species), emeraldSprite('icon', species)]),
     ...rivalSpecies.map((species) => emeraldSprite('front', species)),
     ...(state?.offer ?? []).map((species) => emeraldSprite('front', species)),

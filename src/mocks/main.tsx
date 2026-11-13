@@ -342,7 +342,21 @@ const views: Record<string, () => ReactNode[]> = { 'compartir-a': ShareA, 'compa
 const view = views[new URLSearchParams(location.search).get('v') ?? ''] ?? EvoScene
 // La pantalla real (no una maqueta), para revisar la imagen que exporta: `?v=compartir` (gana) o `?v=compartir-perdida`.
 const shareMode = new URLSearchParams(location.search).get('v')
-if (shareMode === 'ruta-liga') {
+if (shareMode === 'ataques') {
+  // Menú de ataques del combate con nombres largos: arriba la fuente comprimida de antes, abajo la estrecha del juego (FONT_NARROW).
+  const names = ['PISTOLA AGUA', 'PERSECUCIÓN', 'GRUÑIDO', 'PLACAJE']
+  const menu = (narrow: boolean) => (
+    <div key={String(narrow)} style={{ left: 0, top: 0, width: 240, height: 160, background: '#000' }}>
+      <img src={emeraldTheme.asset('combate-caja-movimientos')} alt="" style={{ left: 0, top: 112 }} />
+      {names.map((name, i) => (
+        <div key={name} style={{ left: 16 + 72 * (i % 2), top: 120 + 16 * Math.floor(i / 2), width: 64, height: 16 }}>
+          <GameText text={name} y={1} width={64} fit face={narrow ? 'narrow' : undefined} color="combate-menu" />
+        </div>
+      ))}
+    </div>
+  )
+  createRoot(document.getElementById('root')!).render(<ConsoleStage theme={emeraldTheme} scale={3} screens={[menu(false), menu(true)]} />)
+} else if (shareMode === 'ruta-liga') {
   // La Ruta en la Liga, con la ficha que recorre los cinco rivales (para revisar las flechas).
   const encounters = catalog.encounters as never[] as { kind: string }[]
   createRoot(document.getElementById('root')!).render(
@@ -362,10 +376,10 @@ if (shareMode === 'ruta-liga') {
 } else if (shareMode === 'movimientos') {
   // La pantalla real de Movimientos con datos de ejemplo, para revisar SALIR y las flechas.
   const legal = ['tackle', 'growl', 'ember', 'leer', 'bite', 'flamewheel', 'rage', 'scaryface', 'slash', 'flamethrower'].map((id, i) => ({
-    id, name: id.toUpperCase(), type: 'fire', typeName: 'FUEGO', category: 'Special' as const, power: 40, accuracy: 100, pp: 25, text: 'Línea uno\nlínea dos.', source: { level: i + 1 },
+    id, name: id.toUpperCase(), type: i === 0 ? 'electric' : 'fire', typeName: i === 0 ? 'ELÉCTRICO' : 'FUEGO', category: 'Special' as const, power: 40, accuracy: i === 0 ? 0 : 100, pp: 25, text: 'Línea uno\nlínea dos.', source: { level: i + 1 },
   }))
   createRoot(document.getElementById('root')!).render(
-    <MovesScreen mon={{ species: 'cyndaquil', name: 'CYNDAQUIL', level: 15, dex: 155 }} legal={legal} equipped={['tackle', 'ember']} onChange={() => undefined} onExit={() => undefined} scale={2} />,
+    <MovesScreen mon={{ species: 'cyndaquil', name: 'CYNDAQUIL', level: 15, dex: 155 }} legal={legal} equipped={['tackle', 'growl', 'ember', 'leer']} onChange={() => undefined} onExit={() => undefined} scale={2} />,
   )
 } else if (shareMode === 'compartir' || shareMode === 'compartir-perdida') {
   const won = shareMode === 'compartir'

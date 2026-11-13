@@ -137,13 +137,23 @@ test('T4 combate de campaña contra Petra con el motor: se reanuda tras recargar
     expect(download.suggestedFilename()).toMatch(/^nuzlocke-hoenn-\d{4}-\d{2}-\d{2}\.png$/)
     const png = await readFile(await download.path())
     expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([720, 960])
-    await page.getByRole('button', { name: 'Volver a la ruta' }).click()
+    // Cambio de requisito (Jose, 13/11/2026): perdida la campaña, la pantalla final ofrece «Nueva partida» (sin confirmación) en lugar de
+    // volver a la Ruta, y al volver a entrar sale directamente la pantalla para empezar otra.
+    await expect(page.getByRole('button', { name: 'Volver a la ruta' })).toHaveCount(0)
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('daily-pwt:nuzlocke:v1') ?? 'null'))
+    expect(saved.battle).toBeNull()
+    expect(saved.state.phase).toBe('lost')
+    await page.reload()
+    await page.getByRole('button', { name: 'Modos de juego' }).click()
+    await page.getByRole('button', { name: 'Nuzlocke de Hoenn' }).click()
+    await expect(page.getByRole('button', { name: 'Empezar campaña', exact: true })).toBeVisible()
+    return
   }
   await expect(page.getByRole('heading', { name: 'Ruta' })).toBeAttached()
   await expect(page.getByRole('button', { name: /^CIUDAD FÉRRICA, gimnasio 1, (superado|próximo)$/ })).toBeVisible()
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('daily-pwt:nuzlocke:v1') ?? 'null'))
   expect(saved.battle).toBeNull()
-  expect(['draft', 'lost']).toContain(saved.state.phase)
+  expect(saved.state.phase).toBe('draft')
 })
 
 test('T5 Liga: evoluciones, los seis del PC, elección de participantes y combate contra Sixto con la plantilla fijada', async ({ page }) => {
