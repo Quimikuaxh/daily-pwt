@@ -32,7 +32,7 @@ const SLOTS = [
 ] as const
 
 /** Flechas de rival que tienen a quién ir (la izquierda si no es el primero, la derecha si no es el último). */
-const rivalArrows = (index: number, total: number) => ([[-1, 'izda', 12], [1, 'dcha', 220]] as const).filter(([step]) => { return index + step >= 0 && total > index + step })
+const rivalArrows = (index: number, total: number) => ([[-1, 'izda', 0], [1, 'dcha', 232]] as const).filter(([step]) => { return index + step >= 0 && total > index + step })
 
 export function DomeCard({ rivalId, title, party, page, lines, onPage, accessibleName, accessibleText, rivals }: DomeCardProps) {
   const pages = Math.ceil(party.length / 3)
@@ -69,8 +69,10 @@ export function DomeCard({ rivalId, title, party, page, lines, onPage, accessibl
       ))}
       {rivals && rivalArrows(rivals.index, rivals.total).map(([step, side, x]) => (
         (
-          <button key={side} type="button" className="dome-arrow" style={{ left: x, top: 10, width: 12, height: 16 }} aria-label={rivals.label(step)} onClick={() => rivals.onStep(step)}>
-            <img src={emeraldTheme.asset(`domo-flecha-${side}`)} alt="" style={{ left: 0, top: 0, transform: 'scale(0.75)', transformOrigin: '0 0' }} />
+          // En el margen entre la ficha y el borde de la pantalla, centradas en el cuadro del título (cuadro verde y 13 a 29, flecha 16 a 27; la media fila sobrante, abajo);
+          // dentro de la ficha pisaban la franja (Jose, 13/11/2026).
+          <button key={side} type="button" className="dome-arrow" style={{ left: x, top: 14, width: 8, height: 16 }} aria-label={rivals.label(step)} onClick={() => rivals.onStep(step)}>
+            <img src={emeraldTheme.asset(`domo-flecha-${side}`)} alt="" style={{ left: 0, top: 0 }} />
           </button>
         )
       ))}

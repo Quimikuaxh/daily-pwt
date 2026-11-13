@@ -51,4 +51,12 @@ describe('modelo de Ruta', () => {
   ])('tecla %s en página %i de %i → %s', (key, page, pages, target) => {
     expect(keyPage(String(key), Number(page), Number(pages))).toBe(target)
   })
+
+  // Jose, 13/11/2026: vencido el primero del Alto Mando, la cabeza ya está en Colosalia.
+  it('dentro de la Liga, el jugador está en Colosalia', () => {
+    const league = places.find((place) => place.gym === null)!
+    expect(playerSpot(places, 8, 0)).not.toEqual({ x: league.x, y: league.y })
+    expect(playerSpot(places, 8, 1)).toMatchObject({ x: league.x, y: league.y })
+  })
 })
+

@@ -70,7 +70,7 @@ export function RouteScreen({ places, badges, speciesName, league, scale, reserv
           onClick={() => { setSelectedId(candidate.id); setPage(0) }} />
       ))}
       {/* Icono del protagonista (region_map.c, brendan_icon) en la ciudad donde está; el cursor va encima, como en el juego. */}
-      <img src={emeraldTheme.asset('mapa-jugador')} alt="" style={{ left: playerSpot(places, badges).x * 8 - 4, top: playerSpot(places, badges).y * 8 - 4 }} />
+      <img src={emeraldTheme.asset('mapa-jugador')} alt="" style={{ left: playerSpot(places, badges, league?.next ?? 0).x * 8 - 4, top: playerSpot(places, badges, league?.next ?? 0).y * 8 - 4 }} />
       <img className="blink-a" src={emeraldTheme.asset('mapa-cursor-0')} alt="" style={{ left: place.x * 8 - 4, top: place.y * 8 - 4 }} />
       <img className="blink-b" src={emeraldTheme.asset('mapa-cursor-1')} alt="" style={{ left: place.x * 8 - 4, top: place.y * 8 - 4 }} />
       <GameWindow x={22} y={1} width={7} height={2}>
@@ -83,7 +83,7 @@ export function RouteScreen({ places, badges, speciesName, league, scale, reserv
   ), (
     <DomeCard
       key="card"
-      rivalId={place.id}
+      rivalId={place.rival.id}
       title={title}
       party={party}
       page={page}

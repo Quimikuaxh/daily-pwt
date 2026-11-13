@@ -62,6 +62,9 @@ describe('Ruta y ficha del Domo', () => {
     const league = { rivals: campaignEncounters.filter((encounter) => encounter.kind !== 'gym'), next: 1 }
     render(<RouteScreen places={places} badges={8} speciesName={id => id} league={league} scale={2} />)
     expect(screen.getByRole('region', { name: /Fátima/ })).toHaveTextContent('Llevas hasta')
+    // Con su sprite, no el del campeón (Jose, 13/11/2026).
+    expect(document.querySelector('img[src$="lider-fatima.png"]')).not.toBeNull()
+    expect(document.querySelector('img[src$="lider-plubio.png"]')).toBeNull()
     await user.click(screen.getByRole('button', { name: 'Ver la ficha de Sixto' }))
     expect(screen.getByRole('region', { name: /Sixto/ })).toHaveTextContent('¡Ya le has vencido!')
     for (const name of ['Fátima', 'Nívea', 'Dracón']) await user.click(screen.getByRole('button', { name: `Ver la ficha de ${name}` }))

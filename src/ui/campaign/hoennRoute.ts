@@ -48,8 +48,11 @@ const LITTLEROOT = { x: 5, y: 13 } as const
  * Dónde está el jugador en el mapa (el icono del protagonista del mapa de pared): la ciudad del último gimnasio ganado; antes del primero,
  * Villa Raíz.
  */
-export const playerSpot = (places: readonly RoutePlace[], badges: number): { x: number; y: number } =>
-  badges === 0 ? LITTLEROOT : places.find((place) => place.gym === badges) ?? LITTLEROOT
+export const playerSpot = (places: readonly RoutePlace[], badges: number, leagueBeaten = 0): { x: number; y: number } => {
+  // Ya dentro de la Liga (vencido el primero del Alto Mando), en Colosalia (Jose, 13/11/2026).
+  if (leagueBeaten > 0) return places.find((place) => place.gym === null) ?? LITTLEROOT
+  return badges === 0 ? LITTLEROOT : places.find((place) => place.gym === badges) ?? LITTLEROOT
+}
 
 /** Flechas de página de la ficha del Domo: la izquierda (x 2) y la derecha (x 230) que llevan a una página que existe. */
 export function pageArrows(page: number, pages: number): { side: 'izda' | 'dcha'; target: number; x: number }[] {

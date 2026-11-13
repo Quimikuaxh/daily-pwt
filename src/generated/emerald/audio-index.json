@@ -65,8 +65,8 @@
     "emerald-town-chimney": {
       "path": "audio/music/emerald-town-chimney.m4a",
       "durationSec": 110.396,
-      "loopStartSec": 30.15,
-      "loopEndSec": 73.8803
+      "loopStartSec": 6.43,
+      "loopEndSec": 96.8026
     },
     "emerald-town-petalburg": {
       "path": "audio/music/emerald-town-petalburg.m4a",
@@ -95,8 +95,8 @@
     "emerald-town-evergrande": {
       "path": "audio/music/emerald-town-evergrande.m4a",
       "durationSec": 94.717,
-      "loopStartSec": 15.35,
-      "loopEndSec": 75.5983
+      "loopStartSec": 10,
+      "loopEndSec": 70.2484
     }
   },
   "sfx": {

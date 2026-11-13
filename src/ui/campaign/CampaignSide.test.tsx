@@ -28,6 +28,15 @@ describe('paneles laterales', () => {
     expect(screen.getByText('TREECKO, nivel 15, lleva OBJ-oranberry')).toBeInTheDocument()
   })
 
+  // Jose, 13/11/2026: si no caben en la caja del panel, se pasa de página con flechas.
+  it('la caja del panel pasa de página cuando hay más de diez', async () => {
+    const box = Array.from({ length: 13 }, (_, i) => ({ species: 'ralts', name: `R${i}`, fainted: false }))
+    const { container } = render(<TeamPanel party={[null]} box={box} itemName={(id) => id} />)
+    expect(container.querySelectorAll('img.mon-icon')).toHaveLength(10)
+    await userEvent.setup().click(screen.getAllByRole('button', { name: 'Ver la página 2 de 2 de la caja' })[1])
+    expect(container.querySelectorAll('img.mon-icon')).toHaveLength(3)
+  })
+
   // Jose, 12/11/2026: también la caja, con los caídos marcados.
   it('«Tu equipo» enseña la caja con los caídos', () => {
     const { container } = render(<TeamPanel party={[null]} box={[{ species: 'ralts', name: 'RALTS', fainted: false }, { species: 'zubat', name: 'ZUBAT', fainted: true }]} itemName={(id) => id} />)

@@ -91,8 +91,12 @@ const BOX_ROWS = 2
  */
 export function TeamPanel({ party, box = [], limit = party.length, itemName }: { party: readonly (TeamPanelMon | null)[]; box?: readonly BoxPanelMon[]; limit?: number; itemName: (id: string) => string }) {
   const count = party.filter(Boolean).length
-  const shownBox = box.slice(0, BOX_PER_ROW * BOX_ROWS)
-  const hiddenBox = box.length - shownBox.length
+  // La caja por páginas de BOX_PER_ROW * BOX_ROWS, con flechas (Jose, 13/11/2026: con «Y 5 MÁS» no había forma de verlos).
+  const perPage = BOX_PER_ROW * BOX_ROWS
+  const pages = Math.max(1, Math.ceil(box.length / perPage))
+  const [boxPage, setBoxPage] = useState(0)
+  const page = Math.min(boxPage, pages - 1)
+  const shownBox = box.slice(page * perPage, (page + 1) * perPage)
   // Bloque con llaves: la guarda de literales (literals.test.ts) tomaba el código entre dos JSX por texto.
   const screen = (() => { return (
     <div key="team" style={{ inset: 0, ...stripes('#cdd57b', '#b4b45a'), boxShadow: 'inset 0 0 0 4px #8b9c29' }}>
@@ -114,7 +118,17 @@ export function TeamPanel({ party, box = [], limit = party.length, itemName }: {
       })}
       <div className="game-window" style={{ left: 4, top: 206, width: 176, height: 86 }} />
       <GameText text={t.box} x={12} y={212} face="small" hidden />
-      {hiddenBox > 0 && <GameText text={t.boxMore(hiddenBox)} x={100} y={212} width={72} align="right" face="small" hidden />}
+      {pages > 1 && (
+        <>
+          <GameText text={t.boxPage(page + 1, pages)} x={110} y={212} width={40} align="center" face="small" hidden />
+          {([[-1, 'izda', 100], [1, 'dcha', 152]] as const).map(([step, side, x]) => (
+            <button key={side} type="button" style={{ left: x, top: 210, width: 12, height: 14 }} aria-label={t.boxPageLabel(((page + step + pages) % pages) + 1, pages)}
+              onClick={() => { setBoxPage((page + step + pages) % pages) }}>
+              <img src={emeraldTheme.asset(`pc-flecha-${side}`)} alt="" style={{ left: 2, top: 0 }} />
+            </button>
+          ))}
+        </>
+      )}
       {shownBox.map((mon, i) => (
         <img key={i} className={mon.fainted ? 'mon-icon campaign-side-fainted' : 'mon-icon mon-icon-anim'} src={emeraldSprite('icon', mon.species)} alt=""
           style={{ left: 8 + (i % BOX_PER_ROW) * 34, top: 222 + Math.floor(i / BOX_PER_ROW) * 32 }} />

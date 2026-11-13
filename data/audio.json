@@ -363,9 +363,9 @@
       "id": "emerald-town-chimney",
       "source": "yt-emerald-town-chimney",
       "trimLeadingSilence": true,
-      "_nota": "Campaña de Hoenn: menús del tramo de Monte Cenizo, para Pueblo Lavacalda (Candela). Bucle de 43.730 s por autosemejanza del espectrograma, con la costura afinada a la muestra (12/11/2026; antes 31.35–75.07).",
-      "loopStartSec": 30.15,
-      "loopEndSec": 73.8803
+      "_nota": "Campaña de Hoenn: menús del tramo de Monte Cenizo, para Pueblo Lavacalda (Candela). Bucle de 90,373 s (13/11/2026): el de 43,7 s era una frase que se repite dentro de la pista y se saltaba la segunda mitad; la longitud sale de la semejanza del croma a lo largo de toda la pista y la costura, de la correlación de la onda (0,84), antes del fundido.",
+      "loopStartSec": 6.43,
+      "loopEndSec": 96.8026
     },
     {
       "id": "emerald-town-petalburg",
@@ -403,9 +403,9 @@
       "id": "emerald-town-evergrande",
       "source": "yt-emerald-town-evergrande",
       "trimLeadingSilence": true,
-      "_nota": "Campaña de Hoenn: menús del tramo de Ciudad Colosalia (Liga). Bucle de 60.248 s por autosemejanza del espectrograma, con la costura afinada a la muestra (12/11/2026; antes 5.4–76.0013).",
-      "loopStartSec": 15.35,
-      "loopEndSec": 75.5983
+      "_nota": "Campaña de Hoenn: menús del tramo de Ciudad Colosalia (Liga). Bucle de 60,248 s (13/11/2026), con la costura en el punto de mayor correlación de la onda (0,97; la anterior, 15,35–75,598, daba 0,95).",
+      "loopStartSec": 10.0,
+      "loopEndSec": 70.2484
     }
   ],
   "sfx": [

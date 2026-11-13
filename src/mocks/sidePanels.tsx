@@ -9,6 +9,7 @@ import { GameText } from '../ui/console/GameText'
 import { GameWindow } from '../ui/console/GameWindow'
 import { emeraldSprite, emeraldTheme } from '../ui/console/themes/emerald'
 import { PartySlot } from '../ui/campaign/PartySlot'
+import { TeamPanel } from '../ui/campaign/CampaignSide'
 import { StatusBadge } from '../ui/campaign/EmeraldBattle'
 import { healthbox } from '../ui/campaign/emeraldBattleModel'
 
@@ -183,8 +184,10 @@ export function BattlePanelsMock(): ReactNode {
 const buttonTheme = { ...emeraldTheme, screen: { w: 240, h: 32 }, screens: 1 }
 
 export function SidePanelsMock(): ReactNode {
+  const box = ['ralts', 'zubat', 'geodude', 'machop', 'wingull', 'taillow', 'shroomish', 'nincada', 'whismur', 'aron', 'meditite', 'electrike', 'roselia'].map((species, i) => ({ species, name: species.toUpperCase(), fainted: i % 5 === 4 }))
   return (
     <div style={{ display: 'flex', gap: 24, padding: 16, alignItems: 'flex-start', background: '#222' }}>
+      <div id="panel-equipo-real"><TeamPanel party={team.map((mon) => ({ ...mon, item: mon.item }))} box={box} limit={6} itemName={(id) => id} /></div>
       <div id="panel-campana"><ConsoleStage theme={panelTheme} scale={2} screens={[<Card key="c" />]} /></div>
       <div id="panel-equipo"><ConsoleStage theme={panelTheme} scale={2} screens={[<Team key="t" />]} /></div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>

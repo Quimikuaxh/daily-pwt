@@ -15,6 +15,9 @@ import { hallOfFameSpots } from '../ui/campaign/resultModel'
 import { ShareScreen } from '../ui/campaign/ShareScreen'
 import { MovesScreen } from '../ui/campaign/MovesScreen'
 import { Modal } from '../ui/common/Modal'
+import { RouteScreen } from '../ui/campaign/RouteScreen'
+import { routePlaces } from '../ui/campaign/hoennRoute'
+import catalog from '../../data/nuzlocke/hoenn-emerald.json'
 import { BattlePanelsMock, SidePanelsMock, StatusMock } from './sidePanels'
 import '../index.css'
 import '../ui/campaign/campaign.css'
@@ -339,7 +342,16 @@ const views: Record<string, () => ReactNode[]> = { 'compartir-a': ShareA, 'compa
 const view = views[new URLSearchParams(location.search).get('v') ?? ''] ?? EvoScene
 // La pantalla real (no una maqueta), para revisar la imagen que exporta: `?v=compartir` (gana) o `?v=compartir-perdida`.
 const shareMode = new URLSearchParams(location.search).get('v')
-if (shareMode === 'estados') {
+if (shareMode === 'ruta-liga') {
+  // La Ruta en la Liga, con la ficha que recorre los cinco rivales (para revisar las flechas).
+  const encounters = catalog.encounters as never[] as { kind: string }[]
+  createRoot(document.getElementById('root')!).render(
+    <div style={{ display: 'flex', justifyContent: 'center', padding: 8 }}>
+      <RouteScreen places={routePlaces(catalog.encounters as never)} badges={8} speciesName={(id) => id} scale={3}
+        league={{ rivals: encounters.filter((encounter) => encounter.kind !== 'gym') as never, next: 1 }} />
+    </div>,
+  )
+} else if (shareMode === 'estados') {
   createRoot(document.getElementById('root')!).render(<StatusMock />)
 } else if (shareMode === 'paneles-combate') {
   createRoot(document.getElementById('root')!).render(<BattlePanelsMock />)

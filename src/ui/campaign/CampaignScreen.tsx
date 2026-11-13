@@ -306,7 +306,8 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
     if (!state || view !== 'route') return null
     return (
       <>
-        {state.phase === 'prepare' && (
+        {/* Sin Tienda en la Liga: en el juego no se puede salir de ella (Jose, 13/11/2026). */}
+        {state.phase === 'prepare' && !inLeague(state) && (
           <button type="button" className="campaign-restart" aria-label={esCampaign.exchange.openLabel(state.battlePoints ?? 0)} onClick={() => setView('exchange')}>
             {esCampaign.exchange.open}
           </button>
@@ -579,7 +580,7 @@ function CampaignView({ data, onExit, store, newSession, newSeed = randomSeed, c
   }
 
   const exchangeScreen = () => {
-    if (view !== 'exchange' || state?.phase !== 'prepare') return null
+    if (view !== 'exchange' || state?.phase !== 'prepare' || inLeague(state)) return null
     return (
       <ExchangeScreen
         points={state.battlePoints ?? 0}
