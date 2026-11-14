@@ -21,7 +21,7 @@ import { exchangeScroll, EXCHANGE_ROWS } from './exchangeModel'
 const t = esCampaign.exchange
 const font = emeraldTheme.font as BitmapFont
 
-type ExchangeScreenProps = {
+export type ExchangeScreenProps = {
   points: number
   offers: readonly { item: string; price: number }[]
   onBuy: (item: string) => void

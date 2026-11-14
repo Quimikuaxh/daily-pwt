@@ -485,5 +485,11 @@ export const esCampaign = {
     // Movimientos (maqueta aprobada el 14/11/2026): la lista de lo que puede aprender y la categoría de Gen 5 en el texto accesible.
     canLearn: 'PUEDE APRENDER',
     categoryNames: { Physical: 'físico', Special: 'especial', Status: 'de estado' } as Record<string, string>,
+    // Tienda (maqueta aprobada el 14/11/2026).
+    shopTitle: 'CANJE DE PUNTOS BATALLA',
+    shopLeft: (points: number) => `Te quedarían ${points} PB`,
+    shopMissing: (points: number) => `Te faltan ${points} PB`,
+    shopTeam: 'TU EQUIPO LLEVA',
+    shopOwned: 'Tienes',
   },
 } as const

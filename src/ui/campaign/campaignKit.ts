@@ -20,6 +20,12 @@ import { itemName as emeraldItemName } from './bagModel'
 import { DraftScreen } from './DraftScreen'
 import { TeamScreen, type TeamScreenProps as HoennTeamProps } from './TeamScreen'
 import { MovesScreen, type MovesScreenProps as HoennMovesProps } from './MovesScreen'
+import { BagScreen, type BagScreenProps as HoennBagProps } from './BagScreen'
+import { ExchangeScreen, type ExchangeScreenProps as HoennExchangeProps } from './ExchangeScreen'
+import { bagContents, itemText as emeraldItemText, machineItems, machineLabel, type BagItem, type Pocket } from './bagModel'
+import { emeraldMoveName } from './emeraldNames'
+import { campaignEvolutionItems } from '../../core/nuzlocke/calendar'
+import type { CampaignState } from '../../core/nuzlocke/campaign'
 import type { PartyMember } from '../battle/party/partyModel'
 import type { Candidate } from './draftModel'
 import type { GameData } from '../../core/types'
@@ -45,6 +51,17 @@ export type TeamScreenProps = HoennTeamProps & { details?: (id: string) => Party
 
 /** Lo que recibe Movimientos de cualquier campaña: Teselia usa además `member` y `data` (la pantalla de datos del diario). */
 export type MovesScreenProps = HoennMovesProps & { member: PartyMember | null; data: GameData }
+
+/** Lo que recibe la Mochila de cualquier campaña: Teselia usa además `itemName` (para preguntar si cambiar el que lleva). */
+export type BagScreenProps = HoennBagProps & { itemName: (id: string) => string }
+
+/** Lo que recibe la Tienda de cualquier campaña: Teselia usa además nombres, descripciones, lo que ya tienes y el equipo. */
+export type ExchangeScreenProps = HoennExchangeProps & {
+  itemName: (id: string) => string
+  itemText: (id: string) => string
+  owned: (id: string) => number
+  team: readonly { species: string; name: string; item: string | null }[]
+}
 
 /** Lo que recibe la pantalla Ruta de cualquier campaña. */
 export type RouteScreenProps = {
@@ -77,6 +94,8 @@ export type CampaignKit = {
   medalsInCard: boolean
   /** Nombre de un objeto como lo escribe el juego (Esmeralda, en mayúsculas; N2/B2, como en el diario). */
   itemName: (id: string) => string
+  /** Descripción de un objeto (la de la época de la campaña). */
+  itemText: (id: string) => string
   /** Nombre de una especie como lo escribe el juego (Esmeralda, en mayúsculas; N2/B2, tal cual). */
   speciesLabel: (name: string) => string
   /** Pantallas propias de la campaña. */
@@ -85,9 +104,13 @@ export type CampaignKit = {
     Draft: ComponentType<DraftScreenProps>
     Team: ComponentType<TeamScreenProps>
     Moves: ComponentType<MovesScreenProps>
+    Bag: ComponentType<BagScreenProps>
+    Exchange: ComponentType<ExchangeScreenProps>
     CampaignCard: ComponentType<CampaignCardProps>
     TeamPanel: ComponentType<TeamPanelProps>
   }
+  /** Lo que hay en un bolsillo de la Mochila para el miembro `memberId` (las unidades que no lleva otro). */
+  bagContents: (state: CampaignState, pocket: Pocket, memberId: string, data: GameData) => BagItem[]
   /** Lienzo de la consola en píxeles del juego (para colocar los paneles laterales). */
   console: { w: number; h: number }
   /** Rótulo del modo en la cabecera. */
@@ -100,24 +123,39 @@ const hoennEncounters = catalog.encounters as readonly CampaignEncounter[]
 /** Género del rival para «la LÍDER» / «el LÍDER» (Esmeralda); el Alto Mando habla como líder y Plubio como campeón. */
 const HOENN_FEMALE = new Set(['petra', 'candela', 'alana', 'fatima', 'nivea'])
 
+const hoennDefinition = { encounters: hoennEncounters, species: progression.species } as unknown as CampaignDefinition
+const hoennMoveDescription = (move: string) => (moveTexts as unknown as { moves: Record<string, string> }).moves[move] ?? ''
+
 export const hoennKit: CampaignKit = {
   id: 'hoenn-emerald',
   encounters: hoennEncounters,
-  definition: { encounters: hoennEncounters, species: progression.species } as unknown as CampaignDefinition,
+  definition: hoennDefinition,
   rules: campaignRules('hoenn-emerald'),
   trainerOf: (encounter) => ({
     nameEs: encounter.nameEs,
     category: encounter.kind === 'champion' ? 'champion' : 'leader',
     gender: HOENN_FEMALE.has(encounter.id) ? 'F' : 'M',
   }),
-  moveDescription: (move) => (moveTexts as unknown as { moves: Record<string, string> }).moves[move] ?? '',
+  moveDescription: hoennMoveDescription,
   seedPrefix: 'hoenn',
   places: routePlaces(hoennEncounters),
   badgeNames: esCampaign.route.badges,
   medalsInCard: false,
   itemName: emeraldItemName,
+  itemText: emeraldItemText,
   speciesLabel: (name) => name.toUpperCase(),
-  screens: { Route: RouteScreen, Draft: DraftScreen, Team: TeamScreen, Moves: MovesScreen, CampaignCard, TeamPanel },
+  screens: { Route: RouteScreen, Draft: DraftScreen, Team: TeamScreen, Moves: MovesScreen, Bag: BagScreen, Exchange: ExchangeScreen, CampaignCard, TeamPanel },
+  // OBJ. EVOL. y MT/MO, solo para mirar, con los nombres y descripciones de Esmeralda.
+  bagContents: (state, pocket, memberId, data) => {
+    if (pocket === 'evolution') {
+      return [...campaignEvolutionItems(hoennDefinition, state)].sort().map((id) => ({ id, name: emeraldItemName(id), text: esCampaign.bag.evolutionText, free: 0, view: true }))
+    }
+    if (pocket === 'machines') {
+      return machineItems(state).map(({ id, move }) => ({ id, name: esCampaign.bag.machineName(machineLabel(id), emeraldMoveName(move, data.names)),
+        text: hoennMoveDescription(move), free: 0, view: true }))
+    }
+    return bagContents(state, pocket, memberId)
+  },
   console: { w: 240, h: 320 },
   modeLabel: esCampaign.modeLabel,
   // Marco de ventana de Esmeralda para los botones (URL absoluta: relativa en una variable CSS se resolvería contra la hoja de estilos).

@@ -31,12 +31,8 @@ import { useStartWhenReady } from './useStartWhenReady'
 import { EmeraldBattle } from './EmeraldBattle'
 import { ResultScreen } from './ResultScreen'
 import { EvolutionScene } from './EvolutionScene'
-import { BagScreen } from './BagScreen'
-import { bagContents, itemName as emeraldItemName, machineItems, machineLabel } from './bagModel'
-import { campaignEvolutionItems } from '../../core/nuzlocke/calendar'
-import { emeraldMoveName } from './emeraldNames'
-import { buyExchangeItem, equipItem, exchangeItems } from '../../core/nuzlocke/heldItems'
-import { ExchangeScreen } from './ExchangeScreen'
+import { itemName as emeraldItemName } from './bagModel'
+import { buyExchangeItem, equipItem, exchangeItems, heldItemStock } from '../../core/nuzlocke/heldItems'
 import { leagueEvolutions } from './evolutionModel'
 import { LeagueScreen } from './LeagueScreen'
 import { leagueBeaten } from './leagueModel'
@@ -144,7 +140,7 @@ function CloudCampaign({ cloud, ...props }: Omit<CampaignScreenProps, 'store'> &
 
 function CampaignView({ data, onExit, store, newSession, canStartBattle = () => true, subscribeStore, newSeed: givenSeed, createBattleClient = createCampaignWorkerClient, playerName, sound, onSoundChange, kit = hoennKit }: CampaignViewProps) {
   // Lo propio de la campaña sale de su kit (DEC-106); el recorrido es el mismo para todas.
-  const { encounters, definition, rules, trainerOf, moveDescription } = kit
+  const { encounters, definition, rules, trainerOf } = kit
   const newSeed = givenSeed ?? randomSeedFor(kit.seedPrefix)
   const battleDefinition = definition as unknown as CampaignBattleDefinition
   /** Preparando un combate de la Liga (Alto Mando o campeón). */
@@ -633,8 +629,16 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
   const exchangeScreen = () => {
     if (view !== 'exchange' || state?.phase !== 'prepare' || inLeague(state)) return null
     return (
-      <ExchangeScreen
+      <kit.screens.Exchange
         points={state.battlePoints ?? 0}
+        itemName={kit.itemName}
+        itemText={kit.itemText}
+        owned={(item) => heldItemStock(rules, state)[item] ?? 0}
+        // El mismo equipo que el panel lateral «Tu equipo»: la colocación guardada o, sin ella, la del último combate.
+        team={(savedLayout(state, teamLimit(state)) ?? initialLayout(state, teamLimit(state), team ?? state.lastTeam ?? [])).party.flatMap((id) => {
+          const member = id ? state.members.find((candidate) => { return candidate.id === id && !candidate.fainted }) : undefined
+          return member ? [{ species: member.species, name: kit.speciesLabel(speciesName(member.species)), item: member.item ?? null }] : []
+        })}
         offers={exchangeItems(rules)}
         onBuy={(item) => { save(buyExchangeItem(rules, state, item)) }}
         onExit={() => setView('route')}
@@ -648,14 +652,11 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     if (!state || !member) return null
     const mon = teamMonOf(member, data)
     return (
-      <BagScreen
+      <kit.screens.Bag
         protagonist={protagonistOf(state.seed)}
-        member={{ species: member.species, name: mon.name, level: member.level, hp: mon.hp, item: member.item ?? null }}
-        contents={(pocket) => {
-          if (pocket === 'evolution') return [...campaignEvolutionItems(definition, state)].sort().map((id) => ({ id, name: emeraldItemName(id), text: esCampaign.bag.evolutionText, free: 0, view: true }))
-          if (pocket === 'machines') return machineItems(state).map(({ id, move }) => ({ id, name: esCampaign.bag.machineName(machineLabel(id), emeraldMoveName(move, data.names)), text: moveDescription(move), free: 0, view: true }))
-          return bagContents(state, pocket, member.id)
-        }}
+        member={{ species: member.species, name: kit.speciesLabel(speciesName(member.species)), level: member.level, hp: mon.hp, item: member.item ?? null }}
+        itemName={kit.itemName}
+        contents={(pocket) => kit.bagContents(state, pocket, member.id, data)}
         onGive={(item) => { save(equipItem(rules, state, member.id, item)); setView('team') }}
         onClose={() => setView('team')}
         reservedHeight={150}

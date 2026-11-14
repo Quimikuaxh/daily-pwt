@@ -21,7 +21,7 @@ const t = esCampaign.bag
 /** Fotograma de la mochila de cada bolsillo (bag_male/female.png): 1 objetos, 2 objetos clave, 4 MT/MO, 5 bayas. */
 const BAG_FRAME: Record<Pocket, number> = { items: 1, evolution: 2, machines: 4, berries: 5 }
 
-type BagScreenProps = {
+export type BagScreenProps = {
   protagonist: Protagonist
   member: { species: string; name: string; level: number; hp: number; item: string | null }
   contents: (pocket: Pocket) => BagItem[]

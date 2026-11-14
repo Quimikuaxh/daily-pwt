@@ -15,6 +15,10 @@ import { UnovaCampaignCard, UnovaTeamPanel } from './UnovaSide'
 import { UnovaDraftScreen } from './UnovaDraftScreen'
 import { UnovaTeamScreen } from './UnovaTeamScreen'
 import { UnovaMovesScreen } from './UnovaMovesScreen'
+import { UnovaBagScreen } from './UnovaBagScreen'
+import { unovaBagContents } from './unovaBag'
+import { UnovaExchangeScreen } from './UnovaExchangeScreen'
+import descriptions from '../../generated/descriptions-es.json'
 import names from '../../generated/names-es.json'
 import { UNOVA_PLACES, unovaVars } from './unovaRoute'
 
@@ -23,10 +27,12 @@ const unovaEncounters = unovaCatalog.encounters as readonly CampaignEncounter[]
 const UNOVA_FEMALE = new Set(['hiedra', 'camila', 'gerania', 'anis', 'catleya', 'iris'])
 
 /** Teselia (N2/B2, PRD §0 del 13/11/2026): mismos datos de combate que el diario (Gen 5), con sus descripciones de movimientos. */
+const unovaDefinition = { campaign: 'unova-n2b2', encounters: unovaEncounters, species: unovaProgression.species } as unknown as CampaignDefinition
+
 export const unovaKit: CampaignKit = {
   id: 'unova-n2b2',
   encounters: unovaEncounters,
-  definition: { campaign: 'unova-n2b2', encounters: unovaEncounters, species: unovaProgression.species } as unknown as CampaignDefinition,
+  definition: unovaDefinition,
   rules: campaignRules('unova-n2b2'),
   trainerOf: (encounter) => ({
     nameEs: encounter.nameEs,
@@ -39,8 +45,10 @@ export const unovaKit: CampaignKit = {
   badgeNames: esCampaign.unova.badges,
   medalsInCard: true,
   itemName: (id) => (names.items as Record<string, string>)[id] ?? id,
+  itemText: (id) => (descriptions.items as Record<string, string>)[id] ?? '',
   speciesLabel: (name) => name,
-  screens: { Route: UnovaRouteScreen, Draft: UnovaDraftScreen, Team: UnovaTeamScreen, Moves: UnovaMovesScreen, CampaignCard: UnovaCampaignCard, TeamPanel: UnovaTeamPanel },
+  screens: { Route: UnovaRouteScreen, Draft: UnovaDraftScreen, Team: UnovaTeamScreen, Moves: UnovaMovesScreen, Bag: UnovaBagScreen, Exchange: UnovaExchangeScreen, CampaignCard: UnovaCampaignCard, TeamPanel: UnovaTeamPanel },
+  bagContents: (state, pocket, memberId, data) => unovaBagContents(state, pocket, memberId, unovaDefinition, data),
   console: { w: 256, h: 384 },
   modeLabel: esCampaign.unova.modeLabel,
   pageVars: unovaVars,

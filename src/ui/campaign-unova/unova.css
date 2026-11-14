@@ -304,3 +304,18 @@
 .unova-moves-track { width: 2px; background: #28283c; }
 .unova-moves-thumb { width: 2px; background: #78c8ff; }
 .unova-moves-message { pointer-events: auto; }
+
+/* Mochila: bolsillos tocables (la pieza de la hoja de bolsas) e icono del objeto recortado a la placa. */
+.unova-bag-pocket { padding: 0; }
+.unova-bag-icon { left: -4px; top: -5px; width: 22px; height: 22px; overflow: hidden; }
+
+/* Los botones del lienzo heredan la fuente (console.css, `font: inherit`): los que son texto vuelven a la de los menús, a 13 px. */
+.console-screen button.unova-text { font-family: "Game", monospace; font-size: 13px; line-height: 1; }
+
+/* Tienda: el objeto en grande (x2), la lista de la pantalla de tienda con texto oscuro sobre su panel claro y el señalado resaltado. */
+.unova-shop-big { width: 60px; height: 60px; }
+.unova-shop-row { border: 0; }
+.unova-shop-text { font-family: "Game", monospace; font-size: 13px; line-height: 1; color: #283048; white-space: nowrap; }
+.console-screen .unova-shop-row[aria-current="true"] { background: #ffec96; }
+.unova-shop-mon { left: -6px; top: -6px; width: 22px; height: 20px; overflow: hidden; }
+.unova-shop-mon .bt-member-icon { left: -9px; top: -6px; transform: scale(0.75); transform-origin: 50% 50%; }

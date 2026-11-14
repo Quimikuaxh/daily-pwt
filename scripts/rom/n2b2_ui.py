@@ -11,10 +11,16 @@ interfaz usa, con los recortes de las maquetas:
 - `caja-<n>.png` y `caja-<n>-titulo.png`: fondos de caja del PC (156 x 114) y su pestaña de título (112 x 19), de la hoja de fondos de
   caja: `caja-1`, el del bosque (CAJA 1), y `caja-2`, el de Kyurem gris (BAJAS).
 
+- `mochila-<chico|chica>-<bolsillo>-<0|2>.png`: la mochila y los bolsillos de la Mochila de N2/B2 (hoja de bolsas), cerrado (0) y abierto
+  (2): `objetos` (la mochila), `bayas` (la bolsita), `evol` (la caja) y `mt` (el bolsillo curvo).
+
 Con la ROM de Negro 2 (`npm run gen:n2b2-ui -- RUTA_ROM`; no se copia ni se versiona), además:
 - `pc-marco.png`: la pantalla de cajas del PC (`a/1/4/1`, mapa 8 con las teselas 4 y la paleta 0), 256 x 192.
 - `pc-mano.png`: la mano del cursor del PC (`a/2/0/2`, celda 24 con las teselas 17 y la paleta 11), recortada.
 - `pc-flecha-izda.png` y `pc-flecha-dcha.png`: las flechas de cambio de caja (`a/1/4/1`, celdas 0 y 1 con las teselas 6 y la paleta 2).
+- `mochila-fondo-chico.png` y `mochila-fondo-chica.png`: el fondo de la Mochila (`a/0/8/7`: mapa 5 con las teselas 3 y la paleta 4,
+  azul; mapa 2 con las teselas 0 y la paleta 1, rojo), 256 x 192.
+- `tienda-fondo.png`: la pantalla de tienda de 5.ª generación (`a/0/5/3`: mapa 4 con las teselas 0 y la paleta 1), 256 x 192.
 Sin ROM, esas piezas no se tocan.
 
 Uso: `npm run gen:n2b2-ui [-- RUTA_ROM]`. Requiere Python 3.10 y Pillow 10 o posterior.
@@ -35,6 +41,26 @@ BADGE_ROWS = {'': (618, 678), '-off': (767, 827)}
 # Hoja de fondos de caja: celdas de 170 x 162 desde (2, 2); en cada una, la pestaña en (28, 11) y el fondo en (6, 39).
 WALLPAPER_CELL = (170, 162)
 WALLPAPERS = {'caja-1': 0, 'caja-2': 20}
+
+# Hoja de bolsas: caja de cada pieza (cerrada y abierta) del chico y de la chica, sacadas segmentando la hoja por su color de fondo.
+BAG_PIECES = {
+    'chico': {'objetos': [(397, 33, 456, 93), (537, 31, 597, 94)], 'bayas': [(417, 111, 453, 147), (516, 113, 554, 148)],
+              'evol': [(562, 113, 605, 148), (677, 101, 722, 149)], 'mt': [(419, 169, 455, 213), (503, 165, 541, 214)]},
+    'chica': {'objetos': [(6, 16, 60, 95), (138, 11, 192, 88)], 'bayas': [(10, 109, 46, 147), (109, 112, 147, 148)],
+              'evol': [(155, 112, 198, 148), (270, 100, 315, 149)], 'mt': [(12, 169, 48, 213), (96, 165, 134, 214)]},
+}
+
+
+def without_background(image, background, tolerance=30):
+    """La imagen con su color de fondo (más o menos `tolerance`) vuelto transparente."""
+    out = image.copy()
+    px = out.load()
+    for y in range(out.height):
+        for x in range(out.width):
+            r, g, b, _ = px[x, y]
+            if abs(r - background[0]) + abs(g - background[1]) + abs(b - background[2]) <= tolerance:
+                px[x, y] = (0, 0, 0, 0)
+    return out
 
 
 def sheet(name):
@@ -67,11 +93,16 @@ def rom_pieces(rom):
     pc = [lz(f) for f in narc(rom.file('a/1/4/1'))]
     hand = [lz(f) for f in narc(rom.file('a/2/0/2'))]
     arrows = cells(pc[10])
+    bag = [lz(f) for f in narc(rom.file('a/0/8/7'))]
+    mart = [lz(f) for f in narc(rom.file('a/0/5/3'))]
     return {
         'pc-marco': render_screen(pc[8], pc[4], pc[0]).crop((0, 0, 256, 192)),
         'pc-mano': cropped(render_cell(cells(hand[24])[0], hand[17], hand[11])),
         'pc-flecha-izda': cropped(render_cell(arrows[0], pc[6], pc[2])),
         'pc-flecha-dcha': cropped(render_cell(arrows[1], pc[6], pc[2])),
+        'mochila-fondo-chico': render_screen(bag[5], bag[3], bag[4]).crop((0, 0, 256, 192)),
+        'mochila-fondo-chica': render_screen(bag[2], bag[0], bag[1]).crop((0, 0, 256, 192)),
+        'tienda-fondo': render_screen(mart[4], mart[0], mart[1]).crop((0, 0, 256, 192)),
     }
 
 
@@ -101,6 +132,12 @@ def main():
         x, y = 2 + (index % 6) * WALLPAPER_CELL[0], 2 + (index // 6) * WALLPAPER_CELL[1]
         pieces[name] = walls.crop((x + 6, y + 39, x + 162, y + 153))
         pieces[f'{name}-titulo'] = walls.crop((x + 28, y + 11, x + 140, y + 30))
+    bags = sheet('b2w2-bolsas-48047.png')
+    bag_background = bags.getpixel((2, 2))
+    for who, pockets in BAG_PIECES.items():
+        for pocket, boxes in pockets.items():
+            for state, box in zip((0, 2), boxes):
+                pieces[f'mochila-{who}-{pocket}-{state}'] = without_background(bags.crop(box), bag_background)
     if len(sys.argv) > 1:
         pieces.update(rom_pieces(Rom(sys.argv[1])))
     else:
