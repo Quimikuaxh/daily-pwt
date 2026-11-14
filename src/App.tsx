@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState, useSyncExternalStore } from 'react'
+import { lazy, Suspense, useEffect, useState, useSyncExternalStore, type ComponentProps } from 'react'
 import { newBattleSeed } from './battle/seed'
 import type { Account, Cloud } from './cloud/account'
 import { CONNECTING, DISABLED, OFFLINE, isPlayer } from './cloud/state'
@@ -34,6 +34,9 @@ const LiveScreen = lazy(() => import('./ui/replay/replayModule').then((module) =
 // Campaña Nuzlocke de Hoenn (D7): aparte, fuera de la ruta crítica del reto diario.
 const loadCampaignScreen = () => import('./ui/campaign/CampaignScreen')
 const CampaignScreen = lazy(loadCampaignScreen)
+// Teselia (DEC-103): su kit va en su propio bloque. Por ahora solo con el gancho ?campaign=teselia; la entrada de Modos de juego, después.
+const UnovaCampaignScreen = lazy(() => Promise.all([loadCampaignScreen(), import('./ui/campaign-unova/unovaKit')])
+  .then(([screen, { unovaKit }]) => ({ default: (props: ComponentProps<typeof screen.default>) => <screen.default {...props} kit={unovaKit} /> })))
 
 type AppProps = {
   data: GameData | null
@@ -253,9 +256,14 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
   if (screen.name === 'campaign' && data) {
     return (
       <Suspense fallback={null}>
-        <CampaignScreen data={data} playerName={campaignName} onExit={() => setScreen({ name: 'today' })}
-          sound={settings} onSoundChange={(sound) => changeSettings({ ...settings, ...sound })}
-          cloud={account && accountState.status === 'signedIn' ? account.campaign : undefined} />
+        {(() => {
+          const Screen = hooks.campaign === 'teselia' ? UnovaCampaignScreen : CampaignScreen
+          return (
+            <Screen data={data} playerName={campaignName} onExit={() => setScreen({ name: 'today' })}
+              sound={settings} onSoundChange={(sound) => changeSettings({ ...settings, ...sound })}
+              cloud={account && accountState.status === 'signedIn' ? account.campaign : undefined} />
+          )
+        })()}
       </Suspense>
     )
   }

@@ -8,7 +8,9 @@ export type CampaignEncounter = { id: string; nameEs: string; kind: 'gym' | 'eli
 
 export type RoutePlace = { id: string; x: number; y: number; gym: number | null; rival: CampaignEncounter }
 
-const PLACES: readonly { id: string; x: number; y: number }[] = [
+export type PlaceSpec = { id: string; x: number; y: number }
+
+const PLACES: readonly PlaceSpec[] = [
   { id: 'petra', x: 1, y: 7 },
   { id: 'marcial', x: 3, y: 16 },
   { id: 'erico', x: 9, y: 8 },
@@ -20,9 +22,9 @@ const PLACES: readonly { id: string; x: number; y: number }[] = [
   { id: 'plubio', x: 28, y: 10 },
 ]
 
-/** Lugares de la ruta con su rival del catálogo; la Liga lleva al campeón. */
-export function routePlaces(encounters: readonly CampaignEncounter[]): RoutePlace[] {
-  return PLACES.map((place, i) => {
+/** Lugares de la ruta con su rival del catálogo; la Liga lleva al campeón. Por defecto, los de Hoenn; cada campaña da los suyos. */
+export function routePlaces(encounters: readonly CampaignEncounter[], specs: readonly PlaceSpec[] = PLACES): RoutePlace[] {
+  return specs.map((place, i) => {
     const rival = encounters.find((encounter) => encounter.id === place.id)
     if (!rival) throw new Error(`Falta el rival ${place.id} en el catálogo de la campaña`)
     return { ...place, gym: rival.kind === 'gym' ? i + 1 : null, rival }

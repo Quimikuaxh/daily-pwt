@@ -1,16 +1,34 @@
 /**
  * Kit de cada campaña (DEC-103): lo que la pantalla de campaña necesita de una campaña concreta (encuentros, definición, reglas,
  * entrenadores, descripciones de movimientos, semilla). El recorrido (`CampaignView`) es uno solo; cada campaña aporta su kit.
+ *
+ * Aquí, el tipo y el de Hoenn; el de Teselia vive en `campaign-unova/unovaKit.ts` y se carga aparte, para que su progresión (1,2 MB) no
+ * entre en el bloque de la campaña de Hoenn.
  */
 import catalog from '../../../data/nuzlocke/hoenn-emerald.json'
 import progression from '../../../data/nuzlocke/hoenn-emerald-progression.json'
 import moveTexts from '../../../data/nuzlocke/emerald-move-descriptions-es.json'
-import unovaCatalog from '../../../data/nuzlocke/unova-n2b2.json'
-import unovaProgression from '../../../data/nuzlocke/unova-n2b2-progression.json'
-import { moveDescription as gen5MoveDescription } from '../battle/party/summaryModel'
 import type { CampaignDefinition } from '../../core/nuzlocke/campaign'
 import { campaignRules, type CampaignId, type CampaignRules } from '../../core/nuzlocke/rules'
-import type { CampaignEncounter } from './hoennRoute'
+import type { ComponentType, CSSProperties } from 'react'
+import { emeraldTheme } from '../console/themes/emerald'
+import { esCampaign } from '../../i18n/esCampaign'
+import { routePlaces, type CampaignEncounter, type RoutePlace } from './hoennRoute'
+import { RouteScreen } from './RouteScreen'
+import { CampaignCard, TeamPanel, type CampaignCardProps, type TeamPanelProps } from './CampaignSide'
+import { itemName as emeraldItemName } from './bagModel'
+
+/** Lo que recibe la pantalla Ruta de cualquier campaña. */
+export type RouteScreenProps = {
+  places: readonly RoutePlace[]
+  badges: number
+  speciesName: (id: string) => string
+  league?: { rivals: readonly CampaignEncounter[]; next: number }
+  /** Si la ficha lleva su tira de medallas (Teselia); en Hoenn van en la barra del portal. */
+  showBadges?: boolean
+  scale?: number
+  reservedHeight?: number
+}
 
 export type CampaignKit = {
   id: CampaignId
@@ -23,6 +41,24 @@ export type CampaignKit = {
   moveDescription: (move: string) => string
   /** Prefijo de la semilla de una partida nueva. */
   seedPrefix: string
+  /** Lugares del mapa de la Ruta (gimnasios en orden y la Liga con el campeón). */
+  places: readonly RoutePlace[]
+  /** Nombre de la medalla de cada gimnasio, por id del líder (en mayúsculas). */
+  badgeNames: Readonly<Record<string, string>>
+  /** Las medallas van en la ficha de la Ruta (Teselia) y no en la barra del portal (Hoenn). */
+  medalsInCard: boolean
+  /** Nombre de un objeto como lo escribe el juego (Esmeralda, en mayúsculas; N2/B2, como en el diario). */
+  itemName: (id: string) => string
+  /** Nombre de una especie como lo escribe el juego (Esmeralda, en mayúsculas; N2/B2, tal cual). */
+  speciesLabel: (name: string) => string
+  /** Pantallas propias de la campaña. */
+  screens: { Route: ComponentType<RouteScreenProps>; CampaignCard: ComponentType<CampaignCardProps>; TeamPanel: ComponentType<TeamPanelProps> }
+  /** Lienzo de la consola en píxeles del juego (para colocar los paneles laterales). */
+  console: { w: number; h: number }
+  /** Rótulo del modo en la cabecera. */
+  modeLabel: string
+  /** Variables CSS de la página (las piezas de los botones, en URL absoluta). */
+  pageVars: () => CSSProperties
 }
 
 const hoennEncounters = catalog.encounters as readonly CampaignEncounter[]
@@ -41,23 +77,14 @@ export const hoennKit: CampaignKit = {
   }),
   moveDescription: (move) => (moveTexts as unknown as { moves: Record<string, string> }).moves[move] ?? '',
   seedPrefix: 'hoenn',
-}
-
-const unovaEncounters = unovaCatalog.encounters as readonly CampaignEncounter[]
-/** Rivales femeninas de Teselia (Hiedra, Camila, Gerania, Anís, Catleya, Iris). */
-const UNOVA_FEMALE = new Set(['hiedra', 'camila', 'gerania', 'anis', 'catleya', 'iris'])
-
-/** Teselia (N2/B2, PRD §0 del 13/11/2026): mismos datos de combate que el diario (Gen 5), con sus descripciones de movimientos. */
-export const unovaKit: CampaignKit = {
-  id: 'unova-n2b2',
-  encounters: unovaEncounters,
-  definition: { campaign: 'unova-n2b2', encounters: unovaEncounters, species: unovaProgression.species } as unknown as CampaignDefinition,
-  rules: campaignRules('unova-n2b2'),
-  trainerOf: (encounter) => ({
-    nameEs: encounter.nameEs,
-    category: encounter.kind === 'champion' ? 'champion' : 'leader',
-    gender: UNOVA_FEMALE.has(encounter.id) ? 'F' : 'M',
-  }),
-  moveDescription: (move) => gen5MoveDescription(move) ?? '',
-  seedPrefix: 'teselia',
+  places: routePlaces(hoennEncounters),
+  badgeNames: esCampaign.route.badges,
+  medalsInCard: false,
+  itemName: emeraldItemName,
+  speciesLabel: (name) => name.toUpperCase(),
+  screens: { Route: RouteScreen, CampaignCard, TeamPanel },
+  console: { w: 240, h: 320 },
+  modeLabel: esCampaign.modeLabel,
+  // Marco de ventana de Esmeralda para los botones (URL absoluta: relativa en una variable CSS se resolvería contra la hoja de estilos).
+  pageVars: () => ({ '--campaign-frame': `url("${new URL(emeraldTheme.asset('marco-1'), document.baseURI).href}")` }) as CSSProperties,
 }

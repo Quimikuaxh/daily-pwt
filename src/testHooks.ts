@@ -1,13 +1,14 @@
 import type { AiKind } from './battle/protocol'
 
-export type TestHooks = { date?: string; seed?: string; ai?: AiKind; trainer?: string; variant?: string }
+/** `campaign`: la campaña que abre «Nuzlocke» mientras la de Teselia no tiene entrada en Modos de juego (PENDIENTE, paso 3). */
+export type TestHooks = { date?: string; seed?: string; ai?: AiKind; trainer?: string; variant?: string; campaign?: 'teselia' }
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/
 const ID_PATTERN = /^[a-z0-9][a-z0-9-]{0,63}$/
 const SEED_PATTERN = /^[\w.:-]{1,64}$/
 
 /**
- * Ganchos de prueba ?date=, ?seed=, ?ai=trivial, ?trainer=<id>[&variant=<id>] (DEC-17). Solo existen con VITE_TEST_HOOKS=1: en producción
+ * Ganchos de prueba ?date=, ?seed=, ?ai=trivial, ?trainer=<id>[&variant=<id>], ?campaign=teselia (DEC-17). Solo existen con VITE_TEST_HOOKS=1: en producción
  * la condición es constante y el bundler elimina el resto.
  */
 export function readTestHooks(search: string): TestHooks {
@@ -24,5 +25,6 @@ export function readTestHooks(search: string): TestHooks {
     // Una variante sin entrenador no tiene sentido: se ignora.
     variant: trainer !== null && ID_PATTERN.test(trainer) && variant !== null && ID_PATTERN.test(variant) ? variant : undefined,
     ai: params.get('ai') === 'trivial' ? 'trivial' : undefined,
+    campaign: params.get('campaign') === 'teselia' ? 'teselia' : undefined,
   }
 }

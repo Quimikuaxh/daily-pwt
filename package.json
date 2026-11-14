@@ -40,6 +40,7 @@
     "gen:n2b2-calendar": "node scripts/build-n2b2-calendar.mjs",
     "gen:n2b2-items": "node scripts/build-n2b2-items.mjs",
     "gen:n2b2-progression": "node scripts/build-n2b2-progression.mjs",
+    "gen:n2b2-ui": "python3 scripts/rom/n2b2_ui.py",
     "gen:emerald-progression": "node scripts/import-emerald-progression.mjs",
     "simulate:emerald-draft": "node scripts/simulate-nuzlocke-draft.mjs",
     "validate:data": "node scripts/validate-data.mjs",

@@ -19,8 +19,7 @@ import { esCampaign } from '../../i18n/esCampaign'
 import { emeraldTheme } from '../console/themes/emerald'
 import { candidateOf, emeraldDex } from './draftModel'
 import { DraftScreen } from './DraftScreen'
-import { badgeCount, routePlaces } from './hoennRoute'
-import { RouteScreen } from './RouteScreen'
+import { badgeCount } from './hoennRoute'
 import { fittingLayout, initialLayout, teamMonOf, type TeamLayout } from './teamModel'
 import { MovesScreen } from './MovesScreen'
 import { equippedMoves, legalMoves, moveInfo } from './movesModel'
@@ -49,11 +48,10 @@ import { DifficultyDialog } from './DifficultyDialog'
 import { Modal } from '../common/Modal'
 import { SoundSettings } from '../menu/SoundSettings'
 import type { SoundPrefs } from '../../storage/settings'
-import { CampaignCard, SideColumn, TeamPanel, useSidePanelOffset } from './CampaignSide'
+import { SideColumn, useSidePanelOffset } from './CampaignSide'
 import { CAMPAIGN_PANEL, type SideSets } from './sidePanelsModel'
 import { toId } from '../../core/id'
 import { NEUTRAL_NATURE } from '../../core/constants'
-import type { CSSProperties } from 'react'
 import './campaign.css'
 
 const t = esCampaign.route
@@ -157,24 +155,29 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
   const [soundOpen, setSoundOpen] = useState(false)
   // Una campaña perdida no se vuelve a abrir: al entrar sale directamente la pantalla para empezar otra (Jose, 13/11/2026). El registro
   // se queda guardado hasta que se empiece la nueva, que lo sustituye.
+  // Una sola partida guardada (PRD §0, 13/11/2026): si es de la otra campaña, esta se abre sin partida y empezar una la sustituye.
+  const ownRecord = () => {
+    const record = store.read()
+    return record && (record.state.campaign ?? 'hoenn-emerald') === kit.id ? record : null
+  }
   const [state, setState] = useState(() => {
-    const saved = store.read()?.state ?? null
+    const saved = ownRecord()?.state ?? null
     return saved?.phase === 'lost' ? null : saved
   })
   // Resultado del último combate: el encuentro jugado, la alineación (para enseñar sus bajas), el estado al cerrarlo y los minutos.
   const [result, setResult] = useState(null as CampaignResult | null)
   // Estado y alineación con los que se entró en el combate en curso.
   const [battleContext, setBattleContext] = useState(() => {
-    const record = store.read()
+    const record = ownRecord()
     return record?.battle ? { before: record.state, lineup: record.battle.source.selected ?? record.state.leagueRoster ?? [] } : null
   })
   // Con un combate guardado (recarga a mitad), se vuelve a él.
-  const [view, setView] = useState(() => (store.read()?.battle ? 'battle' : 'route') as 'route' | 'draft' | 'team' | 'teamView' | 'evolveOne' | 'moves' | 'battle' | 'result' | 'share' | 'evolution' | 'league' | 'bag' | 'exchange')
+  const [view, setView] = useState(() => (ownRecord()?.battle ? 'battle' : 'route') as 'route' | 'draft' | 'team' | 'teamView' | 'evolveOne' | 'moves' | 'battle' | 'result' | 'share' | 'evolution' | 'league' | 'bag' | 'exchange')
   // El worker de combate (y su sesión) solo se crea al entrar en combate: Ruta, Draft y Equipo no lo necesitan.
   const startSession = () => (canStartBattle() ? newSession(createBattleClient()) : null)
-  const [session, setSession] = useState(() => (store.read()?.battle ? startSession() : null))
+  const [session, setSession] = useState(() => (ownRecord()?.battle ? startSession() : null))
   // Combate guardado al abrir la campaña: se retoma donde estaba, sin la entrada (Jose, 12/11/2026). Uno nuevo, con ella.
-  const [resumedBattle, setResumedBattle] = useState(() => !!store.read()?.battle)
+  const [resumedBattle, setResumedBattle] = useState(() => !!ownRecord()?.battle)
   const enterBattle = (lineup: readonly string[]) => {
     setResumedBattle(false)
     if (state) setBattleContext({ before: state, lineup })
@@ -239,7 +242,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     if (next.phase === 'draft') openNext(next)
     else { save(next); setView('route') }
   }
-  const places = useMemo(() => routePlaces(encounters), [encounters])
+  const { places } = kit
   // Precarga al entrar y al cambiar de tramo, equipo u oferta: la interfaz entera y los sprites que pueden salir pronto.
   const preloadKey = state ? `${state.encounterIndex}|${state.members.map((member) => member.species).join(',')}|${state.offer.join(',')}` : ''
   useEffect(() => {
@@ -272,7 +275,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
 
   // Paneles laterales en escritorio (PRD §0, 12/11/2026): en los menús, «Tu campaña» y «Tu equipo»; con ellos, la tira de medallas de la
   // barra sobra y los botones secundarios van en la misma fila que el principal.
-  const sideOffset = useSidePanelOffset(150, CAMPAIGN_PANEL.h)
+  const sideOffset = useSidePanelOffset(150, CAMPAIGN_PANEL.h, kit.console)
   // El TIEMPO de la ficha avanza solo: se rehace cada medio minuto.
   const [now, setNow] = useState(() => Date.now())
   useEffect(() => {
@@ -292,22 +295,22 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
       const member = state.members.find((candidate) => { return candidate.id === id })
       if (!member) return null
       const mon = teamMonOf(member, data)
-      return { species: member.species, name: mon.name, level: member.level, hp: mon.hp, maxHp: mon.hp, item: member.item ?? null }
+      return { species: member.species, name: kit.speciesLabel(speciesName(member.species)), level: member.level, hp: mon.hp, maxHp: mon.hp, item: member.item ?? null }
     })
     const encounter = encounters[state.encounterIndex]
     return (
       <>
         <SideColumn side="left" offset={sideOffset} label={esCampaign.side.campaignLabel}>
-          <CampaignCard points={state.battlePoints ?? 0} minutes={minutesSince(state.startedAt, now)}
+          <kit.screens.CampaignCard points={state.battlePoints ?? 0} minutes={minutesSince(state.startedAt, now)}
             fainted={state.members.filter((member) => member.fainted).length} species={recruitedSpecies(state)}
             box={layout.boxes[0].mons.filter(Boolean).length} badges={badges}
             next={esCampaign.side.nextValue(encounter.nameEs, Math.max(...encounter.team.map((member) => member.level)))} />
         </SideColumn>
         <SideColumn side="right" offset={sideOffset} label={esCampaign.side.teamLabel}>
-          <TeamPanel party={party} limit={limit} itemName={emeraldItemName}
+          <kit.screens.TeamPanel party={party} limit={limit} itemName={kit.itemName}
             box={layout.boxes.flatMap((box) => box.mons.flatMap((id) => {
               const member = state.members.find((candidate) => { return candidate.id === id })
-              return member ? [{ species: member.species, name: teamMonOf(member, data).name, fainted: member.fainted }] : []
+              return member ? [{ species: member.species, name: kit.speciesLabel(speciesName(member.species)), fainted: member.fainted }] : []
             }))} />
         </SideColumn>
       </>
@@ -461,8 +464,8 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     const { mode, encounter, after, lineup } = result
     const player = playerNameOf(after.seed, playerName)
     const badges = badgeCount(after, encounters)
-    const badgeNames = places.filter((place) => place.gym !== null).map((place) => t.badges[place.id])
-    const message = mode === 'medal' ? esCampaign.result.medal(player, t.badges[encounter.id], encounter.nameEs)
+    const badgeNames = places.filter((place) => place.gym !== null).map((place) => kit.badgeNames[place.id])
+    const message = mode === 'medal' ? esCampaign.result.medal(player, kit.badgeNames[encounter.id], encounter.nameEs)
       : mode === 'beaten' ? esCampaign.result.beaten(encounter.nameEs)
         : mode === 'whiteout' ? esCampaign.result.whiteout(player) : esCampaign.result.hallOfFame
     const team = lineup.flatMap((id) => {
@@ -657,10 +660,8 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     )
   }
 
-  // Marco de ventana de Esmeralda para los botones (URL absoluta: relativa en una variable CSS se resolvería contra la hoja de estilos).
-  const pageStyle = { '--campaign-frame': `url("${new URL(emeraldTheme.asset('marco-1'), document.baseURI).href}")` } as CSSProperties
   return (
-    <div className="page campaign-page" style={pageStyle}>
+    <div className="page campaign-page" data-campaign={kit.id} style={kit.pageVars()}>
       <a href="#main" className="skip-link">{es.app.skipToContent}</a>
       <header className="today-header">
         <div className="today-header-inner">
@@ -668,7 +669,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
             <span className="logo-ball" aria-hidden="true" />
             <span className="logo-text">{es.app.name}</span>
           </h1>
-          <p className="campaign-mode">{esCampaign.modeLabel}</p>
+          <p className="campaign-mode">{kit.modeLabel}</p>
           {/* Un solo hueco de la rejilla de la cabecera para los dos botones. */}
           <div className="campaign-header-actions">
             {sound && onSoundChange && (
@@ -696,7 +697,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
           />
         ) : (
           // Una partida nueva vuelve a montar la Ruta: si no, seguía elegida la ciudad de la anterior en vez del primer gimnasio (Jose, 13/11/2026).
-          <RouteScreen key={state?.seed ?? 'sin-campaña'} places={places} badges={badges} speciesName={speciesName} reservedHeight={150}
+          <kit.screens.Route key={state?.seed ?? 'sin-campaña'} places={places} badges={badges} speciesName={speciesName} reservedHeight={150}
             league={{ rivals: leagueRivals, next: Math.max(0, Math.min(leagueRivals.length, (state?.encounterIndex ?? 0) - encounters.findIndex((encounter) => encounter.kind !== 'gym') + (state?.phase === 'won' ? 1 : 0))) }} />
         ))}
         </RevealWhenLoaded>
@@ -712,7 +713,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
         {sidePanels()}
         <div className="campaign-bar" data-panels={panels || undefined}>
           {/* En escritorio, con campaña, las medallas van en la ficha del panel «Tu campaña» (también en el combate). */}
-          {(sideOffset === null || state === null) && (
+          {!kit.medalsInCard && (sideOffset === null || state === null) && (
             <ul className="campaign-medals" aria-label={t.medals(badges)}>
               {places.filter((place) => place.gym !== null).map((place) => (
                 <li key={place.id}>

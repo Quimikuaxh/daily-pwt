@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { rulesOf } from '../../core/nuzlocke/rules'
-import { hoennKit, unovaKit } from './campaignKit'
+import { hoennKit } from './campaignKit'
+import { unovaKit } from '../campaign-unova/unovaKit'
 
 // DEC-103: cada campaña aporta su kit; el recorrido de la pantalla es el mismo.
 describe('kits de campaña', () => {

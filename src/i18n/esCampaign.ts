@@ -444,4 +444,34 @@ export const esCampaign = {
       petra: 'PIEDRA', marcial: 'PUÑO', erico: 'DINAMO', candela: 'CALOR', norman: 'EQUILIBRIO', alana: 'PLUMA', 'vito-y-leti': 'MENTE', galano: 'LLUVIA',
     } as Record<string, string>,
   },
+  // Teselia (N2/B2, maqueta Ruta A3 aprobada el 13/11/2026): nombres de la edición española.
+  unova: {
+    modeLabel: 'Nuzlocke · Teselia',
+    region: 'TESELIA',
+    cities: {
+      cheren: 'Ciudad Engobe', hiedra: 'Ciudad Hormigón', camus: 'Ciudad Porcelana', camila: 'Ciudad Mayólica', yakon: 'Ciudad Fayenza',
+      gerania: 'Ciudad Loza', lirio: 'Ciudad Caolín', ciprian: 'Ciudad Marga', iris: 'Liga Pokémon',
+    } as Record<string, string>,
+    types: {
+      cheren: 'normal', hiedra: 'poison', camus: 'bug', camila: 'electric', yakon: 'ground', gerania: 'flying', lirio: 'dragon', ciprian: 'water',
+    } as Record<string, string>,
+    badges: {
+      cheren: 'BÁSICA', hiedra: 'TÓXICA', camus: 'INSECTO', camila: 'VOLTIO', yakon: 'TEMBLOR', gerania: 'JET', lirio: 'LEYENDA', ciprian: 'OLA',
+    } as Record<string, string>,
+    typeNames: {
+      normal: 'Normal', poison: 'Veneno', bug: 'Bicho', electric: 'Eléctrico', ground: 'Tierra', flying: 'Volador', dragon: 'Dragón', water: 'Agua',
+    } as Record<string, string>,
+    leaderTitle: (name: string) => `LÍDER ${name.toUpperCase()}`,
+    eliteTitle: (name: string) => `ALTO MANDO ${name.toUpperCase()}`,
+    championTitle: (name: string) => `CAMPEONA ${name.toUpperCase()}`,
+    gymHead: (gym: number, city: string) => `Gimnasio ${gym} · ${city}`,
+    leagueHead: 'Liga Pokémon',
+    nextLine: (level: number) => `PRÓXIMO · Nv. máx. ${level}`,
+    wonLine: (badge: string) => `SUPERADO · Medalla ${badge.charAt(0)}${badge.slice(1).toLowerCase()}`,
+    pendingLine: (level: number) => `PENDIENTE · Nv. máx. ${level}`,
+    leagueWonLine: 'SUPERADO',
+    count: (n: number) => `${n} Pokémon`,
+    medals: 'MEDALLAS',
+    level: (n: number) => `Nv${n}`,
+  },
 } as const

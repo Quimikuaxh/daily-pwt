@@ -18,6 +18,11 @@ import { Modal } from '../ui/common/Modal'
 import { RouteScreen } from '../ui/campaign/RouteScreen'
 import { routePlaces } from '../ui/campaign/hoennRoute'
 import catalog from '../../data/nuzlocke/hoenn-emerald.json'
+import unovaCatalog from '../../data/nuzlocke/unova-n2b2.json'
+import namesEs from '../generated/names-es.json'
+import { UnovaRouteScreen } from '../ui/campaign-unova/UnovaRouteScreen'
+import { UNOVA_PLACES } from '../ui/campaign-unova/unovaRoute'
+import { UnovaCampaignCard, UnovaTeamPanel } from '../ui/campaign-unova/UnovaSide'
 import { BattlePanelsMock, SidePanelsMock, StatusMock } from './sidePanels'
 import '../index.css'
 import '../ui/campaign/campaign.css'
@@ -363,6 +368,28 @@ if (shareMode === 'ataques') {
     <div style={{ display: 'flex', justifyContent: 'center', padding: 8 }}>
       <RouteScreen places={routePlaces(catalog.encounters as never)} badges={8} speciesName={(id) => id} scale={3}
         league={{ rivals: encounters.filter((encounter) => encounter.kind !== 'gym') as never, next: 1 }} />
+    </div>,
+  )
+} else if (shareMode === 'ruta-teselia') {
+  // La Ruta de Teselia con el catálogo real: `&medallas=n` y `&liga=n` (rivales de la Liga vencidos).
+  const query = new URLSearchParams(location.search)
+  const unova = unovaCatalog.encounters as never as Parameters<typeof routePlaces>[0]
+  createRoot(document.getElementById('root')!).render(
+    <div style={{ display: 'flex', justifyContent: 'center', padding: 8 }}>
+      <UnovaRouteScreen places={routePlaces(unova, UNOVA_PLACES)} badges={Number(query.get('medallas') ?? 0)} speciesName={(id) => (namesEs.species as Record<string, string>)[id] ?? id}
+        league={{ rivals: unova.filter((encounter) => encounter.kind !== 'gym'), next: Number(query.get('liga') ?? 0) }} scale={2} />
+    </div>,
+  )
+} else if (shareMode === 'paneles-teselia') {
+  // Paneles laterales de Teselia con datos de ejemplo (maqueta «escritorio-paneles-2»).
+  const name = (id: string) => (namesEs.species as Record<string, string>)[id] ?? id
+  const mon = (species: string, level: number, hp: number, item: string | null) => ({ species, name: name(species), level, hp, maxHp: 40, item })
+  createRoot(document.getElementById('root')!).render(
+    <div style={{ display: 'flex', gap: 24, padding: 8, alignItems: 'flex-start' }}>
+      <UnovaCampaignCard points={11} minutes={84} fainted={0} species={5} box={12} next="HIEDRA · Nv18" badges={1} />
+      <UnovaTeamPanel party={[mon('oshawott', 14, 40, 'airballoon'), mon('patrat', 13, 18, null), mon('carracosta', 49, 6, 'leftovers'), null, null, null]} limit={6}
+        itemName={(id) => id} box={['lillipup', 'purrloin', 'sewaddle', 'pidove', 'tympole', 'venipede', 'cottonee', 'petilil', 'darumaka', 'dwebble', 'zorua', 'axew']
+          .map((species, i) => ({ species, name: name(species), fainted: i === 2 }))} />
     </div>,
   )
 } else if (shareMode === 'estados') {

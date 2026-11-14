@@ -53,6 +53,7 @@ npm install
 | `npm run gen:player-sets` | Genera `data/player-sets.json` (pool del jugador) desde `data/smogon/` y `data/trainers.json`, y `data/smogon/discarded.json`. Sin red. |
 | `npm run gen:ui-index` | Genera `src/generated/battle-ui-images.json` (gráficos de interfaz que se precargan desde Hoy). |
 | `npm run gen:emerald-ui -- RUTA_POKEEMERALD [--comprobar]` | Recursos de Pokémon Esmeralda desde el decompilado de pret (ver «Recursos de Esmeralda»). Necesita Python 3.10 y Pillow 10. |
+| `npm run gen:n2b2-ui` | Piezas de interfaz de la locke de N2/B2 (mapa de Teselia, ventana, barras, franja de título y medallas) en `public/ui/n2b2/`, recortadas de las hojas de `scripts/.cache/n2b2-ui/` (ARQUITECTURA, DEC-102). Necesita Python 3.10 y Pillow 10. |
 | `npm run gen:trainer-side` | Sprites de mapa de pie de lado de los entrenadores (escenario previo a la pancarta VS): recorta las celdas de `data/trainer-side-sprites.json` de las hojas de The Spriters Resource vía Internet Archive. Necesita red. |
 | `npm run gen:vs-logo` | Dibuja el logo «VS.» de la pancarta en pixel art (`public/ui/battle/vs-logo.png`); sin dependencias. |
 | `npm run gen:trainer-vs` | Retratos de la pancarta VS: último fotograma de cada gif de entrenador (y del sprite de frente de Nate y Rosa) recortado por arriba, en `<sprite>-vs.png`. Necesita `ffmpeg`/`ffprobe`. |

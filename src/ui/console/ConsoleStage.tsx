@@ -10,6 +10,16 @@ import './console.css'
 
 const ThemeContext = createContext(null as ConsoleTheme | null)
 
+/**
+ * Contenedor que da el ancho disponible: el primer antepasado con caja. Un envoltorio con `display: contents` (RevealWhenLoaded de la
+ * campaña) mide 0 de ancho y dejaba la consola a x1 en escritorio.
+ */
+function layoutParent(element: HTMLElement | null): HTMLElement | null {
+  let parent = element?.parentElement ?? null
+  while (parent && getComputedStyle(parent).display === 'contents') parent = parent.parentElement
+  return parent
+}
+
 export function useConsoleTheme(): ConsoleTheme {
   const theme = useContext(ThemeContext)
   if (!theme) throw new Error('useConsoleTheme fuera de ConsoleStage')
@@ -35,7 +45,7 @@ export function ConsoleStage({ theme, screens, reservedHeight = 0, scale: fixedS
   useEffect(() => {
     if (fixedScale) return
     const update = () => {
-      const width = ref.current?.parentElement?.clientWidth ?? window.innerWidth
+      const width = layoutParent(ref.current)?.clientWidth ?? window.innerWidth
       setFitted(consoleScale(width, window.innerHeight - reservedHeight, w, totalHeight))
     }
     update()

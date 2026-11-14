@@ -9,6 +9,7 @@ import { toSlug } from './lib/slug.mjs'
  * Iconos de los objetos (Jose, 06/11/2026): los de la bolsa de 3.ª a 5.ª gen. del repositorio de sprites de PokeAPI
  * (`sprites/items/<slug>.png`, 30 x 30), solo de los objetos que llevan los sets del juego (rivales y pool del jugador), en
  * `public/sprites/items/<id>.png`. Los usa la ficha del objeto de los paneles laterales (RF-44c). Lo ya bajado no se vuelve a bajar.
+ * También los de la locke de Teselia (14/11/2026): equipables, objetos de evolución, canje del Metro y los que llevan sus rivales.
  */
 const ICONS_URL = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items'
 const OUT_DIR = fromRoot('public', 'sprites', 'items')
@@ -20,7 +21,13 @@ export function usedItemIds() {
   const { trainers } = JSON.parse(readFileSync(fromRoot('data', 'trainers.json'), 'utf8'))
   const pool = JSON.parse(readFileSync(fromRoot('data', 'player-sets.json'), 'utf8'))
   const sets = [...trainers.flatMap((trainer) => trainer.variants.flatMap((variant) => variant.team)), ...pool]
-  return [...new Set(sets.map((set) => set.item).filter(Boolean))].sort()
+  const unova = JSON.parse(readFileSync(fromRoot('data', 'nuzlocke', 'unova-n2b2.json'), 'utf8'))
+  const unovaItems = JSON.parse(readFileSync(fromRoot('data', 'nuzlocke', 'unova-n2b2-items.json'), 'utf8'))
+  const campaign = [
+    ...unova.encounters.flatMap((encounter) => encounter.team.map((member) => member.item)),
+    ...Object.keys(unovaItems.held), ...Object.keys(unovaItems.evolution), ...unovaItems.exchange.map((entry) => entry.item),
+  ]
+  return [...new Set([...sets.map((set) => set.item), ...campaign].filter(Boolean))].sort()
 }
 
 /** Nombre del icono en PokeAPI: el del objeto en minúsculas con guiones (Air Balloon -> air-balloon). */

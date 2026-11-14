@@ -18,16 +18,17 @@ const PANEL_GAP = 24
 const PANEL_MARGIN = 16
 /** Cabecera del portal (Daily PWT · Volver a Hoy). */
 const HEADER_HEIGHT = 64
-/** Lienzo de la consola de Esmeralda (dos pantallas de 240 x 160). */
+/** Lienzo de la consola de Esmeralda (dos pantallas de 240 x 160); cada campaña puede dar el suyo (N2/B2, 256 x 384). */
 const CONSOLE = { w: 240, h: 320 }
 
 /**
  * Distancia del centro de la página al borde interior de cada panel, o null si no caben a los lados de la consola sin tocarla ni salirse de
  * la ventana. La consola se escala con la regla de ConsoleStage (`consoleScale`) sobre el mismo hueco, así que los paneles nunca la achican.
  */
-export function sidePanelOffset(viewportWidth: number, viewportHeight: number, reservedHeight: number, panelHeight: number): number | null {
-  const scale = consoleScale(viewportWidth, viewportHeight - reservedHeight, CONSOLE.w, CONSOLE.h)
-  const half = (CONSOLE.w * scale) / 2
+export function sidePanelOffset(viewportWidth: number, viewportHeight: number, reservedHeight: number, panelHeight: number,
+  console: { w: number; h: number } = CONSOLE): number | null {
+  const scale = consoleScale(viewportWidth, viewportHeight - reservedHeight, console.w, console.h)
+  const half = (console.w * scale) / 2
   const fitsWidth = viewportWidth / 2 - half >= CAMPAIGN_PANEL.w * PANEL_SCALE + PANEL_GAP + PANEL_MARGIN
   const fitsHeight = viewportHeight - HEADER_HEIGHT >= panelHeight * PANEL_SCALE + PANEL_MARGIN
   return fitsWidth && fitsHeight ? half + PANEL_GAP : null

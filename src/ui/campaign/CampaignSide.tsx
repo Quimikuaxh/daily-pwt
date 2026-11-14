@@ -28,10 +28,10 @@ export function SideColumn({ side, offset, label, children }: { side: 'left' | '
   return <section className="campaign-side" style={style} aria-label={label}>{children}</section>
 }
 
-type CardProps = { points: number; minutes: number; fainted: number; species: number; box: number; next: string; badges: number }
+export type CampaignCardProps = { points: number; minutes: number; fainted: number; species: number; box: number; next: string; badges: number }
 
 /** «Tu campaña» como la Ficha de Entrenador. */
-export function CampaignCard({ points, minutes, fainted, species, box, next, badges }: CardProps) {
+export function CampaignCard({ points, minutes, fainted, species, box, next, badges }: CampaignCardProps) {
   const rows: [string, string][] = [
     [t.points, esCampaign.result.points(points)], [t.time, esCampaign.result.clock(minutes)], [t.fainted, String(fainted)],
     [t.species, String(species)], [t.box, String(box)], [t.next, next],
@@ -90,7 +90,9 @@ const BOX_ROWS = 2
  * «Tu equipo» como la pantalla de equipo: seis placas (las vacías, sin Pokémon) con el objeto de cada uno en su recuadro y, debajo, la CAJA
  * con los iconos de los que no van en el equipo (Jose, 12/11/2026: en el draft no se veía qué se tenía); los caídos, en gris.
  */
-export function TeamPanel({ party, box = [], limit = party.length, itemName }: { party: readonly (TeamPanelMon | null)[]; box?: readonly BoxPanelMon[]; limit?: number; itemName: (id: string) => string }) {
+export type TeamPanelProps = { party: readonly (TeamPanelMon | null)[]; box?: readonly BoxPanelMon[]; limit?: number; itemName: (id: string) => string }
+
+export function TeamPanel({ party, box = [], limit = party.length, itemName }: TeamPanelProps) {
   const count = party.filter(Boolean).length
   // La caja por páginas de BOX_PER_ROW * BOX_ROWS, con flechas (Jose, 13/11/2026: con «Y 5 MÁS» no había forma de verlos).
   const perPage = BOX_PER_ROW * BOX_ROWS
@@ -288,14 +290,17 @@ export function BattlePanel({ title, mons, boosts, rival = null, nameOf, typesOf
 }
 
 /** Distancia de los paneles al centro mientras caben a los lados de la consola (sidePanelOffset); null si no caben. */
-export function useSidePanelOffset(reservedHeight: number, panelHeight: number): number | null {
-  const read = () => sidePanelOffset(document.documentElement.clientWidth, window.innerHeight, reservedHeight, panelHeight)
+export function useSidePanelOffset(reservedHeight: number, panelHeight: number, console?: { w: number; h: number }): number | null {
+  const consoleW = console?.w
+  const consoleH = console?.h
+  const read = () => sidePanelOffset(document.documentElement.clientWidth, window.innerHeight, reservedHeight, panelHeight, console)
   const [offset, setOffset] = useState(read)
   useEffect(() => {
-    const update = () => { setOffset(sidePanelOffset(document.documentElement.clientWidth, window.innerHeight, reservedHeight, panelHeight)) }
+    const size = consoleW && consoleH ? { w: consoleW, h: consoleH } : undefined
+    const update = () => { setOffset(sidePanelOffset(document.documentElement.clientWidth, window.innerHeight, reservedHeight, panelHeight, size)) }
     update()
     window.addEventListener('resize', update)
     return () => { window.removeEventListener('resize', update) }
-  }, [reservedHeight, panelHeight])
+  }, [reservedHeight, panelHeight, consoleW, consoleH])
   return offset
 }
