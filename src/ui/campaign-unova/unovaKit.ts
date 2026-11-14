@@ -12,6 +12,7 @@ import type { CampaignKit } from '../campaign/campaignKit'
 import { routePlaces, type CampaignEncounter } from '../campaign/hoennRoute'
 import { UnovaRouteScreen } from './UnovaRouteScreen'
 import { UnovaCampaignCard, UnovaTeamPanel } from './UnovaSide'
+import { UnovaDraftScreen } from './UnovaDraftScreen'
 import names from '../../generated/names-es.json'
 import { UNOVA_PLACES, unovaVars } from './unovaRoute'
 
@@ -37,7 +38,7 @@ export const unovaKit: CampaignKit = {
   medalsInCard: true,
   itemName: (id) => (names.items as Record<string, string>)[id] ?? id,
   speciesLabel: (name) => name,
-  screens: { Route: UnovaRouteScreen, CampaignCard: UnovaCampaignCard, TeamPanel: UnovaTeamPanel },
+  screens: { Route: UnovaRouteScreen, Draft: UnovaDraftScreen, CampaignCard: UnovaCampaignCard, TeamPanel: UnovaTeamPanel },
   console: { w: 256, h: 384 },
   modeLabel: esCampaign.unova.modeLabel,
   pageVars: unovaVars,

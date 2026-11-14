@@ -17,6 +17,25 @@ import { routePlaces, type CampaignEncounter, type RoutePlace } from './hoennRou
 import { RouteScreen } from './RouteScreen'
 import { CampaignCard, TeamPanel, type CampaignCardProps, type TeamPanelProps } from './CampaignSide'
 import { itemName as emeraldItemName } from './bagModel'
+import { DraftScreen } from './DraftScreen'
+import type { Candidate } from './draftModel'
+import type { GameData } from '../../core/types'
+
+/** Lo que recibe el draft de cualquier campaña (Hoenn no usa `data` ni `definition`). */
+export type DraftScreenProps = {
+  candidates: readonly Candidate[]
+  /** Elección actual (0…) y cuántas hay en este hito. */
+  pick: number
+  picks: number
+  level: number
+  rivalName: string
+  onRecruit: (id: string) => void
+  onShowTeam?: () => void
+  data: GameData
+  definition: CampaignDefinition
+  scale?: number
+  reservedHeight?: number
+}
 
 /** Lo que recibe la pantalla Ruta de cualquier campaña. */
 export type RouteScreenProps = {
@@ -52,7 +71,12 @@ export type CampaignKit = {
   /** Nombre de una especie como lo escribe el juego (Esmeralda, en mayúsculas; N2/B2, tal cual). */
   speciesLabel: (name: string) => string
   /** Pantallas propias de la campaña. */
-  screens: { Route: ComponentType<RouteScreenProps>; CampaignCard: ComponentType<CampaignCardProps>; TeamPanel: ComponentType<TeamPanelProps> }
+  screens: {
+    Route: ComponentType<RouteScreenProps>
+    Draft: ComponentType<DraftScreenProps>
+    CampaignCard: ComponentType<CampaignCardProps>
+    TeamPanel: ComponentType<TeamPanelProps>
+  }
   /** Lienzo de la consola en píxeles del juego (para colocar los paneles laterales). */
   console: { w: number; h: number }
   /** Rótulo del modo en la cabecera. */
@@ -82,7 +106,7 @@ export const hoennKit: CampaignKit = {
   medalsInCard: false,
   itemName: emeraldItemName,
   speciesLabel: (name) => name.toUpperCase(),
-  screens: { Route: RouteScreen, CampaignCard, TeamPanel },
+  screens: { Route: RouteScreen, Draft: DraftScreen, CampaignCard, TeamPanel },
   console: { w: 240, h: 320 },
   modeLabel: esCampaign.modeLabel,
   // Marco de ventana de Esmeralda para los botones (URL absoluta: relativa en una variable CSS se resolvería contra la hoja de estilos).

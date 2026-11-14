@@ -34,9 +34,14 @@ type ConsoleStageProps = {
   reservedHeight?: number
   /** Escala fija (capturas y tests); si no, la que quepa en el contenedor y la ventana. */
   scale?: number
+  /**
+   * Pantallas cuyo contenido se coloca solo (un componente del diario, como la pantalla de datos): no reciben la regla de colocar todo en
+   * absoluto de `.console-screen`, solo su tamaño y el recorte.
+   */
+  freeScreens?: readonly number[]
 }
 
-export function ConsoleStage({ theme, screens, reservedHeight = 0, scale: fixedScale }: ConsoleStageProps) {
+export function ConsoleStage({ theme, screens, reservedHeight = 0, scale: fixedScale, freeScreens = [] }: ConsoleStageProps) {
   const ref = useRef(null as HTMLDivElement | null)
   const [fitted, setFitted] = useState(2)
   const { w, h } = theme.screen
@@ -68,7 +73,7 @@ export function ConsoleStage({ theme, screens, reservedHeight = 0, scale: fixedS
       <div ref={ref} className="console-stage" data-theme={theme.id} data-scale={scale} style={style}>
         <div className="console-canvas">
           {screens.map((content, i) => (
-            <section key={i} className="console-screen">
+            <section key={i} className={freeScreens.includes(i) ? 'console-screen-free' : 'console-screen'}>
               {content}
             </section>
           ))}

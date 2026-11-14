@@ -12,7 +12,8 @@
   transform-origin: 0 0;
 }
 
-.console-screen {
+.console-screen,
+.console-screen-free {
   position: relative;
   display: block;
   width: var(--screen-w);

@@ -18,7 +18,6 @@ import { es } from '../../i18n/es'
 import { esCampaign } from '../../i18n/esCampaign'
 import { emeraldTheme } from '../console/themes/emerald'
 import { candidateOf, emeraldDex } from './draftModel'
-import { DraftScreen } from './DraftScreen'
 import { badgeCount } from './hoennRoute'
 import { fittingLayout, initialLayout, layoutToSave, lineup, savedLayout, teamMonOf, type TeamLayout } from './teamModel'
 import { MovesScreen } from './MovesScreen'
@@ -696,7 +695,9 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
             llegaba después que el resto (Jose, 13/11/2026). */}
         <RevealWhenLoaded key={view}>
         {shareScreen() ?? teamView() ?? evolveOneScreen() ?? resultScreen() ?? battleScreen() ?? evolutionScreen() ?? leagueScreen() ?? teamScreen() ?? exchangeScreen() ?? bagScreen() ?? movesScreen() ?? (view === 'draft' && state?.phase === 'draft' && state.offer.length ? (
-          <DraftScreen
+          <kit.screens.Draft
+            data={data}
+            definition={definition}
             candidates={draftCandidates(state)}
             pick={state.pick}
             picks={draftPicks(definition, state.encounterIndex)}

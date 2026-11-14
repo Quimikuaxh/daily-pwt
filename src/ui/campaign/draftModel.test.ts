@@ -27,6 +27,9 @@ describe('modelo del Draft', () => {
       // Cambio de requisito (Jose, 12/11/2026): descripción de la habilidad y cómo evoluciona por cualquier método.
       abilityText: 'Potencia PLANTA en apuros.', evolutionText: 'Evoluciona a IVYSAUR al Nv16.',
       moves: expect.any(Array),
+      // Cambio de requisito (14/11/2026): el candidato lleva las formas por las que ha pasado (el draft de Teselia saca de ellas sus
+      // movimientos para la pantalla de datos del diario).
+      history: [],
     })
     // Los cuatro con que llegaría: los últimos aprendidos por nivel (Jose, 12/11/2026).
     expect(candidateOf('bulbasaur', 15, campaignDefinition, data).moves.map((move) => move.id)).toEqual(['leechseed', 'vinewhip', 'poisonpowder', 'sleeppowder'])

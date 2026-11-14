@@ -221,6 +221,8 @@ type SummaryScreenProps = {
   initialSlot: number
   data: GameData
   onClose: () => void
+  /** Página con la que se abre (0 Información, 1 Habilidades y estadísticas, 2 Movimientos); por defecto, la primera. */
+  initialPage?: Page
 }
 
 /**
@@ -228,9 +230,9 @@ type SummaryScreenProps = {
  * (detalle del movimiento elegido). El fondo es la captura de Negro/Blanco limpiada por script; todo lo demás se pinta en ejecución con datos reales.
  * Teclado: ← → cambian de página, ↑ ↓ de Pokémon, Escape vuelve.
  */
-export default function SummaryScreen({ members, initialSlot, data, onClose }: SummaryScreenProps) {
+export default function SummaryScreen({ members, initialSlot, data, onClose, initialPage = 0 }: SummaryScreenProps) {
   const [slot, setSlot] = useState(initialSlot)
-  const [page, setPage] = useState(0 as Page)
+  const [page, setPage] = useState(initialPage)
   const [moveIndex, setMoveIndex] = useState(0)
   const rootRef = useRef(null as HTMLElement | null)
   const imagesLoaded = useImagesLoadedIn(rootRef)

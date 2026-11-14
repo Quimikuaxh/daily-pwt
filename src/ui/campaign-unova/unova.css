@@ -200,3 +200,45 @@
   .campaign-page[data-campaign="unova-n2b2"] .campaign-action,
   .campaign-page[data-campaign="unova-n2b2"] .campaign-restart { font-size: 13px; line-height: 13px; }
 }
+
+/* Draft: la pantalla de datos del diario en la pantalla de arriba (sus 384 px los recorta la sección) y los candidatos abajo. */
+.unova-draft-summary { position: relative; width: 256px; height: 384px; }
+
+.unova-row-icon {
+  left: -6px;
+  top: -6px;
+  width: 26px;
+  height: 22px;
+  overflow: hidden;
+}
+
+.unova-row-icon .bt-member-icon {
+  left: -7px;
+  top: -5px;
+  transform: scale(0.75);
+  transform-origin: 50% 50%;
+}
+
+/* Tipos con la etiqueta corta del diario a 13 px, uno junto a otro. */
+.unova-row-types { left: 84px; top: -3px; display: flex; gap: 2px; }
+.unova-row-types .type-chip {
+  --s: 1;
+  position: static;
+  width: auto;
+  height: 16px;
+  padding: 0 4px 3px;
+  font-size: 13px;
+  text-shadow: 1px 1px 0 #525252;
+}
+.unova-row-types .type-chip * { position: static; }
+
+.unova-row:focus-visible,
+.unova-button:focus-visible { outline: 1px solid #ffd65a; outline-offset: 0; }
+
+/* Los botones del lienzo pierden borde y fondo (console.css): los que son barras los recuperan. */
+.console-screen button.unova-bar { border: 8px solid transparent; border-image: var(--unova-bar) 8 fill / 8px stretch; }
+.console-screen button.unova-bar-off { border: 6px solid transparent; border-image: var(--unova-bar-off) 6 fill / 6px stretch; }
+
+/* La barra seleccionada tiene 8 px de borde y la normal 6: lo de dentro se corrige 2 px para que no salte al señalar otra fila. */
+.unova-bar.unova-row > *,
+.unova-bar.unova-button > * { margin: -2px 0 0 -2px; }

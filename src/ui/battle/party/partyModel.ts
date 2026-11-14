@@ -61,7 +61,7 @@ const genderOf = (details: string): 'M' | 'F' | null => {
 const levelOf = (details: string): number => Number(/L(\d+)/.exec(details)?.[1] ?? 50)
 
 /** Movimiento de la pantalla de datos: el de la tarjeta (Poder Oculto con su tipo y potencia reales) con los PP llenos, potencia y categoría. */
-function partyMove(moveId: string, data: GameData, ivs: StatsTable | undefined, hiddenPowerPower?: number): PartyMove {
+export function partyMove(moveId: string, data: GameData, ivs: StatsTable | undefined, hiddenPowerPower?: number): PartyMove {
   const model = moveModel(moveId, data, ivs, hiddenPowerPower)
   const dexMove = data.dex.moves[moveId]
   const fullPp = dexMove ? Math.floor((dexMove.pp * 8) / 5) : null

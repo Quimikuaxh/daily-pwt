@@ -35,6 +35,8 @@ export type Candidate = {
   evolutionText: string
   /** Los movimientos con que llegaría: los cuatro últimos aprendidos por nivel en sus formas (Jose, 12/11/2026). */
   moves: MoveInfo[]
+  /** Formas por las que ha pasado (de ellas salen los movimientos con que llega). */
+  history: readonly { species: string; evolvedAt: number }[]
 }
 
 /** Número de la Pokédex nacional (sprites de Esmeralda). */
@@ -70,6 +72,7 @@ export function candidateOf(id: string, level: number, definition: CampaignDefin
       (item) => emeraldItemName(item, data.names)),
     moves: species ? defaultMoves(definition.species, { id, species: id, level, history: [...history], fainted: false, victories: 0 } as never)
       .filter((move) => moveRows[move]).map((move) => moveInfo(move, data, { level: 0 })) : [],
+    history,
   }
 }
 

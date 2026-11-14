@@ -476,5 +476,11 @@ export const esCampaign = {
     count: (n: number) => `${n} Pokémon`,
     medals: 'MEDALLAS',
     level: (n: number) => `Nv${n}`,
+    // Draft (maqueta aprobada el 14/11/2026).
+    draftTitle: 'ELIGE UN POKÉMON',
+    draftPick: (n: number, total: number) => `${n} DE ${total}`,
+    draftRival: (name: string, level: number) => `Rival: ${name.toUpperCase()} · Nv. máx. ${level}`,
+    yourTeam: 'TU EQUIPO',
+    yourTeamLabel: 'Ver tu equipo y la caja',
   },
 } as const
