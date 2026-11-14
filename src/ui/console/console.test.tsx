@@ -95,6 +95,21 @@ describe('lienzo de consola de un tema', () => {
     }
   })
 
+  it('UT-218: un envoltorio con display: contents (RevealWhenLoaded) no cuenta: mide el primer antepasado con caja', () => {
+    vi.stubGlobal('innerHeight', 1000)
+    const host = document.createElement('div')
+    document.body.appendChild(host)
+    Object.defineProperty(host, 'clientWidth', { get: () => 960 })
+    const { container, unmount } = render(
+      <div style={{ display: 'contents' }}><ConsoleStage theme={emeraldTheme} reservedHeight={360} screens={['a', 'b']} /></div>, { container: host })
+    try {
+      expect(container.querySelector('.console-stage')).toHaveAttribute('data-scale', '2')
+    } finally {
+      unmount()
+      host.remove()
+    }
+  })
+
   it('apila las pantallas del tema en píxeles del juego, a la escala dada', () => {
     const { container } = render(<ConsoleStage theme={emeraldTheme} scale={3} screens={[<p key="a">arriba</p>, <p key="b">abajo</p>]} />)
     const stage = container.querySelector('.console-stage') as HTMLElement
