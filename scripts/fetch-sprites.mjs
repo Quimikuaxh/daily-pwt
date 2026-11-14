@@ -108,6 +108,22 @@ export function loadTargets() {
   return { spriteIds, trainers }
 }
 
+/**
+ * Las 649 especies de la locke de N2/B2 (PRD §0, 14/11/2026: sprites animados para todas, como el diario), con su sprite de Showdown.
+ * Las que ya tiene el diario no se vuelven a bajar.
+ */
+export function loadN2b2Targets() {
+  const dex = JSON.parse(readFileSync(fromRoot('src', 'generated', 'dex-gen5.json'), 'utf8'))
+  const { species } = JSON.parse(readFileSync(fromRoot('data', 'nuzlocke', 'unova-n2b2-progression.json'), 'utf8'))
+  return Object.keys(species).map((id) => assertSafeSpriteId('spriteId', dex.species[id].spriteId)).sort()
+}
+
+/** Los 13 rivales de la locke de N2/B2 (`<Nombre>_N2B2.gif` de WikiDex); los que ya tiene el diario no se vuelven a bajar. */
+export function loadN2b2Rivals() {
+  const { encounters } = JSON.parse(readFileSync(fromRoot('data', 'nuzlocke', 'unova-n2b2.json'), 'utf8'))
+  return encounters.map((encounter) => ({ id: encounter.id, nameEs: encounter.nameEs, sprite: assertSafeSpriteId('sprite de entrenador', encounter.id) }))
+}
+
 async function fetchPokemonSprites(spriteIds) {
   const failures = []
   for (const spriteId of spriteIds) {
@@ -238,8 +254,10 @@ async function fetchAll() {
 }
 
 // `--substitute`: solo el muñeco del sustituto (el resto tarda por los iconos de WikiDex que faltan).
+// `--n2b2`: solo los Pokémon de la locke de N2/B2 (las 649 especies).
 if (isMain(import.meta.url)) {
-  const failures = process.argv.includes('--substitute') ? await fetchSubstituteSprites() : await fetchAll()
+  const failures = process.argv.includes('--substitute') ? await fetchSubstituteSprites()
+    : process.argv.includes('--n2b2') ? [...await fetchPokemonSprites(loadN2b2Targets()), ...await fetchTrainerSprites(loadN2b2Rivals())] : await fetchAll()
   if (failures.length) {
     console.error(`Faltan ${failures.length} sprites: ${failures.join(', ')}`)
     process.exitCode = 1

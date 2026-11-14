@@ -6,10 +6,10 @@
 import { preloadCampaign } from './campaignPreload'
 import { RevealWhenLoaded } from './RevealWhenLoaded'
 import { availableDraftForms } from '../../core/nuzlocke/draftAvailability'
-import { campaignRules } from '../../core/nuzlocke/rules'
+import { hoennKit, type CampaignKit } from './campaignKit'
 import { campaignSteps } from './stepsModel'
 import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from 'react'
-import { type CampaignDifficulty, chooseRecruit, createCampaign, draftPicks, evolveForLeague, evolveRecruit, lockLeagueRoster, openDraft, specialEvolutionOptions, type CampaignDefinition, type CampaignState } from '../../core/nuzlocke/campaign'
+import { type CampaignDifficulty, chooseRecruit, createCampaign, draftPicks, evolveForLeague, evolveRecruit, lockLeagueRoster, openDraft, specialEvolutionOptions, type CampaignState } from '../../core/nuzlocke/campaign'
 import type { GameData } from '../../core/types'
 import { LocalCampaignStore } from '../../storage/campaignStore'
 import type { AccountCampaign } from '../../cloud/campaign'
@@ -17,11 +17,9 @@ import { browserStorage } from '../../storage/browserStorage'
 import { es } from '../../i18n/es'
 import { esCampaign } from '../../i18n/esCampaign'
 import { emeraldTheme } from '../console/themes/emerald'
-import catalog from '../../../data/nuzlocke/hoenn-emerald.json'
-import progression from '../../../data/nuzlocke/hoenn-emerald-progression.json'
 import { candidateOf, emeraldDex } from './draftModel'
 import { DraftScreen } from './DraftScreen'
-import { badgeCount, routePlaces, type CampaignEncounter } from './hoennRoute'
+import { badgeCount, routePlaces } from './hoennRoute'
 import { RouteScreen } from './RouteScreen'
 import { fittingLayout, initialLayout, teamMonOf, type TeamLayout } from './teamModel'
 import { MovesScreen } from './MovesScreen'
@@ -38,7 +36,6 @@ import { BagScreen } from './BagScreen'
 import { bagContents, itemName as emeraldItemName, machineItems, machineLabel } from './bagModel'
 import { campaignEvolutionItems } from '../../core/nuzlocke/calendar'
 import { emeraldMoveName } from './emeraldNames'
-import moveTexts from '../../../data/nuzlocke/emerald-move-descriptions-es.json'
 import { buyExchangeItem, equipItem, exchangeItems } from '../../core/nuzlocke/heldItems'
 import { ExchangeScreen } from './ExchangeScreen'
 import { leagueEvolutions } from './evolutionModel'
@@ -60,10 +57,6 @@ import type { CSSProperties } from 'react'
 import './campaign.css'
 
 const t = esCampaign.route
-const encounters = catalog.encounters as readonly CampaignEncounter[]
-const definition = { encounters, species: progression.species } as unknown as CampaignDefinition
-// Reglas de la campaña de esta pantalla (Hoenn). La de Teselia tendrá su pantalla en la fase 3 (PENDIENTE.md), con maquetas antes.
-const rules = campaignRules('hoenn-emerald')
 
 type CampaignScreenProps = {
   data: GameData
@@ -84,6 +77,8 @@ type CampaignScreenProps = {
   /** Sonido y volumen de Ajustes; con `onSoundChange`, el botón Sonido de la cabecera los cambia (Jose, 13/11/2026). */
   sound?: SoundPrefs
   onSoundChange?: (sound: SoundPrefs) => void
+  /** Campaña (DEC-103): sus datos, reglas y pantallas. Por defecto, Hoenn. */
+  kit?: CampaignKit
 }
 
 type CampaignViewProps = Omit<CampaignScreenProps, 'store' | 'cloud'> & {
@@ -99,29 +94,10 @@ type CampaignViewProps = Omit<CampaignScreenProps, 'store' | 'cloud'> & {
   subscribeStore?: (listener: () => void) => () => void
 }
 
-/** Plazas del equipo: las del líder en los gimnasios; seis en la Liga. */
-/** Preparando un combate de la Liga (Alto Mando o campeón). */
-const inLeague = (state: CampaignState) => encounters[state.encounterIndex].kind !== 'gym'
-
-const teamLimit = (state: CampaignState) => encounters[state.encounterIndex].kind === 'gym' ? encounters[state.encounterIndex].team.length : 6
-
-/** Los cinco de la Liga, en orden (Alto Mando y campeón). */
-const leagueRivals = encounters.filter((encounter) => encounter.kind !== 'gym')
-
-const battleDefinition = definition as unknown as CampaignBattleDefinition
-/** Género del rival para «la LÍDER» / «el LÍDER» (Esmeralda); el Alto Mando habla como líder y Plubio como campeón. */
-const FEMALE = new Set(['petra', 'candela', 'alana', 'fatima', 'nivea'])
-const trainerOf = (encounter: CampaignEncounter) => ({
-  nameEs: encounter.nameEs, category: encounter.kind === 'champion' ? 'champion' as const : 'leader' as const, gender: FEMALE.has(encounter.id) ? 'F' as const : 'M' as const,
-})
-
 /** Pantallas con su propia salida: sin «Volver a la ruta» en la barra. */
 const OWN_EXIT: readonly string[] = ['battle', 'result', 'evolution', 'evolveOne']
 
-/** Descripción española de un movimiento en dos líneas (la de Movimientos). */
-const moveDescription = (move: string): string => (moveTexts as unknown as { moves: Record<string, string> }).moves[move] ?? ''
-
-const randomSeed = () => `hoenn-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
+const randomSeedFor = (prefix: string) => () => `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
 
 export default function CampaignScreen({ store: givenStore, cloud, ...props }: CampaignScreenProps) {
   const local = useMemo(() => { return givenStore ?? new LocalCampaignStore(browserStorage()) }, [givenStore])
@@ -167,7 +143,17 @@ function CloudCampaign({ cloud, ...props }: Omit<CampaignScreenProps, 'store'> &
   )
 }
 
-function CampaignView({ data, onExit, store, newSession, canStartBattle = () => true, subscribeStore, newSeed = randomSeed, createBattleClient = createCampaignWorkerClient, playerName, sound, onSoundChange }: CampaignViewProps) {
+function CampaignView({ data, onExit, store, newSession, canStartBattle = () => true, subscribeStore, newSeed: givenSeed, createBattleClient = createCampaignWorkerClient, playerName, sound, onSoundChange, kit = hoennKit }: CampaignViewProps) {
+  // Lo propio de la campaña sale de su kit (DEC-103); el recorrido es el mismo para todas.
+  const { encounters, definition, rules, trainerOf, moveDescription } = kit
+  const newSeed = givenSeed ?? randomSeedFor(kit.seedPrefix)
+  const battleDefinition = definition as unknown as CampaignBattleDefinition
+  /** Preparando un combate de la Liga (Alto Mando o campeón). */
+  const inLeague = (state: CampaignState) => encounters[state.encounterIndex].kind !== 'gym'
+  /** Plazas del equipo: las del líder en los gimnasios; seis en la Liga. */
+  const teamLimit = (state: CampaignState) => encounters[state.encounterIndex].kind === 'gym' ? encounters[state.encounterIndex].team.length : 6
+  /** Los de la Liga, en orden (Alto Mando y campeón). */
+  const leagueRivals = encounters.filter((encounter) => encounter.kind !== 'gym')
   const [soundOpen, setSoundOpen] = useState(false)
   // Una campaña perdida no se vuelve a abrir: al entrar sale directamente la pantalla para empezar otra (Jose, 13/11/2026). El registro
   // se queda guardado hasta que se empiece la nueva, que lo sustituye.
@@ -214,7 +200,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     }
     setState(after)
     setView('result')
-  }), [session, store, battleContext])
+  }), [session, store, battleContext, encounters])
   // Alineación aceptada en Equipo y PC; la usan Movimientos y el combate.
   const [team, setTeam] = useState(null as string[] | null)
   // Colocación de Equipo y PC mientras se va a Movimientos y se vuelve; se rehace al entrar desde la Ruta.
@@ -253,7 +239,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     if (next.phase === 'draft') openNext(next)
     else { save(next); setView('route') }
   }
-  const places = useMemo(() => routePlaces(encounters), [])
+  const places = useMemo(() => routePlaces(encounters), [encounters])
   // Precarga al entrar y al cambiar de tramo, equipo u oferta: la interfaz entera y los sprites que pueden salir pronto.
   const preloadKey = state ? `${state.encounterIndex}|${state.members.map((member) => member.species).join(',')}|${state.offer.join(',')}` : ''
   useEffect(() => {
@@ -468,7 +454,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     const lineup = roster ?? team
     if (!lineup?.length) return
     return session.prepare(battleInput(battleDefinition, record.state, lineup))
-  }, [session, store, team])
+  }, [session, store, team, battleDefinition])
 
   const resultScreen = () => {
     if (view !== 'result' || !result) return null
