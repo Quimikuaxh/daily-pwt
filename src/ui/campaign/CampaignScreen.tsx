@@ -30,11 +30,9 @@ import { battleInput } from './campaignBattle'
 import { useStartWhenReady } from './useStartWhenReady'
 import { EmeraldBattle } from './EmeraldBattle'
 import { ResultScreen } from './ResultScreen'
-import { EvolutionScene } from './EvolutionScene'
 import { itemName as emeraldItemName } from './bagModel'
 import { buyExchangeItem, equipItem, exchangeItems, heldItemStock } from '../../core/nuzlocke/heldItems'
 import { leagueEvolutions } from './evolutionModel'
-import { LeagueScreen } from './LeagueScreen'
 import { leagueBeaten } from './leagueModel'
 import { type CampaignResult, minutesSince, playerNameOf, protagonistOf, recruitedSpecies, resultOf, trainerId } from './resultModel'
 import { battleMusic, townMusic, useCampaignMusic } from './campaignMusic'
@@ -152,7 +150,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
   const [soundOpen, setSoundOpen] = useState(false)
   // Una campaña perdida no se vuelve a abrir: al entrar sale directamente la pantalla para empezar otra (Jose, 13/11/2026). El registro
   // se queda guardado hasta que se empiece la nueva, que lo sustituye.
-  // Una sola partida guardada (PRD §0, 13/11/2026): si es de la otra campaña, esta se abre sin partida y empezar una la sustituye.
+  // Una sola partida guardada (PRD §0, 13/11/2026): si es de la otra campaña, esta se abre sin partida y empezar una pide confirmar su sustitución.
   const ownRecord = () => {
     const record = store.read()
     return record && (record.state.campaign ?? 'hoenn-emerald') === kit.id ? record : null
@@ -343,7 +341,12 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
   const [choosingDifficulty, setChoosingDifficulty] = useState(false)
   const start = () => {
     // Perdida, no hay nada que conservar: sin confirmación.
-    if (state && state.phase !== 'lost' && !window.confirm(esCampaign.newCampaignConfirm)) return
+    const saved = store.read()?.state
+    if (saved && saved.phase !== 'lost') {
+      const sameCampaign = (saved.campaign ?? 'hoenn-emerald') === kit.id
+      const message = sameCampaign ? esCampaign.newCampaignConfirm : esCampaign.replaceOtherConfirm(kit.id === 'unova-n2b2')
+      if (!window.confirm(message)) return
+    }
     setChoosingDifficulty(true)
   }
   const startWith = (difficulty: CampaignDifficulty) => {
@@ -352,7 +355,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     setResult(null)
     setView('route')
     // Cuándo empezó: el TIEMPO de la Ficha de Entrenador.
-    save({ ...createCampaign(newSeed(), difficulty), startedAt: Date.now() })
+    save({ ...createCampaign(newSeed(), difficulty, kit.id), startedAt: Date.now() })
   }
 
   // EVOLUCIONAR en el PC antes de la Liga (Jose, 12/11/2026): las formas a las que puede llegar ahora (de día y de noche, para Eevee).
@@ -371,7 +374,8 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     const member = state.members.find((candidate) => { return candidate.id === evolvingId })
     if (!member) return null
     return (
-      <EvolutionScene
+      <kit.screens.Evolution
+        data={data}
         evolutions={[{ id: member.id, species: member.species, level: member.level, targets: evolveTargets(state, member.id) }]}
         nameOf={(species) => speciesName(species).toUpperCase()}
         hpOf={(id, species) => teamMonOf({ ...member, species }, data).hp}
@@ -586,7 +590,8 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
   const evolutionScreen = () => {
     if (view !== 'evolution' || state?.phase !== 'prepare') return null
     return (
-      <EvolutionScene
+      <kit.screens.Evolution
+        data={data}
         evolutions={leagueEvolutions(definition, state)}
         nameOf={(species) => speciesName(species).toUpperCase()}
         hpOf={(id, species) => {
@@ -606,15 +611,15 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
       const member = state.members.find((candidate) => { return candidate.id === id })
       if (!member) return []
       const mon = teamMonOf(member, data)
-      return [{ id, species: member.species, name: mon.name, level: member.level, hp: mon.hp, fainted: member.fainted }]
+      return [{ id, species: member.species, name: kit.speciesLabel(speciesName(member.species)), level: member.level, hp: mon.hp, fainted: member.fainted }]
     })
     return (
-      <LeagueScreen
+      <kit.screens.League
         rival={encounters[state.encounterIndex]}
         beaten={leagueBeaten(state.encounterIndex, encounters)}
         members={members}
         roster={state.leagueRoster}
-        speciesName={(id) => speciesName(id).toUpperCase()}
+        speciesName={(id) => kit.speciesLabel(speciesName(id))}
         onAccept={(selected) => {
           const locked = state.leagueRoster ? state : save(lockLeagueRoster(definition, state, selected))
           enterBattle((locked.leagueRoster ?? selected).filter((id) => locked.members.some((member) => { return member.id === id && !member.fainted })))

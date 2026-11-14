@@ -3,14 +3,14 @@ import { es } from '../../i18n/es'
 import { Modal } from '../common/Modal'
 
 /** `prefetch`: descarga el código del modo al abrir la ventana (entrar en él no espera a la descarga). */
-type Mode = { id: string; label: string; hint: string; onOpen: () => void; prefetch?: () => void }
+type Mode = { id: string; label: string; hint: string; progress?: string; onOpen: () => void; prefetch?: () => void }
 
 const base = import.meta.env.BASE_URL
 
 /**
  * Miniatura de cada modo (Jose, 12/11/2026, opción A de `maquetas.html?v=modos-a`): el reto diario, con el escenario del PWT, Máximo,
- * Cintia y el VS; la Nuzlocke de Hoenn, con el mapa de Hoenn y los dos protagonistas (Bruno y Aura). Las campañas que vengan, con los
- * suyos. Sin miniatura propia, ninguna.
+ * Cintia y el VS; la Nuzlocke de Hoenn, con el mapa de Hoenn y los dos protagonistas (Bruno y Aura); la de Teselia, con el mapa de N2/B2 y
+ * Nate y Rosa. Sin miniatura propia, ninguna.
  */
 function ModeArt({ id }: { id: string }) {
   if (id === 'daily') {
@@ -32,11 +32,20 @@ function ModeArt({ id }: { id: string }) {
       </span>
     )
   }
+  if (id === 'nuzlocke-teselia') {
+    return (
+      <span className="modes-art" aria-hidden="true">
+        <img src={`${base}ui/n2b2/mapa-teselia.png`} alt="" className="modes-art-bg" />
+        <img src={`${base}sprites/trainers/nate.png`} alt="" className="modes-art-left" />
+        <img src={`${base}sprites/trainers/rosa.png`} alt="" className="modes-art-right" />
+      </span>
+    )
+  }
   return null
 }
 
 /**
- * Modos de juego (Jose, 11/11/2026): el reto diario, que es donde se está, y los demás modos (de momento, la campaña Nuzlocke de Hoenn).
+ * Modos de juego (Jose, 11/11/2026): el reto diario, que es donde se está, y las campañas Nuzlocke disponibles.
  * Cada modo es un botón con su miniatura y su descripción, uno debajo de otro; el actual va en rojo, como los botones principales
  * (12/11/2026: en vez de
  * «Estás aquí»), y lo dice `aria-current`.
@@ -45,13 +54,14 @@ export function ModesDialog({ modes, onClose }: { modes: readonly Mode[]; onClos
   // Al abrir Modos ya se descarga la campaña: al elegirla salía medio segundo en blanco esperando su código (Jose, 12/11/2026).
   useEffect(() => { modes.forEach((mode) => mode.prefetch?.()) }, [modes])
   const text = es.modes
-  const option = (id: string, label: string, hint: string, current: boolean, onClick: () => void) => {
+  const option = (id: string, label: string, hint: string, current: boolean, onClick: () => void, progress?: string) => {
     return (
       <li key={id}>
         <button type="button" className="btn modes-option" aria-current={current ? 'page' : undefined} aria-describedby={`mode-${id}-hint`} onClick={onClick}>
           <ModeArt id={id} />
           <span className="modes-text">
             <span className="modes-label">{label}</span>
+            {progress && <span className="settings-hint modes-hint modes-progress">{progress}</span>}
             <span id={`mode-${id}-hint`} className="settings-hint modes-hint">{hint}</span>
           </span>
         </button>
@@ -62,7 +72,7 @@ export function ModesDialog({ modes, onClose }: { modes: readonly Mode[]; onClos
     <Modal title={text.title} onClose={onClose} className="modes-dialog">
       <ul className="modes-list">
         {option('daily', text.daily, text.dailyHint, true, onClose)}
-        {modes.map((mode) => option(mode.id, mode.label, mode.hint, false, () => { onClose(); mode.onOpen() }))}
+        {modes.map((mode) => option(mode.id, mode.label, mode.hint, false, () => { onClose(); mode.onOpen() }, mode.progress))}
       </ul>
     </Modal>
   )

@@ -19,6 +19,11 @@ export const esCampaign = {
   entry: 'Nuzlocke de Hoenn',
   entryHint: 'Campaña con draft de Pokémon contra los gimnasios y la Liga de Esmeralda',
   modeLabel: 'Nuzlocke · Hoenn',
+  inProgressBadges: (badges: number) => `En curso · Medallas ${badges}/8`,
+  inProgressLeague: 'En curso · Liga',
+  replaceOtherConfirm: (unova: boolean) => unova
+    ? 'Tienes una campaña de Hoenn en curso. ¿Empezar la de Teselia? Se perderá la de Hoenn.'
+    : 'Tienes una campaña de Teselia en curso. ¿Empezar la de Hoenn? Se perderá la de Teselia.',
   back: 'Volver a Hoy',
   newCampaign: 'Empezar campaña',
   // Con una campaña en curso, el botón de empezar otra (Jose, 12/11/2026: «Nueva» sola no se entendía; es el texto del menú del juego).
@@ -95,6 +100,7 @@ export const esCampaign = {
     choose: 'Elige de 1 a 6 POKéMON.',
     locked: 'La CAJA queda cerrada.',
     notAble: 'Este POKéMON no es apto.',
+    notAbleShort: 'NO APTO',
     needOne: 'Elige al menos un POKéMON.',
     able: 'APTO',
     unable: 'NO APTO',
@@ -118,6 +124,9 @@ export const esCampaign = {
     progress: (n: number, total: number) => `EVOLUCIONES DE LA LIGA ${n}/${total}`,
     continueLabel: (message: string) => `Continuar: ${message}`,
     optionLabel: (name: string) => `Evolucionar en ${name}`,
+    // Con un objeto de evolución libre, también en la Liga (Jose, 14/11/2026); si solo evoluciona con objeto, puede quedarse como está.
+    canEvolve: (name: string) => `¡${name} puede evolucionar con un objeto!`,
+    keepLabel: (name: string) => `Seguir como ${name}`,
   },
   // Mochila (item_menu.c) y opciones de objeto del menú del PC (DAR / QUITAR, como el menú de equipo del juego).
   bag: {
@@ -449,6 +458,8 @@ export const esCampaign = {
   },
   // Teselia (N2/B2, maqueta Ruta A3 aprobada el 13/11/2026): nombres de la edición española.
   unova: {
+    entry: 'Nuzlocke de Teselia',
+    entryHint: 'Campaña con draft de Pokémon contra los gimnasios y la Liga de Negro 2 y Blanco 2',
     modeLabel: 'Nuzlocke · Teselia',
     region: 'TESELIA',
     cities: {
@@ -491,5 +502,15 @@ export const esCampaign = {
     shopMissing: (points: number) => `Te faltan ${points} PB`,
     shopTeam: 'TU EQUIPO LLEVA',
     shopOwned: 'Tienes',
+    // Evolución (maqueta aprobada el 14/11/2026): el botón grande del combate dice CONTINUAR.
+    continueLabel: 'CONTINUAR',
+    evolutionProgress: (n: number, total: number) => `Evolución ${n} de ${total}`,
+    // Liga (maqueta aprobada el 14/11/2026): el orden de cada participante, dentro de su placa verde.
+    leagueOrder: (n: number) => `${n}.º`,
+    leagueProgress: (beaten: number) => `Liga Pokémon: ${beaten} de 5 superados`,
+    leagueMaxLevel: (level: number) => `Nivel máximo ${level}`,
+    leagueBoxClosed: 'La CAJA está cerrada',
+    leagueChoose: 'Elige de 1 a 6 Pokémon.',
+    leagueLocked: 'La CAJA está cerrada.',
   },
 } as const

@@ -23,6 +23,9 @@ import namesEs from '../generated/names-es.json'
 import { UnovaRouteScreen } from '../ui/campaign-unova/UnovaRouteScreen'
 import { UNOVA_PLACES } from '../ui/campaign-unova/unovaRoute'
 import { UnovaCampaignCard, UnovaTeamPanel } from '../ui/campaign-unova/UnovaSide'
+import { UnovaEvolutionScene } from '../ui/campaign-unova/UnovaEvolutionScene'
+import { UnovaLeagueScreen } from '../ui/campaign-unova/UnovaLeagueScreen'
+import { loadGameData } from '../data/gameData'
 import { BattlePanelsMock, SidePanelsMock, StatusMock } from './sidePanels'
 import '../index.css'
 import '../ui/campaign/campaign.css'
@@ -390,6 +393,27 @@ if (shareMode === 'ataques') {
       <UnovaTeamPanel party={[mon('oshawott', 14, 40, 'airballoon'), mon('patrat', 13, 18, null), mon('carracosta', 49, 6, 'leftovers'), null, null, null]} limit={6}
         itemName={(id) => id} box={['lillipup', 'purrloin', 'sewaddle', 'pidove', 'tympole', 'venipede', 'cottonee', 'petilil', 'darumaka', 'dwebble', 'zorua', 'axew']
           .map((species, i) => ({ species, name: name(species), fainted: i === 2 }))} />
+    </div>,
+  )
+} else if (shareMode === 'evolucion-teselia') {
+  // Evolución de Teselia: Eevee (varias formas: elegir) y después Tepig. `&paso=` no hace falta: se avanza tocando.
+  const data = loadGameData()
+  const name = (id: string) => (namesEs.species as Record<string, string>)[id] ?? id
+  createRoot(document.getElementById('root')!).render(
+    <div style={{ display: 'flex', justifyContent: 'center', padding: 8 }}>
+      <UnovaEvolutionScene data={data} nameOf={name} hpOf={() => 50} onDone={() => undefined} scale={2}
+        evolutions={[{ id: 'a', species: 'eevee', targets: ['vaporeon', 'jolteon', 'flareon', 'espeon'], level: 40 }, { id: 'b', species: 'tepig', targets: ['pignite'], level: 40 }] as never} />
+    </div>,
+  )
+} else if (shareMode === 'liga-teselia') {
+  // Liga de Teselia: Catleya, con dos participantes elegidos (verde, 1.º y 2.º), uno sin elegir (azul) y uno caído (rojo).
+  const name = (id: string) => (namesEs.species as Record<string, string>)[id] ?? id
+  const unova = unovaCatalog.encounters as never as Parameters<typeof routePlaces>[0]
+  const mon = (id: string, species: string, fainted = false) => ({ id, species, name: name(species), level: 52, hp: 160, fainted })
+  createRoot(document.getElementById('root')!).render(
+    <div style={{ display: 'flex', justifyContent: 'center', padding: 8 }}>
+      <UnovaLeagueScreen rival={unova[10]} beaten={2} roster={null} speciesName={name} onAccept={() => undefined} onCancel={() => undefined} scale={2}
+        members={[mon('a', 'samurott'), mon('b', 'excadrill'), mon('c', 'zoroark'), mon('d', 'chandelure', true)]} />
     </div>,
   )
 } else if (shareMode === 'estados') {

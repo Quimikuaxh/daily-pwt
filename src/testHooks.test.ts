@@ -9,6 +9,11 @@ describe('ganchos de prueba ?trainer= y ?variant= (DEC-17)', () => {
     expect(readTestHooks('?trainer=brock&variant=brock-world-leaders')).toMatchObject({ trainer: 'brock', variant: 'brock-world-leaders' })
   })
 
+  it('el antiguo gancho de Teselia se ignora', () => {
+    vi.stubEnv('VITE_TEST_HOOKS', '1')
+    expect(readTestHooks('?campaign=teselia')).not.toHaveProperty('campaign')
+  })
+
   it('una variante sin entrenador se ignora', () => {
     vi.stubEnv('VITE_TEST_HOOKS', '1')
     expect(readTestHooks('?variant=brock-world-leaders')).toMatchObject({ trainer: undefined, variant: undefined })

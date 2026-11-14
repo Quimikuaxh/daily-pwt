@@ -1493,6 +1493,8 @@ img.sprite,
 .modes-text { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
 .modes-label { font-size: 1.15em; }
 .modes-hint { margin: 0; }
+/* «En curso · Medallas n/8»: la campaña con la partida guardada (Jose, 14/11/2026), en el amarillo de los avisos del juego. */
+.modes-progress { margin: 0; color: #f8d030; }
 .modes-option[aria-current="page"] .modes-hint { color: #f0d8e0; }
 
 /* Miniatura de cada modo: capas en pixel art sobre un fondo recortado. */

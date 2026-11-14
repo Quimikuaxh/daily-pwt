@@ -2,20 +2,41 @@
  * Evoluciones de la Liga (D7, opción A aprobada el 11/11/2026): qué miembros evolucionan y a qué formas finales (las del núcleo,
  * `leagueEvolutionTargets`), y la secuencia de mensajes de la escena por miembro. Los de una forma no preguntan; los de varias, sí.
  */
-import { leagueEvolutionTargets, type CampaignDefinition, type CampaignState } from '../../core/nuzlocke/campaign'
+import { leagueEvolutionOptions, type CampaignDefinition, type CampaignState } from '../../core/nuzlocke/campaign'
+import { campaignEvolutionItems } from '../../core/nuzlocke/calendar'
 import emeraldSprites from '../../generated/emerald/sprites.json'
 
-export type LeagueEvolution = { id: string; species: string; level: number; targets: string[] }
+/**
+ * Un miembro que cambia de forma en la Liga: las formas a las que puede llegar (`targets`) y los objetos de evolución que gasta cada una
+ * (`items`; las que no gastan nada, sin entrada). Una de las formas puede ser la suya, si solo evoluciona con objeto (Gloom).
+ */
+export type LeagueEvolution = { id: string; species: string; level: number; targets: string[]; items?: Readonly<Record<string, readonly string[]>> }
 
-/** Miembros vivos que cambian de forma en la Liga, en el orden de la campaña. */
+/** Miembros vivos que cambian de forma en la Liga, en el orden de la campaña, con los objetos de evolución libres. */
 export function leagueEvolutions(definition: CampaignDefinition, state: CampaignState): LeagueEvolution[] {
+  const free = campaignEvolutionItems(definition, state)
   return state.members.flatMap((member) => {
     if (member.fainted) return []
-    const targets = leagueEvolutionTargets(definition, member.species)
-    if (!targets.length || (targets.length === 1 && targets[0] === member.species)) return []
-    return [{ id: member.id, species: member.species, level: member.level, targets }]
+    const options = leagueEvolutionOptions(definition, member.species, member.gender, free)
+    if (!options.length || (options.length === 1 && options[0].target === member.species)) return []
+    const items = Object.fromEntries(options.filter((option) => option.items.length).map((option) => [option.target, option.items]))
+    return [{ id: member.id, species: member.species, level: member.level, targets: options.map((option) => option.target), ...(Object.keys(items).length ? { items } : {}) }]
   })
 }
+
+/**
+ * Formas que le quedan a un miembro según lo elegido por los anteriores: cada objeto de evolución se gasta una vez (evolveForLeague los
+ * reparte en el mismo orden).
+ */
+export function availableTargets(evolutions: readonly LeagueEvolution[], index: number, choices: EvolutionChoices): string[] {
+  const used = new Set(evolutions.slice(0, index).flatMap((evolution) => evolution.items?.[choices[evolution.id] ?? ''] ?? []))
+  const current = evolutions[index]
+  return current.targets.filter((target) => (current.items?.[target] ?? []).every((item) => !used.has(item)))
+}
+
+/** Si a un miembro ya no le queda nada que hacer en la escena (solo su propia forma). */
+export const nothingLeft = (evolution: LeagueEvolution, targets: readonly string[]): boolean =>
+  targets.length === 0 || (targets.length === 1 && targets[0] === evolution.species)
 
 /** Paso de la escena de un miembro: anuncio, pregunta (si hay varias formas) y resultado. */
 export type EvolutionStep = 'evolving' | 'choose' | 'animating' | 'evolved'

@@ -14,6 +14,7 @@ import { esCampaign } from './i18n/esCampaign'
 import { LocalStorageStore } from './storage/localStorageStore'
 import { clearSettings, DEFAULT_SETTINGS, loadSettings, saveSettings, type Settings } from './storage/settings'
 import { browserStorage } from './storage/browserStorage'
+import { readCampaignSummary } from './storage/campaignSummary'
 import { clearWelcome } from './storage/welcomePrompt'
 import type { MenuContext } from './ui/menu/AppMenu'
 import type { BattleMode, DayRecord, GameStore, VoidReason } from './storage/gameStore'
@@ -34,9 +35,10 @@ const LiveScreen = lazy(() => import('./ui/replay/replayModule').then((module) =
 // Campaña Nuzlocke de Hoenn (D7): aparte, fuera de la ruta crítica del reto diario.
 const loadCampaignScreen = () => import('./ui/campaign/CampaignScreen')
 const CampaignScreen = lazy(loadCampaignScreen)
-// Teselia (DEC-106): su kit va en su propio bloque. Por ahora solo con el gancho ?campaign=teselia; la entrada de Modos de juego, después.
-const UnovaCampaignScreen = lazy(() => Promise.all([loadCampaignScreen(), import('./ui/campaign-unova/unovaKit')])
-  .then(([screen, { unovaKit }]) => ({ default: (props: ComponentProps<typeof screen.default>) => <screen.default {...props} kit={unovaKit} /> })))
+// Teselia (DEC-106): su kit va en su propio bloque, también al precargar desde Modos de juego.
+const loadUnovaCampaignScreen = () => Promise.all([loadCampaignScreen(), import('./ui/campaign-unova/unovaKit')])
+  .then(([screen, { unovaKit }]) => ({ default: (props: ComponentProps<typeof screen.default>) => <screen.default {...props} kit={unovaKit} /> }))
+const UnovaCampaignScreen = lazy(loadUnovaCampaignScreen)
 
 type AppProps = {
   data: GameData | null
@@ -60,10 +62,12 @@ type Screen =
   | { name: 'replay'; source: ReplaySource; back?: Screen }
   // Directo (RF-111c): el oficial en curso de un amigo que ha aceptado.
   | { name: 'live'; nickname: string }
-  // Campaña Nuzlocke de Hoenn (D7).
-  | { name: 'campaign' }
+  // Campañas Nuzlocke (D7).
+  | { name: 'campaign'; region: 'hoenn' | 'unova' }
 
 const noSubscription = () => () => {}
+/** Gimnasios de cada campaña Nuzlocke antes de la Liga (Hoenn y Teselia). */
+const CAMPAIGN_GYMS = 8
 
 /**
  * Sprite del rival y equipo de un combate del historial (F5): el reto es determinista, así que sale de la fecha, el rival y la variante con
@@ -89,6 +93,8 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
   const [account, setAccount] = useState(null as Account | null)
   const [accountFailed, setAccountFailed] = useState(false)
   const accountState = useSyncExternalStore(account?.subscribe ?? noSubscription, account?.getState ?? (() => (accountFailed ? OFFLINE : cloud ? CONNECTING : DISABLED)))
+  const campaignCloud = account && accountState.status === 'signedIn' ? account.campaign : undefined
+  const campaignCloudState = useSyncExternalStore(campaignCloud?.subscribe ?? noSubscription, campaignCloud?.getState ?? (() => null))
   // Con sesión de Google, la caché de la cuenta; si no, el historial de este navegador.
   const store = account && accountState.status === 'signedIn' ? account.store : localStore
   // Nickname del jugador (pancarta VS de sus combates y repeticiones); sin cuenta o sin nombre, sale el del protagonista.
@@ -172,10 +178,26 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
     saveSettings(browserStorage(), next)
   }
 
+  // La cuenta no usa el registro local como respaldo mientras carga. Un guardado local dañado se conserva sin anunciar progreso.
+  const savedCampaign = (() => {
+    if (campaignCloud) return campaignCloudState?.status === 'loading' ? null : campaignCloudState?.record?.state ?? null
+    return readCampaignSummary(browserStorage())
+  })()
+  const campaignProgress = (unova: boolean) => {
+    if (!savedCampaign || savedCampaign.phase === 'lost' || (savedCampaign.campaign === 'unova-n2b2') !== unova) return undefined
+    // Las dos campañas tienen ocho gimnasios antes de la Liga: basta el tramo, sin importar catálogos ni kits en el bloque del reto diario.
+    const inLeague = savedCampaign.encounterIndex >= CAMPAIGN_GYMS
+    const badges = Math.min(CAMPAIGN_GYMS, savedCampaign.encounterIndex + (savedCampaign.phase === 'won' ? 1 : 0))
+    return inLeague ? esCampaign.inProgressLeague : esCampaign.inProgressBadges(badges)
+  }
+
   const menu: MenuContext = {
     trainerName: (trainerId) => data?.trainers.find((trainer) => trainer.id === trainerId)?.nameEs ?? trainerId,
     onWatchReplay: (date) => setScreen({ name: 'replay', source: { kind: 'mine', date } }),
-    modes: [{ id: 'nuzlocke-hoenn', label: esCampaign.entry, hint: esCampaign.entryHint, onOpen: () => setScreen({ name: 'campaign' }), prefetch: () => { void loadCampaignScreen() } }],
+    modes: [
+      { id: 'nuzlocke-hoenn', label: esCampaign.entry, hint: esCampaign.entryHint, progress: campaignProgress(false), onOpen: () => setScreen({ name: 'campaign', region: 'hoenn' }), prefetch: () => { void loadCampaignScreen() } },
+      { id: 'nuzlocke-teselia', label: esCampaign.unova.entry, hint: esCampaign.unova.entryHint, progress: campaignProgress(true), onOpen: () => setScreen({ name: 'campaign', region: 'unova' }), prefetch: () => { void loadUnovaCampaignScreen() } },
+    ],
     onWatchFriendReplay: (nickname, date) => setScreen({ name: 'replay', source: { kind: 'friend', nickname, date } }),
     onWatchLive: (nickname) => setScreen({ name: 'live', nickname }),
     historyArt: (item) => historyArtFor(item, data),
@@ -257,7 +279,7 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
     return (
       <Suspense fallback={null}>
         {(() => {
-          const Screen = hooks.campaign === 'teselia' ? UnovaCampaignScreen : CampaignScreen
+          const Screen = screen.region === 'unova' ? UnovaCampaignScreen : CampaignScreen
           return (
             <Screen data={data} playerName={campaignName} onExit={() => setScreen({ name: 'today' })}
               sound={settings} onSoundChange={(sound) => changeSettings({ ...settings, ...sound })}

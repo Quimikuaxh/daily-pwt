@@ -7,6 +7,8 @@ import { LocalCampaignStore } from '../../storage/campaignStore'
 import { MemoryStorage } from '../../test-utils/memoryStorage'
 import { campaignDefinition, mockCampaignCanvas } from '../../test-utils/campaignUi'
 import CampaignScreen from './CampaignScreen'
+import { unovaKit } from '../campaign-unova/unovaKit'
+import { esCampaign } from '../../i18n/esCampaign'
 
 mockCampaignCanvas()
 const data = loadGameData()
@@ -265,3 +267,35 @@ describe('Campaña de Hoenn', () => {
   })
 })
 
+
+describe('Sustituir la campaña de la otra región (UT-229)', () => {
+  it.each([false, true])('cancelar conserva el registro y aceptar sustituye (Teselia: %s)', async (unova) => {
+    const store = new LocalCampaignStore(new MemoryStorage())
+    store.write(createCampaign('otra-region', undefined, unova ? undefined : 'unova-n2b2'), null, 0)
+    const before = store.read()
+    const user = userEvent.setup()
+    render(<CampaignScreen data={data} store={store} kit={unova ? unovaKit : undefined} newSeed={() => 'nueva-region'} onExit={() => undefined} />)
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false)
+    await user.click(screen.getByRole('button', { name: 'Empezar campaña' }))
+    expect(confirm).toHaveBeenCalledWith(esCampaign.replaceOtherConfirm(unova))
+    expect(store.read()).toEqual(before)
+    expect(screen.queryByRole('dialog', { name: 'Dificultad de la campaña' })).not.toBeInTheDocument()
+    confirm.mockReturnValue(true)
+    await user.click(screen.getByRole('button', { name: 'Empezar campaña' }))
+    expect(store.read()).toEqual(before)
+    await user.click(await screen.findByRole('button', { name: 'Empezar' }))
+    expect(store.read()?.state).toEqual({ ...createCampaign('nueva-region', undefined, unova ? 'unova-n2b2' : 'hoenn-emerald'), startedAt: expect.any(Number) })
+    expect(store.read()?.revision).toBe(before!.revision + 1)
+  })
+
+  it.each([false, true])('la otra campaña perdida no pide confirmación (Teselia: %s)', async (unova) => {
+    const store = new LocalCampaignStore(new MemoryStorage())
+    store.write({ ...createCampaign('perdida', undefined, unova ? undefined : 'unova-n2b2'), phase: 'lost' }, null, 0)
+    const user = userEvent.setup()
+    render(<CampaignScreen data={data} store={store} kit={unova ? unovaKit : undefined} onExit={() => undefined} />)
+    const confirm = vi.spyOn(window, 'confirm')
+    await user.click(screen.getByRole('button', { name: 'Empezar campaña' }))
+    expect(await screen.findByRole('dialog', { name: 'Dificultad de la campaña' })).toBeInTheDocument()
+    expect(confirm).not.toHaveBeenCalled()
+  })
+})

@@ -9,21 +9,17 @@
 import { useRef, useState } from 'react'
 import { ConsoleStage } from '../console/ConsoleStage'
 import { n2b2Theme } from '../console/themes/n2b2'
-import { MemberIcon } from '../battle/party/MemberIcon'
 import { uiAsset } from '../common/uiAssets'
-import { TypeBadge } from '../common/TypeBadge'
 import { trainerSprite } from '../common/spriteUrls'
 import { imagesReady } from '../battle/preloadAssets'
 import { usePreloadImages } from '../campaign/usePreloadImages'
 import { esCampaign } from '../../i18n/esCampaign'
 import { placeState, type CampaignEncounter, type PlaceState, type RoutePlace } from '../campaign/hoennRoute'
 import { MAP_TOP, n2b2Ui, unovaVars } from './unovaRoute'
-import { UnovaTitle } from './UnovaTitle'
+import { GRID_TOP, UnovaRivalCard } from './UnovaRivalCard'
 import './unova.css'
 
 const t = esCampaign.unova
-/** Primera fila de la cuadrícula del equipo (2 columnas x 3 filas de 22 px, todo a 13 px: Jose, 14/11/2026). */
-const GRID_TOP = 86
 const route = esCampaign.route
 
 export type UnovaRouteScreenProps = {
@@ -76,6 +72,9 @@ export function UnovaRouteScreen({ places, badges, speciesName, league, showBadg
     if (!league) return
     whenReady(league.rivals[leagueIndex + delta], () => setLeagueIndex(leagueIndex + delta))
   }
+  // En la Liga, flechas a los lados para pasar por sus cinco rivales.
+  const neighbour = (delta: number) => (league?.rivals[leagueIndex + delta] ? route.leagueRivalLabel(league.rivals[leagueIndex + delta].nameEs) : null)
+  const arrows = leagueRival && league ? { previous: neighbour(-1), next: neighbour(1), onStep: step } : undefined
 
   return (
     <ConsoleStage theme={n2b2Theme} scale={scale} reservedHeight={reservedHeight} screens={[(
@@ -97,41 +96,9 @@ export function UnovaRouteScreen({ places, badges, speciesName, league, showBadg
         <span className="unova-route-cursor" aria-hidden="true" style={{ left: place.x - 9, top: MAP_TOP + place.y - 9 }} />
       </div>
     ), (
-      <div key="card" className="unova-card" style={unovaVars()} role="region" aria-label={route.cardLabel(place.rival.nameEs)}>
-        <span className="unova-panel" style={{ left: 8, top: 4, width: 240, height: 150 }} />
-        <UnovaTitle x={11} y={9} width={234} title={title} />
-        {type && <span className="unova-type" style={{ right: 17, top: 12 }}><TypeBadge typeName={type} label={t.typeNames[type]} /></span>}
-        <span className="unova-card-trainer">
-          <img src={trainerSprite(place.rival.id)} alt="" />
-        </span>
-        {lines.map((line, i) => (
-          <span key={i} className={`unova-text${i === 1 && state === 'next' ? ' unova-gold' : ' unova-soft'}`} style={{ left: 74, top: 36 + i * 15 }}>{line}</span>
-        ))}
-        <ul className="unova-card-team" aria-label={route.cardLabel(place.rival.nameEs)}>
-          {Array.from({ length: 6 }, (_, slot) => {
-            const member = place.rival.team[slot]
-            return (
-              <li key={slot} className="unova-bar-off" style={{ left: 11 + (slot % 2) * 118, top: GRID_TOP + Math.floor(slot / 2) * 22 }}
-                aria-label={member ? route.memberLabel(speciesName(member.species), member.level) : undefined} aria-hidden={member ? undefined : true}>
-                {member && (
-                  <>
-                    <span className="unova-card-icon"><MemberIcon spriteId={member.species} /></span>
-                    <span className="unova-text unova-card-name">{speciesName(member.species)}</span>
-                    <span className="unova-text unova-soft unova-card-level">{t.level(member.level)}</span>
-                  </>
-                )}
-              </li>
-            )
-          })}
-        </ul>
-        {leagueRival && league && leagueIndex > 0 && (
-          <button type="button" className="unova-text unova-arrow" style={{ left: 0, top: 60 }} onClick={() => step(-1)}
-            aria-label={route.leagueRivalLabel(league.rivals[leagueIndex - 1].nameEs)}>‹</button>
-        )}
-        {leagueRival && league && leagueIndex < league.rivals.length - 1 && (
-          <button type="button" className="unova-text unova-arrow" style={{ left: 246, top: 60 }} onClick={() => step(1)}
-            aria-label={route.leagueRivalLabel(league.rivals[leagueIndex + 1].nameEs)}>›</button>
-        )}
+      <UnovaRivalCard key="card" rival={place.rival} title={title} type={type} lines={lines} goldLine={state === 'next' ? 1 : null}
+        speciesName={speciesName}
+        arrows={arrows}>
         {showBadges && (
           <div className="unova-card-badges" style={{ top: GRID_TOP + 3 * 22 + 6 }} aria-label={route.medals(badges)} role="img">
             <span className="unova-bar-off" style={{ left: 0, top: 0, width: 240, height: 30 }} />
@@ -142,7 +109,7 @@ export function UnovaRouteScreen({ places, badges, speciesName, league, showBadg
             ))}
           </div>
         )}
-      </div>
+      </UnovaRivalCard>
     )]} />
   )
 }

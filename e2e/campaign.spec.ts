@@ -58,6 +58,8 @@ test('T3 Hoy → Modos → Ruta → cuatro elecciones de Petra → Ruta → Hoy'
 async function playCampaignBattle(page: import('@playwright/test').Page, { reloadAt }: { reloadAt?: number } = {}) {
   const battle = page.locator('.emerald-battle')
   await expect(battle).toBeVisible()
+  // Diagnóstico (PENDIENTE, «T4 se queda en el cambio forzado»): cuántas veces seguidas se cerró el menú de un Pokémon sin poder cambiarlo.
+  let closedInARow = 0
   for (let step = 0; step < 600; step++) {
     if (!(await battle.count())) return
     if (step === reloadAt) {
@@ -73,8 +75,7 @@ async function playCampaignBattle(page: import('@playwright/test').Page, { reloa
     const fight = battle.getByRole('button', { name: 'LUCHAR' })
     // Los mensajes avanzan solos: un botón visto puede desaparecer antes del clic, así que cada clic espera poco y el bucle sigue.
     const tap = (target: import('@playwright/test').Locator) => target.click({ timeout: 1500 }).catch(() => undefined)
-    if (await yes.count()) await tap(yes.first())
-    else if (await closeMenu.count()) await tap(closeMenu)
+    if (await yes.count()) { closedInARow = 0; await tap(yes.first()) } else if (await closeMenu.count()) { closedInARow += 1; await tap(closeMenu) }
     else if (await next.count()) await tap(next)
     else if (await fight.count()) {
       await tap(fight)
@@ -95,7 +96,10 @@ async function playCampaignBattle(page: import('@playwright/test').Page, { reloa
       await page.waitForTimeout(100)
     }
   }
-  throw new Error('El combate de campaña no terminó')
+  // Al rendirse, el estado en que se quedó: el mensaje, los botones CAMBIAR (y si están desactivados) y el menú cerrado sin cambiar.
+  const status = await battle.getByRole('status').allTextContents().catch(() => [])
+  const switches = await battle.locator('button[aria-label^="Cambiar a "]').evaluateAll((buttons) => buttons.map((button) => `${button.getAttribute('aria-label')}${button.getAttribute('aria-disabled') ? ' (desactivado)' : ''}`))
+  throw new Error(`El combate de campaña no terminó: «${status.join(' | ')}»; CAMBIAR: ${switches.join(', ') || 'ninguno a la vista'}; menú cerrado sin cambiar ${closedInARow} veces seguidas`)
 }
 
 test('T4 combate de campaña contra Petra con el motor: se reanuda tras recargar y al acabar vuelve a la Ruta con la campaña guardada', async ({ page }) => {

@@ -124,6 +124,20 @@ export function loadN2b2Rivals() {
   return encounters.map((encounter) => ({ id: encounter.id, nameEs: encounter.nameEs, sprite: assertSafeSpriteId('sprite de entrenador', encounter.id) }))
 }
 
+/** Protagonistas de N2/B2 (Nate y Rosa) para Modos de juego y las pantallas de la locke: los de Showdown, que son los del juego. */
+export const N2B2_PROTAGONISTS = ['nate', 'rosa']
+
+async function fetchProtagonists() {
+  const failures = []
+  for (const id of N2B2_PROTAGONISTS) {
+    const relativePath = `trainers/${id}.png`
+    if (hasValidImage(relativePath, 'png')) continue
+    if (!await download(`${SHOWDOWN_SPRITES_URL}/trainers/${id}.png`, relativePath, 'png')) failures.push(relativePath)
+    await sleep(PAUSE_BETWEEN_REQUESTS_MS)
+  }
+  return failures
+}
+
 async function fetchPokemonSprites(spriteIds) {
   const failures = []
   for (const spriteId of spriteIds) {
@@ -254,10 +268,10 @@ async function fetchAll() {
 }
 
 // `--substitute`: solo el muñeco del sustituto (el resto tarda por los iconos de WikiDex que faltan).
-// `--n2b2`: solo los Pokémon de la locke de N2/B2 (las 649 especies).
+// `--n2b2`: solo lo de la locke de N2/B2: las 649 especies, sus 13 rivales y los protagonistas (Nate y Rosa).
 if (isMain(import.meta.url)) {
   const failures = process.argv.includes('--substitute') ? await fetchSubstituteSprites()
-    : process.argv.includes('--n2b2') ? [...await fetchPokemonSprites(loadN2b2Targets()), ...await fetchTrainerSprites(loadN2b2Rivals())] : await fetchAll()
+    : process.argv.includes('--n2b2') ? [...await fetchPokemonSprites(loadN2b2Targets()), ...await fetchTrainerSprites(loadN2b2Rivals()), ...await fetchProtagonists()] : await fetchAll()
   if (failures.length) {
     console.error(`Faltan ${failures.length} sprites: ${failures.join(', ')}`)
     process.exitCode = 1

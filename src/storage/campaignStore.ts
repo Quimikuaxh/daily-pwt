@@ -2,7 +2,9 @@ import type { CampaignState } from '../core/nuzlocke/campaign'
 import type { SavedCampaignBattle } from '../battle/protocol'
 import { validCampaignRecord } from './campaignValidation'
 
-export const CAMPAIGN_STORAGE_KEY = 'daily-pwt:nuzlocke:v1'
+import { CAMPAIGN_STORAGE_KEY } from './campaignSummary'
+
+export { CAMPAIGN_STORAGE_KEY }
 export type CampaignRecord = { version: 1; revision: number; state: CampaignState; battle: SavedCampaignBattle | null }
 export interface CampaignStore {
   readonly persistent: boolean

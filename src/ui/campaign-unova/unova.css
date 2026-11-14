@@ -319,3 +319,35 @@
 .console-screen .unova-shop-row[aria-current="true"] { background: #ffec96; }
 .unova-shop-mon { left: -6px; top: -6px; width: 22px; height: 20px; overflow: hidden; }
 .unova-shop-mon .bt-member-icon { left: -9px; top: -6px; transform: scale(0.75); transform-origin: 50% 50%; }
+
+/* Evolución: escena oscura con halo (radial) detrás del Pokémon, su sprite de 5.ª generación abajo al centro y las siluetas blancas de
+   la animación; la franja de mensajes y la pantalla táctil son las del combate del diario (battle.css). */
+.unova-evo-scene { position: relative; width: 256px; height: 192px; overflow: hidden; background: #0a0e24; }
+.unova-evo-halo {
+  position: absolute;
+  left: 38px;
+  top: 4px;
+  width: 180px;
+  height: 140px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(170 200 255 / 0.85), rgb(120 160 255 / 0.35) 55%, transparent);
+}
+.unova-evo-mon { position: absolute; left: 50%; bottom: 52px; transform: translate(-50%, 0); transform-origin: 50% 100%; image-rendering: pixelated; }
+.unova-evo-silhouette { filter: brightness(0) invert(1); }
+.unova-evo-touch .bt-move-name { font-size: 16px; }
+.unova-evo-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 156px;
+  text-align: center;
+  font-size: 13px;
+  color: #303038;
+}
+
+/* Liga: la pantalla de equipo del diario (256 x 384) subida 192 px para que se vea su mitad de abajo en la pantalla de abajo; el orden del
+   participante en su placa, donde va el sexo; ACEPTAR en la placa de la barra (la del botón RIVAL del cambio forzado). */
+.unova-league-party { position: relative; top: -192px; width: 256px; height: 384px; }
+.unova-league-order { color: #f8d030; }
+.unova-league-prompt { width: 132px; }
+.bt-party .unova-league-accept { left: 136px; width: 64px; color: #f8f8f8; font-size: 13px; }

@@ -20,7 +20,7 @@ const t = esCampaign.league
 
 export type LeagueMember = { id: string; species: string; name: string; level: number; hp: number; fainted: boolean }
 
-type LeagueScreenProps = {
+export type LeagueScreenProps = {
   rival: CampaignEncounter
   beaten: number
   /** Los del equipo (hasta 6), en su orden. */

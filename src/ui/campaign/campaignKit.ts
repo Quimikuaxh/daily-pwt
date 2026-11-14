@@ -22,6 +22,8 @@ import { TeamScreen, type TeamScreenProps as HoennTeamProps } from './TeamScreen
 import { MovesScreen, type MovesScreenProps as HoennMovesProps } from './MovesScreen'
 import { BagScreen, type BagScreenProps as HoennBagProps } from './BagScreen'
 import { ExchangeScreen, type ExchangeScreenProps as HoennExchangeProps } from './ExchangeScreen'
+import { EvolutionScene, type EvolutionSceneProps as HoennEvolutionProps } from './EvolutionScene'
+import { LeagueScreen, type LeagueScreenProps } from './LeagueScreen'
 import { bagContents, itemText as emeraldItemText, machineItems, machineLabel, type BagItem, type Pocket } from './bagModel'
 import { emeraldMoveName } from './emeraldNames'
 import { campaignEvolutionItems } from '../../core/nuzlocke/calendar'
@@ -62,6 +64,9 @@ export type ExchangeScreenProps = HoennExchangeProps & {
   owned: (id: string) => number
   team: readonly { species: string; name: string; item: string | null }[]
 }
+
+/** Lo que recibe la escena de evolución de cualquier campaña: Teselia usa además `data` (sus sprites de 5.ª generación). */
+export type EvolutionSceneProps = HoennEvolutionProps & { data: GameData }
 
 /** Lo que recibe la pantalla Ruta de cualquier campaña. */
 export type RouteScreenProps = {
@@ -106,6 +111,8 @@ export type CampaignKit = {
     Moves: ComponentType<MovesScreenProps>
     Bag: ComponentType<BagScreenProps>
     Exchange: ComponentType<ExchangeScreenProps>
+    Evolution: ComponentType<EvolutionSceneProps>
+    League: ComponentType<LeagueScreenProps>
     CampaignCard: ComponentType<CampaignCardProps>
     TeamPanel: ComponentType<TeamPanelProps>
   }
@@ -144,7 +151,7 @@ export const hoennKit: CampaignKit = {
   itemName: emeraldItemName,
   itemText: emeraldItemText,
   speciesLabel: (name) => name.toUpperCase(),
-  screens: { Route: RouteScreen, Draft: DraftScreen, Team: TeamScreen, Moves: MovesScreen, Bag: BagScreen, Exchange: ExchangeScreen, CampaignCard, TeamPanel },
+  screens: { Route: RouteScreen, Draft: DraftScreen, Team: TeamScreen, Moves: MovesScreen, Bag: BagScreen, Exchange: ExchangeScreen, Evolution: EvolutionScene, League: LeagueScreen, CampaignCard, TeamPanel },
   // OBJ. EVOL. y MT/MO, solo para mirar, con los nombres y descripciones de Esmeralda.
   bagContents: (state, pocket, memberId, data) => {
     if (pocket === 'evolution') {

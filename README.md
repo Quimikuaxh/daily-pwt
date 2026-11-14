@@ -21,6 +21,14 @@ En F1 no hay límite de un combate oficial al día ni persistencia: un mismo ret
 
 Fecha de lanzamiento (`#1`): 2026-10-24 (ver [Configuración](#lanzamiento-launch_date)).
 
+## Campañas Nuzlocke
+
+Abre «Modos de juego» y elige «Nuzlocke de Hoenn» (Esmeralda) o «Nuzlocke de Teselia» (Negro 2 y Blanco 2, con pantallas en desarrollo). No hace falta una URL de prueba para Teselia.
+
+Solo hay una partida de campaña por navegador o cuenta. «En curso · Medallas n/8» o «En curso · Liga» identifica la guardada; con cuenta aparece cuando su estado está cargado. Empezar la otra campaña pide confirmar la pérdida de la anterior, salvo si ya está perdida. La sustitución se guarda al aceptar la dificultad.
+
+El kit, el catálogo de rivales y la progresión de Teselia se cargan en un bloque separado mediante `import()`; el calendario y los objetos se importan desde las reglas comunes de campaña (`rules.ts`). El indicador de «En curso» usa los ocho gimnasios que tienen las dos campañas antes de la Liga, así que el menú no importa ningún catálogo ni kit en el bloque del reto diario.
+
 ## Requisitos
 
 - Node.js `>=22.12.0` (campo `engines` de `package.json`).

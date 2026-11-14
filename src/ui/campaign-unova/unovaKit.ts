@@ -18,6 +18,8 @@ import { UnovaMovesScreen } from './UnovaMovesScreen'
 import { UnovaBagScreen } from './UnovaBagScreen'
 import { unovaBagContents } from './unovaBag'
 import { UnovaExchangeScreen } from './UnovaExchangeScreen'
+import { UnovaEvolutionScene } from './UnovaEvolutionScene'
+import { UnovaLeagueScreen } from './UnovaLeagueScreen'
 import descriptions from '../../generated/descriptions-es.json'
 import names from '../../generated/names-es.json'
 import { UNOVA_PLACES, unovaVars } from './unovaRoute'
@@ -47,7 +49,7 @@ export const unovaKit: CampaignKit = {
   itemName: (id) => (names.items as Record<string, string>)[id] ?? id,
   itemText: (id) => (descriptions.items as Record<string, string>)[id] ?? '',
   speciesLabel: (name) => name,
-  screens: { Route: UnovaRouteScreen, Draft: UnovaDraftScreen, Team: UnovaTeamScreen, Moves: UnovaMovesScreen, Bag: UnovaBagScreen, Exchange: UnovaExchangeScreen, CampaignCard: UnovaCampaignCard, TeamPanel: UnovaTeamPanel },
+  screens: { Route: UnovaRouteScreen, Draft: UnovaDraftScreen, Team: UnovaTeamScreen, Moves: UnovaMovesScreen, Bag: UnovaBagScreen, Exchange: UnovaExchangeScreen, Evolution: UnovaEvolutionScene, League: UnovaLeagueScreen, CampaignCard: UnovaCampaignCard, TeamPanel: UnovaTeamPanel },
   bagContents: (state, pocket, memberId, data) => unovaBagContents(state, pocket, memberId, unovaDefinition, data),
   console: { w: 256, h: 384 },
   modeLabel: esCampaign.unova.modeLabel,
