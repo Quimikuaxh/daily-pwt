@@ -279,7 +279,7 @@ Pasos, en este orden (cada uno depende del anterior):
 - **Muñeco del sustituto** (27/10/2026): en el repo (lo bajó Jose) y recortado a su contenido para que pise la plataforma como los Pokémon (DEC-61, UT-89). Revisado con captura: rival y jugador en su sitio.
 
 ## Pantalla de equipo y de datos
-- **Poder Oculto y los IV del jugador:** como los IV del jugador son iguales en las seis características, su Poder Oculto es siempre Lucha 30, Siniestro 30 o Lucha 70 (DEC-54), aunque el set de Smogon pensara en otro tipo. Si se quiere respetar el tipo previsto habría que darle IV distintos (decisión de producto, ver PRD §0 «IVs, EVs y naturaleza del jugador»).
+- **Poder Oculto y los IV del jugador:** desde el 15/11/2026 la potencia es siempre 60 (DEC-100); el tipo sigue saliendo de los IV. Como los IV del jugador son iguales en las seis características, su Poder Oculto es siempre de tipo Lucha o Siniestro (DEC-54), aunque el set de Smogon pensara en otro tipo. Si se quiere respetar el tipo previsto habría que darle IV distintos (decisión de producto, ver PRD §0 «IVs, EVs y naturaleza del jugador»).
 - **Mochila = equipo rival:** hecho (DEC-52).
 - **Fondo de la pantalla de datos de N2/B2:** el actual es el de Negro/Blanco (limpiado por script de capturas de Bulbagarden Archives). Si aparece un rip limpio de N2/B2, sustituir las URLs de `battle/summary/*` en `data/ui-assets.json` y quitar sus `cleanups`.
 - **Descripciones en español:** son de Pokémon X/Y (primera edición con español en PokeAPI), no de N2/B2.

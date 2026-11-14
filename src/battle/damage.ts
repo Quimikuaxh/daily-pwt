@@ -63,6 +63,8 @@ function calcMove(moveId: string, generation: Generation, set: BattleSet): Move 
   const move = generation.moves.get(id as never)
   if (!move) throw new Error(`Movimiento desconocido para el cálculo de daño: ${moveId}`)
   let basePower = power?.power
+  // Potencia fija (DEC-100): el calculador daría 70 a la variante con tipo.
+  if (set.hiddenPowerPower !== undefined && moveId.startsWith('hiddenpower')) basePower = set.hiddenPowerPower
   if (set.happiness !== undefined && (moveId === 'return' || moveId === 'frustration')) {
     const happiness = Math.max(0, Math.min(255, set.happiness))
     basePower = Math.max(1, Math.floor((moveId === 'return' ? happiness : 255 - happiness) * 10 / 25))

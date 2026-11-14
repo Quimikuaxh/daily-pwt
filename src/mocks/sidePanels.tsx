@@ -10,7 +10,7 @@ import { GameWindow } from '../ui/console/GameWindow'
 import { emeraldSprite, emeraldTheme } from '../ui/console/themes/emerald'
 import { PartySlot } from '../ui/campaign/PartySlot'
 import { TeamPanel } from '../ui/campaign/CampaignSide'
-import { StatusBadge } from '../ui/campaign/EmeraldBattle'
+import { HpBar, StatusBadge } from '../ui/campaign/EmeraldBattle'
 import { healthbox } from '../ui/campaign/emeraldBattleModel'
 
 const PANEL = { w: 184, h: 296 }
@@ -207,9 +207,16 @@ export function StatusMock(): ReactNode {
     return (
       <div key={status} style={{ left: 0, top: i * 40 - 10, width: 240, height: 40 }}>
         <img src={emeraldTheme.asset(rival.image)} alt="" style={{ left: rival.left, top: rival.top - 20 }} />
-        <div style={{ left: 0, top: -20, width: 240, height: 40 }}><StatusBadge status={status} x={rival.status.x} y={rival.status.y} coverLabel /></div>
+        {/* Mismo orden que el combate: la barra y, encima, el icono. */}
+        <div style={{ left: 0, top: -20, width: 240, height: 40 }}>
+          <HpBar x={rival.bar.x} y={rival.bar.y} ratio={0.6} />
+          <StatusBadge status={status} x={rival.status.x} y={rival.status.y} coverLabel />
+        </div>
         <img src={emeraldTheme.asset(player.image)} alt="" style={{ left: player.left, top: player.top - 72 }} />
-        <div style={{ left: 0, top: -72, width: 240, height: 120 }}><StatusBadge status={status} x={player.status.x} y={player.status.y} /></div>
+        <div style={{ left: 0, top: -72, width: 240, height: 120 }}>
+          <HpBar x={player.bar.x} y={player.bar.y} ratio={0.6} />
+          <StatusBadge status={status} x={player.status.x} y={player.status.y} />
+        </div>
       </div>
     )
   })

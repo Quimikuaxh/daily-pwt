@@ -443,3 +443,6 @@
 /* Sin la capa del diario (z-index: 2): la caja de texto y las de PS van por delante, como en el juego (Jose, 13/11/2026); y con el
    tamaño de la pantalla de Esmeralda, no el de la DS (si no, se estiraba). */
 .console-screen .bt-fx { left: 0; top: 0; z-index: auto; width: 240px; height: 160px; pointer-events: none; image-rendering: pixelated; }
+
+/* Fallo del combate (no arranca el motor o falla un guardado): el aviso con «Reintentar», encima de la consola para que se vea en móvil. */
+.emerald-battle-failed { order: -1; margin-top: 0.75rem; }

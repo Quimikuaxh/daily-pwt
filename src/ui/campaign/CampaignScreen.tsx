@@ -23,7 +23,7 @@ import { candidateOf, emeraldDex } from './draftModel'
 import { DraftScreen } from './DraftScreen'
 import { badgeCount, routePlaces, type CampaignEncounter } from './hoennRoute'
 import { RouteScreen } from './RouteScreen'
-import { fittingLayout, initialLayout, teamMonOf, type TeamLayout } from './teamModel'
+import { fittingLayout, initialLayout, layoutToSave, lineup, savedLayout, teamMonOf, type TeamLayout } from './teamModel'
 import { MovesScreen } from './MovesScreen'
 import { equippedMoves, legalMoves, moveInfo } from './movesModel'
 import { setCampaignMemberMoves } from '../../core/nuzlocke/progression'
@@ -31,6 +31,7 @@ import type { CampaignBattleDefinition } from '../../core/nuzlocke/battle'
 import { LocalCampaignSession } from '../../battle/campaignSession'
 import { createCampaignWorkerClient, type CampaignBattleClient } from '../../battle/client'
 import { battleInput } from './campaignBattle'
+import { useStartWhenReady } from './useStartWhenReady'
 import { EmeraldBattle } from './EmeraldBattle'
 import { ResultScreen } from './ResultScreen'
 import { EvolutionScene } from './EvolutionScene'
@@ -141,7 +142,9 @@ function CloudCampaign({ cloud, ...props }: Omit<CampaignScreenProps, 'store'> &
   if (status === 'closed' || (status === 'loading' && generation === 0 && !cloudState.record)) {
     return <p className="campaign-cloud-status" role="status">{status === 'closed' ? esCampaign.closed : esCampaign.loading}</p>
   }
-  const blocked = status !== 'ready'
+  // Guardando en segundo plano no se bloquea (Jose, 14/11/2026): los cambios se ponen en cola (`AccountCampaign.write`) y el combate
+  // espera a que esté todo guardado (`canStartBattle`). Sí se bloquea al cargar y con un fallo (sin conexión, conflicto o error).
+  const blocked = status !== 'ready' && status !== 'saving'
   return (
     <>
       {status === 'conflict' && (
@@ -157,7 +160,7 @@ function CloudCampaign({ cloud, ...props }: Omit<CampaignScreenProps, 'store'> &
         </div>
       )}
       {status === 'error' && <p className="campaign-cloud-alert" role="alert">{message ?? esCampaign.invalid}</p>}
-      <div className="campaign-cloud" inert={blocked} aria-busy={status === 'saving' || status === 'loading'}>
+      <div className="campaign-cloud" inert={blocked} aria-busy={status === 'loading'}>
         <CampaignView key={generation} {...props} store={cloud} newSession={(client) => { return cloud.createSession(client) }}
           canStartBattle={() => { return cloud.getState().status === 'ready' }} subscribeStore={cloud.subscribe} />
       </div>
@@ -194,15 +197,14 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     setView('battle')
   }
   // En combate sin sesión (la cuenta aún cargaba o guardaba al entrar): se crea cuando el guardado pase a listo, una sola vez.
-  useEffect(() => {
-    if (view !== 'battle' || session || !subscribeStore) return
-    let started = false
-    return subscribeStore(() => {
-      if (started || !canStartBattle()) return
-      started = true
-      setSession(newSession(createBattleClient()))
-    })
-  }, [view, session, subscribeStore, canStartBattle, newSession, createBattleClient])
+  useStartWhenReady(view === 'battle' && !session, subscribeStore, canStartBattle, () => { setSession(newSession(createBattleClient())) })
+  // Combate que ha fallado (el motor no arranca o falla un guardado): «Reintentar» crea otra sesión y vuelve a montar el combate, que
+  // reanuda o prepara lo guardado, como al recargar la página.
+  const [battleAttempt, setBattleAttempt] = useState(0)
+  const retryBattle = () => {
+    setSession(startSession())
+    setBattleAttempt((value) => value + 1)
+  }
   useEffect(() => () => session?.stop(), [session])
   useEffect(() => session?.subscribe((message) => {
     if (message.type !== 'campaign-finished') return
@@ -299,7 +301,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     // En la Liga, con la plantilla fijada, el equipo es esa plantilla (los que siguen en pie, en su orden; Jose, 12/11/2026).
     const roster = state.leagueRoster?.filter((id) => state.members.some((member) => { return member.id === id && !member.fainted }))
     const limit = roster ? roster.length : state.phase === 'prepare' ? teamLimit(state) : 6
-    const layout = (state.phase === 'prepare' && !roster ? fittingLayout(teamLayout, state, limit) : null) ?? initialLayout(state, limit, roster ?? team ?? state.lastTeam ?? [])
+    const layout = (state.phase === 'prepare' && !roster ? fittingLayout(teamLayout, state, limit) ?? savedLayout(state, limit) : null) ?? initialLayout(state, limit, roster ?? team ?? state.lastTeam ?? [])
     const party = layout.party.map((id) => {
       const member = state.members.find((candidate) => { return candidate.id === id })
       if (!member) return null
@@ -431,7 +433,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     return (
     <TeamScreen
       mons={Object.fromEntries(shown.members.map((member) => [member.id, teamMonOf(member, data)]))}
-      initial={fittingLayout(teamLayout, shown, limit) ?? initialLayout(shown, limit, preferred)}
+      initial={fittingLayout(teamLayout, shown, limit) ?? (roster ? null : savedLayout(state, limit)) ?? initialLayout(shown, limit, preferred)}
       limit={limit}
       rivalName={encounters[state.encounterIndex].nameEs}
       itemName={emeraldItemName}
@@ -446,7 +448,14 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
       onTakeItem={(id) => { save(equipItem(state, id, null)) }}
       canEvolve={(id) => !roster && evolveTargets(state, id).length > 0}
       onEvolve={(id) => { setEvolvingId(id); setView('evolveOne') }}
-      onLayoutChange={setTeamLayout}
+      // Cada cambio se guarda (Jose, 14/11/2026: al salir sin ACEPTAR se perdía el orden del equipo y la caja); en la cuenta, en segundo
+      // plano. En la Liga, el orden de la plantilla, como ACEPTAR.
+      onLayoutChange={(layout) => {
+        setTeamLayout(layout)
+        const order = lineup(layout)
+        if (roster) save({ ...state, leagueRoster: [...order, ...roster.filter((id) => !order.includes(id))] })
+        else save({ ...state, teamLayout: layoutToSave(layout) })
+      }}
       summaryOf={(id) => {
         const member = state.members.find((candidate) => { return candidate.id === id })
         return member ? memberSummary(state, member) : null
@@ -548,8 +557,10 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     const lead = state.members.find((member) => { return member.id === leadId })
     return (
       <EmeraldBattle
+        key={battleAttempt}
         session={session}
         start={startBattle}
+        onRetry={retryBattle}
         data={data}
         trainer={trainerOf(encounter)}
         trainerId={encounter.id}

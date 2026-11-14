@@ -6,7 +6,11 @@ import { esCampaign } from '../i18n/esCampaign'
 import { CloudError, isPermanent, type CampaignOperation, type CloudApi } from './api'
 
 export const campaignAccountKey = (userId: string) => `daily-pwt:campaign-account:v1:${userId}`
-type Journal = { version: 1; record: CampaignRecord | null; pending: CampaignOperation | null; conflict: boolean }
+/**
+ * `next`: el último cambio hecho mientras `pending` está en vuelo (guardado en segundo plano, Jose, 14/11/2026). Se manda al confirmar
+ * `pending`; otro cambio antes lo sustituye (solo vale el último). Va en el diario para no perderlo al recargar.
+ */
+type Journal = { version: 1; record: CampaignRecord | null; pending: CampaignOperation | null; next?: CampaignRecord | null; conflict: boolean }
 export type CampaignCloudState = {
   status: 'closed' | 'loading' | 'ready' | 'saving' | 'offline' | 'conflict' | 'error'
   record: CampaignRecord | null
@@ -22,7 +26,8 @@ function validJournal(value: unknown): value is Journal {
     (j.record === null || validCampaignRecord(j.record)) && (p === null ||
       (typeof p?.operationId === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(p.operationId) &&
         Number.isSafeInteger(p.expectedRevision) && p.expectedRevision >= 0 && validCampaignRecord(p.record) &&
-        p.record.revision === p.expectedRevision + 1 && (j.record?.revision ?? 0) === p.expectedRevision))
+        p.record.revision === p.expectedRevision + 1 && (j.record?.revision ?? 0) === p.expectedRevision)) &&
+    (j.next === undefined || j.next === null || (p !== null && validCampaignRecord(j.next) && j.next.revision === p.record.revision + 1))
 }
 
 /** Guardado de cuenta separado del diario y del prototipo local. D7 consume el estado y confirma `reload()`. */
@@ -36,6 +41,8 @@ export class AccountCampaign implements CampaignStore {
   private state: CampaignCloudState = { status: 'closed', record: null, message: null, persistent: false }
   private readonly listeners = new Set<() => void>()
   private readonly sessions = new Set<LocalCampaignSession>()
+  /** Quien espera a que se guarde un cambio puesto en cola (`next`): se resuelve al confirmarse esa revisión. */
+  private waiters: { revision: number; resolve: (record: CampaignRecord) => void; reject: (error: Error) => void }[] = []
 
   constructor(private readonly storage: Storage | null) {}
   getState = (): CampaignCloudState => this.state
@@ -45,9 +52,18 @@ export class AccountCampaign implements CampaignStore {
 
   private stopSessions() { this.sessions.forEach(s => s.stop()); this.sessions.clear() }
   private set(status: CampaignCloudState['status'], message: string | null = null) {
-    this.state = { ...this.state, status, message, record: structuredClone(this.journal.pending?.record ?? this.journal.record) }
-    if (status === 'conflict' || status === 'error' || status === 'offline') this.stopSessions()
+    this.state = { ...this.state, status, message, record: structuredClone(this.journal.next ?? this.journal.pending?.record ?? this.journal.record) }
+    if (status === 'conflict' || status === 'error' || status === 'offline') {
+      this.stopSessions()
+      this.settleWaiters(null, new Error(message ?? esCampaign.offline))
+    }
     this.listeners.forEach(fn => fn())
+  }
+
+  private settleWaiters(confirmed: CampaignRecord | null, error?: Error) {
+    const done = confirmed ? this.waiters.filter((waiter) => waiter.revision <= confirmed.revision) : this.waiters
+    this.waiters = this.waiters.filter((waiter) => !done.includes(waiter))
+    done.forEach((waiter) => (confirmed ? waiter.resolve(structuredClone(confirmed)) : waiter.reject(error ?? new Error(esCampaign.offline))))
   }
 
   /** Cambiar de cuenta invalida inmediatamente las respuestas y motores del propietario anterior. */
@@ -60,6 +76,7 @@ export class AccountCampaign implements CampaignStore {
     this.cacheRead = false
     this.journal = { version: 1, record: null, pending: null, conflict: false }
     this.state = { status: 'closed', record: null, message: null, persistent: false }
+    this.settleWaiters(null, new Error(esCampaign.closed))
     this.listeners.forEach(fn => fn())
   }
 
@@ -133,6 +150,18 @@ export class AccountCampaign implements CampaignStore {
 
   async write(state: CampaignRecord['state'], battle: CampaignRecord['battle'], expectedRevision: number): Promise<CampaignRecord> {
     this.context()
+    // Guardando otro cambio: este se pone en cola (o sustituye al que ya esperaba) y se manda al confirmar el que está en vuelo. Solo
+    // sobre el último cambio conocido (`read()`); uno basado en una revisión anterior sigue siendo un error.
+    const inFlight = this.journal.pending
+    if (this.state.status === 'saving' && inFlight) {
+      if ((this.journal.next ?? inFlight.record).revision !== expectedRevision) throw new Error(this.state.message ?? esCampaign.busy)
+      const record: CampaignRecord = structuredClone({ version: 1, revision: inFlight.record.revision + 1, state, battle })
+      if (!validCampaignRecord(record)) throw new Error(esCampaign.invalid)
+      this.journal.next = record
+      this.persist()
+      this.set('saving')
+      return new Promise((resolve, reject) => { this.waiters.push({ revision: record.revision, resolve, reject }) })
+    }
     if (this.state.status !== 'ready') throw new Error(this.state.message ?? esCampaign.busy)
     if ((this.journal.record?.revision ?? 0) !== expectedRevision) throw new Error(esCampaign.conflict)
     const record: CampaignRecord = structuredClone({ version: 1, revision: expectedRevision + 1, state, battle })
@@ -155,8 +184,18 @@ export class AccountCampaign implements CampaignStore {
       if (!receipt || receipt.operationId !== pending.operationId || receipt.revision !== pending.record.revision) throw new CloudError('invalid_receipt', true)
       this.journal.record = pending.record
       this.journal.pending = null
+      const next = this.journal.next
+      this.journal.next = null
+      if (next) {
+        // El cambio en cola sale ahora, sobre lo recién confirmado; la pantalla sigue en `saving` (sin bloquear) hasta el último.
+        this.journal.pending = { operationId: crypto.randomUUID(), expectedRevision: pending.record.revision, record: next }
+        this.persist()
+        this.settleWaiters(pending.record)
+        return this.sendPending()
+      }
       this.persist()
       this.set('ready')
+      this.settleWaiters(pending.record)
     } catch (error) { check(); this.failure(error) }
   }
 

@@ -60,6 +60,8 @@ type EmeraldBattleProps = {
   session: LocalCampaignSession
   /** Prepara el combate o reanuda el guardado. */
   start: StartBattle
+  /** Si el combate falla (no arranca el motor, falla un guardado): crear otra sesión y volver a arrancarlo, como al recargar. */
+  onRetry: () => void
   data: GameData
   trainer: { nameEs: string; category: 'leader' | 'champion'; gender: 'F' | 'M' }
   /** Sprite del rival (`lider-*`) para la entrada al combate. */
@@ -97,7 +99,7 @@ type Menu = 'actions' | 'moves' | 'party'
 /** Lo que enseña DATOS: la ficha (como en el draft), el nivel y el objeto. */
 export type SummaryData = { mon: Candidate; level: number; item: string | null }
 
-export function EmeraldBattle({ session, start, data, trainer, trainerId, resumed = false, summaryOf, intro, rivalLevels, playerLevels, music, lineup = [], onEnded, sides, reservedHeight, scale }: EmeraldBattleProps) {
+export function EmeraldBattle({ session, start, onRetry, data, trainer, trainerId, resumed = false, summaryOf, intro, rivalLevels, playerLevels, music, lineup = [], onEnded, sides, reservedHeight, scale }: EmeraldBattleProps) {
   const client = useMemo(() => sessionBattleClient(session, start), [session, start])
   const battleNames = useMemo(() => emeraldBattleNames(data.names), [data.names])
   // PS máximos del rival (el motor solo da su porcentaje): los de Gen 3 a su nivel, con 20 IV, sin EV y naturaleza neutra (PRD §0).
@@ -342,9 +344,10 @@ export function EmeraldBattle({ session, start, data, trainer, trainerId, resume
             <div aria-hidden="true" style={rival.fainted ? hideAfterFaint(false, rival.species, battle.speed) : boxStyle(rivalHidden || !!rivalRecall, rivalSend)}>
               <img src={emeraldTheme.asset(hb(false).image)} alt="" style={{ left: hb(false).left, top: hb(false).top }} />
               <GameText text={nameOf(rival.species)} x={hb(false).name.x} y={hb(false).name.y} face="small" color="combate-nombre" hidden />
-              <StatusBadge status={rival.fainted ? null : rival.status} x={hb(false).status.x} y={hb(false).status.y} coverLabel />
               {rivalLevel > 0 && <GameText text={`{LV_2}${rivalLevel}`} x={hb(false).level.x} y={hb(false).level.y} face="small" color="combate-nombre" hidden />}
               <HpBar x={hb(false).bar.x} y={hb(false).bar.y} ratio={rivalHp ? rivalBar / rivalHp.maxHp : 0} />
+              {/* Después de la barra: el icono va encima de su rótulo PS; pintado antes, la barra lo pisaba (Jose, 14/11/2026). */}
+              <StatusBadge status={rival.fainted ? null : rival.status} x={hb(false).status.x} y={hb(false).status.y} coverLabel />
             </div>
           )}
           {player && playerHp && (
@@ -462,6 +465,12 @@ export function EmeraldBattle({ session, start, data, trainer, trainerId, resume
         </div>
         ) })()
       )]} />
+      {battle.failed && (
+        <section role="alert" className="campaign-cloud-alert emerald-battle-failed">
+          <p>{t.failed}</p>
+          <button type="button" className="campaign-action" onClick={onRetry}>{t.retry}</button>
+        </section>
+      )}
       {sidePanels()}
     </div>
   )
@@ -485,7 +494,7 @@ export function StatusBadge({ status, x, y, coverLabel = false }: { status: stri
 }
 
 /** Barra de PS de la caja (subsprites de 64×8): la parte vacía conserva el marco y se tapa con el gris del juego. */
-function HpBar({ x, y, ratio }: { x: number; y: number; ratio: number }) {
+export function HpBar({ x, y, ratio }: { x: number; y: number; ratio: number }) {
   const filled = Math.ceil(48 * Math.max(0, Math.min(1, ratio)))
   return (
     <div style={{ left: x, top: y, width: 64, height: 8 }}>

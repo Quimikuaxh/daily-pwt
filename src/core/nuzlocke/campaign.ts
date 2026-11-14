@@ -53,6 +53,11 @@ export type CampaignState = {
   difficulty?: CampaignDifficulty
   /** Alineación del último combate (Jose, 12/11/2026): el equipo del tramo siguiente arranca con los que fueron y siguen en pie. */
   lastTeam?: readonly string[]
+  /**
+   * Colocación de Equipo y PC (Jose, 14/11/2026: se guarda cada cambio, también al salir sin ACEPTAR): el equipo en su orden y los
+   * huecos de la caja (`null` vacío). La caja de BAJAS no se guarda: sale de los debilitados.
+   */
+  teamLayout?: { party: readonly string[]; box: readonly (string | null)[] }
   /** Momento (ms desde 1970) en que empezó; lo pone la interfaz al crearla, para el TIEMPO de la Ficha de Entrenador. */
   startedAt?: number
 }

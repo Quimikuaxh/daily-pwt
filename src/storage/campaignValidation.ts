@@ -22,7 +22,9 @@ function state(v: unknown): boolean {
     (v.difficulty === undefined || (object(v.difficulty) && level(v.difficulty.ai) && level(v.difficulty.draft))) &&
     (v.scannerChoice === undefined || v.scannerChoice === 'deepseatooth' || v.scannerChoice === 'deepseascale') &&
     (v.draftTypeCovered === undefined || typeof v.draftTypeCovered === 'boolean') &&
-    (v.leagueEvolved === undefined || typeof v.leagueEvolved === 'boolean')
+    (v.leagueEvolved === undefined || typeof v.leagueEvolved === 'boolean') &&
+    (v.teamLayout === undefined || (object(v.teamLayout) && list(v.teamLayout.party) &&
+      Array.isArray(v.teamLayout.box) && v.teamLayout.box.every((id) => id === null || text(id))))
 }
 
 function set(v: unknown): boolean {

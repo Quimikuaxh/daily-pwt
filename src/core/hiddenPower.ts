@@ -19,6 +19,11 @@ export function hiddenPower(ivs: StatsTable): { type: (typeof HIDDEN_POWER_TYPES
   return { type: HIDDEN_POWER_TYPES[Math.floor((typeBits * 15) / 63)], power: Math.floor((powerBits * 40) / 63) + 30 }
 }
 
+/** Potencia de Poder Oculto de un set: la fija si la tiene (DEC-100), si no la de sus IV. */
+export function hiddenPowerPowerOf(set: { ivs: StatsTable; hiddenPowerPower?: number }): number {
+  return set.hiddenPowerPower ?? hiddenPower(set.ivs).power
+}
+
 /** `hiddenpower` -> `hiddenpowerfighting` (el id con tipo, que tiene nombre en español y tipo en el dex); el resto, igual. */
 export function resolveHiddenPowerId(moveId: string, ivs: StatsTable | undefined): string {
   return moveId === 'hiddenpower' && ivs ? `hiddenpower${hiddenPower(ivs).type.toLowerCase()}` : moveId

@@ -3858,7 +3858,8 @@
           "spa": 0,
           "spd": 0,
           "spe": 0
-        }
+        },
+        "hiddenPowerPower": 60
       },
       {
         "species": "cloyster",
@@ -4133,7 +4134,8 @@
           "spd": 0,
           "spe": 0
         },
-        "gender": "M"
+        "gender": "M",
+        "hiddenPowerPower": 60
       },
       {
         "species": "arcanine",
@@ -4532,7 +4534,8 @@
           "spd": 0,
           "spe": 0
         },
-        "gender": "M"
+        "gender": "M",
+        "hiddenPowerPower": 60
       },
       {
         "species": "togekiss",

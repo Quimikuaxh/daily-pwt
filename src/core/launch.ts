@@ -40,5 +40,13 @@ export const GENDERS_FROM = '2026-11-03'
  */
 export const POOL_RULES_FROM = '2026-11-05'
 
+/**
+ * Desde este día Poder Oculto pega siempre con `HIDDEN_POWER_FIXED_POWER` de potencia, en los dos bandos (Jose, 14/11/2026; DEC-100); el tipo sigue
+ * saliendo de los IV. Antes, la potencia salía de los IV (30 a 70; con los IV uniformes del jugador, casi siempre 30). Como las otras: al
+ * desplegar, el día siguiente al despliegue.
+ */
+export const HIDDEN_POWER_60_FROM = '2026-11-15'
+export const HIDDEN_POWER_FIXED_POWER = 60
+
 /** Etiqueta de esos sets (la pone `gen:player-sets`). */
 export const NO_SYNERGY_TAG = 'quality:no-synergy'

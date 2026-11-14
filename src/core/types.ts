@@ -45,6 +45,8 @@ export type ResolvedSet = {
   ivs: StatsTable
   evs: StatsTable
   gender?: 'M' | 'F'
+  /** Potencia fija de Poder Oculto (desde `HIDDEN_POWER_60_FROM`); sin ella, la de los IV. Solo en los sets que lo llevan. */
+  hiddenPowerPower?: number
 }
 
 export type RosterScheduleEntry = { fromDayIndex: number; trainerIds: string[] }

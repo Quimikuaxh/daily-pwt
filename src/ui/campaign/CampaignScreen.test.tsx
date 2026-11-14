@@ -203,6 +203,35 @@ describe('Campaña de Hoenn', () => {
     expect(store.read()!.state.leagueRoster).toEqual(['a', 'b'])
   })
 
+  // UT-222 (Jose, 14/11/2026): al salir de Equipo y PC sin ACEPTAR se guardaban los movimientos pero no el orden del equipo ni la caja.
+  it('cada cambio en Equipo y PC se guarda y se conserva al salir con Cerrar y volver a entrar', async () => {
+    const store = new LocalCampaignStore(new MemoryStorage())
+    const member = (id: string, species: string) => ({ id, species, level: 20, history: [], fainted: false, victories: 0 })
+    store.write({ ...createCampaign('orden'), phase: 'prepare', encounterIndex: 0, pick: 0, offer: [],
+      members: [member('a', 'grovyle'), member('b', 'machop'), member('c', 'wingull')] }, null, 0)
+    const { user } = mount(store)
+    await user.click(screen.getByRole('button', { name: /^Continuar/ }))
+    // WINGULL, del puesto 3 al hueco 5 de la caja (con hueco delante: la caja guarda sus huecos).
+    fireEvent.click(screen.getByRole('button', { name: /^Equipo, puesto 3: WINGULL/ }))
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Mover a WINGULL' }))
+    fireEvent.click(screen.getByRole('button', { name: /^CAJA 1, hueco 5: vacío/ }))
+    const saved = store.read()!.state.teamLayout!
+    expect(saved.party).toEqual(['a', 'b'])
+    expect(saved.box.slice(0, 6)).toEqual([null, null, null, null, 'c', null])
+    const placed = () => {
+      expect(screen.getByRole('button', { name: /^CAJA 1, hueco 5: WINGULL/ })).toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /^Equipo, puesto 3: WINGULL/ })).toBeNull()
+    }
+    await user.click(screen.getByRole('button', { name: 'Cerrar el PC y volver a la ruta' }))
+    await user.click(screen.getByRole('button', { name: /^Continuar/ }))
+    placed()
+    // Remontado (como al recargar): sale del guardado, no de la memoria de la pantalla.
+    cleanup()
+    mount(store)
+    await userEvent.setup().click(screen.getByRole('button', { name: /^Continuar/ }))
+    placed()
+  })
+
   it('en la ficha del rival de la Liga, CANCELAR vuelve a Equipo y PC, no a la ruta (Jose, 13/11/2026)', async () => {
     const store = new LocalCampaignStore(new MemoryStorage())
     const member = (id: string, species: string) => ({ id, species, level: 50, history: [], fainted: false, victories: 0 })

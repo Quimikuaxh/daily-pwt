@@ -1,5 +1,5 @@
 import { NEUTRAL_NATURE } from './constants'
-import { BST_WINDOW_2_FROM, GENDERS_FROM, LAUNCH_DATE, LAUNCH_OPENING, NO_SYNERGY_TAG, POOL_RULES_FROM, TEAM_RULES_2_FROM } from './launch'
+import { BST_WINDOW_2_FROM, GENDERS_FROM, HIDDEN_POWER_60_FROM, HIDDEN_POWER_FIXED_POWER, LAUNCH_DATE, LAUNCH_OPENING, NO_SYNERGY_TAG, POOL_RULES_FROM, TEAM_RULES_2_FROM } from './launch'
 import { rivalForDay, type TrainerTraits } from './bag'
 import { challengeNumber, dayIndex } from './date'
 import { DataError } from './errors'
@@ -40,6 +40,10 @@ function resolveRivalSet(set: PokemonSet, trainer: Trainer, abilityRng: Prng, da
   }
   if (set.gender) resolved.gender = set.gender
   return resolved
+}
+
+function withFixedHiddenPower(team: ResolvedSet[]): ResolvedSet[] {
+  return team.map((set) => (set.moves.includes('hiddenpower') ? { ...set, hiddenPowerPower: HIDDEN_POWER_FIXED_POWER } : set))
 }
 
 function putLeadFirst(team: ResolvedSet[], trainer: Trainer, leadRng: Prng): ResolvedSet[] {
@@ -103,8 +107,11 @@ export function challengeFor({ date, trainerId, variantId }: ChallengeSelection,
   const namedPlayerTeam = player.team.map((member) => ({ ...member, nameEs: spanishName(data, member.species) }))
   // Géneros (Jose, 03/11/2026): con su propio flujo del PRNG, para no mover nada más del reto; desde `GENDERS_FROM`.
   const genderRng = date >= GENDERS_FROM ? new Prng(deriveSeed(daySeed, 'gender')) : null
-  const finalRivalTeam = genderRng ? withGenders(rivalTeam, data.dex, genderRng) : rivalTeam
-  const playerTeam = genderRng ? withGenders(namedPlayerTeam, data.dex, genderRng) : namedPlayerTeam
+  const gendered = { rival: genderRng ? withGenders(rivalTeam, data.dex, genderRng) : rivalTeam, player: genderRng ? withGenders(namedPlayerTeam, data.dex, genderRng) : namedPlayerTeam }
+  // Poder Oculto a potencia fija desde `HIDDEN_POWER_60_FROM` (Jose, 14/11/2026; DEC-100): no usa el PRNG, no mueve nada más.
+  const fixedHiddenPower = date >= HIDDEN_POWER_60_FROM
+  const finalRivalTeam = fixedHiddenPower ? withFixedHiddenPower(gendered.rival) : gendered.rival
+  const playerTeam = fixedHiddenPower ? withFixedHiddenPower(gendered.player) : gendered.player
 
   const challengeTrainer: Challenge['trainer'] = {
     id: trainer.id,

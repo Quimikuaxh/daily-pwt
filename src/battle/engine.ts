@@ -47,6 +47,8 @@ function toSimSet(set: BattleSet, name = toId(set.species)): PokemonSet {
     ivs: { ...set.ivs },
     level: set.level,
     ...(set.happiness !== undefined ? { happiness: set.happiness } : {}),
+    // El simulador no lo usa: lo lee `fixHiddenPower` y la IA (`toBattleSet`), que trabaja sobre los `Pokemon` del simulador.
+    ...(set.hiddenPowerPower !== undefined ? { hiddenPowerPower: set.hiddenPowerPower } : {}),
     shiny: false,
   } as PokemonSet
 }
@@ -88,6 +90,25 @@ function withoutPpUps(battle: Battle): void {
   if (battle.requestState) battle.makeRequest(battle.requestState)
 }
 
+/**
+ * Poder Oculto a potencia fija (DEC-100): en la 5.ª gen. el simulador la saca de los IV al crear el Pokémon (`hpPower`, también en el
+ * nombre que manda en la petición, «Hidden Power Dark 60»). Se sobrescribe en los que la traen en el set y se rehace la petición del
+ * primer turno, como en `withoutPpUps`. Determinista: se aplica igual al reanudar.
+ */
+function fixHiddenPower(battle: Battle): void {
+  let changed = false
+  for (const side of battle.sides) {
+    for (const pokemon of side.pokemon) {
+      const power = (pokemon.set as { hiddenPowerPower?: number }).hiddenPowerPower
+      if (power === undefined) continue
+      pokemon.hpPower = power
+      ;(pokemon as unknown as { baseHpPower: number }).baseHpPower = power
+      changed = true
+    }
+  }
+  if (changed && battle.requestState) battle.makeRequest(battle.requestState)
+}
+
 /** Motor de combate síncrono sobre el `Battle` de @pkmn/sim. Funciona igual en el worker y en Node. */
 export function createBattleEngine(init: EngineInit): BattleEngine {
   const playerLead = init.playerLead ?? 0
@@ -114,6 +135,7 @@ export function createBattleEngine(init: EngineInit): BattleEngine {
   battle.setPlayer('p1', { name: PLAYER_NAME, team: simTeam(playerTeam, 'p1', playerIndexes) })
   battle.setPlayer('p2', { name: RIVAL_NAME, team: simTeam(init.rival, 'p2', init.rival.map((_, index) => index)) })
   if (init.generation === 3) withoutPpUps(battle)
+  fixHiddenPower(battle)
 
   function externalIdent(text: string): string {
     return text.replace(/p([12])([a-c]?): (member\d+)\b/g, (ref, side: string, position: string, name: string) => {
