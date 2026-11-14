@@ -118,6 +118,9 @@ export const esCampaign = {
     progress: (n: number, total: number) => `EVOLUCIONES DE LA LIGA ${n}/${total}`,
     continueLabel: (message: string) => `Continuar: ${message}`,
     optionLabel: (name: string) => `Evolucionar en ${name}`,
+    // Con un objeto de evolución libre, también en la Liga (Jose, 14/11/2026); si solo evoluciona con objeto, puede quedarse como está.
+    canEvolve: (name: string) => `¡${name} puede evolucionar con un objeto!`,
+    keepLabel: (name: string) => `Seguir como ${name}`,
   },
   // Mochila (item_menu.c) y opciones de objeto del menú del PC (DAR / QUITAR, como el menú de equipo del juego).
   bag: {

@@ -73,7 +73,8 @@ describe('evoluciones de la Liga con el catálogo real de Esmeralda (DEC-93)', (
   ])('%s exige elección explícita y acepta todas sus ramas sin objeto', (id, targets) => {
     const initial = ready(id)
     expect(() => evolveForLeague(definition, initial)).toThrow(/elige/i)
-    for (const invalid of [id, 'missing', 'jolteon', 'tyranitar']) {
+    // Cambio de requisito (Jose, 14/11/2026): con su piedra libre, Jolteon ya es una rama válida de Eevee en la Liga (UT-232).
+    for (const invalid of [id, 'missing', 'tyranitar']) {
       expect(() => evolveForLeague(definition, initial, { 'member-0': invalid })).toThrow(/elige/i)
     }
     for (const target of targets) {
@@ -113,7 +114,8 @@ describe('evoluciones de la Liga con el catálogo real de Esmeralda (DEC-93)', (
 
   it('mantiene opcionales las evoluciones por objeto y consume su unidad con evolveRecruit', () => {
     const initial = chooseScannerItem(definition, ready('gloom', 'poliwhirl', 'onix', 'clamperl'), 'deepseatooth')
-    const evolved = evolveForLeague(definition, initial)
+    // Cambio de requisito (Jose, 14/11/2026): la Liga ofrece también las vías con objeto libre (UT-232); quedarse como está sigue sin gastarlo.
+    const evolved = evolveForLeague(definition, initial, { 'member-0': 'gloom', 'member-1': 'poliwhirl', 'member-3': 'clamperl' })
     expect(evolved.members).toEqual(initial.members)
     expect(campaignEvolutionItems(definition, evolved)).toEqual(campaignEvolutionItems(definition, initial))
     for (const [index, target, item] of [[0, 'vileplume', 'leafstone'], [1, 'poliwrath', 'waterstone'], [3, 'huntail', 'deepseatooth']] as const) {
@@ -152,5 +154,40 @@ describe('guardado local de leagueEvolved', () => {
     const valid = new LocalCampaignStore(new MemoryStorage())
     expect(() => valid.write(record.state as unknown as CampaignState, null, 0)).toThrow(/guardar/)
     expect(valid.read()).toBeNull()
+  })
+})
+
+// UT-232 (Jose, 14/11/2026: en la Liga, Eevee solo podía ser Espeon o Umbreon aunque se tuvieran las piedras): la evolución de la Liga
+// ofrece también las vías de los objetos de evolución libres, gastándolos; si solo hay vías con objeto, se puede quedar como está.
+describe('evoluciones de la Liga con objetos de evolución libres', () => {
+  it('con las piedras del calendario, Eevee puede ser también Vaporeon, Jolteon o Flareon y la elegida gasta su piedra', () => {
+    const state = ready('eevee')
+    const free = campaignEvolutionItems(definition, state)
+    expect(free.has('waterstone')).toBe(true)
+    expect(leagueEvolutionTargets(definition, 'eevee', free)).toEqual(['espeon', 'flareon', 'jolteon', 'umbreon', 'vaporeon'])
+    const evolved = evolveForLeague(definition, state, { 'member-0': 'vaporeon' })
+    expect(evolved.members[0].species).toBe('vaporeon')
+    expect(campaignEvolutionItems(definition, evolved).has('waterstone')).toBe(false)
+    expect(campaignEvolutionItems(definition, evolved).has('thunderstone')).toBe(true)
+  })
+
+  it('sin la piedra (ya gastada), solo las formas sin objeto', () => {
+    expect(leagueEvolutionTargets(definition, 'eevee', new Set())).toEqual(['espeon', 'umbreon'])
+    const used = evolveForLeague(definition, ready('eevee', 'eevee'), { 'member-0': 'vaporeon', 'member-1': 'umbreon' })
+    expect(leagueEvolutionTargets(definition, 'eevee', campaignEvolutionItems(definition, used))).not.toContain('vaporeon')
+  })
+
+  it('Gloom solo evoluciona con piedra: puede quedarse como está o usar la Piedra Hoja o la Solar', () => {
+    const state = ready('gloom')
+    expect(leagueEvolutionTargets(definition, 'gloom', campaignEvolutionItems(definition, state))).toEqual(['bellossom', 'gloom', 'vileplume'])
+    expect(evolveForLeague(definition, state, { 'member-0': 'gloom' }).members[0].species).toBe('gloom')
+    expect(campaignEvolutionItems(definition, evolveForLeague(definition, state, { 'member-0': 'gloom' })).has('leafstone')).toBe(true)
+  })
+
+  it('una piedra se gasta una sola vez: el segundo que la pide no la tiene', () => {
+    const state = ready('eevee', 'eevee')
+    const evolved = evolveForLeague(definition, state, { 'member-0': 'vaporeon', 'member-1': 'espeon' })
+    expect(evolved.members.map(member => member.species)).toEqual(['vaporeon', 'espeon'])
+    expect(() => evolveForLeague(definition, state, { 'member-0': 'vaporeon', 'member-1': 'vaporeon' })).toThrow()
   })
 })

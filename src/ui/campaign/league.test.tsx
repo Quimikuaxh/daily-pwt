@@ -30,10 +30,12 @@ describe('modelo de la Liga', () => {
     expect(participantText('x', true, [])).toBe('NO APTO')
   })
 
-  it('evolucionan los vivos con forma final distinta (sin objetos); los caídos y los finales, no', () => {
+  it('evolucionan los vivos con forma final distinta (con los objetos libres); los caídos y los finales, no', () => {
     const state = { ...createCampaign('ut184'), phase: 'prepare', encounterIndex: 8,
       members: [member('a', 'kirlia'), member('b', 'grovyle'), member('c', 'gloom'), member('d', 'sceptile'), member('e', 'ralts', { fainted: true })] } as unknown as CampaignState
-    expect(leagueEvolutions(definition, state).map((evolution) => [evolution.id, evolution.targets])).toEqual([['a', ['gardevoir']], ['b', ['sceptile']]])
+    // Cambio de requisito (Jose, 14/11/2026): Gloom, que solo evoluciona con piedra, puede usarla en la Liga o quedarse como está (UT-232).
+    expect(leagueEvolutions(definition, state).map((evolution) => [evolution.id, evolution.targets]))
+      .toEqual([['a', ['gardevoir']], ['b', ['sceptile']], ['c', ['bellossom', 'gloom', 'vileplume']]])
     // Cambio de requisito (Jose, 12/11/2026): entre la pregunta y la felicitación va la animación de evolución.
     expect(nextStep('evolving', 1)).toBe('animating')
     expect(nextStep('evolving', 2)).toBe('choose')

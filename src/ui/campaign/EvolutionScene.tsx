@@ -16,7 +16,7 @@ import { usePreloadImages } from './usePreloadImages'
 import { esCampaign } from '../../i18n/esCampaign'
 import { PartySlot } from './PartySlot'
 import { messagePages } from './emeraldBattleModel'
-import { animationFrame, evolutionLength, evolutionSound, sceneSpriteTop, firstStep, nextStep, optionsWidth, type EvolutionChoices, type EvolutionStep, type LeagueEvolution } from './evolutionModel'
+import { animationFrame, evolutionLength, evolutionSound, sceneSpriteTop, availableTargets, firstStep, nextStep, nothingLeft, optionsWidth, type EvolutionChoices, type EvolutionStep, type LeagueEvolution } from './evolutionModel'
 import { EVOLUTION_MUSIC, EVOLUTION_SFX_IDS, EVOLVED_MUSIC, playCry, playSfx, preloadCries, preloadSfx, useCampaignMusic } from './campaignMusic'
 
 const LENGTH = evolutionLength()
@@ -74,9 +74,13 @@ export function EvolutionScene({ evolutions, nameOf, hpOf, onDone, scale, reserv
   }, [step])
   const current = evolutions[index]
   const name = nameOf(current.species)
-  const chosen = choices[current.id] ?? current.targets[0]
+  // Las formas que le quedan (un objeto de evolución ya usado por otro no vuelve a salir); con la suya entre ellas, puede quedarse así.
+  const targets = availableTargets(evolutions, index, choices)
+  const optional = targets.includes(current.species)
+  const chosen = choices[current.id] ?? targets.find((target) => target !== current.species) ?? targets[0]
   const shownSpecies = step === 'evolved' || frameShowsNew(step, frame) ? chosen : current.species
-  const message = step === 'evolving' || step === 'animating' ? t.evolving(name) : step === 'choose' ? t.which(name) : t.evolved(name, nameOf(chosen))
+  const message = step === 'evolving' && optional ? t.canEvolve(name) : step === 'evolving' || step === 'animating' ? t.evolving(name)
+    : step === 'choose' ? t.which(name) : t.evolved(name, nameOf(chosen))
   const animation = step === 'animating' ? animationFrame(frame) : null
   const scales = animation?.scales ?? null
   const flash = animation?.flash ?? 0
@@ -84,26 +88,36 @@ export function EvolutionScene({ evolutions, nameOf, hpOf, onDone, scale, reserv
   const row = animation?.row ?? -1
   const lines = messagePages(message)[0] ?? []
 
-  const advance = () => {
-    const next = nextStep(step, current.targets.length)
-    if (next) { setFrame(0); setStep(next); return }
-    const all = { ...choices, [current.id]: chosen }
-    if (index + 1 < evolutions.length) {
+  // Pasa al siguiente miembro que aún tenga algo que hacer (los que se quedaron sin su objeto, tal cual) o termina.
+  const finish = (all: EvolutionChoices) => {
+    let next = index + 1
+    while (next < evolutions.length && nothingLeft(evolutions[next], availableTargets(evolutions, next, all))) {
+      all = { ...all, [evolutions[next].id]: evolutions[next].species }
+      next += 1
+    }
+    if (next < evolutions.length) {
       setChoices(all)
-      setIndex(index + 1)
+      setIndex(next)
       setStep(firstStep)
       setCursor(0)
       return
     }
     onDone(all)
   }
+  const advance = () => {
+    const next = nextStep(step, targets.length)
+    if (next) { setFrame(0); setStep(next); return }
+    finish({ ...choices, [current.id]: chosen })
+  }
   const choose = (target: string) => {
+    // Quedarse como está: sin animación, al siguiente.
+    if (target === current.species) { finish({ ...choices, [current.id]: target }); return }
     setChoices({ ...choices, [current.id]: target })
     setFrame(0)
     setStep('animating')
   }
   // La ventana de formas (como la de la maqueta: derecha, a media altura), con tantas filas como formas.
-  const windowWidth = optionsWidth(current.targets.map(nameOf))
+  const windowWidth = optionsWidth(targets.map(nameOf))
 
   return (
     <div className="evolution-screen">
@@ -135,11 +149,11 @@ export function EvolutionScene({ evolutions, nameOf, hpOf, onDone, scale, reserv
             <MessageArrow x={16 + textWidth(emeraldTheme.font as BitmapFont, lines[lines.length - 1]) + 1} y={120 + 16 * (lines.length - 1)} />
           )}
           {step === 'choose' ? (
-            <GameWindow x={28 - windowWidth} y={13 - current.targets.length * 2} width={windowWidth} height={current.targets.length * 2}>
+            <GameWindow x={28 - windowWidth} y={13 - targets.length * 2} width={windowWidth} height={targets.length * 2}>
               <div role="menu" aria-label={message}>
-                {current.targets.map((target, i) => (
+                {targets.map((target, i) => (
                   <button key={target} type="button" role="menuitem" className="team-menu-item" style={{ left: 0, top: i * 16, width: windowWidth * 8, height: 16 }}
-                    aria-label={t.optionLabel(nameOf(target))} autoFocus={i === cursor} onFocus={() => setCursor(i)} onPointerEnter={(event) => event.currentTarget.focus()} onClick={() => choose(target)}>
+                    aria-label={target === current.species ? t.keepLabel(nameOf(target)) : t.optionLabel(nameOf(target))} autoFocus={i === cursor} onFocus={() => setCursor(i)} onPointerEnter={(event) => event.currentTarget.focus()} onClick={() => choose(target)}>
                     <GameText text={'▶'} y={1} hidden />
                     <GameText text={nameOf(target)} x={8} y={1} hidden />
                   </button>

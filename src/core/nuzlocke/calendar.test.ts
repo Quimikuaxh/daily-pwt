@@ -108,7 +108,8 @@ describe('evoluciones decididas por Jose', () => {
   })
 
   it('guarda la plantilla fijada, permite evolucionar antes del primer combate y prepara esa misma identidad', () => {
-    const initial = evolveForLeague(definition, ready(8, 'gloom', 'eevee'), { 'member-1': 'umbreon' })
+    // Cambio de requisito (Jose, 14/11/2026): Gloom puede usar su piedra en la Liga; aquí se queda como está (UT-232).
+    const initial = evolveForLeague(definition, ready(8, 'gloom', 'eevee'), { 'member-0': 'gloom', 'member-1': 'umbreon' })
     for (const invalid of [[], ['missing'], ['member-0', 'member-0']]) {
       expect(() => lockLeagueRoster(definition, initial, invalid)).toThrow()
     }

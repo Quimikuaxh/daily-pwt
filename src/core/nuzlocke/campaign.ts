@@ -288,24 +288,57 @@ export function evolveRecruit(
 /**
  * Vías de evolución que no necesitan objeto (Jose, 11/11/2026): al entrar en la Liga se aplican sin esperar nivel ni condición, para que
  * se puedan usar Pokémon que tardan demasiado en evolucionar (Tyranitar, Salamence). Las de piedra u objeto evolutivo (`ITEM`,
- * `TRADE_ITEM`) siguen en `evolveRecruit` con el inventario. Wurmple ya se resolvió por semilla al subir de nivel y Shedinja no es una
+ * `TRADE_ITEM`) se usan con el inventario: en la preparación con `evolveRecruit` y en la propia Liga, si hay objeto libre (`leaguePaths`). Wurmple ya se resolvió por semilla al subir de nivel y Shedinja no es una
  * evolución del miembro.
  */
 const LEAGUE_FREE_EVOLUTIONS = new Set(['LEVEL', 'LEVEL_NINJASK', 'LEVEL_ATK_LT_DEF', 'LEVEL_ATK_GT_DEF', 'LEVEL_ATK_EQ_DEF',
   'FRIENDSHIP', 'FRIENDSHIP_DAY', 'FRIENDSHIP_NIGHT', 'TRADE', 'BEAUTY'])
 
-/** Caminos de evolución sin objeto desde una especie hasta cada forma final (la propia especie si no evoluciona así). */
-function leaguePaths(definition: CampaignDefinition, species: string, seen: ReadonlySet<string> = new Set([species])): string[][] {
-  const next = definition.species[species]?.evolutions.filter(rule =>
-    LEAGUE_FREE_EVOLUTIONS.has(rule.method) && Object.hasOwn(definition.species, rule.target) && !seen.has(rule.target)) ?? []
-  if (!next.length) return [[species]]
-  const targets = [...new Set(next.map(rule => rule.target))]
-  return targets.flatMap(target => leaguePaths(definition, target, new Set([...seen, target])).map(path => [species, ...path]))
+/** Camino de la Liga desde una especie hasta una forma final y los objetos de evolución que gasta por el camino. */
+export type LeaguePath = { path: string[]; items: string[] }
+
+/** Vías de evolución con objeto (piedra u objeto evolutivo, también el de intercambio). */
+const LEAGUE_ITEM_EVOLUTIONS = new Set(['ITEM', 'TRADE_ITEM'])
+
+/**
+ * Caminos de la Liga (PRD §0, «Liga con los Pokémon evolucionados»; Jose, 14/11/2026: Eevee solo podía ser Espeon o Umbreon aunque se
+ * tuvieran las piedras). En cada paso: si hay vías sin objeto, se evoluciona por ellas o por las de objeto que haya libre (`items`); si solo
+ * hay vías con objeto, se puede quedar como está o usar el objeto. Sin objetos libres, son los de siempre.
+ */
+function leaguePaths(definition: CampaignDefinition, species: string, items: ReadonlySet<string>, seen: ReadonlySet<string> = new Set([species])): LeaguePath[] {
+  const usable = definition.species[species]?.evolutions.filter(rule => Object.hasOwn(definition.species, rule.target) && !seen.has(rule.target)) ?? []
+  const free = usable.filter(rule => LEAGUE_FREE_EVOLUTIONS.has(rule.method))
+  const withItem = usable.filter(rule => LEAGUE_ITEM_EVOLUTIONS.has(rule.method) && typeof rule.parameter === 'string' && items.has(rule.parameter))
+  const steps = [...free.map(rule => ({ target: rule.target, item: null as string | null })),
+    ...withItem.map(rule => ({ target: rule.target, item: rule.parameter as string }))]
+  const stay: LeaguePath[] = free.length ? [] : [{ path: [species], items: [] }]
+  return [...stay, ...steps.flatMap(({ target, item }) => leaguePaths(definition, target, items, new Set([...seen, target]))
+    .map(next => ({ path: [species, ...next.path], items: item ? [item, ...next.items] : next.items })))]
 }
 
-/** Formas finales a las que puede llegar un miembro en la Liga sin objeto; con más de una, elige el jugador. */
-export function leagueEvolutionTargets(definition: CampaignDefinition, species: string): string[] {
-  return [...new Set(leaguePaths(definition, species).map(path => path[path.length - 1]))].sort()
+/** Un camino por forma final: el que menos objetos gasta. */
+function leagueFinals(paths: readonly LeaguePath[]): Map<string, LeaguePath> {
+  const finals = new Map<string, LeaguePath>()
+  for (const candidate of paths) {
+    const final = candidate.path[candidate.path.length - 1]
+    const known = finals.get(final)
+    if (!known || candidate.items.length < known.items.length) finals.set(final, candidate)
+  }
+  return finals
+}
+
+/**
+ * Formas finales a las que puede llegar un miembro en la Liga (con más de una, elige el jugador) y los objetos que gasta cada una; con
+ * `items`, también por las vías de los objetos de evolución libres.
+ */
+export function leagueEvolutionOptions(definition: CampaignDefinition, species: string, items: ReadonlySet<string> = new Set()): { target: string; items: string[] }[] {
+  return [...leagueFinals(leaguePaths(definition, species, items)).entries()]
+    .map(([target, path]) => ({ target, items: path.items })).sort((a, b) => a.target.localeCompare(b.target))
+}
+
+/** Formas finales a las que puede llegar un miembro en la Liga; con `items`, también con los objetos de evolución libres. */
+export function leagueEvolutionTargets(definition: CampaignDefinition, species: string, items: ReadonlySet<string> = new Set()): string[] {
+  return leagueEvolutionOptions(definition, species, items).map(option => option.target)
 }
 
 /**
@@ -318,15 +351,17 @@ export function evolveForLeague(definition: CampaignDefinition, state: CampaignS
     throw new DataError('Las evoluciones de la Liga se aplican al preparar la Liga, antes de fijar la plantilla.')
   }
   if (state.leagueEvolved) return state
+  // Cada objeto de evolución libre se gasta una vez: el que usa un miembro ya no está para los siguientes (en el orden de la campaña).
+  const available = new Set(campaignEvolutionItems(definition, state))
   const members = state.members.map(member => {
     if (member.fainted) return member
-    const paths = leaguePaths(definition, member.species)
-    const finals = [...new Set(paths.map(path => path[path.length - 1]))]
-    const target = finals.length === 1 ? finals[0] : choices[member.id]
-    if (!target || !finals.includes(target)) throw new DataError(`Elige la evolución de ${member.species} para la Liga.`)
+    const finals = leagueFinals(leaguePaths(definition, member.species, available))
+    const target = finals.size === 1 ? [...finals.keys()][0] : choices[member.id]
+    const chosen = target === undefined ? undefined : finals.get(target)
+    if (!target || !chosen) throw new DataError(`Elige la evolución de ${member.species} para la Liga.`)
     if (target === member.species) return member
-    const path = paths.find(candidate => candidate[candidate.length - 1] === target)!
-    const stages = path.slice(0, -1).map(species => ({ species, evolvedAt: member.level }))
+    chosen.items.forEach(item => available.delete(item))
+    const stages = chosen.path.slice(0, -1).map(species => ({ species, evolvedAt: member.level }))
     return { ...member, species: target, history: [...member.history, ...stages] }
   })
   return { ...state, members, leagueEvolved: true }
