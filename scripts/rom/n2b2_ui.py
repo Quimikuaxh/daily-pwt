@@ -11,6 +11,8 @@ interfaz usa, con los recortes de las maquetas:
 - `caja-<n>.png` y `caja-<n>-titulo.png`: fondos de caja del PC (156 x 114) y su pestaña de título (112 x 19), de la hoja de fondos de
   caja: `caja-1`, el del bosque (CAJA 1), y `caja-2`, el de Kyurem gris (BAJAS).
 
+- `ficha-estuche.png` (256 x 192): el estuche de medallas de la Ficha de Entrenador (retratos de los ocho líderes y sus huecos), y
+  `ficha.png` (245 x 165): la cara de la Ficha, de la hoja de la ficha de entrenador, sin el rótulo inglés (lo pinta la interfaz).
 - `mochila-<chico|chica>-<bolsillo>-<0|2>.png`: la mochila y los bolsillos de la Mochila de N2/B2 (hoja de bolsas), cerrado (0) y abierto
   (2): `objetos` (la mochila), `bayas` (la bolsita), `evol` (la caja) y `mt` (el bolsillo curvo).
 
@@ -127,6 +129,14 @@ def main():
     for index in range(8):
         for row in BADGE_ROWS:
             pieces[f'medalla-{index + 1}{row}'] = badge(card, index, row)
+    pieces['ficha-estuche'] = card.crop((2, 2, 258, 194))
+    # Cara de la Ficha sin el rótulo inglés «TRAINER'S CARD» (x 20 a 143, entre los corchetes): cada fila, con el color de la franja en x 21,
+    # donde no hay letra. La interfaz pinta «FICHA DE ENTRENADOR» encima.
+    face = card.crop((523, 262, 768, 427))
+    for y in range(6, 22):
+        for x in range(20, 144):
+            face.putpixel((x, y), face.getpixel((21, y)))
+    pieces['ficha'] = face
     walls = sheet('b2w2-fondos-caja-48041.png')
     for name, index in WALLPAPERS.items():
         x, y = 2 + (index % 6) * WALLPAPER_CELL[0], 2 + (index // 6) * WALLPAPER_CELL[1]

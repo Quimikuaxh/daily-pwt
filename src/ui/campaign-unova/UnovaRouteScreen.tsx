@@ -14,12 +14,13 @@ import { trainerSprite } from '../common/spriteUrls'
 import { imagesReady } from '../battle/preloadAssets'
 import { usePreloadImages } from '../campaign/usePreloadImages'
 import { esCampaign } from '../../i18n/esCampaign'
+import { esUnova } from '../../i18n/esUnova'
 import { placeState, type CampaignEncounter, type PlaceState, type RoutePlace } from '../campaign/hoennRoute'
 import { MAP_TOP, n2b2Ui, unovaVars } from './unovaRoute'
 import { GRID_TOP, UnovaRivalCard } from './UnovaRivalCard'
 import './unova.css'
 
-const t = esCampaign.unova
+const t = esUnova
 const route = esCampaign.route
 
 export type UnovaRouteScreenProps = {

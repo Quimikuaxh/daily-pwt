@@ -4,21 +4,21 @@
  * POKéDEX, BAJAS, TIEMPO y las medallas. Suena la música de los créditos. «Compartir» abre el menú del sistema con la imagen de las
  * dos pantallas (720 × 960) y «Guardar imagen» la descarga (`exportScreens`).
  */
-import { useRef, useState } from 'react'
+import { useRef, useState, type RefObject } from 'react'
 import { ConsoleStage } from '../console/ConsoleStage'
 import { GameText } from '../console/GameText'
 import { emeraldSprite, emeraldTheme } from '../console/themes/emerald'
 import { exportScreens, shareOrDownload } from '../console/exportScreens'
 import { esCampaign } from '../../i18n/esCampaign'
 import { hallOfFameOrder, hallOfFameSpots, type Protagonist } from './resultModel'
-import { CREDITS_MUSIC, useCampaignMusic } from './campaignMusic'
+import { hoennMusic, useCampaignMusic, type CampaignMusic } from './campaignMusic'
 
 const t = esCampaign.share
 const r = esCampaign.result
 /** Aumentos de la imagen: 240 × 320 → 720 × 960. */
 const ZOOM = 3
 
-type ShareScreenProps = {
+export type ShareScreenProps = {
   won: boolean
   player: string
   protagonist: Protagonist
@@ -28,30 +28,19 @@ type ShareScreenProps = {
   card: { id: string; pokedex: number; fainted: number; minutes: number; badges: number }
   /** Fecha para el nombre del fichero (AAAA-MM-DD). */
   date: string
+  music?: CampaignMusic
   reservedHeight?: number
   scale?: number
 }
 
-export function ShareScreen({ won, player, protagonist, rival, team, card, date, reservedHeight, scale }: ShareScreenProps) {
-  useCampaignMusic(CREDITS_MUSIC)
+export function ShareScreen({ won, player, protagonist, rival, team, card, date, reservedHeight, scale, music = hoennMusic }: ShareScreenProps) {
+  useCampaignMusic(music.credits, music.register)
   const stage = useRef(null as HTMLDivElement | null)
-  const [status, setStatus] = useState(null as string | null)
   const title = won ? t.champion(player, protagonist === 'may') : t.fell(player, rival)
   const shown = team.slice(0, 6)
   const spots = hallOfFameSpots(shown.length)
   const stats: [string, string, number][] = [[r.pokedex, String(card.pokedex), 65], [t.fainted, String(card.fainted), 81], [r.time, r.clock(card.minutes), 97]]
   const cardText = t.cardText(player, card.id, card.pokedex, card.fainted, r.clock(card.minutes), card.badges)
-
-  const send = async (download: boolean) => {
-    const element = stage.current?.querySelector('.console-stage') as HTMLElement | null
-    if (!element) return
-    try {
-      const result = await shareOrDownload(exportScreens(element, ZOOM), t.fileName(date), t.text(player, won, rival), download)
-      setStatus(result === 'downloaded' ? t.saved : null)
-    } catch {
-      setStatus(t.failed)
-    }
-  }
 
   return (
     <div className="share-screen" ref={stage}>
@@ -83,11 +72,34 @@ export function ShareScreen({ won, player, protagonist, rival, team, card, date,
           ))}
         </div>
       )]} />
+      <ShareActions stage={stage} fileName={t.fileName(date)} text={t.text(player, won, rival)} />
+    </div>
+  )
+}
+
+/**
+ * Botones de la pantalla final: «Compartir» abre el menú del sistema con la imagen de las dos pantallas del `ConsoleStage` de `stage` y
+ * «Guardar imagen» la descarga (`exportScreens`). Los usan las pantallas para compartir de cada campaña.
+ */
+export function ShareActions({ stage, fileName, text }: { stage: RefObject<HTMLElement | null>; fileName: string; text: string }) {
+  const [status, setStatus] = useState(null as string | null)
+  const send = async (download: boolean) => {
+    const element = stage.current?.querySelector('.console-stage') as HTMLElement | null
+    if (!element) return
+    try {
+      const result = await shareOrDownload(exportScreens(element, ZOOM), fileName, text, download)
+      setStatus(result === 'downloaded' ? t.saved : null)
+    } catch {
+      setStatus(t.failed)
+    }
+  }
+  return (
+    <>
       <div className="share-actions">
         <button type="button" className="campaign-action" aria-label={t.shareLabel} onClick={() => { void send(false) }}>{t.share}</button>
         <button type="button" className="campaign-action" aria-label={t.saveLabel} onClick={() => { void send(true) }}>{t.save}</button>
       </div>
       <p className="sr-only" role="status">{status ?? ''}</p>
-    </div>
+    </>
   )
 }

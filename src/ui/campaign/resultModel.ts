@@ -36,7 +36,8 @@ export const protagonistOf = (seed: string): Protagonist => (hash(`${seed}:prota
 /** El nombre se pinta con la fuente de Esmeralda: lo que no tiene glifo (el «_» de los nicknames) va como espacio y no como «?». */
 const printable = (name: string): string => [...name].map((char) => (char in (emeraldTheme.font as BitmapFont).charmap ? char : ' ')).join('')
 
-export const playerNameOf = (seed: string, nickname?: string): string => nickname ? printable(nickname) : esCampaign.result.protagonist[protagonistOf(seed)]
+export const playerNameOf = (seed: string, nickname?: string, names: Readonly<Record<Protagonist, string>> = esCampaign.result.protagonist): string =>
+  nickname ? printable(nickname) : names[protagonistOf(seed)]
 
 /** Minutos desde que empezó la campaña (0 en campañas guardadas antes de registrarlo). */
 export const minutesSince = (startedAt: number | undefined, now: number): number => startedAt !== undefined ? Math.max(0, Math.floor((now - startedAt) / 60000)) : 0

@@ -1,0 +1,87 @@
+{
+  "music": {
+    "unova-town-aspertia": {
+      "path": "audio/music/unova-town-aspertia.m4a",
+      "durationSec": 166,
+      "loopStartSec": 73.82,
+      "loopEndSec": 149.1862
+    },
+    "unova-town-virbank": {
+      "path": "audio/music/unova-town-virbank.m4a",
+      "durationSec": 108,
+      "loopStartSec": 43.39,
+      "loopEndSec": 92.8128
+    },
+    "unova-town-castelia": {
+      "path": "audio/music/unova-town-castelia.m4a",
+      "durationSec": 111,
+      "loopStartSec": 10.46,
+      "loopEndSec": 60.9976
+    },
+    "unova-town-nimbasa": {
+      "path": "audio/music/unova-town-nimbasa.m4a",
+      "durationSec": 119,
+      "loopStartSec": 35.61,
+      "loopEndSec": 90.5601
+    },
+    "unova-town-driftveil": {
+      "path": "audio/music/unova-town-driftveil.m4a",
+      "durationSec": 89,
+      "loopStartSec": 34.86,
+      "loopEndSec": 73.9783
+    },
+    "unova-town-mistralton": {
+      "path": "audio/music/unova-town-mistralton.m4a",
+      "durationSec": 165,
+      "loopStartSec": 17.52,
+      "loopEndSec": 94.6158
+    },
+    "unova-town-opelucid": {
+      "path": "audio/music/unova-town-opelucid.m4a",
+      "durationSec": 251,
+      "loopStartSec": 73.68,
+      "loopEndSec": 191.7695
+    },
+    "unova-town-humilau": {
+      "path": "audio/music/unova-town-humilau.m4a",
+      "durationSec": 170,
+      "loopStartSec": 56.37,
+      "loopEndSec": 136.3883
+    },
+    "unova-town-league": {
+      "path": "audio/music/unova-town-league.m4a",
+      "durationSec": 82,
+      "loopStartSec": 9.74,
+      "loopEndSec": 45.7482
+    },
+    "unova-elite": {
+      "path": "audio/music/unova-elite.m4a",
+      "durationSec": 176,
+      "loopStartSec": 86.99,
+      "loopEndSec": 160.2724
+    },
+    "unova-gym-victory": {
+      "path": "audio/music/unova-gym-victory.m4a",
+      "durationSec": 82
+    },
+    "unova-hall-of-fame": {
+      "path": "audio/music/unova-hall-of-fame.m4a",
+      "durationSec": 56
+    },
+    "unova-evolution": {
+      "path": "audio/music/unova-evolution.m4a",
+      "durationSec": 56.896,
+      "loopStartSec": 33.26,
+      "loopEndSec": 41.0014
+    },
+    "unova-evolved": {
+      "path": "audio/music/unova-evolved.m4a",
+      "durationSec": 3.925
+    },
+    "unova-credits": {
+      "path": "audio/music/unova-credits.m4a",
+      "durationSec": 317.184
+    }
+  },
+  "sfx": {}
+}

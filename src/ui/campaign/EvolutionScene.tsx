@@ -17,7 +17,7 @@ import { esCampaign } from '../../i18n/esCampaign'
 import { PartySlot } from './PartySlot'
 import { messagePages } from './emeraldBattleModel'
 import { animationFrame, evolutionLength, evolutionSound, sceneSpriteTop, availableTargets, firstStep, nextStep, nothingLeft, optionsWidth, type EvolutionChoices, type EvolutionStep, type LeagueEvolution } from './evolutionModel'
-import { EVOLUTION_MUSIC, EVOLUTION_SFX_IDS, EVOLVED_MUSIC, playCry, playSfx, preloadCries, preloadSfx, useCampaignMusic } from './campaignMusic'
+import { hoennMusic, type CampaignMusic, EVOLUTION_SFX_IDS, playCry, playSfx, preloadCries, preloadSfx, useCampaignMusic } from './campaignMusic'
 
 const LENGTH = evolutionLength()
 const frameShowsNew = (step: EvolutionStep, frame: number) => { return step === 'animating' && animationFrame(frame).evolved }
@@ -32,10 +32,11 @@ export type EvolutionSceneProps = {
   hpOf: (id: string, species: string) => number
   onDone: (choices: EvolutionChoices) => void
   scale?: number
+  music?: CampaignMusic
   reservedHeight?: number
 }
 
-export function EvolutionScene({ evolutions, nameOf, hpOf, onDone, scale, reservedHeight }: EvolutionSceneProps) {
+export function EvolutionScene({ evolutions, nameOf, hpOf, onDone, scale, reservedHeight, music = hoennMusic }: EvolutionSceneProps) {
   const [index, setIndex] = useState(0)
   const [step, setStep] = useState(firstStep)
   // Las formas de antes y de después de todos, listas antes de la animación.
@@ -46,7 +47,7 @@ export function EvolutionScene({ evolutions, nameOf, hpOf, onDone, scale, reserv
   const [frame, setFrame] = useState(0)
   // La música de evolución suena mientras se anima (EVOSTATE_START_MUSIC hasta EVOSTATE_RESTORE_SCREEN).
   // Después, la fanfarria de «¡Enhorabuena!» con el mensaje (MUS_EVOLVED), una vez.
-  useCampaignMusic(step === 'animating' ? EVOLUTION_MUSIC : step === 'evolved' ? EVOLVED_MUSIC : null)
+  useCampaignMusic(step === 'animating' ? music.evolution : step === 'evolved' ? music.evolved : null, music.register)
   useEffect(() => {
     preloadSfx(EVOLUTION_SFX_IDS)
     preloadCries(evolutions.flatMap((evolution) => [evolution.species, ...evolution.targets]))

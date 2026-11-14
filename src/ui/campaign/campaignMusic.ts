@@ -52,14 +52,15 @@ export const CREDITS_MUSIC = 'emerald-credits'
 export const EVOLVED_MUSIC = 'emerald-evolved'
 
 /** Suena `id` mientras no sea `null` (con transición si cambia) y se funde al quitarla o al salir de la pantalla. */
-export function useCampaignMusic(id: string | null): void {
+export function useCampaignMusic(id: string | null, register?: () => void): void {
   useEffect(() => {
     if (!id) return
-    const audio = getAudio()
+    register?.()
+    const audio = id.startsWith('emerald-') ? getAudio() : baseAudio()
     audio.preload([id], [])
     audio.playMusic(id)
     return () => audio.stopMusic()
-  }, [id])
+  }, [id, register])
 }
 
 /**
@@ -100,4 +101,41 @@ export const moveSoundIds = (moves: readonly string[]): string[] => [...new Set(
 export function playMoveSounds(move: string, speed: number): () => void {
   const timers = (moveSounds[move] ?? []).map(([frame, id]) => setTimeout(() => playSfx(id), (frame * 1000) / 60 / speed))
   return () => { timers.forEach(clearTimeout) }
+}
+
+/** Reparto de música del kit; registrar metadatos no descarga ninguna pista. */
+export type CampaignMusic = {
+  town: (encounterId: string) => string
+  battle: (kind: 'gym' | 'elite' | 'champion') => string
+  result: (mode: ResultMode) => string | null
+  evolution: string
+  evolved: string | null
+  credits: string
+  register?: () => void
+}
+
+export const hoennMusic: CampaignMusic = {
+  town: townMusic, battle: battleMusic, result: resultMusic,
+  evolution: EVOLUTION_MUSIC, evolved: EVOLVED_MUSIC, credits: CREDITS_MUSIC,
+}
+
+/** Efectos y gritos por campaña; los sonidos de ataques de Esmeralda solo pertenecen a Hoenn. */
+export type CampaignSounds = {
+  battleIds: readonly string[]
+  sfxFor: (id: SfxId) => string | null
+  select: string
+  ballThrow: string
+  ballOpen: string
+  lowHealth: string | null
+  playSfx: typeof playSfx
+  preloadSfx: typeof preloadSfx
+  playCry: typeof playCry
+  preloadCries: typeof preloadCries
+  moveSoundIds: typeof moveSoundIds
+  playMoveSounds: typeof playMoveSounds
+}
+export const hoennSounds: CampaignSounds = {
+  battleIds: BATTLE_SFX_IDS, sfxFor: emeraldSfxFor, select: 'emerald-select',
+  ballThrow: 'emerald-ball-throw', ballOpen: 'emerald-ball-open', lowHealth: LOW_HEALTH_SFX,
+  playSfx, preloadSfx, playCry, preloadCries, moveSoundIds, playMoveSounds,
 }

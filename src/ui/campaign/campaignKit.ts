@@ -5,6 +5,7 @@
  * Aquí, el tipo y el de Hoenn; el de Teselia vive en `campaign-unova/unovaKit.ts` y se carga aparte, para que su progresión (1,2 MB) no
  * entre en el bloque de la campaña de Hoenn.
  */
+import { hoennMusic, hoennSounds, type CampaignMusic, type CampaignSounds } from './campaignMusic'
 import catalog from '../../../data/nuzlocke/hoenn-emerald.json'
 import progression from '../../../data/nuzlocke/hoenn-emerald-progression.json'
 import moveTexts from '../../../data/nuzlocke/emerald-move-descriptions-es.json'
@@ -24,6 +25,8 @@ import { BagScreen, type BagScreenProps as HoennBagProps } from './BagScreen'
 import { ExchangeScreen, type ExchangeScreenProps as HoennExchangeProps } from './ExchangeScreen'
 import { EvolutionScene, type EvolutionSceneProps as HoennEvolutionProps } from './EvolutionScene'
 import { LeagueScreen, type LeagueScreenProps } from './LeagueScreen'
+import { ResultScreen, type ResultScreenProps as HoennResultProps } from './ResultScreen'
+import { ShareScreen, type ShareScreenProps as HoennShareProps } from './ShareScreen'
 import { bagContents, itemText as emeraldItemText, machineItems, machineLabel, type BagItem, type Pocket } from './bagModel'
 import { emeraldMoveName } from './emeraldNames'
 import { campaignEvolutionItems } from '../../core/nuzlocke/calendar'
@@ -69,6 +72,10 @@ export type ExchangeScreenProps = HoennExchangeProps & {
 export type EvolutionSceneProps = HoennEvolutionProps & { data: GameData }
 
 /** Lo que recibe la pantalla Ruta de cualquier campaña. */
+/** Resultado de un combate y Salón de la Fama (Teselia necesita los datos para los sprites del Salón). */
+export type ResultScreenProps = HoennResultProps & { data: GameData }
+export type ShareScreenProps = HoennShareProps & { data: GameData }
+
 export type RouteScreenProps = {
   places: readonly RoutePlace[]
   badges: number
@@ -82,6 +89,8 @@ export type RouteScreenProps = {
 
 export type CampaignKit = {
   id: CampaignId
+  music: CampaignMusic
+  sounds: CampaignSounds
   encounters: readonly CampaignEncounter[]
   definition: CampaignDefinition
   rules: CampaignRules
@@ -113,6 +122,8 @@ export type CampaignKit = {
     Exchange: ComponentType<ExchangeScreenProps>
     Evolution: ComponentType<EvolutionSceneProps>
     League: ComponentType<LeagueScreenProps>
+    Result: ComponentType<ResultScreenProps>
+    Share: ComponentType<ShareScreenProps>
     CampaignCard: ComponentType<CampaignCardProps>
     TeamPanel: ComponentType<TeamPanelProps>
   }
@@ -120,6 +131,8 @@ export type CampaignKit = {
   bagContents: (state: CampaignState, pocket: Pocket, memberId: string, data: GameData) => BagItem[]
   /** Lienzo de la consola en píxeles del juego (para colocar los paneles laterales). */
   console: { w: number; h: number }
+  /** Nombre del protagonista (el de la semilla) cuando el jugador no tiene nickname. */
+  protagonistNames: Readonly<Record<'brendan' | 'may', string>>
   /** Rótulo del modo en la cabecera. */
   modeLabel: string
   /** Variables CSS de la página (las piezas de los botones, en URL absoluta). */
@@ -135,6 +148,8 @@ const hoennMoveDescription = (move: string) => (moveTexts as unknown as { moves:
 
 export const hoennKit: CampaignKit = {
   id: 'hoenn-emerald',
+  music: hoennMusic,
+  sounds: hoennSounds,
   encounters: hoennEncounters,
   definition: hoennDefinition,
   rules: campaignRules('hoenn-emerald'),
@@ -151,7 +166,7 @@ export const hoennKit: CampaignKit = {
   itemName: emeraldItemName,
   itemText: emeraldItemText,
   speciesLabel: (name) => name.toUpperCase(),
-  screens: { Route: RouteScreen, Draft: DraftScreen, Team: TeamScreen, Moves: MovesScreen, Bag: BagScreen, Exchange: ExchangeScreen, Evolution: EvolutionScene, League: LeagueScreen, CampaignCard, TeamPanel },
+  screens: { Route: RouteScreen, Draft: DraftScreen, Team: TeamScreen, Moves: MovesScreen, Bag: BagScreen, Exchange: ExchangeScreen, Evolution: EvolutionScene, League: LeagueScreen, Result: ResultScreen, Share: ShareScreen, CampaignCard, TeamPanel },
   // OBJ. EVOL. y MT/MO, solo para mirar, con los nombres y descripciones de Esmeralda.
   bagContents: (state, pocket, memberId, data) => {
     if (pocket === 'evolution') {
@@ -165,6 +180,7 @@ export const hoennKit: CampaignKit = {
   },
   console: { w: 240, h: 320 },
   modeLabel: esCampaign.modeLabel,
+  protagonistNames: esCampaign.result.protagonist,
   // Marco de ventana de Esmeralda para los botones (URL absoluta: relativa en una variable CSS se resolvería contra la hoja de estilos).
   pageVars: () => ({ '--campaign-frame': `url("${new URL(emeraldTheme.asset('marco-1'), document.baseURI).href}")` }) as CSSProperties,
 }

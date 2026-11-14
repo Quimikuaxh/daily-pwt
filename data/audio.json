@@ -406,6 +406,118 @@
       "_nota": "Campaña de Hoenn: menús del tramo de Ciudad Colosalia (Liga). Bucle de 60,248 s (13/11/2026), con la costura en el punto de mayor correlación de la onda (0,97; la anterior, 15,35–75,598, daba 0,95).",
       "loopStartSec": 10.0,
       "loopEndSec": 70.2484
+    },
+    {
+      "id": "unova-town-aspertia",
+      "source": "ost-b2w2",
+      "file": "Disc 1/04 - Aspertia City.flac",
+      "_nota": "Campaña de Teselia. Bucle con scripts/find-loops.py (14/11/2026), costura a -32,3 dB.",
+      "loopStartSec": 73.82,
+      "loopEndSec": 149.1862
+    },
+    {
+      "id": "unova-town-virbank",
+      "source": "ost-b2w2",
+      "file": "Disc 1/13 - Virbank City.flac",
+      "_nota": "Campaña de Teselia. Bucle con scripts/find-loops.py (14/11/2026), costura a -42,3 dB.",
+      "loopStartSec": 43.39,
+      "loopEndSec": 92.8128
+    },
+    {
+      "id": "unova-town-castelia",
+      "source": "ost-bw",
+      "file": "Disc 1/53 - Castelia City.flac",
+      "_nota": "Campaña de Teselia. Bucle con scripts/find-loops.py (14/11/2026), costura a -29,0 dB.",
+      "loopStartSec": 10.46,
+      "loopEndSec": 60.9976
+    },
+    {
+      "id": "unova-town-nimbasa",
+      "source": "ost-bw",
+      "file": "Disc 1/57 - Nimbasa City.flac",
+      "_nota": "Campaña de Teselia. Bucle con scripts/find-loops.py (14/11/2026), costura a -22,8 dB.",
+      "loopStartSec": 35.61,
+      "loopEndSec": 90.5601
+    },
+    {
+      "id": "unova-town-driftveil",
+      "source": "ost-bw",
+      "file": "Disc 2/02 - Driftveil City.flac",
+      "_nota": "Campaña de Teselia. Bucle con scripts/find-loops.py (14/11/2026), costura a -30,3 dB.",
+      "loopStartSec": 34.86,
+      "loopEndSec": 73.9783
+    },
+    {
+      "id": "unova-town-mistralton",
+      "source": "ost-bw",
+      "file": "Disc 2/09 - Mistralton City.flac",
+      "_nota": "Campaña de Teselia. Bucle con scripts/find-loops.py (14/11/2026), costura a -25,4 dB.",
+      "loopStartSec": 17.52,
+      "loopEndSec": 94.6158
+    },
+    {
+      "id": "unova-town-opelucid",
+      "source": "ost-bw",
+      "file": "Disc 2/24 - Opelucid City (Black).flac",
+      "_nota": "Campaña de Teselia. Bucle con scripts/find-loops.py (14/11/2026), costura a -28,6 dB.",
+      "loopStartSec": 73.68,
+      "loopEndSec": 191.7695
+    },
+    {
+      "id": "unova-town-humilau",
+      "source": "ost-b2w2",
+      "file": "Disc 2/38 - Humilau City.flac",
+      "_nota": "Campaña de Teselia. Bucle con scripts/find-loops.py (14/11/2026), costura a -30,4 dB.",
+      "loopStartSec": 56.37,
+      "loopEndSec": 136.3883
+    },
+    {
+      "id": "unova-town-league",
+      "source": "ost-bw",
+      "file": "Disc 2/29 - Pokémon League.flac",
+      "_nota": "Campaña de Teselia. Bucle con scripts/find-loops.py (14/11/2026), costura a -47,4 dB.",
+      "loopStartSec": 9.74,
+      "loopEndSec": 45.7482
+    },
+    {
+      "id": "unova-elite",
+      "source": "ost-bw",
+      "file": "Disc 2/30 - Battle! (Elite Four).flac",
+      "_nota": "Campaña de Teselia. Bucle con scripts/find-loops.py (14/11/2026), costura a -21,4 dB.",
+      "loopStartSec": 86.99,
+      "loopEndSec": 160.2724
+    },
+    {
+      "id": "unova-gym-victory",
+      "source": "ost-bw",
+      "file": "Disc 1/48 - Victory! (Gym Leader).flac",
+      "_nota": "Campaña de Teselia. Una sola reproducción, sin bucle."
+    },
+    {
+      "id": "unova-hall-of-fame",
+      "source": "ost-bw",
+      "file": "Disc 4/19 - Hall of Fame.flac",
+      "_nota": "Campaña de Teselia. Una sola reproducción, sin bucle."
+    },
+    {
+      "id": "unova-evolution",
+      "source": "ost-bw",
+      "file": "Disc 1/38 - Evolution.flac",
+      "_nota": "Campaña de Teselia. Escena de evolución. La frase de 7,74 s se repite de 16,8 a 42,6 s; find-loops.py busca bucles de 20 s o más, así que el periodo se buscó desde 4 s con sus mismas funciones (14/11/2026), costura a -22,9 dB.",
+      "loopStartSec": 33.26,
+      "loopEndSec": 41.0014
+    },
+    {
+      "id": "unova-evolved",
+      "source": "ost-bw",
+      "file": "Disc 1/39 - Congratulations! Your Pokémon Evolved!.flac",
+      "_nota": "Campaña de Teselia. Una sola reproducción, sin bucle."
+    },
+    {
+      "id": "unova-credits",
+      "source": "ost-b2w2",
+      "file": "Disc 3/32 - Staff Credits.flac",
+      "_nota": "Campaña de Teselia. Una sola reproducción, sin bucle."
     }
   ],
   "sfx": [

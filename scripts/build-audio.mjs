@@ -7,6 +7,7 @@ import { CACHE_DIR, fromRoot } from './lib/paths.mjs'
 const MANIFEST_PATH = fromRoot('data', 'audio.json')
 const INDEX_PATH = fromRoot('src', 'generated', 'audio-index.json')
 const EMERALD_INDEX_PATH = fromRoot('src', 'generated', 'emerald', 'audio-index.json')
+const UNOVA_INDEX_PATH = fromRoot('src', 'generated', 'unova', 'audio-index.json')
 const AUDIO_DIR = fromRoot('public', 'audio')
 const MUSIC_CACHE = resolve(CACHE_DIR, 'audio')
 const SFX_CACHE = resolve(CACHE_DIR, 'sfx')
@@ -110,6 +111,20 @@ function extractEntry(zip, entry) {
   return execFileSync('unzip', ['-p', zipPath, entry], { maxBuffer: 1 << 28 })
 }
 
+/** Separa los metadatos de campaña para que no entren en la ruta crítica del diario (E2E-21). No descarga audio. */
+export function splitCampaignAudio(index) {
+  const base = { ...index, music: {}, sfx: {} }
+  const emerald = { music: {}, sfx: {} }
+  const unova = { music: {}, sfx: {} }
+  for (const kind of ['music', 'sfx']) {
+    for (const [id, entry] of Object.entries(index[kind])) {
+      const target = id.startsWith('emerald-') ? emerald : id.startsWith('unova-') ? unova : base
+      target[kind][id] = entry
+    }
+  }
+  return { base, emerald, unova }
+}
+
 async function main() {
   const force = process.argv.includes('--force')
   const manifest = JSON.parse(readFileSync(MANIFEST_PATH, 'utf8'))
@@ -136,18 +151,12 @@ async function main() {
     process.exitCode = 1
     return
   }
-  // Lo de Esmeralda (`emerald-*`) va en su propio índice, que carga la campaña: así no pesa en la ruta crítica del reto diario (E2E-21).
-  const emerald = { music: {}, sfx: {} }
-  for (const kind of ['music', 'sfx']) {
-    for (const id of Object.keys(index[kind])) {
-      if (!id.startsWith('emerald-')) continue
-      emerald[kind][id] = index[kind][id]
-      delete index[kind][id]
-    }
+  const { base, emerald, unova } = splitCampaignAudio(index)
+  for (const [path, entries] of [[INDEX_PATH, base], [EMERALD_INDEX_PATH, emerald], [UNOVA_INDEX_PATH, unova]]) {
+    mkdirSync(dirname(path), { recursive: true })
+    writeFileSync(path, `${JSON.stringify(entries, null, 2)}\n`)
   }
-  writeFileSync(INDEX_PATH, `${JSON.stringify(index, null, 2)}\n`)
-  writeFileSync(EMERALD_INDEX_PATH, `${JSON.stringify(emerald, null, 2)}\n`)
-  console.log(`Audio completo (${Object.keys(index.music).length} + ${Object.keys(emerald.music).length} de Esmeralda pistas, ${Object.keys(index.sfx).length} + ${Object.keys(emerald.sfx).length} de Esmeralda efectos).`)
+  console.log('Audio completo: índices del diario, Hoenn y Teselia escritos por separado.')
 }
 
 if (isMain(import.meta.url)) await main()

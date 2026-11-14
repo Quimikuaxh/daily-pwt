@@ -8,12 +8,13 @@ import { MemberIcon } from '../battle/party/MemberIcon'
 import { TypeBadge } from '../common/TypeBadge'
 import { trainerSprite } from '../common/spriteUrls'
 import { esCampaign } from '../../i18n/esCampaign'
+import { esUnova } from '../../i18n/esUnova'
 import type { CampaignEncounter } from '../campaign/hoennRoute'
 import { unovaVars } from './unovaRoute'
 import { UnovaTitle } from './UnovaTitle'
 import './unova.css'
 
-const t = esCampaign.unova
+const t = esUnova
 const route = esCampaign.route
 /** Primera fila de la cuadrícula del equipo (2 columnas x 3 filas de 22 px, todo a 13 px). */
 export const GRID_TOP = 86

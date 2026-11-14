@@ -25,6 +25,8 @@ import { UNOVA_PLACES } from '../ui/campaign-unova/unovaRoute'
 import { UnovaCampaignCard, UnovaTeamPanel } from '../ui/campaign-unova/UnovaSide'
 import { UnovaEvolutionScene } from '../ui/campaign-unova/UnovaEvolutionScene'
 import { UnovaLeagueScreen } from '../ui/campaign-unova/UnovaLeagueScreen'
+import { UnovaResultScreen } from '../ui/campaign-unova/UnovaResultScreen'
+import { UnovaShareScreen } from '../ui/campaign-unova/UnovaShareScreen'
 import { loadGameData } from '../data/gameData'
 import { BattlePanelsMock, SidePanelsMock, StatusMock } from './sidePanels'
 import '../index.css'
@@ -414,6 +416,27 @@ if (shareMode === 'ataques') {
     <div style={{ display: 'flex', justifyContent: 'center', padding: 8 }}>
       <UnovaLeagueScreen rival={unova[10]} beaten={2} roster={null} speciesName={name} onAccept={() => undefined} onCancel={() => undefined} scale={2}
         members={[mon('a', 'samurott'), mon('b', 'excadrill'), mon('c', 'zoroark'), mon('d', 'chandelure', true)]} />
+    </div>,
+  )
+} else if (shareMode === 'resultado-teselia' || shareMode === 'salon-teselia' || shareMode === 'compartir-teselia') {
+  // Resultado (medalla de Hiedra: mensaje y, tocando, la Ficha), Salón de la Fama y compartir (`&perdida=1`: derrota ante Lirio) de Teselia.
+  const data = loadGameData()
+  const name = (id: string) => ((namesEs.species as Record<string, string>)[id] ?? id).toUpperCase()
+  const species = ['samurott', 'excadrill', 'zoroark', 'chandelure', 'haxorus', 'braviary']
+  const team = species.map((id, i) => ({ species: id, name: name(id), level: 50 + i, hp: 150, fainted: i === 3 }))
+  const lost = new URLSearchParams(location.search).get('perdida') === '1'
+  const props = { data, player: 'RIZZO', protagonist: 'brendan' as const, badges: 8, badgeNames: [], card: { id: '20417', points: 64, pokedex: 31, minutes: 312 },
+    team, trainer: 'lider-hiedra', onDone: () => undefined, scale: 2 }
+  createRoot(document.getElementById('root')!).render(
+    <div style={{ display: 'flex', justifyContent: 'center', padding: 8 }}>
+      {shareMode === 'compartir-teselia' ? (
+        <UnovaShareScreen data={data} won={!lost} player="RIZZO" protagonist="brendan" rival="Lirio" date="2026-11-14" scale={2}
+          team={team.filter((member) => lost || !member.fainted)} card={{ id: '20417', pokedex: 31, fainted: 1, minutes: 312, badges: lost ? 7 : 8 }} />
+      ) : shareMode === 'salon-teselia' ? (
+        <UnovaResultScreen {...props} mode="hallOfFame" message="" />
+      ) : (
+        <UnovaResultScreen {...props} badges={2} mode="medal" message="¡RIZZO recibió la MEDALLA TOXIN de HIEDRA!" />
+      )}
     </div>,
   )
 } else if (shareMode === 'estados') {

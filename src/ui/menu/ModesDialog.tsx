@@ -36,8 +36,8 @@ function ModeArt({ id }: { id: string }) {
     return (
       <span className="modes-art" aria-hidden="true">
         <img src={`${base}ui/n2b2/mapa-teselia.png`} alt="" className="modes-art-bg" />
-        <img src={`${base}sprites/trainers/nate.png`} alt="" className="modes-art-left" />
-        <img src={`${base}sprites/trainers/rosa.png`} alt="" className="modes-art-right" />
+        <img src={`${base}ui/battle/trainers/nate-front.png`} alt="" className="modes-art-left" />
+        <img src={`${base}ui/battle/trainers/rosa-front.png`} alt="" className="modes-art-right" />
       </span>
     )
   }

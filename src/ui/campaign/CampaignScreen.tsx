@@ -29,14 +29,12 @@ import { createCampaignWorkerClient, type CampaignBattleClient } from '../../bat
 import { battleInput } from './campaignBattle'
 import { useStartWhenReady } from './useStartWhenReady'
 import { EmeraldBattle } from './EmeraldBattle'
-import { ResultScreen } from './ResultScreen'
 import { itemName as emeraldItemName } from './bagModel'
 import { buyExchangeItem, equipItem, exchangeItems, heldItemStock } from '../../core/nuzlocke/heldItems'
 import { leagueEvolutions } from './evolutionModel'
 import { leagueBeaten } from './leagueModel'
 import { type CampaignResult, minutesSince, playerNameOf, protagonistOf, recruitedSpecies, resultOf, trainerId } from './resultModel'
-import { battleMusic, townMusic, useCampaignMusic } from './campaignMusic'
-import { ShareScreen } from './ShareScreen'
+import { useCampaignMusic } from './campaignMusic'
 import { DifficultyDialog } from './DifficultyDialog'
 import { Modal } from '../common/Modal'
 import { SoundSettings } from '../menu/SoundSettings'
@@ -246,7 +244,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
   // En los menús (Ruta, draft, equipo, movimientos, Mochila, Tienda, Liga) suena el tema de la ciudad del tramo; el combate, el
   // resultado, la evolución y el final llevan la suya.
   const menuView = !['battle', 'result', 'share', 'evolution', 'evolveOne'].includes(view)
-  useCampaignMusic(menuView ? townMusic(encounters[state?.encounterIndex ?? 0].id) : null)
+  useCampaignMusic(menuView ? kit.music.town(encounters[state?.encounterIndex ?? 0].id) : null, kit.music.register)
   // Candidatos del draft con la trayectoria de su forma (para los movimientos con que llegarían).
   const draftCandidates = (current: CampaignState) => {
     const level = Math.max(...encounters[current.encounterIndex].team.map((member) => member.level))
@@ -375,6 +373,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     if (!member) return null
     return (
       <kit.screens.Evolution
+        music={kit.music}
         data={data}
         evolutions={[{ id: member.id, species: member.species, level: member.level, targets: evolveTargets(state, member.id) }]}
         nameOf={(species) => speciesName(species).toUpperCase()}
@@ -473,7 +472,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
   const resultScreen = () => {
     if (view !== 'result' || !result) return null
     const { mode, encounter, after, lineup } = result
-    const player = playerNameOf(after.seed, playerName)
+    const player = playerNameOf(after.seed, playerName, kit.protagonistNames)
     const badges = badgeCount(after, encounters)
     const badgeNames = places.filter((place) => place.gym !== null).map((place) => kit.badgeNames[place.id])
     const message = mode === 'medal' ? esCampaign.result.medal(player, kit.badgeNames[encounter.id], encounter.nameEs)
@@ -486,7 +485,9 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
       return [{ species: member.species, name: mon.name, level: member.level, hp: mon.hp, fainted: member.fainted }]
     })
     return (
-      <ResultScreen
+      <kit.screens.Result
+        music={kit.music}
+        data={data}
         mode={mode} message={message} player={player} protagonist={protagonistOf(after.seed)}
         badges={badges} badgeNames={badgeNames}
         card={{ id: trainerId(after.seed), points: after.battlePoints ?? 0, pokedex: recruitedSpecies(after), minutes: result.minutes }}
@@ -509,8 +510,10 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
       return member && (!won || !member.fainted) ? [{ species: member.species, name: speciesName(member.species).toUpperCase() }] : []
     })
     return (
-      <ShareScreen
-        won={won} player={playerNameOf(after.seed, playerName)} protagonist={protagonistOf(after.seed)} rival={encounter.nameEs} team={team}
+      <kit.screens.Share
+        music={kit.music}
+        data={data}
+        won={won} player={playerNameOf(after.seed, playerName, kit.protagonistNames)} protagonist={protagonistOf(after.seed)} rival={encounter.nameEs} team={team}
         card={{ id: trainerId(after.seed), pokedex: recruitedSpecies(after), fainted: after.members.filter((member) => member.fainted).length, minutes: result.minutes, badges: badgeCount(after, encounters) }}
         date={new Date().toISOString().slice(0, 10)}
         reservedHeight={200}
@@ -573,7 +576,9 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
         intro={{ rivalLead: speciesName(encounter.team[0].species).toUpperCase(), playerLead: lead ? speciesName(lead.species).toUpperCase() : '' }}
         rivalLevels={encounter.team.map((member) => member.level)}
         playerLevels={Object.fromEntries(state.members.map((member) => [member.species, member.level]))}
-        music={battleMusic(encounter.kind)}
+        music={kit.music.battle(encounter.kind)}
+        registerMusic={kit.music.register}
+        sounds={kit.sounds}
         lineup={(battleContext?.lineup ?? []).flatMap((id, i) => {
           const member = state.members.find((candidate) => { return candidate.id === id })
           if (!member) return []
@@ -591,6 +596,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     if (view !== 'evolution' || state?.phase !== 'prepare') return null
     return (
       <kit.screens.Evolution
+        music={kit.music}
         data={data}
         evolutions={leagueEvolutions(definition, state)}
         nameOf={(species) => speciesName(species).toUpperCase()}

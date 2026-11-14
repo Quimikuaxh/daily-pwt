@@ -17,14 +17,14 @@ import { RevealWhenLoaded } from './RevealWhenLoaded'
 import { slotBox } from './partySlotModel'
 import { messagePages } from './emeraldBattleModel'
 import { hallOfFameOrder, hallOfFameSpots, type Protagonist, type ResultMode } from './resultModel'
-import { resultMusic, useCampaignMusic } from './campaignMusic'
+import { hoennMusic, useCampaignMusic, type CampaignMusic } from './campaignMusic'
 
 const t = esCampaign.result
 const font = emeraldTheme.font as BitmapFont
 
 export type ResultMember = { species: string; name: string; level: number; hp: number; fainted: boolean }
 
-type ResultScreenProps = {
+export type ResultScreenProps = {
   mode: ResultMode
   message: string
   player: string
@@ -37,12 +37,13 @@ type ResultScreenProps = {
   /** Rival vencido (`lider-*`): vuelve a salir en el campo mientras habla, como el juego al dar la medalla (Jose, 12/11/2026). */
   trainer?: string | null
   onDone: () => void
+  music?: CampaignMusic
   reservedHeight?: number
   scale?: number
 }
 
-export function ResultScreen({ mode, message, player, protagonist, badges, badgeNames, card, team, trainer = null, onDone, reservedHeight, scale }: ResultScreenProps) {
-  useCampaignMusic(resultMusic(mode))
+export function ResultScreen({ mode, message, player, protagonist, badges, badgeNames, card, team, trainer = null, onDone, reservedHeight, scale, music = hoennMusic }: ResultScreenProps) {
+  useCampaignMusic(music.result(mode), music.register)
   const [showCard, setShowCard] = useState(false)
   const [page, setPage] = useState(0)
   const pages = messagePages(message)

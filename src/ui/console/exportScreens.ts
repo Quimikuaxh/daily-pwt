@@ -38,7 +38,8 @@ export function toGray(source: CanvasImageSource, w: number, h: number): HTMLCan
 
 /** Las pantallas de `stage`, una debajo de otra, a `zoom` aumentos. */
 export function exportScreens(stage: HTMLElement, zoom: number): HTMLCanvasElement {
-  const screens = [...stage.querySelectorAll('.console-screen')] as HTMLElement[]
+  // Las pantallas libres (`freeScreens`, las de Teselia) también: lo que se copia sale igual de su caja.
+  const screens = [...stage.querySelectorAll('.console-screen, .console-screen-free')] as HTMLElement[]
   const first = screens[0]?.getBoundingClientRect()
   const k = first ? first.width / Number(getComputedStyle(stage).getPropertyValue('--screen-w').replace('px', '') || 240) : 1
   const w = Math.round((first?.width ?? 0) / k)

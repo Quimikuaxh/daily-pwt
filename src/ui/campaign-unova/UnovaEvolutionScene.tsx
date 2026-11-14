@@ -2,7 +2,7 @@
  * Escena de evolución de la campaña de Teselia (maqueta aprobada el 14/11/2026). Arriba, fondo oscuro con un halo detrás del Pokémon (su
  * sprite de 5.ª generación) y el mensaje en la franja de mensajes del combate del diario. Abajo, la pantalla táctil del combate del diario
  * con su botón central grande (CONTINUAR en lugar de LUCHAR); para elegir forma, los botones de movimiento del combate, uno por forma.
- * El orden de los pasos, la animación (dos siluetas que crecen y menguan) y las músicas y efectos son los de Hoenn (evolutionModel).
+ * El orden de los pasos y la animación (dos siluetas que crecen y menguan) son los de Hoenn (evolutionModel); el audio pertenece a Teselia.
  */
 import { useEffect, useState, type CSSProperties } from 'react'
 import { ConsoleStage } from '../console/ConsoleStage'
@@ -12,15 +12,17 @@ import { moveTileColor } from '../battle/moveTileColors'
 import { speciesSprite } from '../common/spriteUrls'
 import { usePreloadImages } from '../campaign/usePreloadImages'
 import { esCampaign } from '../../i18n/esCampaign'
+import { esUnova } from '../../i18n/esUnova'
 import type { GameData } from '../../core/types'
-import { animationFrame, evolutionLength, evolutionSound, availableTargets, firstStep, nextStep, nothingLeft, type EvolutionChoices, type EvolutionStep, type LeagueEvolution } from '../campaign/evolutionModel'
-import { EVOLUTION_MUSIC, EVOLUTION_SFX_IDS, EVOLVED_MUSIC, playCry, playSfx, preloadCries, preloadSfx, useCampaignMusic } from '../campaign/campaignMusic'
+import { animationFrame, evolutionLength, availableTargets, firstStep, nextStep, nothingLeft, type EvolutionChoices, type EvolutionStep, type LeagueEvolution } from '../campaign/evolutionModel'
+import { useCampaignMusic, type CampaignMusic } from '../campaign/campaignMusic'
+import { unovaMusic, unovaSounds } from './unovaMusic'
 import '../battle/battle.css'
 import './unova.css'
 
 const LENGTH = evolutionLength()
 const t = esCampaign.evolution
-const u = esCampaign.unova
+const u = esUnova
 const frameShowsNew = (step: EvolutionStep, frame: number) => { return step === 'animating' && animationFrame(frame).evolved }
 const reducedMotion = () => typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
 
@@ -31,28 +33,25 @@ export type UnovaEvolutionSceneProps = {
   onDone: (choices: EvolutionChoices) => void
   data: GameData
   scale?: number
+  music?: CampaignMusic
   reservedHeight?: number
 }
 
-export function UnovaEvolutionScene({ evolutions, nameOf, onDone, data, scale, reservedHeight }: UnovaEvolutionSceneProps) {
+export function UnovaEvolutionScene({ evolutions, nameOf, onDone, data, scale, reservedHeight, music = unovaMusic }: UnovaEvolutionSceneProps) {
   const [index, setIndex] = useState(0)
   const [step, setStep] = useState(firstStep)
   const [choices, setChoices] = useState({} as EvolutionChoices)
   const [frame, setFrame] = useState(0)
   const sprite = (species: string) => speciesSprite(data.dex, species, 'front') ?? ''
   usePreloadImages(evolutions.flatMap((evolution) => [evolution.species, ...evolution.targets].map(sprite)))
-  useCampaignMusic(step === 'animating' ? EVOLUTION_MUSIC : step === 'evolved' ? EVOLVED_MUSIC : null)
+  useCampaignMusic(step === 'animating' ? music.evolution : step === 'evolved' ? music.evolved : null, music.register)
   useEffect(() => {
-    preloadSfx(EVOLUTION_SFX_IDS)
-    preloadCries(evolutions.flatMap((evolution) => [evolution.species, ...evolution.targets]))
+    unovaSounds.preloadCries(evolutions.flatMap((evolution) => [evolution.species, ...evolution.targets]))
   }, [evolutions])
-  const sparklePhase = step === 'animating' ? evolutionSound(frame) : null
-  useEffect(() => { if (sparklePhase) playSfx(sparklePhase) }, [sparklePhase])
-  useEffect(() => { if (step === 'evolved') playSfx('emerald-evo-done') }, [step, index])
   const evolvingSpecies = step === 'evolving' ? evolutions[index]?.species : null
-  useEffect(() => { if (evolvingSpecies) playCry(evolvingSpecies) }, [evolvingSpecies, index])
+  useEffect(() => { if (evolvingSpecies) unovaSounds.playCry(evolvingSpecies) }, [evolvingSpecies, index])
   const evolvedSpecies = step === 'evolved' ? (choices[evolutions[index]?.id ?? ''] ?? evolutions[index]?.targets[0]) : null
-  useEffect(() => { if (evolvedSpecies) playCry(evolvedSpecies) }, [evolvedSpecies, index])
+  useEffect(() => { if (evolvedSpecies) unovaSounds.playCry(evolvedSpecies) }, [evolvedSpecies, index])
   useEffect(() => {
     if (step !== 'animating') return
     if (reducedMotion()) { setStep('evolved'); return }

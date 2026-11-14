@@ -12,6 +12,7 @@ import SummaryScreen from '../battle/party/SummaryScreen'
 import { partyMove, type PartyMember } from '../battle/party/partyModel'
 import type { GameData } from '../../core/types'
 import { esCampaign } from '../../i18n/esCampaign'
+import { esUnova } from '../../i18n/esUnova'
 import { learnMove, type MoveInfo } from '../campaign/movesModel'
 import { scrollList, wheelRows } from '../campaign/listScroll'
 import { unovaVars } from './unovaRoute'
@@ -20,7 +21,7 @@ import '../battle/party/summary.css'
 import './unova.css'
 
 const t = esCampaign.moves
-const u = esCampaign.unova
+const u = esUnova
 const VISIBLE = 6
 /** Lista sobre el sprite de la pantalla de abajo (en píxeles de la pantalla de datos: la de abajo empieza en y 192). */
 const LIST = { x: 142, y: 194, w: 112, h: 150, rowY: 22, rowH: 18, step: 20 }

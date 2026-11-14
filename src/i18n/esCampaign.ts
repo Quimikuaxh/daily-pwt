@@ -199,7 +199,7 @@ export const esCampaign = {
     champions: (names: string) => `Campeones: ${names}.`,
     ended: 'Fin de la campaña. Todas las bajas son permanentes.',
     memberLabel: (name: string, level: number, fainted: boolean, hp: number) => `${name}, nivel ${level}, ${fainted ? 'baja permanente' : `${hp} PS`}`,
-    protagonist: { brendan: 'BRUNO', may: 'AURA' } as Record<string, string>,
+    protagonist: { brendan: 'BRUNO', may: 'AURA' } as Record<'brendan' | 'may', string>,
   },
   // Pantalla final para compartir (Jose, 12/11/2026, opción A): Salón de la Fama y Ficha de Entrenador, en imagen.
   share: {
@@ -456,61 +456,9 @@ export const esCampaign = {
       petra: 'PIEDRA', marcial: 'PUÑO', erico: 'DINAMO', candela: 'CALOR', norman: 'EQUILIBRIO', alana: 'PLUMA', 'vito-y-leti': 'MENTE', galano: 'LLUVIA',
     } as Record<string, string>,
   },
-  // Teselia (N2/B2, maqueta Ruta A3 aprobada el 13/11/2026): nombres de la edición española.
-  unova: {
+  // Entrada de Teselia en Modos de juego. El resto de sus textos, en esUnova.ts (solo los carga su kit: fuera de la ruta crítica, E2E-21).
+  unovaEntry: {
     entry: 'Nuzlocke de Teselia',
     entryHint: 'Campaña con draft de Pokémon contra los gimnasios y la Liga de Negro 2 y Blanco 2',
-    modeLabel: 'Nuzlocke · Teselia',
-    region: 'TESELIA',
-    cities: {
-      cheren: 'Ciudad Engobe', hiedra: 'Ciudad Hormigón', camus: 'Ciudad Porcelana', camila: 'Ciudad Mayólica', yakon: 'Ciudad Fayenza',
-      gerania: 'Ciudad Loza', lirio: 'Ciudad Caolín', ciprian: 'Ciudad Marga', iris: 'Liga Pokémon',
-    } as Record<string, string>,
-    types: {
-      cheren: 'normal', hiedra: 'poison', camus: 'bug', camila: 'electric', yakon: 'ground', gerania: 'flying', lirio: 'dragon', ciprian: 'water',
-    } as Record<string, string>,
-    badges: {
-      cheren: 'BÁSICA', hiedra: 'TÓXICA', camus: 'INSECTO', camila: 'VOLTIO', yakon: 'TEMBLOR', gerania: 'JET', lirio: 'LEYENDA', ciprian: 'OLA',
-    } as Record<string, string>,
-    typeNames: {
-      normal: 'Normal', poison: 'Veneno', bug: 'Bicho', electric: 'Eléctrico', ground: 'Tierra', flying: 'Volador', dragon: 'Dragón', water: 'Agua',
-    } as Record<string, string>,
-    leaderTitle: (name: string) => `LÍDER ${name.toUpperCase()}`,
-    eliteTitle: (name: string) => `ALTO MANDO ${name.toUpperCase()}`,
-    championTitle: (name: string) => `CAMPEONA ${name.toUpperCase()}`,
-    gymHead: (gym: number, city: string) => `Gimnasio ${gym} · ${city}`,
-    leagueHead: 'Liga Pokémon',
-    nextLine: (level: number) => `PRÓXIMO · Nv. máx. ${level}`,
-    wonLine: (badge: string) => `SUPERADO · Medalla ${badge.charAt(0)}${badge.slice(1).toLowerCase()}`,
-    pendingLine: (level: number) => `PENDIENTE · Nv. máx. ${level}`,
-    leagueWonLine: 'SUPERADO',
-    count: (n: number) => `${n} Pokémon`,
-    medals: 'MEDALLAS',
-    level: (n: number) => `Nv${n}`,
-    // Draft (maqueta aprobada el 14/11/2026).
-    draftTitle: 'ELIGE UN POKÉMON',
-    draftPick: (n: number, total: number) => `${n} DE ${total}`,
-    draftRival: (name: string, level: number) => `Rival: ${name.toUpperCase()} · Nv. máx. ${level}`,
-    yourTeam: 'TU EQUIPO',
-    yourTeamLabel: 'Ver tu equipo y la caja',
-    // Movimientos (maqueta aprobada el 14/11/2026): la lista de lo que puede aprender y la categoría de Gen 5 en el texto accesible.
-    canLearn: 'PUEDE APRENDER',
-    categoryNames: { Physical: 'físico', Special: 'especial', Status: 'de estado' } as Record<string, string>,
-    // Tienda (maqueta aprobada el 14/11/2026).
-    shopTitle: 'CANJE DE PUNTOS BATALLA',
-    shopLeft: (points: number) => `Te quedarían ${points} PB`,
-    shopMissing: (points: number) => `Te faltan ${points} PB`,
-    shopTeam: 'TU EQUIPO LLEVA',
-    shopOwned: 'Tienes',
-    // Evolución (maqueta aprobada el 14/11/2026): el botón grande del combate dice CONTINUAR.
-    continueLabel: 'CONTINUAR',
-    evolutionProgress: (n: number, total: number) => `Evolución ${n} de ${total}`,
-    // Liga (maqueta aprobada el 14/11/2026): el orden de cada participante, dentro de su placa verde.
-    leagueOrder: (n: number) => `${n}.º`,
-    leagueProgress: (beaten: number) => `Liga Pokémon: ${beaten} de 5 superados`,
-    leagueMaxLevel: (level: number) => `Nivel máximo ${level}`,
-    leagueBoxClosed: 'La CAJA está cerrada',
-    leagueChoose: 'Elige de 1 a 6 Pokémon.',
-    leagueLocked: 'La CAJA está cerrada.',
   },
 } as const

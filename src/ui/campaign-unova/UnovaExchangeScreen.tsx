@@ -11,6 +11,7 @@ import { MemberIcon } from '../battle/party/MemberIcon'
 import { itemIconUrl } from '../common/spriteUrls'
 import { usePreloadImages } from '../campaign/usePreloadImages'
 import { esCampaign } from '../../i18n/esCampaign'
+import { esUnova } from '../../i18n/esUnova'
 import { scrollList, wheelRows } from '../campaign/listScroll'
 import { wrapText } from '../campaign/draftModel'
 import { n2b2Ui, unovaVars } from './unovaRoute'
@@ -20,7 +21,7 @@ import '../battle/party/party.css'
 import './unova.css'
 
 const t = esCampaign.exchange
-const u = esCampaign.unova
+const u = esUnova
 const VISIBLE = 7
 const ROW = { x: 96, y: 9, w: 152, h: 17 }
 

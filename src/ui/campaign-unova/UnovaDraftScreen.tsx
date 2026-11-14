@@ -13,6 +13,7 @@ import SummaryScreen from '../battle/party/SummaryScreen'
 import { TypeBadge } from '../common/TypeBadge'
 import { shortTypeLabel } from '../common/typeLabels'
 import { esCampaign } from '../../i18n/esCampaign'
+import { esUnova } from '../../i18n/esUnova'
 import type { DraftScreenProps } from '../campaign/campaignKit'
 import { unovaVars } from './unovaRoute'
 import { unovaSummaryMember } from './unovaSummary'
@@ -21,7 +22,7 @@ import '../battle/party/party.css'
 import '../battle/party/summary.css'
 import './unova.css'
 
-const t = esCampaign.unova
+const t = esUnova
 const draft = esCampaign.draft
 const ROW = { x: 12, y: 36, w: 232, h: 24, step: 26 }
 

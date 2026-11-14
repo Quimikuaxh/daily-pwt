@@ -6,13 +6,15 @@ type Index = Record<'music' | 'sfx', Record<string, { path: string; durationSec:
 type Trainer = { id: string; category: 'leader' | 'champion'; region: string }
 
 const manifest = (): Manifest => readJson('data', 'audio.json')
-/** Índice del diario más el de Esmeralda (`emerald-*`, aparte para no pesar en la ruta crítica del diario; E2E-21, 12/11/2026). */
+/** Índices del diario, Hoenn y Teselia; las campañas permanecen fuera de la ruta crítica (E2E-21). */
 function fullIndex<T extends Index>(): T {
   const base = readJson<T>('src', 'generated', 'audio-index.json')
   const emerald = readJson<Index>('src', 'generated', 'emerald', 'audio-index.json')
+  const unova = readJson<Index>('src', 'generated', 'unova', 'audio-index.json')
   for (const kind of ['music', 'sfx'] as const) {
     expect(Object.keys(base[kind]).some((id) => id.startsWith('emerald-')), `${kind} del diario sin Esmeralda`).toBe(false)
-    base[kind] = { ...base[kind], ...emerald[kind] }
+    expect(Object.keys(base[kind]).some((id) => id.startsWith('unova-')), `${kind} del diario sin Teselia`).toBe(false)
+    base[kind] = { ...base[kind], ...emerald[kind], ...unova[kind] }
   }
   return base
 }
@@ -23,7 +25,8 @@ describe('scripts/build-audio.mjs', () => {
     const plans = planAudio(manifest())
     // Cambio de requisito (Jose, 12/11/2026): pistas de Esmeralda para la campaña de Hoenn (combate, resultado, evolución, créditos y
     // los nueve temas de ciudad de los menús), de vídeos de YouTube.
-    expect(plans.filter((plan: { kind: string }) => plan.kind === 'music')).toHaveLength(33)
+    // Teselia añade 15 pistas de los OST de B/N y N2/B2; reutiliza gym-unova y champion-unova (14/11/2026).
+    expect(plans.filter((plan: { kind: string }) => plan.kind === 'music')).toHaveLength(48)
     expect(plans.find((plan: { id: string }) => plan.id === 'emerald-gym')).toMatchObject({ video: 'https://www.youtube.com/watch?v=0j4sfjIXTA0', cacheName: 'emerald-gym.yt' })
     // Sin el pitido de vida baja: lo sustituye la música (decisión de Jose, 30/10/2026).
     // Cambio de requisito (Jose, 12/11/2026): más los 128 efectos de los ataques de Esmeralda (`gen:emerald-move-sounds`).
@@ -38,6 +41,22 @@ describe('scripts/build-audio.mjs', () => {
     expect(() => planAudio({ ...manifest(), sfx: [{ ...manifest().sfx[0], gainDb: 40 }] })).toThrow(/gainDb no válido/)
     const kanto = plans.find((plan: { id: string }) => plan.id === 'gym-kanto')
     expect(kanto.url).toBe('https://archive.org/download/pkmn-bw2-soundtrack/Disc%202/04%20-%20Battle!%20(Gym%20Leader%20-%20Kanto).flac')
+  })
+
+  it('separa los índices de campaña sin filtrar metadatos ni modificar el índice de entrada', async () => {
+    const { splitCampaignAudio, planAudio } = await importScript('scripts/build-audio.mjs')
+    const plans = planAudio(manifest())
+    const music = Object.fromEntries(plans.filter((item: { kind: string }) => item.kind === 'music').map((item: { id: string; path: string }) => [item.id, { path: item.path }]))
+    const input = { music, sfx: { 'emerald-select': {}, 'menu-select': {} }, trainers: { cheren: 'rival-cheren' } }
+    const { base, emerald, unova } = splitCampaignAudio(input)
+    expect(Object.keys(unova.music)).toHaveLength(15)
+    expect(Object.keys(base.music).some((id) => /^(emerald|unova)-/.test(id))).toBe(false)
+    expect(base.music['gym-unova']).toBeDefined()
+    expect(base.music['champion-unova']).toBeDefined()
+    expect(base.trainers).toEqual(input.trainers)
+    expect(emerald.sfx).toEqual({ 'emerald-select': {} })
+    expect(base.sfx).toEqual({ 'menu-select': {} })
+    expect(Object.keys(music)).toHaveLength(48)
   })
 
   it('rechaza ids duplicados, ids no seguros y orígenes desconocidos', async () => {
@@ -56,8 +75,14 @@ describe('scripts/build-audio.mjs', () => {
     const index = fullIndex<Index>()
     for (const [id, entry] of Object.entries(index.music)) {
       // Jingles que suenan una vez: el del PWT y, en la campaña de Hoenn, las victorias y el Salón de la Fama (12/11/2026).
-      if (['victory-pwt', 'emerald-gym-victory', 'emerald-league-victory', 'emerald-hall-of-fame', 'emerald-evolved', 'emerald-credits'].includes(id)) {
+      if (['victory-pwt', 'emerald-gym-victory', 'emerald-league-victory', 'emerald-hall-of-fame', 'emerald-evolved', 'emerald-credits', 'unova-gym-victory', 'unova-hall-of-fame', 'unova-evolved', 'unova-credits'].includes(id)) {
         expect(entry.loopStartSec, id).toBeUndefined()
+        continue
+      }
+      if (id.startsWith('unova-')) {
+        expect(entry.loopStartSec, id).toBeGreaterThanOrEqual(0)
+        expect(entry.loopEndSec!, id).toBeGreaterThan(entry.loopStartSec!)
+        expect(entry.loopEndSec!, id).toBeLessThan(entry.durationSec)
         continue
       }
       if (id.startsWith('emerald-town-')) {

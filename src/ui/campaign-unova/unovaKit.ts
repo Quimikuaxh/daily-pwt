@@ -2,12 +2,13 @@
  * Kit de la campaña de Teselia (DEC-106). Módulo aparte del de Hoenn (campaignKit.ts): se importa solo al abrir esta campaña, así que su
  * progresión (1,2 MB) no entra en el bloque de la de Hoenn.
  */
+import { unovaMusic, unovaSounds } from './unovaMusic'
 import unovaCatalog from '../../../data/nuzlocke/unova-n2b2.json'
 import unovaProgression from '../../../data/nuzlocke/unova-n2b2-progression.json'
 import { moveDescription as gen5MoveDescription } from '../battle/party/summaryModel'
 import type { CampaignDefinition } from '../../core/nuzlocke/campaign'
 import { campaignRules } from '../../core/nuzlocke/rules'
-import { esCampaign } from '../../i18n/esCampaign'
+import { esUnova } from '../../i18n/esUnova'
 import type { CampaignKit } from '../campaign/campaignKit'
 import { routePlaces, type CampaignEncounter } from '../campaign/hoennRoute'
 import { UnovaRouteScreen } from './UnovaRouteScreen'
@@ -20,6 +21,8 @@ import { unovaBagContents } from './unovaBag'
 import { UnovaExchangeScreen } from './UnovaExchangeScreen'
 import { UnovaEvolutionScene } from './UnovaEvolutionScene'
 import { UnovaLeagueScreen } from './UnovaLeagueScreen'
+import { UnovaResultScreen } from './UnovaResultScreen'
+import { UnovaShareScreen } from './UnovaShareScreen'
 import descriptions from '../../generated/descriptions-es.json'
 import names from '../../generated/names-es.json'
 import { UNOVA_PLACES, unovaVars } from './unovaRoute'
@@ -33,6 +36,8 @@ const unovaDefinition = { campaign: 'unova-n2b2', encounters: unovaEncounters, s
 
 export const unovaKit: CampaignKit = {
   id: 'unova-n2b2',
+  music: unovaMusic,
+  sounds: unovaSounds,
   encounters: unovaEncounters,
   definition: unovaDefinition,
   rules: campaignRules('unova-n2b2'),
@@ -44,14 +49,15 @@ export const unovaKit: CampaignKit = {
   moveDescription: (move) => gen5MoveDescription(move) ?? '',
   seedPrefix: 'teselia',
   places: routePlaces(unovaEncounters, UNOVA_PLACES),
-  badgeNames: esCampaign.unova.badges,
+  badgeNames: esUnova.badges,
   medalsInCard: true,
   itemName: (id) => (names.items as Record<string, string>)[id] ?? id,
   itemText: (id) => (descriptions.items as Record<string, string>)[id] ?? '',
   speciesLabel: (name) => name,
-  screens: { Route: UnovaRouteScreen, Draft: UnovaDraftScreen, Team: UnovaTeamScreen, Moves: UnovaMovesScreen, Bag: UnovaBagScreen, Exchange: UnovaExchangeScreen, Evolution: UnovaEvolutionScene, League: UnovaLeagueScreen, CampaignCard: UnovaCampaignCard, TeamPanel: UnovaTeamPanel },
+  screens: { Route: UnovaRouteScreen, Draft: UnovaDraftScreen, Team: UnovaTeamScreen, Moves: UnovaMovesScreen, Bag: UnovaBagScreen, Exchange: UnovaExchangeScreen, Evolution: UnovaEvolutionScene, League: UnovaLeagueScreen, Result: UnovaResultScreen, Share: UnovaShareScreen, CampaignCard: UnovaCampaignCard, TeamPanel: UnovaTeamPanel },
   bagContents: (state, pocket, memberId, data) => unovaBagContents(state, pocket, memberId, unovaDefinition, data),
   console: { w: 256, h: 384 },
-  modeLabel: esCampaign.unova.modeLabel,
+  modeLabel: esUnova.modeLabel,
+  protagonistNames: esUnova.protagonist,
   pageVars: unovaVars,
 }

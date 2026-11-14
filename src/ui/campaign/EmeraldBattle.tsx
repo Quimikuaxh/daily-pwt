@@ -34,7 +34,7 @@ import { statAt } from './draftModel'
 import { typeIconId } from './movesModel'
 import { SummaryPages } from './SummaryPages'
 import type { Candidate } from './draftModel'
-import { moveSoundIds, playMoveSounds, BATTLE_SFX_IDS, emeraldSfxFor, LOW_HEALTH_PERIOD_MS, LOW_HEALTH_SFX, playCry, playSfx, preloadCries, preloadSfx, useCampaignMusic } from './campaignMusic'
+import { hoennSounds, type CampaignSounds, LOW_HEALTH_PERIOD_MS, useCampaignMusic } from './campaignMusic'
 import type { MonView } from '../../battle/protocol'
 import moveData from '../../generated/emerald/moves.json'
 
@@ -78,6 +78,8 @@ type EmeraldBattleProps = {
   playerLevels: Readonly<Record<string, number>>
   /** Tema del combate (`battleMusic`): suena desde la intro hasta que acaba. */
   music: string
+  registerMusic?: () => void
+  sounds?: CampaignSounds
   /**
    * El equipo con que se entra, para la pantalla de abajo mientras el motor carga (Jose, 12/11/2026: hasta que llegaba la primera
    * petición se veía el equipo vacío).
@@ -99,7 +101,8 @@ type Menu = 'actions' | 'moves' | 'party'
 /** Lo que enseña DATOS: la ficha (como en el draft), el nivel y el objeto. */
 export type SummaryData = { mon: Candidate; level: number; item: string | null }
 
-export function EmeraldBattle({ session, start, onRetry, data, trainer, trainerId, resumed = false, summaryOf, intro, rivalLevels, playerLevels, music, lineup = [], onEnded, sides, reservedHeight, scale }: EmeraldBattleProps) {
+export function EmeraldBattle({ session, start, onRetry, data, trainer, trainerId, resumed = false, summaryOf, intro, rivalLevels, playerLevels, music, registerMusic, sounds = hoennSounds, lineup = [], onEnded, sides, reservedHeight, scale }: EmeraldBattleProps) {
+  const { playSfx, preloadSfx, playCry, preloadCries, moveSoundIds, playMoveSounds } = sounds
   const client = useMemo(() => sessionBattleClient(session, start), [session, start])
   const battleNames = useMemo(() => emeraldBattleNames(data.names), [data.names])
   // PS máximos del rival (el motor solo da su porcentaje): los de Gen 3 a su nivel, con 20 IV, sin EV y naturaleza neutra (PRD §0).
@@ -118,13 +121,13 @@ export function EmeraldBattle({ session, start, onRetry, data, trainer, trainerI
     switchDurations: EMERALD_SWITCH,
     // La barra de Gen 3 baja 1 PS por fotograma: se espera a que llegue antes del siguiente mensaje.
     hpPause: (before, after) => hpPauseMs(before, after, rivalMaxHp),
-    // Efectos de Esmeralda; los de la bola, al ritmo del envío (abajo).
-    playSfx: (id) => { const sound = emeraldSfxFor(id); if (sound) playSfx(sound) },
-    // Gritos de la tercera generación; al debilitarse, más graves (CRY_MODE_FAINT).
+    // Efectos del kit; los de la bola, al ritmo del envío (abajo).
+    playSfx: (id) => { const sound = sounds.sfxFor(id); if (sound) playSfx(sound) },
+    // Gritos del kit; al debilitarse, más graves.
     playCry: (species, faint) => playCry(species, faint),
   })
-  useCampaignMusic(battle.introPhase !== 'loading' && !battle.ended ? music : null)
-  useEffect(() => preloadSfx(BATTLE_SFX_IDS), [])
+  useCampaignMusic(battle.introPhase !== 'loading' && !battle.ended ? music : null, registerMusic)
+  useEffect(() => preloadSfx(sounds.battleIds), [preloadSfx, sounds])
   // Sonidos de los ataques: se descargan los de los movimientos de los dos equipos al entrar y suenan con «X usó Y».
   const sideSets = sides?.sets() ?? null
   // Los que pueden salir al campo (frente del rival, espalda propia), sus iconos y la ficha de DATOS, listos antes de cada cambio.
@@ -133,14 +136,14 @@ export function EmeraldBattle({ session, start, onRetry, data, trainer, trainerI
     ...sideSets.player.flatMap((set) => [emeraldSprite('back', set.species), emeraldSprite('front', set.species), emeraldSprite('icon', set.species)]),
   ] : [])
   const movesKey = sideSets ? [...sideSets.player, ...sideSets.rival].flatMap((set) => set.moves).join(',') : ''
-  useEffect(() => { if (movesKey) preloadSfx(moveSoundIds(movesKey.split(','))) }, [movesKey])
+  useEffect(() => { if (movesKey) preloadSfx(moveSoundIds(movesKey.split(','))) }, [movesKey, preloadSfx, moveSoundIds])
   const moveFx = battle.moveFx
   const speedRef = useRef(battle.speed)
   // Animaciones de los ataques: las del reto diario (DEC-53), sobre los Pokémon y bajo las cajas (Jose, 13/11/2026: en Esmeralda el
   // atacante no se mueve; se descartaron la embestida y el impacto propios).
   const fieldRef = useRef(null as HTMLDivElement | null)
   useEffect(() => { speedRef.current = battle.speed }, [battle.speed])
-  useEffect(() => (moveFx ? playMoveSounds(moveFx.moveId, speedRef.current) : undefined), [moveFx])
+  useEffect(() => (moveFx ? playMoveSounds(moveFx.moveId, speedRef.current) : undefined), [moveFx, playMoveSounds])
   const [menu, setMenu] = useState('actions' as Menu)
   const [moveCursor, setMoveCursor] = useState(0)
   // Menú de un Pokémon del equipo (CAMBIAR / DATOS / CANCELAR) y la ficha que se mira; se pueden abrir en cualquier momento del
@@ -179,8 +182,8 @@ export function EmeraldBattle({ session, start, onRetry, data, trainer, trainerI
     : switching('rival') ? `${battle.switchStage}:${view?.rival.active}-${rival?.species}` : null
   const playerEvent = battle.introPhase === 'playerSend' ? 'send:intro'
     : switching('player') ? `${battle.switchStage}:${view?.player.active}-${player?.species}` : null
-  useBallSounds(rivalEvent, false, rival?.species ?? '', battle.speed)
-  useBallSounds(playerEvent, true, player?.species ?? '', battle.speed)
+  useBallSounds(rivalEvent, false, rival?.species ?? '', battle.speed, sounds)
+  useBallSounds(playerEvent, true, player?.species ?? '', battle.speed, sounds)
   const rivalFrame = useFrames(rivalEvent, battle.speed)
   const playerFrame = useFrames(playerEvent, battle.speed)
   const rivalSend = rival && rivalEvent?.startsWith('send') ? sendOutFrame(false, rival.species, rivalFrame) : null
@@ -195,15 +198,16 @@ export function EmeraldBattle({ session, start, onRetry, data, trainer, trainerI
   const playerBar = useBarHp(`${view?.player.active ?? ''}-${player?.species ?? ''}`, playerHp?.hp ?? 0, playerHp?.maxHp ?? 1, battle.speed)
   // Gritos de los Pokémon del combate, como el diario: solo los suyos.
   const teamSpecies = [...(view?.rival.team ?? []), ...(view?.player.team ?? [])].map((mon) => mon.species).join(',')
-  useEffect(() => { if (teamSpecies) preloadCries(teamSpecies.split(',')) }, [teamSpecies])
+  useEffect(() => { if (teamSpecies) preloadCries(teamSpecies.split(',')) }, [teamSpecies, preloadCries])
   // Pitido de vida baja (HandleLowHpMusicChange): mientras la barra del jugador está en rojo, encima de la música.
   const lowHealth = !!player && !player.fainted && !!playerHp && !battle.ended && barImage(playerBar / playerHp.maxHp) === 'combate-barra-roja'
   useEffect(() => {
-    if (!lowHealth) return
-    playSfx(LOW_HEALTH_SFX)
-    const timer = setInterval(() => playSfx(LOW_HEALTH_SFX), LOW_HEALTH_PERIOD_MS)
+    if (!lowHealth || !sounds.lowHealth) return
+    const lowHealthId = sounds.lowHealth
+    playSfx(lowHealthId)
+    const timer = setInterval(() => playSfx(lowHealthId), LOW_HEALTH_PERIOD_MS)
     return () => clearInterval(timer)
-  }, [lowHealth])
+  }, [lowHealth, sounds.lowHealth, playSfx])
   const rivalLevel = view?.rival.active != null ? rivalLevels[view.rival.team[view.rival.active]?.teamIndex ?? view.rival.active] ?? 0 : 0
   const requestMoves = request?.active?.[0]?.moves ?? []
   // Como en el diario: cuando se puede actuar, el menú sustituye al último mensaje; un aviso propio (MOCHILA, HUIR) va encima.
@@ -220,7 +224,7 @@ export function EmeraldBattle({ session, start, onRetry, data, trainer, trainerI
     battle.advance()
   }
   const chooseMove = (i: number) => {
-    playSfx('emerald-select')
+    playSfx(sounds.select)
     setMenu('actions')
     // Con el menú de un Pokémon del equipo abierto (para cambiarlo o mirarlo), elegir ataque lo cierra (Jose, 13/11/2026).
     setMemberMenu(null)
@@ -249,7 +253,7 @@ export function EmeraldBattle({ session, start, onRetry, data, trainer, trainerI
   }
 
   const actions = [
-    [t.fight, () => { playSfx('emerald-select'); setMenu('moves') }],
+    [t.fight, () => { playSfx(sounds.select); setMenu('moves') }],
     [t.bag, () => { setNote(t.noBag) }],
     [t.pokemon, () => { setMenu('party') }],
     [t.run, () => { setNote(t.noRun) }],
@@ -593,11 +597,11 @@ function useFrames(key: string | null, speed: number): number {
 }
 
 /** Sonidos de la Poké Ball en el envío: lanzarla (solo la del jugador, que vuela) y abrirse cuando sale el Pokémon. */
-function useBallSounds(event: string | null, player: boolean, species: string, speed: number): void {
+function useBallSounds(event: string | null, player: boolean, species: string, speed: number, sounds: CampaignSounds): void {
   useEffect(() => {
     if (!event?.startsWith('send')) return
-    if (player) playSfx('emerald-ball-throw')
-    const timer = setTimeout(() => playSfx('emerald-ball-open'), frameMs(releaseFrame(player, species), speed))
+    if (player) sounds.playSfx(sounds.ballThrow)
+    const timer = setTimeout(() => sounds.playSfx(sounds.ballOpen), frameMs(releaseFrame(player, species), speed))
     return () => clearTimeout(timer)
-  }, [event, player, species, speed])
+  }, [event, player, species, speed, sounds])
 }

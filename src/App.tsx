@@ -196,7 +196,7 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
     onWatchReplay: (date) => setScreen({ name: 'replay', source: { kind: 'mine', date } }),
     modes: [
       { id: 'nuzlocke-hoenn', label: esCampaign.entry, hint: esCampaign.entryHint, progress: campaignProgress(false), onOpen: () => setScreen({ name: 'campaign', region: 'hoenn' }), prefetch: () => { void loadCampaignScreen() } },
-      { id: 'nuzlocke-teselia', label: esCampaign.unova.entry, hint: esCampaign.unova.entryHint, progress: campaignProgress(true), onOpen: () => setScreen({ name: 'campaign', region: 'unova' }), prefetch: () => { void loadUnovaCampaignScreen() } },
+      { id: 'nuzlocke-teselia', label: esCampaign.unovaEntry.entry, hint: esCampaign.unovaEntry.entryHint, progress: campaignProgress(true), onOpen: () => setScreen({ name: 'campaign', region: 'unova' }), prefetch: () => { void loadUnovaCampaignScreen() } },
     ],
     onWatchFriendReplay: (nickname, date) => setScreen({ name: 'replay', source: { kind: 'friend', nickname, date } }),
     onWatchLive: (nickname) => setScreen({ name: 'live', nickname }),
