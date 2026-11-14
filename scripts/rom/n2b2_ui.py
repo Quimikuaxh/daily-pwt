@@ -8,11 +8,21 @@ interfaz usa, con los recortes de las maquetas:
 - `franja.png` y `franja-pestana.png`: la barra seleccionada partida en dos para los títulos: la franja entera, oscura, y la pestaña clara
   con su muesca (x 0 a 120), que se estira hasta el ancho del título.
 - `medalla-<n>.png` y `medalla-<n>-off.png`: las ocho medallas de Teselia, ganada y sin ganar (fondo transparente, 14 x 26 como mucho).
+- `caja-<n>.png` y `caja-<n>-titulo.png`: fondos de caja del PC (156 x 114) y su pestaña de título (112 x 19), de la hoja de fondos de
+  caja: `caja-1`, el del bosque (CAJA 1), y `caja-2`, el de Kyurem gris (BAJAS).
 
-Uso: `npm run gen:n2b2-ui`. Requiere Python 3.10 y Pillow 10 o posterior.
+Con la ROM de Negro 2 (`npm run gen:n2b2-ui -- RUTA_ROM`; no se copia ni se versiona), además:
+- `pc-marco.png`: la pantalla de cajas del PC (`a/1/4/1`, mapa 8 con las teselas 4 y la paleta 0), 256 x 192.
+- `pc-mano.png`: la mano del cursor del PC (`a/2/0/2`, celda 24 con las teselas 17 y la paleta 11), recortada.
+- `pc-flecha-izda.png` y `pc-flecha-dcha.png`: las flechas de cambio de caja (`a/1/4/1`, celdas 0 y 1 con las teselas 6 y la paleta 2).
+Sin ROM, esas piezas no se tocan.
+
+Uso: `npm run gen:n2b2-ui [-- RUTA_ROM]`. Requiere Python 3.10 y Pillow 10 o posterior.
 """
 import os
+import sys
 from PIL import Image
+from ds import Rom, cells, lz, narc, render_cell, render_screen
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 CACHE = os.path.join(ROOT, 'scripts', '.cache', 'n2b2-ui')
@@ -21,6 +31,10 @@ OUT = os.path.join(ROOT, 'public', 'ui', 'n2b2')
 # Columnas de cada medalla en la hoja de la ficha de entrenador y filas de las dos versiones (ganada y sin ganar).
 BADGE_X = [(785, 796), (806, 835), (845, 868), (881, 904), (915, 931), (947, 966), (977, 1006), (1017, 1039)]
 BADGE_ROWS = {'': (618, 678), '-off': (767, 827)}
+
+# Hoja de fondos de caja: celdas de 170 x 162 desde (2, 2); en cada una, la pestaña en (28, 11) y el fondo en (6, 39).
+WALLPAPER_CELL = (170, 162)
+WALLPAPERS = {'caja-1': 0, 'caja-2': 20}
 
 
 def sheet(name):
@@ -44,6 +58,23 @@ def badge(card, index, row):
     return out
 
 
+def cropped(image):
+    """La imagen recortada a lo que tiene pintado."""
+    return image.crop(image.getbbox())
+
+
+def rom_pieces(rom):
+    pc = [lz(f) for f in narc(rom.file('a/1/4/1'))]
+    hand = [lz(f) for f in narc(rom.file('a/2/0/2'))]
+    arrows = cells(pc[10])
+    return {
+        'pc-marco': render_screen(pc[8], pc[4], pc[0]).crop((0, 0, 256, 192)),
+        'pc-mano': cropped(render_cell(cells(hand[24])[0], hand[17], hand[11])),
+        'pc-flecha-izda': cropped(render_cell(arrows[0], pc[6], pc[2])),
+        'pc-flecha-dcha': cropped(render_cell(arrows[1], pc[6], pc[2])),
+    }
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     options = sheet('b2w2-opciones-132978.png')
@@ -65,6 +96,15 @@ def main():
     for index in range(8):
         for row in BADGE_ROWS:
             pieces[f'medalla-{index + 1}{row}'] = badge(card, index, row)
+    walls = sheet('b2w2-fondos-caja-48041.png')
+    for name, index in WALLPAPERS.items():
+        x, y = 2 + (index % 6) * WALLPAPER_CELL[0], 2 + (index // 6) * WALLPAPER_CELL[1]
+        pieces[name] = walls.crop((x + 6, y + 39, x + 162, y + 153))
+        pieces[f'{name}-titulo'] = walls.crop((x + 28, y + 11, x + 140, y + 30))
+    if len(sys.argv) > 1:
+        pieces.update(rom_pieces(Rom(sys.argv[1])))
+    else:
+        print('Sin ROM: no se tocan las piezas del PC (pc-marco, pc-mano, pc-flecha-*).')
     for name, image in pieces.items():
         image.save(os.path.join(OUT, f'{name}.png'), optimize=True)
     print(f'{len(pieces)} piezas en {os.path.relpath(OUT, ROOT)}')

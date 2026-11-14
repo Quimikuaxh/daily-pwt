@@ -242,3 +242,51 @@
 /* La barra seleccionada tiene 8 px de borde y la normal 6: lo de dentro se corrige 2 px para que no salte al señalar otra fila. */
 .unova-bar.unova-row > *,
 .unova-bar.unova-button > * { margin: -2px 0 0 -2px; }
+
+/* Equipo y PC (maqueta del 14/11/2026): la pantalla de cajas de la ROM, los iconos del diario a 0,75 y la mano del PC del juego. */
+.unova-pc { inset: 0; }
+
+.unova-pc-box-name { text-align: center; text-shadow: 1px 0 #28283c, -1px 0 #28283c, 0 1px #28283c, 0 -1px #28283c, 1px 1px #28283c; }
+
+.unova-pc-icon,
+.unova-pc-held {
+  width: 26px;
+  height: 22px;
+  overflow: hidden;
+}
+
+.unova-pc-icon { left: 0; top: 0; }
+
+/* En las casillas del equipo (26 x 24 por dentro), el icono a su tamaño. */
+.unova-pc-party-icon { left: 0; top: 0; width: 26px; height: 24px; overflow: hidden; }
+.unova-pc-party-icon .bt-member-icon { left: -7px; top: -4px; }
+
+.unova-pc-icon .bt-member-icon,
+.unova-pc-held .bt-member-icon {
+  left: -7px;
+  top: -5px;
+  transform: scale(0.75);
+  transform-origin: 50% 50%;
+}
+
+.unova-pc-locked { opacity: 0.35; }
+
+/* La mano baja y sube 2 px, como el cursor del PC; con un Pokémon cogido, este va encima de ella. */
+@keyframes unova-pc-hand { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(2px); } }
+.unova-pc-hand { width: 28px; height: 32px; animation: unova-pc-hand 0.6s steps(2, jump-none) infinite; pointer-events: none; }
+.unova-pc-held { left: 1px; top: -16px; }
+.team-drag .unova-pc-drag-icon { position: absolute; left: -13px; top: -40px; }
+.team-drag .unova-pc-drag-icon .bt-member-icon { position: absolute; }
+
+.unova-pc-menu {
+  box-sizing: border-box;
+  border: 6px solid transparent;
+  border-image: var(--unova-panel) 12 fill / 6px stretch;
+}
+
+.console-screen .unova-pc-menu-item { background: none; border: 0; }
+.unova-pc-menu-cursor { visibility: hidden; }
+.unova-pc-menu-item:focus .unova-pc-menu-cursor { visibility: visible; }
+.console-screen .unova-pc-menu-item:focus-visible { outline: 0; }
+
+.unova-pc-bar { left: 0; top: 166px; width: 256px; height: 26px; background: #202020; }

@@ -19,6 +19,7 @@ import { esCampaign } from '../../i18n/esCampaign'
 import { emeraldTheme } from '../console/themes/emerald'
 import { candidateOf, emeraldDex } from './draftModel'
 import { badgeCount } from './hoennRoute'
+import { unovaSummaryMember } from '../campaign-unova/unovaSummary'
 import { fittingLayout, initialLayout, layoutToSave, lineup, savedLayout, teamMonOf, type TeamLayout } from './teamModel'
 import { MovesScreen } from './MovesScreen'
 import { equippedMoves, legalMoves, moveInfo } from './movesModel'
@@ -41,7 +42,6 @@ import { leagueEvolutions } from './evolutionModel'
 import { LeagueScreen } from './LeagueScreen'
 import { leagueBeaten } from './leagueModel'
 import { type CampaignResult, minutesSince, playerNameOf, protagonistOf, recruitedSpecies, resultOf, trainerId } from './resultModel'
-import { TeamScreen } from './TeamScreen'
 import { battleMusic, townMusic, useCampaignMusic } from './campaignMusic'
 import { ShareScreen } from './ShareScreen'
 import { DifficultyDialog } from './DifficultyDialog'
@@ -396,8 +396,10 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
   const teamView = () => {
     if (view !== 'teamView' || state?.phase !== 'draft') return null
     return (
-      <TeamScreen
+      <kit.screens.Team
         readOnly
+        data={data}
+        details={(id) => memberDetails(state, id)}
         mons={Object.fromEntries(state.members.map((member) => [member.id, teamMonOf(member, data)]))}
         initial={initialLayout(state, 6, [])}
         limit={6}
@@ -421,7 +423,9 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     const limit = roster ? shown.members.filter((member) => { return !member.fainted }).length : teamLimit(state)
     const preferred = roster ?? team ?? state.lastTeam ?? []
     return (
-    <TeamScreen
+    <kit.screens.Team
+      data={data}
+      details={(id) => memberDetails(state, id)}
       mons={Object.fromEntries(shown.members.map((member) => [member.id, teamMonOf(member, data)]))}
       initial={fittingLayout(teamLayout, shown, limit) ?? (roster ? null : savedLayout(state, limit)) ?? initialLayout(shown, limit, preferred)}
       limit={limit}
@@ -531,6 +535,13 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
   }
 
   // DATOS de un miembro (Jose, 12/11/2026): la ficha del draft con sus movimientos equipados, su nivel y su objeto.
+  // Ficha de la pantalla de datos del diario (Teselia): con los movimientos que lleva, su objeto, su sexo y sus formas.
+  const memberDetails = (current: CampaignState, id: string) => {
+    const member = current.members.find((candidate) => { return candidate.id === id })
+    return member ? unovaSummaryMember({ species: member.species, level: member.level, history: member.history, gender: member.gender ?? null,
+      item: member.item ?? null, moves: equippedMoves(definition, current, member) }, definition, data) : null
+  }
+
   const memberSummary = (current: CampaignState, member: CampaignState['members'][number]) => {
     const mon = candidateOf(member.species, member.level, definition, data, member.history)
     return {

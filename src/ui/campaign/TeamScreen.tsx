@@ -25,7 +25,7 @@ import { arrowTarget, pcMenuWindow, placeKey, placeOf, useMonDrag } from './team
 const t = esCampaign.team
 const m = esCampaign.pcMenu
 
-type TeamScreenProps = {
+export type TeamScreenProps = {
   mons: Readonly<Record<string, TeamMon>>
   initial: TeamLayout
   limit: number

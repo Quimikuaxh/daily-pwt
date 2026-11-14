@@ -204,3 +204,66 @@ def render_tiles(ncgr, nclr, width_tiles=None, sub=0, transparent=True):
             r, g, b = colors[index] if index < len(colors) else (255, 0, 255)
             px[ox + i % 8, oy + i // 8] = (r, g, b, 255)
     return out
+
+
+# Tamaños de un OAM (ancho, alto) por forma (cuadrado, ancho, alto) y tamaño.
+_OAM_SIZES = {
+    0: [(8, 8), (16, 16), (32, 32), (64, 64)],
+    1: [(16, 8), (32, 8), (32, 16), (64, 32)],
+    2: [(8, 16), (8, 32), (16, 32), (32, 64)],
+}
+
+
+def cells(data):
+    """Celdas de un NCER: por celda, sus OAM como dict (x, y, ancho, alto, tesela, paleta, volteos)."""
+    pos = _section(data, b'KBEC')
+    count, bank_type = struct.unpack_from('<HH', data, pos + 8)
+    data_off, mapping = struct.unpack_from('<II', data, pos + 12)
+    base = pos + 8 + data_off
+    entry = 16 if bank_type == 1 else 8
+    oam_base = base + count * entry
+    shift = mapping & 0x7  # 1D: el índice de tesela va en bloques de 32 << shift bytes
+    out = []
+    for c in range(count):
+        n, _, off = struct.unpack_from('<HHI', data, base + c * entry)
+        oams = []
+        for k in range(n):
+            a0, a1, a2 = struct.unpack_from('<3H', data, oam_base + off + 6 * k)
+            y = a0 & 0xFF
+            y = y - 256 if y >= 128 else y
+            x = a1 & 0x1FF
+            x = x - 512 if x >= 256 else x
+            w, h = _OAM_SIZES[a0 >> 14][a1 >> 14]
+            oams.append({'x': x, 'y': y, 'w': w, 'h': h, 'tile': (a2 & 0x3FF) << shift, 'pal': a2 >> 12,
+                         'hflip': bool(a1 & 0x1000), 'vflip': bool(a1 & 0x2000), 'bpp8': bool(a0 & 0x2000)})
+        out.append(oams)
+    return out
+
+
+def render_cell(oams, ncgr, nclr, pal_offset=0):
+    """Pinta una celda (lista de OAM de `cells`) con las teselas en 1D; el origen (0, 0) de la celda queda en el centro de 256 x 256."""
+    tile_list, bpp, _ = tiles(ncgr)
+    colors = palette(nclr)
+    out = Image.new('RGBA', (256, 256))
+    px = out.load()
+    for oam in oams:
+        tw, th = oam['w'] // 8, oam['h'] // 8
+        for ty in range(th):
+            for tx in range(tw):
+                index = oam['tile'] + ty * tw + tx
+                if index >= len(tile_list):
+                    continue
+                pixels = tile_list[index]
+                dx = (tw - 1 - tx) if oam['hflip'] else tx
+                dy = (th - 1 - ty) if oam['vflip'] else ty
+                for y in range(8):
+                    for x in range(8):
+                        v = pixels[(7 - y if oam['vflip'] else y) * 8 + (7 - x if oam['hflip'] else x)]
+                        if v == 0:
+                            continue
+                        ci = ((oam['pal'] + pal_offset) * 16 + v) if bpp == 4 else v
+                        r, g, b = colors[ci] if ci < len(colors) else (255, 0, 255)
+                        X, Y = 128 + oam['x'] + dx * 8 + x, 128 + oam['y'] + dy * 8 + y
+                        if 0 <= X < 256 and 0 <= Y < 256:
+                            px[X, Y] = (r, g, b, 255)
+    return out
