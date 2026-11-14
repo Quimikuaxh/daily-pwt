@@ -3,7 +3,7 @@ import { rulesOf } from '../../core/nuzlocke/rules'
 import { hoennKit } from './campaignKit'
 import { unovaKit } from '../campaign-unova/unovaKit'
 
-// DEC-103: cada campaña aporta su kit; el recorrido de la pantalla es el mismo.
+// DEC-106: cada campaña aporta su kit; el recorrido de la pantalla es el mismo.
 describe('kits de campaña', () => {
   it('Hoenn y Teselia traen sus encuentros, sus reglas y su definición', () => {
     expect(hoennKit.encounters).toHaveLength(13)

@@ -8,7 +8,7 @@ import { heldItemStock } from './heldItems'
 import { campaignRules, rulesOf } from './rules'
 import { advanceLevel } from './progression'
 
-// UT-216 · Núcleo de la locke de N2/B2 (DEC-101, PRD §0, 13/11/2026): reglas por campaña, sexo, evoluciones de Gen 5 y combate de Gen 5.
+// UT-216 · Núcleo de la locke de N2/B2 (DEC-104, PRD §0, 13/11/2026): reglas por campaña, sexo, evoluciones de Gen 5 y combate de Gen 5.
 const { encounters } = readJson<Pick<CampaignBattleDefinition, 'encounters'>>('data', 'nuzlocke', 'unova-n2b2.json')
 const { species } = readJson<Pick<CampaignBattleDefinition, 'species'>>('data', 'nuzlocke', 'unova-n2b2-progression.json')
 const definition = { campaign: 'unova-n2b2' as const, encounters, species }

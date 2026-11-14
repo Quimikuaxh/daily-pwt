@@ -1,4 +1,4 @@
-"""Lectura de ROM de Nintendo DS para sacar gráficos (locke de N2/B2, DEC-102): sistema de ficheros (FNT/FAT), archivos NARC,
+"""Lectura de ROM de Nintendo DS para sacar gráficos (locke de N2/B2, DEC-105): sistema de ficheros (FNT/FAT), archivos NARC,
 compresión LZ10/LZ11 y los formatos gráficos de Nintendo: paletas NCLR, teselas NCGR y mapas de teselas NSCR.
 
 Solo lee: la ROM no se copia ni se versiona. Requiere Python 3.10 y Pillow 10 o posterior (como `scripts/decomp/comun.py`).

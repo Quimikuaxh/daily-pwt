@@ -1,6 +1,6 @@
-"""Piezas de interfaz de la locke de N2/B2 (DEC-102, maquetas aprobadas el 13/11/2026) en `public/ui/n2b2/`.
+"""Piezas de interfaz de la locke de N2/B2 (DEC-105, maquetas aprobadas el 13/11/2026) en `public/ui/n2b2/`.
 
-Lee las hojas guardadas en `scripts/.cache/n2b2-ui/` (no versionadas; su origen está en ARQUITECTURA, DEC-102) y escribe solo lo que la
+Lee las hojas guardadas en `scripts/.cache/n2b2-ui/` (no versionadas; su origen está en ARQUITECTURA, DEC-105) y escribe solo lo que la
 interfaz usa, con los recortes de las maquetas:
 
 - `mapa-teselia.png`: mapa de la región de N2/B2 (256 x 168, el del juego sin rótulos).
@@ -26,7 +26,7 @@ BADGE_ROWS = {'': (618, 678), '-off': (767, 827)}
 def sheet(name):
     path = os.path.join(CACHE, name)
     if not os.path.exists(path):
-        raise SystemExit(f'Falta {path}: ver ARQUITECTURA, DEC-102 (hojas de interfaz de N2/B2).')
+        raise SystemExit(f'Falta {path}: ver ARQUITECTURA, DEC-105 (hojas de interfaz de N2/B2).')
     return Image.open(path).convert('RGBA')
 
 

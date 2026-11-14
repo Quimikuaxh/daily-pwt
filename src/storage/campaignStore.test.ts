@@ -28,7 +28,7 @@ describe('registro local versionado de campaña', () => {
     storage.setItem(CAMPAIGN_STORAGE_KEY, JSON.stringify(raw))
     expect(() => new LocalCampaignStore(storage).read()).toThrow(/conservado/)
   })
-  // DEC-101 (13/11/2026): la partida recuerda su campaña y los reclutas de Teselia llevan sexo.
+  // DEC-104 (13/11/2026): la partida recuerda su campaña y los reclutas de Teselia llevan sexo.
   it('conserva la campaña de la partida y el sexo de los reclutas, y rechaza valores que no son', () => {
     const storage = new MemoryStorage()
     const store = new LocalCampaignStore(storage)

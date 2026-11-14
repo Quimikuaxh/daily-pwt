@@ -1,5 +1,5 @@
 /**
- * Kit de cada campaña (DEC-103): lo que la pantalla de campaña necesita de una campaña concreta (encuentros, definición, reglas,
+ * Kit de cada campaña (DEC-106): lo que la pantalla de campaña necesita de una campaña concreta (encuentros, definición, reglas,
  * entrenadores, descripciones de movimientos, semilla). El recorrido (`CampaignView`) es uno solo; cada campaña aporta su kit.
  *
  * Aquí, el tipo y el de Hoenn; el de Teselia vive en `campaign-unova/unovaKit.ts` y se carga aparte, para que su progresión (1,2 MB) no

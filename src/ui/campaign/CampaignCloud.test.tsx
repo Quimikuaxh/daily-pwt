@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createCampaign } from '../../core/nuzlocke/campaign'
 import { loadGameData } from '../../data/gameData'
@@ -97,5 +97,52 @@ describe('campaña en la cuenta', () => {
     confirm()
     await waitFor(() => expect(cloud.getState().status).toBe('ready'))
     await waitFor(() => expect(createBattleClient).toHaveBeenCalledTimes(1))
+  })
+
+  // UT-223 (Jose, 14/11/2026): guardando en segundo plano la pantalla no se bloquea; con un fallo, sí.
+  it('mientras guarda no bloquea la pantalla; sin conexión, sí', async () => {
+    let fail = (_: Error) => {}
+    const api = fakeApi({ getCampaign: vi.fn(async () => null), saveCampaign: vi.fn(() => new Promise<never>((_, reject) => { fail = reject })) })
+    const { cloud, user } = mount(api)
+    await user.click(await screen.findByRole('button', { name: 'Empezar campaña' }))
+    await user.click(await screen.findByRole('button', { name: 'Empezar' }))
+    await waitFor(() => expect(cloud.getState().status).toBe('saving'))
+    const screenArea = document.querySelector('.campaign-cloud') as HTMLElement
+    expect(screenArea.hasAttribute('inert')).toBe(false)
+    expect(screenArea.getAttribute('aria-busy')).toBe('false')
+    act(() => { fail(networkError()) })
+    await waitFor(() => expect(cloud.getState().status).toBe('offline'))
+    expect(document.querySelector('.campaign-cloud')!.hasAttribute('inert')).toBe(true)
+  })
+
+  // UT-220 (Jose, 14/11/2026, Sixto en el móvil con la cuenta): si el combate falla al arrancar, la pantalla se quedaba en negro hasta
+  // recargar; ahora avisa y «Reintentar» crea otra sesión y vuelve a pedir el combate guardado.
+  it('si el motor del combate falla, avisa y Reintentar vuelve a crear el combate', async () => {
+    const state = { ...createCampaign('local-campaign'), phase: 'prepare' as const, encounterIndex: 0,
+      members: [{ id: 'starter', species: 'treecko', level: 15, history: [], fainted: false, victories: 0 }] }
+    const preparation = { unlockedMoves: [], movesByMember: { starter: ['absorb'] }, leadId: 'starter' }
+    const saved: CampaignRecord = { version: 1, revision: 4, state,
+      battle: { source: { state, preparation, selected: ['starter'] }, init: null, decisions: [], checkpoint: null } }
+    const api = fakeApi({ getCampaign: vi.fn(async () => saved) })
+    const cloud = new AccountCampaign(new MemoryStorage())
+    cloud.setAccount(api, 'g1')
+    const clients: { prepare: ReturnType<typeof vi.fn>; fail: () => void }[] = []
+    const createBattleClient = vi.fn(() => {
+      const listeners = new Set<(message: unknown) => void>()
+      const client = { prepare: vi.fn(), resume: vi.fn(), choose: vi.fn(), forfeit: vi.fn(), finish: vi.fn(), terminate: vi.fn(),
+        subscribe: vi.fn((listener: (message: unknown) => void) => { listeners.add(listener); return () => { listeners.delete(listener) } }) }
+      // Como `connectWorker` cuando el worker no carga: un error sin petición.
+      clients.push({ prepare: client.prepare, fail: () => listeners.forEach((listener) => listener({ type: 'campaign-error', requestId: null, message: 'x' })) })
+      return client as unknown as CampaignBattleClient
+    })
+    render(<CampaignScreen data={data} cloud={cloud} newSeed={() => 'cuenta'} onExit={vi.fn()} createBattleClient={createBattleClient} />)
+    await waitFor(() => expect(clients[0]?.prepare).toHaveBeenCalledOnce())
+    act(() => { clients[0].fail() })
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent('No se ha podido cargar el combate')
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Reintentar' }))
+    await waitFor(() => expect(createBattleClient).toHaveBeenCalledTimes(2))
+    await waitFor(() => expect(clients[1].prepare).toHaveBeenCalledOnce())
+    expect(screen.queryByRole('alert')).toBeNull()
   })
 })

@@ -10,7 +10,7 @@ Usa `account.campaign` para el modo de campaña. Requiere una cuenta iniciada; l
 4. Espera las promesas de `prepare`, `choose` y `forfeit` y captura sus errores. Su resolución permite el envío al worker; el evento `campaign-prepared`, `campaign-resumed`, `campaign-update` o `campaign-finished` confirma también la persistencia de la respuesta. Espera ese evento antes de permitir otra acción. `resume` y `finish` notifican el resultado por eventos.
 5. Al salir del combate llama a `session.stop()`. Cerrar sesión o cambiar de cuenta termina automáticamente los clientes registrados e invalida respuestas pendientes; `read()` pasa a `null`. No borres las cachés ni el historial al hacerlo.
 
-`getState()` expone `status`, `record`, `message` y `persistent`. `record` incluye la intención pendiente cuando exista, aunque aún no esté confirmada por el servidor. Solo `ready` permite una escritura nueva. `loading` y `saving` bloquean acciones concurrentes. `error` conserva el registro incompatible o rechazado sin sobrescribirlo. `closed` requiere cuenta y carga del modo. Los textos de guardado viven en `src/i18n/esCampaign.ts`.
+`getState()` expone `status`, `record`, `message` y `persistent`. `record` incluye la intención pendiente cuando exista, aunque aún no esté confirmada por el servidor. `ready` permite una escritura nueva; en `saving`, una escritura sobre el último cambio conocido (`read()`) va a la cola (`next`, una sola plaza: la última) y sale al confirmarse la que está en vuelo (DEC-102); la pantalla no se bloquea mientras guarda. `loading` bloquea, y el combate solo se crea en `ready`. `error` conserva el registro incompatible o rechazado sin sobrescribirlo. `closed` requiere cuenta y carga del modo. Los textos de guardado viven en `src/i18n/esCampaign.ts`.
 
 ## Conflicto y recuperación
 
@@ -18,7 +18,7 @@ Aplica la decisión de Jose del **11/11/2026**, PRD §0 y DEC-90: en `conflict`,
 
 En `offline`, muestra el fallo y ofrece `retry()`. Reenvía la misma intención con el mismo UUID y revisión; no generes otra operación. El worker se ha detenido: tras recuperar `ready`, crea otra sesión y reconstruye desde el registro. Un cierre de combate pendiente se recupera del mismo modo. No reenvíes un conflicto ni lo resuelvas desde `retry()`.
 
-El journal `daily-pwt:campaign-account:v1:<userId>` conserva por cuenta el último registro confirmado, la intención pendiente y la marca de conflicto. La revisión del servidor decide si una escritura es vigente; localStorage no es un bloqueo entre pestañas. No dependas de la caché para autorizar sobrescrituras. Si `persistent` es `false` (almacenamiento bloqueado, ausente o sin cuota), la intención puede estar solo en memoria: no garantices que sobreviva al cierre de la página. Las operaciones confirmadas siguen guardadas en Supabase.
+El journal `daily-pwt:campaign-account:v1:<userId>` conserva por cuenta el último registro confirmado, la intención pendiente, el cambio en cola (`next`) y la marca de conflicto. La revisión del servidor decide si una escritura es vigente; localStorage no es un bloqueo entre pestañas. No dependas de la caché para autorizar sobrescrituras. Si `persistent` es `false` (almacenamiento bloqueado, ausente o sin cuota), la intención puede estar solo en memoria: no garantices que sobreviva al cierre de la página. Las operaciones confirmadas siguen guardadas en Supabase.
 
 ## Migración y comprobación local
 

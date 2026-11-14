@@ -53,11 +53,24 @@ const LAST_MOVE_WEIGHT = 0.5
 const SWITCH_MARGIN = 0.2
 const MAX_SWITCH_HIT = 0.4
 const MIN_SWITCH_EDGE = 0.5
+/*
+ * Sin hacer nada (Jose, 14/11/2026: el Shiftry de Sixto usaba Paranormal contra un Umbreon, inmune, en vez de cambiar o usar otro
+ * movimiento). Un ataque de daño que no le hace nada al del jugador no se usa nunca. Si sus ataques de daño no le quitan ni
+ * `USELESS_FRACTION` de sus PS (los de estado no cuentan), cambia sin pedir la mejora grande: basta con que quien entra no reciba
+ * `MAX_SWITCH_HIT` o más, no pierda el cara a cara (`matchup` ≥ 0) y sí le haga daño (si no, cambiarían uno por otro sin fin). Si
+ * ninguno vale, usa un movimiento de estado o de mejora (la heurística, sin los ataques que no hacen nada) y, si no tiene, el ataque
+ * que más haga. Solo con algún ataque de daño: uno que solo lleva movimientos de estado no está «sin hacer nada».
+ */
 
 const side = (mon: AiMon): DamageSide => ({ set: mon.set, hp: mon.hp, boosts: mon.boosts, status: mon.status })
 const priority = (moveId: string, field: DamageField) => Dex.forGen(field.generation ?? 5).moves.get(moveId).priority ?? 0
 const usable = (mon: AiMon) => mon.moves.map((move, index) => ({ move, slot: index + 1 })).filter(({ move }) => !move.disabled && move.pp > 0)
 const attacksOf = (mon: AiMon, field: DamageField) => mon.moves.filter((move) => moveInfo(move.id, field.generation).kind === 'attack')
+/** Ataque de daño que no le quita nada a `foe` (inmunidad, Levitación…). */
+const noDamage = (me: AiMon, foe: AiMon, moveId: string, field: DamageField) => {
+  const info = moveInfo(moveId, field.generation)
+  return info.kind === 'attack' && expected(me, foe, moveId, info, field) <= 0
+}
 
 /** Daño esperado de un ataque (media del intervalo por la precisión; los de dos turnos, a la mitad). */
 function expected(attacker: AiMon, defender: AiMon, moveId: string, info: MoveInfo, field: DamageField): number {
@@ -154,27 +167,9 @@ export function chooseLookaheadAction(state: AiState & { danger?: ActiveDanger; 
   const field: DamageField = { weather: state.weather, generation: state.generation }
   const bench = state.self.trapped ? [] : state.self.pokemon.map((mon, index) => ({ mon, slot: index + 1 })).filter(({ mon }, index) => index > 0 && !mon.fainted)
   const isStuck = bench.length > 0 && stuck(me, foe, state.danger, field)
-  // Si la heurística elige un movimiento de estado, curación o mejora y no está atada, se respeta: esta IA decide entre atacar y cambiar.
-  if (!isStuck && base.type === 'move') {
-    const chosen = me.moves[base.slot - 1]
-    if (chosen && moveInfo(chosen.id, field.generation).kind !== 'attack') return base
-  }
-  const weights = importance(state.self.pokemon, state.foe.pokemon, field)
-  const weight = (mon: AiMon) => weights.get(mon) ?? 1
-  const options: { choice: Choice; action: Action }[] = isStuck ? [] : usable(me)
-    .map(({ move, slot }) => ({ choice: { type: 'move', slot } as Choice, action: { kind: 'move', moveId: move.id, info: moveInfo(move.id, field.generation) } as Action }))
-    .filter(({ action }) => action.kind === 'move' && action.info.kind === 'attack' && !action.info.unreliable)
-  // Recién entrado, no vuelve a cambiar salvo que esté atado o en peligro: cada cambio regala un golpe (Jose, 12/11/2026, Sixto).
-  if (!state.justIn || isStuck) for (const { mon, slot } of bench) options.push({ choice: { type: 'switch', slot }, action: { kind: 'switch', mon } })
-  if (!options.length) return base
   const responses: (string | null)[] = attacksOf(foe, field).map((move) => move.id)
   if (!responses.length) responses.push(null)
   const last = state.foeLastMove && responses.includes(state.foeLastMove) ? state.foeLastMove : null
-  const scores = options.map(({ action }) => {
-    const worst = Math.min(...responses.map((response) => turnScore(me, action, foe, response, field, weight)))
-    return last ? (1 - LAST_MOVE_WEIGHT) * worst + LAST_MOVE_WEIGHT * turnScore(me, action, foe, last, field, weight) : worst
-  })
-  const bestMove = Math.max(-Infinity, ...scores.filter((_, i) => options[i].action.kind === 'move'))
   const hitOnEntry = (mon: AiMon) => {
     const hits = (last ? [last] : responses).map((response) => {
       const info = response ? moveInfo(response, field.generation) : null
@@ -182,6 +177,41 @@ export function chooseLookaheadAction(state: AiState & { danger?: ActiveDanger; 
     })
     return Math.max(0, ...hits) / Math.max(1, mon.hp)
   }
+  const weights = importance(state.self.pokemon, state.foe.pokemon, field)
+  const weight = (mon: AiMon) => weights.get(mon) ?? 1
+  const score = (action: Action) => {
+    const worst = Math.min(...responses.map((response) => turnScore(me, action, foe, response, field, weight)))
+    return last ? (1 - LAST_MOVE_WEIGHT) * worst + LAST_MOVE_WEIGHT * turnScore(me, action, foe, last, field, weight) : worst
+  }
+  const hasAttacks = usable(me).some(({ move }) => moveInfo(move.id, field.generation).kind === 'attack')
+  if (!isStuck && hasAttacks && bestHit(me, foe, field, true) < foe.hp * USELESS_FRACTION) {
+    const entrants = bench.filter(({ mon }) => {
+      const hit = hitOnEntry(mon)
+      return hit < MAX_SWITCH_HIT && matchup(mon, mon.hp * (1 - hit), foe, field) >= 0 && bestHit(mon, foe, field) >= foe.hp * USELESS_FRACTION
+    }).map(({ mon, slot }) => ({ slot, value: score({ kind: 'switch', mon }) }))
+    if (entrants.length) {
+      const top = Math.max(...entrants.map((entrant) => entrant.value))
+      return { type: 'switch', slot: rng.pick(entrants.filter((entrant) => Math.abs(entrant.value - top) < 1e-9)).slot }
+    }
+    const useful = { ...me, moves: me.moves.map((move) => (noDamage(me, foe, move.id, field) ? { ...move, disabled: true } : move)) }
+    if (useful.moves.some((move) => !move.disabled && move.pp > 0)) {
+      const fallback = chooseRivalAction({ ...state, self: { ...state.self, pokemon: [useful, ...state.self.pokemon.slice(1)] } }, rng)
+      if (fallback.type === 'move' && !useful.moves[fallback.slot - 1]?.disabled) return fallback
+    }
+    // Sin estado ni mejora útiles: sigue abajo, entre los ataques que sí hacen algo y los cambios de siempre.
+  }
+  // Si la heurística elige un movimiento de estado, curación o mejora y no está atada, se respeta: esta IA decide entre atacar y cambiar.
+  if (!isStuck && base.type === 'move') {
+    const chosen = me.moves[base.slot - 1]
+    if (chosen && moveInfo(chosen.id, field.generation).kind !== 'attack') return base
+  }
+  const options: { choice: Choice; action: Action }[] = isStuck ? [] : usable(me)
+    .map(({ move, slot }) => ({ choice: { type: 'move', slot } as Choice, action: { kind: 'move', moveId: move.id, info: moveInfo(move.id, field.generation) } as Action }))
+    .filter(({ action }) => action.kind === 'move' && action.info.kind === 'attack' && !action.info.unreliable && !noDamage(me, foe, action.moveId, field))
+  // Recién entrado, no vuelve a cambiar salvo que esté atado o en peligro: cada cambio regala un golpe (Jose, 12/11/2026, Sixto).
+  if (!state.justIn || isStuck) for (const { mon, slot } of bench) options.push({ choice: { type: 'switch', slot }, action: { kind: 'switch', mon } })
+  if (!options.length) return base
+  const scores = options.map(({ action }) => score(action))
   const foeFirst = effectiveSpeed(side(foe), field) >= effectiveSpeed(side(me), field)
   const doomed = foeFirst && (last ? [last] : responses).some((response) => {
     const info = response ? moveInfo(response, field.generation) : null
@@ -189,11 +219,14 @@ export function chooseLookaheadAction(state: AiState & { danger?: ActiveDanger; 
   })
   const adjusted = scores.map((score, i) => {
     const action = options[i].action
-    if (action.kind !== 'switch' || isStuck || !Number.isFinite(bestMove)) return score
+    // Las condiciones del cambio valen también sin ningún ataque útil (todos sin daño): sin ellas metía a quien recibe un golpe muy alto.
+    if (action.kind !== 'switch' || isStuck) return score
     const hit = hitOnEntry(action.mon)
     if (hit >= MAX_SWITCH_HIT || matchup(action.mon, action.mon.hp * (1 - hit), foe, field) < (doomed ? 0 : MIN_SWITCH_EDGE)) return -Infinity
     return score - SWITCH_MARGIN
   })
   const top = Math.max(...adjusted)
+  // Nada que valga (solo ataques sin daño y ningún cambio aceptable): lo que diga la heurística, sin cambiar.
+  if (!Number.isFinite(top)) return base.type === 'move' ? base : { type: 'move', slot: usable(me)[0]?.slot ?? 1 }
   return rng.pick(options.filter((_, i) => Math.abs(adjusted[i] - top) < 1e-9)).choice
 }

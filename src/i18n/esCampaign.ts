@@ -212,6 +212,9 @@ export const esCampaign = {
   },
   // Combate (battle_message.c y battle_controller_player.c: textos del juego en castellano).
   battle: {
+    /** El combate no ha podido arrancar o el motor ha fallado (worker, guardado en la cuenta): antes la pantalla se quedaba en negro. */
+    failed: 'No se ha podido cargar el combate. Comprueba la conexión y vuelve a intentarlo.',
+    retry: 'Reintentar',
     fight: 'LUCHAR',
     bag: 'MOCHILA',
     pokemon: 'POKéMON',

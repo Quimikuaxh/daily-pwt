@@ -61,18 +61,18 @@ const genderOf = (details: string): 'M' | 'F' | null => {
 const levelOf = (details: string): number => Number(/L(\d+)/.exec(details)?.[1] ?? 50)
 
 /** Movimiento de la pantalla de datos: el de la tarjeta (Poder Oculto con su tipo y potencia reales) con los PP llenos, potencia y categoría. */
-function partyMove(moveId: string, data: GameData, ivs: StatsTable | undefined): PartyMove {
-  const model = moveModel(moveId, data, ivs)
+function partyMove(moveId: string, data: GameData, ivs: StatsTable | undefined, hiddenPowerPower?: number): PartyMove {
+  const model = moveModel(moveId, data, ivs, hiddenPowerPower)
   const dexMove = data.dex.moves[moveId]
   const fullPp = dexMove ? Math.floor((dexMove.pp * 8) / 5) : null
   return { ...model, pp: fullPp, maxPp: fullPp, basePower: Number(model.power) || 0, category: dexMove?.category ?? null }
 }
 
 /** Movimientos con los PP que le quedan según la vista del combate (llenos si aún no hay vista). */
-function partyMoves(moveIds: readonly string[], data: GameData, viewMon: MonView | undefined, ivs: StatsTable | undefined): PartyMove[] {
+function partyMoves(moveIds: readonly string[], data: GameData, viewMon: MonView | undefined, ivs: StatsTable | undefined, hiddenPowerPower?: number): PartyMove[] {
   return moveIds.map((moveId, index) => {
     const slot = viewMon?.moves?.[index]
-    const full = partyMove(moveId, data, ivs)
+    const full = partyMove(moveId, data, ivs, hiddenPowerPower)
     return slot ? { ...full, pp: slot.pp, maxPp: slot.maxPp } : full
   })
 }
@@ -133,7 +133,7 @@ export function partyMembers(request: BattleRequest | null, view: BattleView | n
         natureUp: natureEffects?.up ?? null,
         natureDown: natureEffects?.down ?? null,
         stats,
-        moves: partyMoves(set?.moves ?? member.moves ?? [], data, viewMon, set?.ivs),
+        moves: partyMoves(set?.moves ?? member.moves ?? [], data, viewMon, set?.ivs, set?.hiddenPowerPower),
       },
     ]
   })
@@ -195,7 +195,7 @@ export function rivalMembers(view: BattleView | null, data: GameData, team: read
         natureUp: natureEffects?.up ?? null,
         natureDown: natureEffects?.down ?? null,
         stats: calcStats(species.baseStats, set.ivs, set.evs, set.nature, set.level),
-        moves: partyMoves(set.moves, data, mon, set.ivs),
+        moves: partyMoves(set.moves, data, mon, set.ivs, set.hiddenPowerPower),
       },
     ]
   })

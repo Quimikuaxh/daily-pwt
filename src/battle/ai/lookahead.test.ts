@@ -102,6 +102,35 @@ describe('cuándo cambia (Jose, 12/11/2026)', () => {
     for (const seed of SEEDS) expect(choose(state, seed).type).not.toBe('switch')
   })
 
+  // UT-221 (Jose, 14/11/2026): el Shiftry de Sixto usaba Paranormal (Psíquico) contra un Umbreon (Siniestro, inmune) en vez de cambiar o
+  // usar otro movimiento. Un ataque de daño que no hace nada no se usa nunca; sin hacer casi nada, cambia o usa un movimiento de estado.
+  it('nunca usa un ataque que no hace daño: cambia a quien sí pega o, si no hay, usa estado (Sixto: Shiftry contra Umbreon, Gen 3)', () => {
+    const r = (species: string, level: number, item: string, ability: string, moves: [string, string, string, string], iv = 30) =>
+      mkResolved(species, item, ability, moves, { level: level as never, ivs: { hp: iv, atk: iv, def: iv, spa: iv, spd: iv, spe: iv }, evs: { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 } })
+    const shiftry = r('shiftry', 48, '', 'chlorophyll', ['torment', 'doubleteam', 'swagger', 'extrasensory'])
+    const crawdaunt = r('crawdaunt', 48, '', 'hypercutter', ['surf', 'swordsdance', 'strength', 'facade'])
+    const absol = r('absol', 49, 'sitrusberry', 'pressure', ['aerialace', 'rockslide', 'swordsdance', 'slash'], 31)
+    const umbreon = r('umbreon', 48, 'leftovers', 'synchronize', ['faintattack', 'moonlight', 'toxic', 'confuseray'], 20)
+    const extrasensory = (state: unknown) => slotOf(state as never, 'extrasensory')
+    const withBench = { ...mkState([mkMon(shiftry), mkMon(crawdaunt), mkMon(absol)], [mkMon(umbreon)], { generation: 3 } as never), danger: noDanger }
+    for (const seed of SEEDS) {
+      const choice = choose(withBench, seed)
+      expect(choice).not.toEqual({ type: 'move', slot: extrasensory(withBench) })
+      expect(choice.type).toBe('switch')
+    }
+    // Recién entrado también: quedarse sin hacer nada no le sirve.
+    for (const seed of SEEDS) expect(choose({ ...withBench, justIn: true }, seed).type).toBe('switch')
+    // Solo, sin banquillo: un movimiento de estado o de mejora, nunca Paranormal.
+    const alone = { ...mkState([mkMon(shiftry)], [mkMon(umbreon)], { generation: 3 } as never), danger: noDanger }
+    for (const seed of SEEDS) expect(choose(alone, seed)).not.toEqual({ type: 'move', slot: extrasensory(alone) })
+  })
+
+  it('con solo movimientos de estado no se considera «sin hacer nada»: no cambia por eso', () => {
+    const state = { ...mkState([mkMon(blissey), mkMon(heatran)], [mkMon(skarmory)]), danger: noDanger }
+    const statusOnly = { ...state, self: { ...state.self, pokemon: [{ ...state.self.pokemon[0], moves: state.self.pokemon[0].moves.filter((move) => move.id !== 'seismictoss') }, ...state.self.pokemon.slice(1)] } }
+    for (const seed of SEEDS) expect(choose(statusOnly, seed).type).toBe('move')
+  })
+
   // UT-204 (Jose, 12/11/2026): contra un Tauros con Cinta Elegida, Sixto cambiaba cada turno (con el motor: 22 cambios voluntarios en 6
   // combates de 8 turnos; con esto, 10). Recién entrado no vuelve a cambiar salvo que esté atado o en peligro.
   it('recién entrado no cambia aunque otro aguante mejor; atado a algo inútil, sí', () => {

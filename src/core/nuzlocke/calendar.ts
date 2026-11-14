@@ -1,5 +1,5 @@
 /**
- * MT/MO y objetos de evolución desbloqueados según el calendario de cada campaña (sus reglas: `rules.ts`, DEC-101). Sin reglas (una
+ * MT/MO y objetos de evolución desbloqueados según el calendario de cada campaña (sus reglas: `rules.ts`, DEC-104). Sin reglas (una
  * definición de prueba), el llamador da los desbloqueos.
  */
 import { DataError } from '../errors'

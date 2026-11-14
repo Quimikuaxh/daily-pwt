@@ -1,5 +1,5 @@
 /**
- * Reglas de cada campaña (DEC-101): lo que en Hoenn venía de leer `hoenn-emerald-calendar.json` y de preguntar «¿es Esmeralda?»
+ * Reglas de cada campaña (DEC-104): lo que en Hoenn venía de leer `hoenn-emerald-calendar.json` y de preguntar «¿es Esmeralda?»
  * (`isEmeraldCampaign`), en un objeto por campaña. El núcleo decide con `rulesOf(definition)`; una definición sin campaña conocida
  * (las de los tests unitarios) no tiene reglas y conserva el contrato de antes: el llamador da los desbloqueos.
  *
@@ -104,7 +104,7 @@ export const campaignRules = (id: CampaignId): CampaignRules => RULES[id]
 
 /**
  * Reglas de una definición: las de su `campaign` o, sin ella, las de Hoenn si sus encuentros son los de Esmeralda (las definiciones de
- * antes de DEC-101); si no, `null`.
+ * antes de DEC-104); si no, `null`.
  */
 export function rulesOf(definition: { campaign?: CampaignId; encounters: readonly { id: string }[] }): CampaignRules | null {
   if (definition.campaign) return RULES[definition.campaign]

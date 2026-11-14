@@ -34,7 +34,7 @@ const LiveScreen = lazy(() => import('./ui/replay/replayModule').then((module) =
 // Campaña Nuzlocke de Hoenn (D7): aparte, fuera de la ruta crítica del reto diario.
 const loadCampaignScreen = () => import('./ui/campaign/CampaignScreen')
 const CampaignScreen = lazy(loadCampaignScreen)
-// Teselia (DEC-103): su kit va en su propio bloque. Por ahora solo con el gancho ?campaign=teselia; la entrada de Modos de juego, después.
+// Teselia (DEC-106): su kit va en su propio bloque. Por ahora solo con el gancho ?campaign=teselia; la entrada de Modos de juego, después.
 const UnovaCampaignScreen = lazy(() => Promise.all([loadCampaignScreen(), import('./ui/campaign-unova/unovaKit')])
   .then(([screen, { unovaKit }]) => ({ default: (props: ComponentProps<typeof screen.default>) => <screen.default {...props} kit={unovaKit} /> })))
 

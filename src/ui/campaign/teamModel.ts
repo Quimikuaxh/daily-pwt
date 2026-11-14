@@ -80,6 +80,23 @@ export function moveMon(layout: TeamLayout, from: Place, to: Place, limit: numbe
 }
 
 /** Colocación de Equipo y PC guardada en la pantalla, si sigue valiendo: los mismos miembros y no más en el equipo que el límite. */
+/** La colocación guardada en la campaña (`teamLayout`), si sigue valiendo para sus miembros y el límite; si no, `null`. */
+export function savedLayout(state: CampaignState, limit: number): TeamLayout | null {
+  const saved = state.teamLayout
+  if (!saved) return null
+  return fittingLayout({
+    party: fill(saved.party, PARTY_SIZE),
+    boxes: [
+      { ko: false, mons: fill(saved.box, BOX_SIZE).slice(0, BOX_SIZE) },
+      { ko: true, mons: fill(state.members.filter((member) => member.fainted).map((member) => member.id), BOX_SIZE) },
+    ],
+  }, state, limit)
+}
+
+/** Para guardar en la campaña: el equipo en su orden y los huecos de la caja de los vivos. */
+export const layoutToSave = (layout: TeamLayout): NonNullable<CampaignState['teamLayout']> =>
+  ({ party: lineup(layout), box: [...(layout.boxes.find((box) => !box.ko)?.mons ?? [])] })
+
 export function fittingLayout(layout: TeamLayout | null, state: CampaignState, limit: number): TeamLayout | null {
   if (!layout) return null
   const placed = [...layout.party, ...layout.boxes.flatMap((box) => box.mons)].filter((id): id is string => id !== null)

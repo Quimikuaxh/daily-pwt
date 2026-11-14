@@ -1,5 +1,5 @@
 /**
- * Objetos equipables de la campaña (Jose, 11/11/2026; PRD §0, DEC-94), con las reglas de cada una (`rules.ts`, DEC-101). Del calendario
+ * Objetos equipables de la campaña (Jose, 11/11/2026; PRD §0, DEC-94), con las reglas de cada una (`rules.ts`, DEC-104). Del calendario
  * (`held`): una unidad por fuente de la aventura desde su hito habitual; las bayas (y en Teselia lo de tienda), sin límite desde la primera
  * fuente. Competitivos: el canje (`exchange`, con sus precios en PB), pagado con Puntos Batalla que se ganan durante la aventura: los de
  * `battlePoints` por gimnasio ganado y unos pocos más si nadie se debilita, para que pasando los gimnasios de forma normal se puedan

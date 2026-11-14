@@ -176,6 +176,55 @@ describe('guardado de campaña por cuenta, D4(b)', () => {
     expect(campaign.read()).toBeNull()
   })
 
+  // UT-223 (Jose, 14/11/2026): guardado en segundo plano. Mientras un guardado está en vuelo, el cambio siguiente se pone en cola (solo
+  // el último), va en el diario y sale al confirmarse el anterior; la pantalla no se bloquea (CampaignCloud.test).
+  it('pone en cola el último cambio mientras guarda, lo manda al confirmar y lo conserva al recargar', async () => {
+    const first = deferred<CampaignReceipt>()
+    const { api, campaign, storage } = await setup()
+    api.saveCampaign.mockImplementationOnce(() => first.promise)
+    const writing = campaign.write({ ...record().state, seed: 'uno' }, null, 0)
+    expect(campaign.getState().status).toBe('saving')
+    const queuedA = campaign.write({ ...record().state, seed: 'dos' }, null, 1)
+    // Sobre el último conocido (`read()`, ya la 2 en cola): sustituye al de la cola.
+    const queuedB = campaign.write({ ...record().state, seed: 'tres' }, null, 2)
+    // Una revisión que no es la última conocida sigue siendo un error.
+    await expect(campaign.write(record().state, null, 0)).rejects.toThrow(esCampaign.busy)
+    expect(campaign.read()).toMatchObject({ revision: 2, state: { seed: 'tres' } })
+    expect(JSON.parse(storage.getItem(campaignAccountKey('g1'))!).next).toMatchObject({ revision: 2, state: { seed: 'tres' } })
+    // Recargar con la cola (otra pestaña con una copia del diario): reenvía la intención con su UUID y después la cola.
+    const copy = new MemoryStorage()
+    copy.setItem(campaignAccountKey('g1'), storage.getItem(campaignAccountKey('g1'))!)
+    const op = api.saveCampaign.mock.calls[0][0]
+    const otherApi = fakeApi({ saveCampaign: vi.fn(async (sent: CampaignOperation) => ({ operationId: sent.operationId, revision: sent.record.revision })),
+      getCampaign: vi.fn(async () => ({ version: 1 as const, revision: 2, state: { ...record().state, seed: 'tres' }, battle: null })) })
+    const reopened = await setup(otherApi, copy)
+    expect(otherApi.saveCampaign.mock.calls.map(([sent]) => [sent.operationId === op.operationId, sent.record.revision])).toEqual([[true, 1], [false, 2]])
+    expect(reopened.campaign.getState()).toMatchObject({ status: 'ready', record: { revision: 2, state: { seed: 'tres' } } })
+    first.resolve({ operationId: op.operationId, revision: 1 })
+    await writing
+    await expect(queuedA).resolves.toMatchObject({ revision: 2, state: { seed: 'tres' } })
+    await expect(queuedB).resolves.toMatchObject({ revision: 2, state: { seed: 'tres' } })
+    expect(api.saveCampaign).toHaveBeenCalledTimes(2)
+    expect(api.saveCampaign.mock.calls[1][0]).toMatchObject({ expectedRevision: 1, record: { revision: 2, state: { seed: 'tres' } } })
+    expect(campaign.getState()).toMatchObject({ status: 'ready', record: { revision: 2 } })
+  })
+
+  it('si el guardado en vuelo falla, la cola se conserva y Reintentar manda los dos', async () => {
+    const { api, campaign } = await setup()
+    const first = deferred<CampaignReceipt>()
+    api.saveCampaign.mockImplementationOnce(() => first.promise)
+    const writing = campaign.write({ ...record().state, seed: 'uno' }, null, 0)
+    const queued = campaign.write({ ...record().state, seed: 'dos' }, null, 1)
+    first.reject(networkError())
+    await expect(writing).rejects.toThrow()
+    await expect(queued).rejects.toThrow()
+    expect(campaign.getState().status).toBe('offline')
+    expect(campaign.read()).toMatchObject({ revision: 2, state: { seed: 'dos' } })
+    await campaign.retry()
+    expect(api.saveCampaign.mock.calls.map(([op]) => [op.expectedRevision, op.record.state.seed])).toEqual([[0, 'uno'], [0, 'uno'], [1, 'dos']])
+    expect(campaign.getState()).toMatchObject({ status: 'ready', record: { revision: 2, state: { seed: 'dos' } } })
+  })
+
   it('ignora una lectura tardía al cerrar sesión', async () => {
     const wait = deferred<unknown>()
     const api = fakeApi({ getCampaign: () => wait.promise })

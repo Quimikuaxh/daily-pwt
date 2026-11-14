@@ -24,6 +24,13 @@ describe('Poder Oculto con su tipo real', () => {
     expect(rivalMembers(null, data, [set])[0].moves[0]).toMatchObject({ name: 'Poder Oculto', typeName: 'Fighting', basePower: 30 })
   })
 
+  it('UT-219: con potencia fija (DEC-100), tarjeta y datos enseñan 60 con el tipo de los IV', () => {
+    const set = { species: 'starmie', nameEs: 'Starmie', level: 50, item: 'leftovers', ability: 'naturalcure', nature: 'Serious', moves: ['hiddenpower', 'surf'], ivs: uniform(20), evs: uniform(0), hiddenPowerPower: 60 } as unknown as ResolvedSet
+    expect(moveModel('hiddenpower', data, uniform(25), 60)).toMatchObject({ typeName: 'Dark', power: '60' })
+    expect(cardModel(set, data).moves[0]).toMatchObject({ name: 'Poder Oculto', typeName: 'Fighting', power: '60' })
+    expect(rivalMembers(null, data, [set])[0].moves[0]).toMatchObject({ typeName: 'Fighting', basePower: 60 })
+  })
+
   it('menú de movimientos del combate: el tipo que da el simulador («Hidden Power Dark 30»)', () => {
     const request = { active: [{ moves: [{ id: 'hiddenpower', move: 'Hidden Power Dark 30', pp: 24, maxpp: 24 }] }], side: { name: 'Jugador', id: 'p1', pokemon: [] } } as unknown as BattleRequest
     expect(moveOptions(request, data)[0]).toMatchObject({ id: 'hiddenpower', name: 'Poder Oculto', typeName: 'Dark' })

@@ -1,5 +1,5 @@
 /**
- * Kit de la campaña de Teselia (DEC-103). Módulo aparte del de Hoenn (campaignKit.ts): se importa solo al abrir esta campaña, así que su
+ * Kit de la campaña de Teselia (DEC-106). Módulo aparte del de Hoenn (campaignKit.ts): se importa solo al abrir esta campaña, así que su
  * progresión (1,2 MB) no entra en el bloque de la de Hoenn.
  */
 import unovaCatalog from '../../../data/nuzlocke/unova-n2b2.json'

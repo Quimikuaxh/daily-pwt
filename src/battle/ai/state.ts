@@ -52,6 +52,8 @@ function toBattleSet(pokemon: Pokemon): BattleSet {
   }
   if (pokemon.set.gender === 'M' || pokemon.set.gender === 'F') resolved.gender = pokemon.set.gender
   if (pokemon.battle.gen === 3 && pokemon.side.id === 'p1') resolved.happiness = pokemon.happiness
+  const hiddenPowerPower = (pokemon.set as { hiddenPowerPower?: number }).hiddenPowerPower
+  if (hiddenPowerPower !== undefined) resolved.hiddenPowerPower = hiddenPowerPower
   return resolved
 }
 
