@@ -23,7 +23,7 @@ const t = esCampaign.moves
 const font = emeraldTheme.font as BitmapFont
 const VISIBLE = 6
 
-type MovesScreenProps = {
+export type MovesScreenProps = {
   mon: { species: string; name: string; level: number; dex: number }
   legal: readonly MoveInfo[]
   equipped: readonly string[]

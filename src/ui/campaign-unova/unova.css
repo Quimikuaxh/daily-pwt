@@ -290,3 +290,17 @@
 .console-screen .unova-pc-menu-item:focus-visible { outline: 0; }
 
 .unova-pc-bar { left: 0; top: 166px; width: 256px; height: 26px; background: #202020; }
+
+/* Movimientos: la lista de lo que puede aprender sobre el sprite de la pantalla de datos del diario, con su barra de desplazamiento, y el
+   mensaje en una franja al pie de la pantalla de arriba. Van dentro de .bt-summary, que no coloca a sus hijos: se colocan aquí. */
+.unova-moves-aside, .unova-moves-aside * { position: absolute; margin: 0; padding: 0; image-rendering: pixelated; }
+.unova-moves-aside { inset: 0; pointer-events: none; z-index: 2; }
+.unova-moves-aside button { pointer-events: auto; cursor: pointer; background: none; color: inherit; font: inherit; }
+.unova-moves-aside .unova-moves-row.unova-bar { border: 8px solid transparent; border-image: var(--unova-bar) 8 fill / 8px stretch; }
+.unova-moves-aside .unova-moves-row.unova-bar-off { border: 6px solid transparent; border-image: var(--unova-bar-off) 6 fill / 6px stretch; }
+.unova-moves-aside .unova-moves-row.unova-bar > * { margin: -2px 0 0 -2px; }
+.unova-moves-aside .unova-moves-scroll { border: 0; }
+.unova-moves-aside .unova-moves-row:focus-visible { outline: 1px solid #ffd65a; }
+.unova-moves-track { width: 2px; background: #28283c; }
+.unova-moves-thumb { width: 2px; background: #78c8ff; }
+.unova-moves-message { pointer-events: auto; }

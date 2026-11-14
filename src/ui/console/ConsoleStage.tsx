@@ -39,9 +39,11 @@ type ConsoleStageProps = {
    * absoluto de `.console-screen`, solo su tamaño y el recorte.
    */
   freeScreens?: readonly number[]
+  /** Un solo contenido libre que ocupa el lienzo entero (todas las pantallas), como la pantalla de datos del diario completa. */
+  whole?: ReactNode
 }
 
-export function ConsoleStage({ theme, screens, reservedHeight = 0, scale: fixedScale, freeScreens = [] }: ConsoleStageProps) {
+export function ConsoleStage({ theme, screens, reservedHeight = 0, scale: fixedScale, freeScreens = [], whole }: ConsoleStageProps) {
   const ref = useRef(null as HTMLDivElement | null)
   const [fitted, setFitted] = useState(2)
   const { w, h } = theme.screen
@@ -72,7 +74,7 @@ export function ConsoleStage({ theme, screens, reservedHeight = 0, scale: fixedS
     <ThemeContext.Provider value={theme}>
       <div ref={ref} className="console-stage" data-theme={theme.id} data-scale={scale} style={style}>
         <div className="console-canvas">
-          {screens.map((content, i) => (
+          {whole !== undefined ? <section className="console-screen-free" style={{ height: totalHeight }}>{whole}</section> : screens.map((content, i) => (
             <section key={i} className={freeScreens.includes(i) ? 'console-screen-free' : 'console-screen'}>
               {content}
             </section>

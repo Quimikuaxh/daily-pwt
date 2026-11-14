@@ -19,6 +19,7 @@ import { CampaignCard, TeamPanel, type CampaignCardProps, type TeamPanelProps } 
 import { itemName as emeraldItemName } from './bagModel'
 import { DraftScreen } from './DraftScreen'
 import { TeamScreen, type TeamScreenProps as HoennTeamProps } from './TeamScreen'
+import { MovesScreen, type MovesScreenProps as HoennMovesProps } from './MovesScreen'
 import type { PartyMember } from '../battle/party/partyModel'
 import type { Candidate } from './draftModel'
 import type { GameData } from '../../core/types'
@@ -41,6 +42,9 @@ export type DraftScreenProps = {
 
 /** Lo que recibe Equipo y PC de cualquier campaña: Hoenn usa `summaryOf` (su ficha); Teselia, `details` y `data` (la del diario). */
 export type TeamScreenProps = HoennTeamProps & { details?: (id: string) => PartyMember | null; data: GameData }
+
+/** Lo que recibe Movimientos de cualquier campaña: Teselia usa además `member` y `data` (la pantalla de datos del diario). */
+export type MovesScreenProps = HoennMovesProps & { member: PartyMember | null; data: GameData }
 
 /** Lo que recibe la pantalla Ruta de cualquier campaña. */
 export type RouteScreenProps = {
@@ -80,6 +84,7 @@ export type CampaignKit = {
     Route: ComponentType<RouteScreenProps>
     Draft: ComponentType<DraftScreenProps>
     Team: ComponentType<TeamScreenProps>
+    Moves: ComponentType<MovesScreenProps>
     CampaignCard: ComponentType<CampaignCardProps>
     TeamPanel: ComponentType<TeamPanelProps>
   }
@@ -112,7 +117,7 @@ export const hoennKit: CampaignKit = {
   medalsInCard: false,
   itemName: emeraldItemName,
   speciesLabel: (name) => name.toUpperCase(),
-  screens: { Route: RouteScreen, Draft: DraftScreen, Team: TeamScreen, CampaignCard, TeamPanel },
+  screens: { Route: RouteScreen, Draft: DraftScreen, Team: TeamScreen, Moves: MovesScreen, CampaignCard, TeamPanel },
   console: { w: 240, h: 320 },
   modeLabel: esCampaign.modeLabel,
   // Marco de ventana de Esmeralda para los botones (URL absoluta: relativa en una variable CSS se resolvería contra la hoja de estilos).

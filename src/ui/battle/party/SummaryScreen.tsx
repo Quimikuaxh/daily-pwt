@@ -7,7 +7,7 @@ import { speciesSprite } from '../../common/spriteUrls'
 import { TypeBadge } from '../../common/TypeBadge'
 import { useImagesLoadedIn } from '../preloadAssets'
 import { uiAsset } from '../../common/uiAssets'
-import { memberHpText, type PartyMember } from './partyModel'
+import { memberHpText, type PartyMember, type PartyMove } from './partyModel'
 import { BANDS, infoLine, infoRow, moveDetailRow, statRow, topInBand, type Band } from './summaryLayout'
 import { abilityDescription, dexNumberText, frontSpriteSize, hpBar, moveDescription, natureEffectText, SKILL_STAT_KEYS } from './summaryModel'
 import './summary.css'
@@ -153,8 +153,9 @@ function SkillsPage({ member }: { member: PartyMember }) {
   )
 }
 
-function MovesTopPage({ member, moveIndex, data }: { member: PartyMember; moveIndex: number; data: GameData }) {
-  const move = member.moves[moveIndex]
+function MovesTopPage({ member, moveIndex, data, detail }: { member: PartyMember; moveIndex: number; data: GameData; detail: PartyMove | null }) {
+  const move = detail ?? member.moves[moveIndex]
+  if (!move) return null
   const description = moveDescription(move.id)
   const dexMove = data.dex.moves[move.id]
   return (
@@ -223,6 +224,12 @@ type SummaryScreenProps = {
   onClose: () => void
   /** Página con la que se abre (0 Información, 1 Habilidades y estadísticas, 2 Movimientos); por defecto, la primera. */
   initialPage?: Page
+  /** Movimiento que se detalla arriba en la página de movimientos en lugar del equipado señalado (el de una lista que lo acompañe). */
+  detailMove?: PartyMove | null
+  /** Aviso al tocar una placa de movimiento (además de señalarla). */
+  onMovePick?: (index: number) => void
+  /** Contenido propio en la pantalla de abajo, encima del sprite (en píxeles de la pantalla de datos: la de abajo empieza en y 192). */
+  aside?: ReactNode
 }
 
 /**
@@ -230,7 +237,7 @@ type SummaryScreenProps = {
  * (detalle del movimiento elegido). El fondo es la captura de Negro/Blanco limpiada por script; todo lo demás se pinta en ejecución con datos reales.
  * Teclado: ← → cambian de página, ↑ ↓ de Pokémon, Escape vuelve.
  */
-export default function SummaryScreen({ members, initialSlot, data, onClose, initialPage = 0 }: SummaryScreenProps) {
+export default function SummaryScreen({ members, initialSlot, data, onClose, initialPage = 0, detailMove = null, onMovePick, aside }: SummaryScreenProps) {
   const [slot, setSlot] = useState(initialSlot)
   const [page, setPage] = useState(initialPage)
   const [moveIndex, setMoveIndex] = useState(0)
@@ -274,6 +281,7 @@ export default function SummaryScreen({ members, initialSlot, data, onClose, ini
   const pickMove = (index: number) => {
     setMoveIndex(index)
     setPage(2)
+    onMovePick?.(index)
   }
 
   const backgrounds = BACKGROUNDS[page]
@@ -300,7 +308,7 @@ export default function SummaryScreen({ members, initialSlot, data, onClose, ini
 
       {page === 0 && <InfoPage member={member} />}
       {page === 1 && <SkillsPage member={member} />}
-      {page === 2 && <MovesTopPage member={member} moveIndex={moveIndex} data={data} />}
+      {page === 2 && <MovesTopPage member={member} moveIndex={moveIndex} data={data} detail={detailMove} />}
       {page !== 0 && <MoveSlots member={member} page={page} moveIndex={moveIndex} onPick={pickMove} />}
       <SharedBottom member={member} data={data} />
 
@@ -314,6 +322,7 @@ export default function SummaryScreen({ members, initialSlot, data, onClose, ini
       )}
       <button type="button" className="bt-sum-hit bt-sum-close" onClick={onClose} aria-label={text.close} />
       <button type="button" className="bt-sum-hit bt-sum-back" onClick={back} aria-label={text.back} />
+      {aside}
     </section>
   )
 }

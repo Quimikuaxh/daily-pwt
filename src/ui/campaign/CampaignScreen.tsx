@@ -21,7 +21,6 @@ import { candidateOf, emeraldDex } from './draftModel'
 import { badgeCount } from './hoennRoute'
 import { unovaSummaryMember } from '../campaign-unova/unovaSummary'
 import { fittingLayout, initialLayout, layoutToSave, lineup, savedLayout, teamMonOf, type TeamLayout } from './teamModel'
-import { MovesScreen } from './MovesScreen'
 import { equippedMoves, legalMoves, moveInfo } from './movesModel'
 import { setCampaignMemberMoves } from '../../core/nuzlocke/progression'
 import type { CampaignBattleDefinition } from '../../core/nuzlocke/battle'
@@ -669,8 +668,10 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     if (!state || !member) return null
     const mon = teamMonOf(member, data)
     return (
-      <MovesScreen
+      <kit.screens.Moves
         key={member.id}
+        data={data}
+        member={memberDetails(state, member.id)}
         mon={{ species: member.species, name: mon.name, level: member.level, dex: emeraldDex(member.species) }}
         legal={legalMoves(definition, state, member, data)}
         equipped={equippedMoves(definition, state, member)}

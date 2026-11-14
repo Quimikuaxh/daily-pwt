@@ -482,5 +482,8 @@ export const esCampaign = {
     draftRival: (name: string, level: number) => `Rival: ${name.toUpperCase()} · Nv. máx. ${level}`,
     yourTeam: 'TU EQUIPO',
     yourTeamLabel: 'Ver tu equipo y la caja',
+    // Movimientos (maqueta aprobada el 14/11/2026): la lista de lo que puede aprender y la categoría de Gen 5 en el texto accesible.
+    canLearn: 'PUEDE APRENDER',
+    categoryNames: { Physical: 'físico', Special: 'especial', Status: 'de estado' } as Record<string, string>,
   },
 } as const
