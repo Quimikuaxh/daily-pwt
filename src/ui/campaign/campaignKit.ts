@@ -5,6 +5,7 @@
  * Aquí, el tipo y el de Hoenn; el de Teselia vive en `campaign-unova/unovaKit.ts` y se carga aparte, para que su progresión (1,2 MB) no
  * entre en el bloque de la campaña de Hoenn.
  */
+import { EmeraldBattle, type CampaignBattleProps } from './EmeraldBattle'
 import { hoennMusic, hoennSounds, type CampaignMusic, type CampaignSounds } from './campaignMusic'
 import catalog from '../../../data/nuzlocke/hoenn-emerald.json'
 import progression from '../../../data/nuzlocke/hoenn-emerald-progression.json'
@@ -114,6 +115,7 @@ export type CampaignKit = {
   speciesLabel: (name: string) => string
   /** Pantallas propias de la campaña. */
   screens: {
+    Battle: ComponentType<CampaignBattleProps>
     Route: ComponentType<RouteScreenProps>
     Draft: ComponentType<DraftScreenProps>
     Team: ComponentType<TeamScreenProps>
@@ -166,7 +168,7 @@ export const hoennKit: CampaignKit = {
   itemName: emeraldItemName,
   itemText: emeraldItemText,
   speciesLabel: (name) => name.toUpperCase(),
-  screens: { Route: RouteScreen, Draft: DraftScreen, Team: TeamScreen, Moves: MovesScreen, Bag: BagScreen, Exchange: ExchangeScreen, Evolution: EvolutionScene, League: LeagueScreen, Result: ResultScreen, Share: ShareScreen, CampaignCard, TeamPanel },
+  screens: { Battle: EmeraldBattle, Route: RouteScreen, Draft: DraftScreen, Team: TeamScreen, Moves: MovesScreen, Bag: BagScreen, Exchange: ExchangeScreen, Evolution: EvolutionScene, League: LeagueScreen, Result: ResultScreen, Share: ShareScreen, CampaignCard, TeamPanel },
   // OBJ. EVOL. y MT/MO, solo para mirar, con los nombres y descripciones de Esmeralda.
   bagContents: (state, pocket, memberId, data) => {
     if (pocket === 'evolution') {

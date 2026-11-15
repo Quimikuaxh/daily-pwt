@@ -1,5 +1,6 @@
+import type { BattleChallenge } from './battleTypes'
 import { useEffect, useLayoutEffect, useState, type RefObject } from 'react'
-import type { Challenge, GameData } from '../../core/types'
+import type { GameData } from '../../core/types'
 import battleUiImages from '../../generated/battle-ui-images.json'
 import { itemIconUrl, speciesSprite, trainerSideSprite, trainerSprite, trainerVsSprite } from '../common/spriteUrls'
 import { uiAsset } from '../common/uiAssets'
@@ -57,7 +58,7 @@ export function preloadBattleImages(createImage: ImageFactory = () => new Image(
 }
 
 /** URLs de sprites del reto de hoy: frente y espalda de los 6 rivales y los 6 propios, y el entrenador rival. Nunca los del resto del pool. */
-export function challengeSpriteUrls(challenge: Challenge, data: GameData): string[] {
+export function challengeSpriteUrls(challenge: BattleChallenge, data: GameData): string[] {
   const species = [...challenge.rivalTeam, ...challenge.playerTeam].map((set) => set.species)
   const urls = [...new Set(species)].flatMap((id) => [speciesSprite(data.dex, id, 'front'), speciesSprite(data.dex, id, 'back')])
   return [...urls.filter((url): url is string => url !== null), trainerSprite(challenge.trainer.sprite), trainerVsSprite(challenge.trainer.sprite), trainerSideSprite(challenge.trainer.sprite)]
@@ -67,7 +68,7 @@ export function challengeSpriteUrls(challenge: Challenge, data: GameData): strin
  * Iconos de los objetos de los 12 Pokémon del reto (ficha del objeto de los paneles laterales): sin precarga tardaban un momento en salir
  * al abrirla (Jose, 06/11/2026). Pesan unos 4 KB cada uno.
  */
-export function challengeItemIconUrls(challenge: Challenge): string[] {
+export function challengeItemIconUrls(challenge: BattleChallenge): string[] {
   const items = [...challenge.rivalTeam, ...challenge.playerTeam].map((set) => set.item).filter((item): item is string => Boolean(item))
   return [...new Set(items)].map(itemIconUrl)
 }
@@ -88,14 +89,14 @@ export const introImagesReady = (urls: readonly string[], createImage?: ImageFac
   imagesReady(urls, INTRO_IMAGES_TIMEOUT_MS, createImage, 'high')
 
 /** Precarga los iconos de los objetos de un combate en reposo (también para repeticiones y directos, que no pasan por Hoy). */
-export function preloadItemIcons(challenge: Challenge, createImage: ImageFactory = () => new Image()): void {
+export function preloadItemIcons(challenge: BattleChallenge, createImage: ImageFactory = () => new Image()): void {
   const urls = challengeItemIconUrls(challenge)
   runWhenIdle(() => {
     for (const url of urls) void requestImage(url, createImage)
   })
 }
 
-export function preloadChallengeSprites(challenge: Challenge, data: GameData, createImage: ImageFactory = () => new Image()): void {
+export function preloadChallengeSprites(challenge: BattleChallenge, data: GameData, createImage: ImageFactory = () => new Image()): void {
   const urls = [...challengeSpriteUrls(challenge, data), ...challengeItemIconUrls(challenge)]
   runWhenIdle(() => {
     for (const url of urls) void requestImage(url, createImage)
@@ -103,7 +104,7 @@ export function preloadChallengeSprites(challenge: Challenge, data: GameData, cr
 }
 
 /** Precarga los sprites del reto de hoy cuando se muestra Hoy. */
-export function usePreloadChallengeSprites(challenge: Challenge, data: GameData): void {
+export function usePreloadChallengeSprites(challenge: BattleChallenge, data: GameData): void {
   useEffect(() => {
     preloadChallengeSprites(challenge, data)
   }, [challenge, data])

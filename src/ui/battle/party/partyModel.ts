@@ -1,9 +1,10 @@
+import type { BattleTeamSet } from '../battleTypes'
 import type { BattleRequest, BattleView, MonView, RequestPokemon } from '../../../battle/protocol'
 import { battleIdentity, parseBattleIdentity } from '../../../battle/identity'
 import { isFaintedCondition } from '../../../battle/condition'
 import { calcStats, natureEffect } from '../../../core/stats'
 import { toId } from '../../../core/id'
-import type { DexMove, GameData, ResolvedSet, StatsTable } from '../../../core/types'
+import type { DexMove, GameData, StatsTable } from '../../../core/types'
 import { es } from '../../../i18n/es'
 import { moveModel, STAT_KEYS, type MoveModel } from '../../today/cardModel'
 
@@ -85,7 +86,7 @@ const STAT_FROM_REQUEST: Record<keyof StatsTable, string> = { hp: 'hp', atk: 'at
  * del set resuelto del reto (`team`); si el set no está (no ocurre en una partida real)
  * se cae a lo que trae el propio request del simulador.
  */
-export function partyMembers(request: BattleRequest | null, view: BattleView | null, data: GameData, team: readonly ResolvedSet[]): PartyMember[] {
+export function partyMembers(request: BattleRequest | null, view: BattleView | null, data: GameData, team: readonly BattleTeamSet[]): PartyMember[] {
   const pokemon = request?.side.pokemon ?? []
   return pokemon.flatMap((member, index) => {
     const speciesId = toId(member.details.split(',')[0])
@@ -143,7 +144,7 @@ export function partyMembers(request: BattleRequest | null, view: BattleView | n
  * Visor de repeticiones (F5): las repeticiones no guardan la petición del simulador, de donde salen las placas del jugador. Se monta una
  * equivalente con la vista grabada (mismo orden, PS reales, estado y activo); nivel y género, del set.
  */
-export function requestFromView(view: BattleView | null, team: readonly ResolvedSet[]): BattleRequest | null {
+export function requestFromView(view: BattleView | null, team: readonly BattleTeamSet[]): BattleRequest | null {
   if (!view) return null
   return {
     side: {
@@ -162,7 +163,7 @@ export function requestFromView(view: BattleView | null, team: readonly Resolved
  * Equipo del rival para consultarlo (botón RIVAL; decisiones de Jose del 22/10/2026): los 6 en el orden del motor, con su set completo
  * (Hoy ya lo enseña), PS en porcentaje y los PP que le quedan a cada movimiento.
  */
-export function rivalMembers(view: BattleView | null, data: GameData, team: readonly ResolvedSet[]): PartyMember[] {
+export function rivalMembers(view: BattleView | null, data: GameData, team: readonly BattleTeamSet[]): PartyMember[] {
   return team.flatMap((set, index) => {
     const species = data.dex.species[set.species]
     if (!species) return []

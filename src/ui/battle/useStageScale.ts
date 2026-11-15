@@ -84,14 +84,14 @@ export function stageScaleFor(containerWidth: number, viewportHeight: number): S
   return { scale, wide, frame: wide && frameFits(availableWidth, availableHeight, scale), layout: wide ? 'wide' : 'stacked', sideZoom: 1 }
 }
 
-export function useStageScale(containerRef: RefObject<HTMLElement | null>): StageScale {
+export function useStageScale(containerRef: RefObject<HTMLElement | null>, reservedHeight = 0): StageScale {
   const [stage, setStage] = useState({ scale: 1, wide: false, frame: false, layout: 'stacked', sideZoom: 1 } as StageScale)
 
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
     const update = () => {
-      const next = stageScaleFor(container.clientWidth, window.innerHeight)
+      const next = stageScaleFor(container.clientWidth, window.innerHeight - reservedHeight)
       setStage((previous) => (previous.scale === next.scale && previous.layout === next.layout && previous.frame === next.frame && previous.sideZoom === next.sideZoom ? previous : next))
     }
     update()
@@ -102,7 +102,7 @@ export function useStageScale(containerRef: RefObject<HTMLElement | null>): Stag
       window.removeEventListener('resize', update)
       observer?.disconnect()
     }
-  }, [containerRef])
+  }, [containerRef, reservedHeight])
 
   return stage
 }

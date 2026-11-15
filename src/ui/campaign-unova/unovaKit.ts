@@ -2,6 +2,7 @@
  * Kit de la campaña de Teselia (DEC-106). Módulo aparte del de Hoenn (campaignKit.ts): se importa solo al abrir esta campaña, así que su
  * progresión (1,2 MB) no entra en el bloque de la de Hoenn.
  */
+import { UnovaBattle } from './UnovaBattle'
 import { unovaMusic, unovaSounds } from './unovaMusic'
 import unovaCatalog from '../../../data/nuzlocke/unova-n2b2.json'
 import unovaProgression from '../../../data/nuzlocke/unova-n2b2-progression.json'
@@ -54,7 +55,7 @@ export const unovaKit: CampaignKit = {
   itemName: (id) => (names.items as Record<string, string>)[id] ?? id,
   itemText: (id) => (descriptions.items as Record<string, string>)[id] ?? '',
   speciesLabel: (name) => name,
-  screens: { Route: UnovaRouteScreen, Draft: UnovaDraftScreen, Team: UnovaTeamScreen, Moves: UnovaMovesScreen, Bag: UnovaBagScreen, Exchange: UnovaExchangeScreen, Evolution: UnovaEvolutionScene, League: UnovaLeagueScreen, Result: UnovaResultScreen, Share: UnovaShareScreen, CampaignCard: UnovaCampaignCard, TeamPanel: UnovaTeamPanel },
+  screens: { Battle: UnovaBattle, Route: UnovaRouteScreen, Draft: UnovaDraftScreen, Team: UnovaTeamScreen, Moves: UnovaMovesScreen, Bag: UnovaBagScreen, Exchange: UnovaExchangeScreen, Evolution: UnovaEvolutionScene, League: UnovaLeagueScreen, Result: UnovaResultScreen, Share: UnovaShareScreen, CampaignCard: UnovaCampaignCard, TeamPanel: UnovaTeamPanel },
   bagContents: (state, pocket, memberId, data) => unovaBagContents(state, pocket, memberId, unovaDefinition, data),
   console: { w: 256, h: 384 },
   modeLabel: esUnova.modeLabel,

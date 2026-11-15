@@ -1,10 +1,12 @@
+import { trainerSprite } from '../common/spriteUrls'
+import type { BattleChallenge } from './battleTypes'
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { battleMusicFor, CRITICAL_HEALTH_MUSIC, getAudio, LAST_POKEMON_MUSIC, SFX_IDS } from '../../audio/audio'
 import { MUSIC_CHANGE_FADE_MS } from '../../audio/audioEngine'
 import type { BattleClient } from '../../battle/client'
 import type { AiKind, BattleRequest, EngineEnd } from '../../battle/protocol'
 import { MAX_TURNS } from '../../config'
-import type { Challenge, GameData } from '../../core/types'
+import type { GameData } from '../../core/types'
 import { HP_BAR_ANIMATION_MS, useBattle, type BattleParams } from '../../hooks/useBattle'
 import type { BattleMode } from '../../storage/gameStore'
 import { useReducedMotion } from '../../hooks/usePrefersReducedMotion'
@@ -25,20 +27,23 @@ import { FieldPanel, FieldPill } from './FieldStatus'
 import { LiveRequestRow, LiveWatching, useLiveInbox } from './LiveInbox'
 import type { CloudApi } from '../../cloud/api'
 import { canChoose, hasOnlyForcedMove, isForcedSwitch, moveOptions, playerInPinch, lastPokemonThemeOn, switchBlockedReason, switchOptions } from './battleModel'
-import { avatarForSeed } from './introAssets'
+import { VS_LOGO, avatarForSeed } from './introAssets'
 import { menuSoundFor } from './menuSounds'
 import { SCREEN_HEIGHT, SCREEN_WIDTH, STAGE_HEIGHT, useStageScale } from './useStageScale'
+import type { CampaignPresentation } from './battleTypes'
+export type { CampaignPresentation } from './battleTypes'
 import './battle.css'
 
 // Paneles laterales (RF-44c): solo se descargan con la ventana ancha (llevan las descripciones de movimientos, objetos y habilidades).
 const SidePanel = lazy(() => import('./side/SidePanel').then((module) => ({ default: module.SidePanel })))
 
 type BattleScreenProps = {
+  campaign?: CampaignPresentation
   /** Espera de la intro por sus imágenes (UT-181); por defecto, decodificarlas con tope (`introImagesReady`). */
   introImages?: IntroImagesWait
   client: BattleClient
   data: GameData
-  challenge: Challenge
+  challenge: BattleChallenge
   playerLead: number
   battleSeed: string
   ai?: AiKind
@@ -87,21 +92,22 @@ type TouchChoice = { request: BattleRequest | null; mode: TouchMode }
 
 const isInteractive = (target: EventTarget | null): boolean => target instanceof HTMLElement && target.closest('button, a, input, select, textarea, [role="dialog"]') !== null
 
-export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', replayBadge, playerLabel = es.battle.you, liveApi, controls, replay, onDecision, onSettled, onReplayFailed, paused, initialSpeed, onSpeedChange, animations = 'always', sound, onSoundChange, musicMuted = false, onFinish, onExit, trainerName, introImages = introImagesReady }: BattleScreenProps) {
+export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', replayBadge, playerLabel = es.battle.you, liveApi, controls, replay, onDecision, onSettled, onReplayFailed, paused, initialSpeed, onSpeedChange, animations = 'always', sound, onSoundChange, musicMuted = false, onFinish, onExit, trainerName, introImages = introImagesReady, campaign }: BattleScreenProps) {
   const { trainer, rivalTeam, playerTeam } = challenge
   const speciesName = (speciesId: string, fallback: string): string => data.names.species[speciesId] ?? fallback
   // Grito de una especie: va por su `spriteId` (las formas tienen el suyo o el de la especie base; `gen:cries`).
   const cryIdOf = useCallback((speciesId: string): string => data.dex.species[speciesId]?.spriteId ?? speciesId, [data])
 
-  const avatar = useMemo(() => avatarForSeed(battleSeed), [battleSeed])
+  const avatar = useMemo(() => campaign?.avatar ?? avatarForSeed(battleSeed), [battleSeed, campaign?.avatar])
   const battle = useBattle({
     client,
     init: { battleSeed, player: playerTeam, playerLead, rival: rivalTeam, ai, maxTurns: MAX_TURNS },
     translateContext: { names: data.names, trainer: { nameEs: trainer.nameEs, category: trainer.category, gender: trainer.gender } },
-    intro: {
+    intro: campaign?.intro ?? {
       rivalLead: speciesName(rivalTeam[0].species, rivalTeam[0].nameEs),
       playerLead: speciesName(playerTeam[playerLead].species, playerTeam[playerLead].nameEs),
     },
+    skipIntro: campaign?.resumed,
     onFinish,
     replay,
     onDecision,
@@ -110,13 +116,15 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
     paused,
     initialSpeed,
     onSpeedChange,
-    playCry: (species, faint) => getAudio().playCry(cryIdOf(species), { faint }),
-    introReady: () => introImages(introImageUrls(avatar, trainer.sprite)),
+    playSfx: campaign?.playSfx,
+    playCry: campaign?.playCry ?? ((species, faint) => getAudio().playCry(cryIdOf(species), { faint })),
+    introReady: () => introImages(campaign ? [avatar.front, trainerSprite(trainer.sprite), VS_LOGO] : introImageUrls(avatar, trainer.sprite)),
   })
 
   const reducedMotion = useReducedMotion(animations)
   const layoutRef = useRef(null as HTMLDivElement | null)
-  const { scale, layout, frame, sideZoom } = useStageScale(layoutRef)
+  const { scale, layout, frame, sideZoom } = useStageScale(layoutRef, campaign?.reservedHeight ?? 0)
+  const BattleSidePanel = campaign?.SidePanel ?? SidePanel
   const panels = layout === 'panels'
   const [touchChoice, setTouchChoice] = useState({ request: null, mode: 'main' } as TouchChoice)
   const [dialog, setDialog] = useState(null as PendingDialog)
@@ -129,6 +137,8 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   // Pantalla «Estado» (RF-44b): abierta en el visor y lo último pulsado, que se ve en la caja de mensajes mientras no llegue otro mensaje.
   const [replayStatus, setReplayStatus] = useState(false)
   const [fieldNote, setFieldNote] = useState(null as { text: string; over: string | null } | null)
+  // Campaña: aviso de HUIR (no se huye de un entrenador) sobre el mensaje, hasta la siguiente acción.
+  const [runNote, setRunNote] = useState(null as string | null)
 
   const { request, lastChoiceRequest, choose, advance } = battle
   const menuRequest = request ?? lastChoiceRequest
@@ -152,12 +162,19 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   // En el visor (RF-128) la pantalla se vuelve a montar en cada salto: la música sigue sin cortarse y la para el visor al salir.
   // Con el último Pokémon del rival en el campo, su tema en vez del del rival, con transición (decisión de Jose, 30/10/2026); sigue
   // sonando cuando ese último cae.
-  const rivalMusic = battleMusicFor(trainer)
+  const rivalMusic = campaign?.music ?? battleMusicFor(trainer)
   // Con «Tema del último Pokémon» desactivado en Ajustes (Jose, 03/11/2026), sigue el del rival.
+  // También en la campaña de Teselia (Jose, 15/11/2026).
   const music = sound?.lastPokemonMusic !== false && lastPokemonThemeOn(battle.view) ? LAST_POKEMON_MUSIC : rivalMusic
   // Gritos (Jose, 31/10/2026): solo los de los Pokémon de este combate, como la música.
   const cries = useMemo(() => [...playerTeam, ...rivalTeam].map((set) => cryIdOf(set.species)), [playerTeam, rivalTeam, cryIdOf])
-  useEffect(() => getAudio().preload([rivalMusic, LAST_POKEMON_MUSIC, CRITICAL_HEALTH_MUSIC], SFX_IDS, cries), [rivalMusic, cries])
+  useEffect(() => {
+    if (campaign) {
+      campaign.registerMusic?.()
+      getAudio().preload([rivalMusic, LAST_POKEMON_MUSIC, CRITICAL_HEALTH_MUSIC], [])
+      campaign.preload([...playerTeam, ...rivalTeam].map((set) => set.species))
+    } else getAudio().preload([rivalMusic, LAST_POKEMON_MUSIC, CRITICAL_HEALTH_MUSIC], SFX_IDS, cries)
+  }, [rivalMusic, cries, campaign, playerTeam, rivalTeam])
   // Iconos de la ficha del objeto (paneles laterales): ya pedidos desde Hoy para el reto del día; aquí, para repeticiones y directos.
   useEffect(() => preloadItemIcons(challenge), [challenge])
   // `musicMuted`: la música silenciada en el visor de repeticiones (Jose, 03/11/2026); los efectos y los gritos siguen.
@@ -214,7 +231,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   const prompt = canActNow && !forcedSwitch && battle.introPhase === 'done' && activePlayerName ? es.battle.whatWillDo(activePlayerName) : null
   const statusOpen = mode === 'replay' ? replayStatus : touchMode === 'field'
   const note = statusOpen && fieldNote && fieldNote.over === battle.message ? fieldNote.text : null
-  const message = note ?? prompt ?? battle.message
+  const message = note ?? runNote ?? prompt ?? battle.message
   const showNote = (text: string) => setFieldNote({ text, over: battle.message })
 
   function chooseMove(slot: number) {
@@ -249,14 +266,14 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   const stageStyle = { width: SCREEN_WIDTH * scale, height: STAGE_HEIGHT * scale } as CSSProperties
 
   return (
-    <div data-testid="battle-screen" data-reduced-motion={reducedMotion ? 'true' : undefined} className="bt-root" style={rootStyle}>
+    <div data-testid="battle-screen" data-reduced-motion={reducedMotion ? 'true' : undefined} className="bt-root" data-campaign={campaign ? 'unova' : undefined} style={rootStyle}>
       <main className="bt" inert={dialog !== null} aria-hidden={dialog !== null ? true : undefined}>
         <h1 className="sr-only">{es.battle.heading}</h1>
         <div ref={layoutRef} className="bt-layout" data-layout={layout}>
           {panels && (
             <div className="bt-side-col" data-side="player">
               <Suspense fallback={null}>
-                {sideMembers.length > 0 && <SidePanel side="player" title={playerLabel === es.battle.you ? es.battle.side.playerTitle : playerLabel} members={sideMembers} boosts={battle.view?.field?.playerActive.boosts ?? null} opponent={rivals.find((member) => member.active) ?? null} chart={data.dex.typeChart} />}
+                {sideMembers.length > 0 && <BattleSidePanel side="player" title={playerLabel === es.battle.you ? es.battle.side.playerTitle : playerLabel} members={sideMembers} boosts={battle.view?.field?.playerActive.boosts ?? null} opponent={rivals.find((member) => member.active) ?? null} chart={data.dex.typeChart} />}
               </Suspense>
               {/* La solicitud de directo, al pie: así no mueve el panel ni su ficha (Jose, 05/11/2026). */}
               {battle.view && liveAsk && <LiveRequestRow nickname={liveAsk} onAnswer={(accept) => answerLive(liveAsk, accept)} />}
@@ -264,10 +281,13 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
           )}
           <div className="bt-chrome">
             <div className="bt-chrome-buttons">
-              <button type="button" className="bt-chrome-btn" onClick={() => (mode === 'replay' ? onExit() : setDialog('exit'))}>
-                <ChromeIcon name="exit" />
-                {mode === 'replay' ? es.battle.back : es.battle.exit}
-              </button>
+              {/* En la campaña no se sale del combate (como en Hoenn): se deja con «Volver a Hoy» y se reanuda. */}
+              {!campaign && (
+                <button type="button" className="bt-chrome-btn" onClick={() => (mode === 'replay' ? onExit() : setDialog('exit'))}>
+                  <ChromeIcon name="exit" />
+                  {mode === 'replay' ? es.battle.back : es.battle.exit}
+                </button>
+              )}
               <button type="button" className="bt-chrome-btn" onClick={() => setDialog('history')}>
                 <ChromeIcon name="history" />
                 {es.battle.history}
@@ -300,11 +320,14 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
               style={{ width: SCREEN_WIDTH, height: STAGE_HEIGHT }}
               onClickCapture={(event) => {
                 const sound = menuSoundFor(event.target)
-                if (sound) getAudio().playSfx(sound)
+                if (sound) {
+                  if (campaign) campaign.playSfx(sound)
+                  else getAudio().playSfx(sound)
+                }
               }}
             >
-              <span data-testid="battle-mode" data-mode={replayBadge ? 'live' : mode} className={`bt-mode bt-mode-${replayBadge ? 'live' : mode}`} role="img" aria-label={replayBadge ? replayBadge.label : mode === 'replay' ? es.battle.modeReplayLabel : es.battle.modeLabel(mode === 'official')}>
-                {replayBadge ? replayBadge.text : mode === 'replay' ? es.battle.modeReplay : mode === 'official' ? es.battle.modeOfficial : es.battle.modePractice}
+              <span data-testid="battle-mode" data-mode={campaign ? 'campaign' : replayBadge ? 'live' : mode} className={`bt-mode bt-mode-${replayBadge ? 'live' : mode}`} role="img" aria-label={campaign ? campaign.modeLabel : replayBadge ? replayBadge.label : mode === 'replay' ? es.battle.modeReplayLabel : es.battle.modeLabel(mode === 'official')}>
+                {campaign ? campaign.modeLabel : replayBadge ? replayBadge.text : mode === 'replay' ? es.battle.modeReplay : mode === 'official' ? es.battle.modeOfficial : es.battle.modePractice}
               </span>
               {liveInbox.watching > 0 && <LiveWatching count={liveInbox.watching} />}
               {partyOpen && (
@@ -342,11 +365,11 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                 />
               )}
               <div className="bt-underlay" inert={partyOpen || rivalOpen || replayPartyOpen || replayRivalOpen}>
-                <TopScreen view={battle.view} data={data} challenge={challenge} introPhase={battle.introPhase} switchAnim={battle.switchAnim} avatar={avatar} playerName={playerLabel !== es.battle.you ? playerLabel : trainerName} message={message} onAdvance={advance} speed={battle.speed} reducedMotion={reducedMotion} moveFx={reducedMotion ? null : battle.moveFx} />
+                <TopScreen campaign={!!campaign} view={battle.view} data={data} challenge={challenge} introPhase={battle.introPhase} switchAnim={battle.switchAnim} avatar={avatar} playerName={playerLabel !== es.battle.you ? playerLabel : trainerName} message={message} onAdvance={advance} speed={battle.speed} reducedMotion={reducedMotion} moveFx={reducedMotion ? null : battle.moveFx} />
                 {battle.failed ? (
                   <section role="alert" className="bt-touch bt-error" style={{ height: SCREEN_HEIGHT }}>
                     <p>{es.battle.failure}</p>
-                    <button type="button" className="btn btn-primary" onClick={onExit}>{es.battle.backToToday}</button>
+                    <button type="button" className="btn btn-primary" onClick={campaign?.onRetry ?? onExit}>{campaign?.retryLabel ?? es.battle.backToToday}</button>
                   </section>
                 ) : (
                   <>
@@ -372,11 +395,13 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                     moves={moves}
                     switchBlockedReason={blockedReason}
                     onMode={(mode) => {
+                      setRunNote(null)
                       if (mode === 'field') setFieldNote(null)
                       setTouchChoice({ request: menuRequest, mode })
                     }}
                     onChooseMove={chooseMove}
-                    onForfeit={() => setDialog('forfeit')}
+                    onForfeit={() => (campaign ? setRunNote(campaign.noRun) : setDialog('forfeit'))}
+                    runLabel={campaign?.runLabel}
                     onRival={() => setTouchChoice({ request: menuRequest, mode: 'rival' })}
                     weather={battle.view?.weather ?? null}
                     weatherTurns={battle.view?.weatherTurns ?? null}
@@ -394,7 +419,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
           {panels && (
             <div className="bt-side-col" data-side="rival">
               <Suspense fallback={null}>
-                {rivals.length > 0 && <SidePanel side="rival" title={trainer.nameEs} members={rivals} boosts={battle.view?.field?.rivalActive.boosts ?? null} opponent={sideMembers.find((member) => member.active) ?? null} chart={data.dex.typeChart} />}
+                {rivals.length > 0 && <BattleSidePanel hidePrivate={!!campaign} trainerSpriteId={campaign ? trainer.sprite : undefined} side="rival" title={trainer.nameEs} members={rivals} boosts={battle.view?.field?.rivalActive.boosts ?? null} opponent={sideMembers.find((member) => member.active) ?? null} chart={data.dex.typeChart} />}
               </Suspense>
             </div>
           )}

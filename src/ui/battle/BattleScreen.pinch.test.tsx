@@ -125,3 +125,48 @@ describe('músicas especiales desactivadas en Ajustes (UT-137)', () => {
     play.mockRestore()
   })
 })
+
+// UT-239 (Jose, 15/11/2026): en la campaña de Teselia también suenan la música de vida baja y el tema del último Pokémon del rival.
+describe('campaña de Teselia: vida baja y último Pokémon (UT-239)', () => {
+  const campaign = {
+    intro: { rivalLead: 'Snorlax', playerLead: 'Garchomp' }, music: 'gym-unova', playSfx: vi.fn(), playCry: vi.fn(), preload: vi.fn(), onRetry: vi.fn(),
+    retryLabel: 'Reintentar combate', runLabel: 'HUIR', noRun: 'No', modeLabel: 'Nuzlocke · Teselia',
+  }
+  it('en rojo pide la de vida baja y con el último Pokémon del rival, su tema; los dos se precargan', async () => {
+    const audio = getAudio()
+    const pinch = vi.spyOn(audio, 'setPinchMusic')
+    const play = vi.spyOn(audio, 'playMusic')
+    const preload = vi.spyOn(audio, 'preload')
+    const client = mockClient()
+    const { unmount } = render(<BattleScreen client={client as never} data={data} challenge={challenge} playerLead={0} battleSeed="s" campaign={campaign} onFinish={vi.fn()} onExit={vi.fn()} />)
+    expect(preload).toHaveBeenCalledWith(['gym-unova', 'last-pokemon', 'critical-health'], [])
+    client.emit(mkUpdate({ view: viewWith(150) }))
+    await settleIntro()
+    client.emit(mkUpdate({ lines: ['|-damage|p1a: Garchomp|20/150'], view: viewWith(20) }))
+    await settle(8000)
+    expect(pinch).toHaveBeenLastCalledWith('critical-health')
+    client.emit(mkUpdate({ view: rivalDown(5) }))
+    await settle(8000)
+    expect(play.mock.calls.some(([id]) => id === 'last-pokemon')).toBe(true)
+    unmount()
+    pinch.mockRestore(); play.mockRestore(); preload.mockRestore()
+  })
+
+  it('con los interruptores de Ajustes apagados, no suenan', async () => {
+    const audio = getAudio()
+    const pinch = vi.spyOn(audio, 'setPinchMusic')
+    const play = vi.spyOn(audio, 'playMusic')
+    const client = mockClient()
+    const sound = { lastPokemonMusic: false, pinchMusic: false } as never
+    const { unmount } = render(<BattleScreen client={client as never} data={data} challenge={challenge} playerLead={0} battleSeed="s" campaign={campaign} sound={sound} onFinish={vi.fn()} onExit={vi.fn()} />)
+    client.emit(mkUpdate({ view: viewWith(150) }))
+    await settleIntro()
+    client.emit(mkUpdate({ lines: ['|-damage|p1a: Garchomp|20/150'], view: viewWith(20) }))
+    client.emit(mkUpdate({ view: rivalDown(5) }))
+    await settle(8000)
+    expect(pinch.mock.calls.some(([id]) => id === 'critical-health')).toBe(false)
+    expect(play.mock.calls.some(([id]) => id === 'last-pokemon')).toBe(false)
+    unmount()
+    pinch.mockRestore(); play.mockRestore()
+  })
+})

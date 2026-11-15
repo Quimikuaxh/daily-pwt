@@ -555,3 +555,6 @@
   padding: 0;
   margin-top: 2px;
 }
+
+/* Agrupa cada dato del dl sin alterar la rejilla del diario. */
+.bt-side-fact { display: contents; }

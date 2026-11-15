@@ -34,6 +34,8 @@ type TouchScreenProps = {
   mode: TouchMode
   canAct: boolean
   forfeitEnabled: boolean
+  /** Rótulo del botón de abajo (por defecto RENDIRSE; HUIR en la campaña). */
+  runLabel?: string
   moves: MoveOption[]
   switchBlockedReason: string | null
   onMode: (mode: TouchMode) => void
@@ -98,7 +100,7 @@ export function TouchScreen(props: TouchScreenProps) {
           </button>
           <button type="button" className="bt-run" disabled={!props.forfeitEnabled} onClick={props.onForfeit}>
             <img src={uiAsset('touch/run.png')} alt="" />
-            <span className="bt-plate-label">{es.battle.forfeit}</span>
+            <span className="bt-plate-label">{props.runLabel ?? es.battle.forfeit}</span>
           </button>
           {switchBlockedReason && <p id={reasonId} className="bt-switch-reason">{switchBlockedReason}</p>}
         </div>

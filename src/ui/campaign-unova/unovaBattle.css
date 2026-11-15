@@ -1,0 +1,46 @@
+/* Piezas compartidas con UnovaSide: nueve cortes para las ventanas y una barra por dato. Solo afecta al adaptador de Teselia. */
+.bt-side[data-unova] { font-size: 13px; }
+.bt-side[data-unova] .bt-side-panel,
+.bt-side[data-unova] .bt-side-info {
+  border: 12px solid transparent;
+  border-image: var(--unova-panel) 12 fill / 12px stretch;
+  background: none;
+  padding: 0;
+  clip-path: none;
+}
+.bt-side[data-unova] .bt-side-in { padding: 0; background: #303030; clip-path: none; }
+.bt-side-unova-title { position: relative; height: 44px; width: 312px; margin: 0; flex: none; }
+.bt-side-unova-title > * { position: absolute; transform: scale(2); transform-origin: top left; }
+.bt-side-unova-title > .unova-text:not(.unova-band-tab) { left: 14px !important; top: 10px !important; }
+.bt-side[data-unova] .bt-side-head { position: relative; flex-wrap: wrap; gap: 6px; }
+.bt-side[data-unova] .bt-side-head > img { object-fit: contain; image-rendering: pixelated; }
+.bt-side[data-unova] .bt-side-head .bt-side-balls { margin-left: auto; }
+.bt-side[data-unova] .bt-side-card { padding: 0; background: none; border: 0; }
+.bt-side[data-unova] .bt-side-stats { grid-template-columns: repeat(2, 1fr); gap: 3px; }
+.bt-side[data-unova] .bt-side-stats > div,
+.bt-side[data-unova] .bt-side-fact,
+.bt-side[data-unova] .bt-side-move {
+  border: 6px solid transparent;
+  border-image: var(--unova-bar-off) 6 fill / 6px stretch;
+  background: none;
+}
+.bt-side[data-unova] .bt-side-stats > div { display: flex; align-items: center; justify-content: space-between; gap: 3px; padding: 0; }
+.bt-side[data-unova] .bt-side-stats dt { font-size: 13px; color: #c8dcff; line-height: 1; }
+.bt-side[data-unova] .bt-side-stats dd { margin: 0; font-size: 13px; }
+.bt-side[data-unova] .bt-side-stage-slot { width: 22px; height: 18px; }
+.bt-side[data-unova] .bt-side-facts { display: grid; grid-template-columns: 1fr; gap: 3px; margin-top: 6px; padding: 0; font-size: 13px; }
+.bt-side[data-unova] .bt-side-fact { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: center; }
+.bt-side[data-unova] .bt-side-facts dt { color: #c8dcff; }
+.bt-side[data-unova] .bt-side-move { padding: 0; min-height: 30px; }
+.bt-side[data-unova] .bt-side-bench { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
+.bt-side[data-unova] .bt-side-bench-mon {
+  position: relative; width: 148px; height: 40px; padding: 0; border: 0;
+  background: var(--unova-bench) center / 100% 100% no-repeat;
+}
+.bt-side[data-unova] .bt-side-bench-mon .bt-member-icon { position: absolute; left: 0; top: 2px; }
+.bt-side[data-unova] .bt-side-bench-name { position: absolute; left: 40px; top: 6px; max-width: 102px; overflow: hidden; white-space: nowrap; font-size: 13px; padding-bottom: 0.25em; margin-bottom: -0.25em; }
+.bt-side[data-unova] .bt-side-bench-mon .bt-side-hp { position: absolute; left: 44px; right: 12px; bottom: 7px; width: auto; }
+.bt-side[data-unova] .bt-side-info { padding: 4px; }
+
+.bt-side[data-unova] .bt-side-name { font-size: 26px; }
+.bt-side[data-unova] .bt-side-move { font-size: 13px; }

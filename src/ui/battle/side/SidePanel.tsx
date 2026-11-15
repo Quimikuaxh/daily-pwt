@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useState, type ReactNode, type CSSProperties } from 'react'
 import type { Boosts } from '../../../battle/fieldState'
 import descriptions from '../../../generated/descriptions-es.json'
 import { es } from '../../../i18n/es'
 import { CategoryIcon } from '../../common/CategoryIcon'
 import { TypeBadge } from '../../common/TypeBadge'
-import { itemIconUrl } from '../../common/spriteUrls'
+import { trainerSprite, itemIconUrl } from '../../common/spriteUrls'
 import { uiAsset } from '../../common/uiAssets'
 import { boostEntries } from '../fieldText'
 import { hpFillColor } from '../party/hpBar'
@@ -41,7 +41,10 @@ function samePressed(current: Detail | null, detail: Detail): boolean {
 /** Pokémon que se ve y lo pulsado; `forActive` es el que estaba en combate al elegirlo: si sale otro, se vuelve a él (Jose, 05/11/2026). */
 type Selection = { forActive: number | null; slot: number | null; detail: Detail | null }
 
-type SidePanelProps = {
+export type SidePanelProps = {
+  presentation?: { title: ReactNode; style: CSSProperties }
+  hidePrivate?: boolean
+  trainerSpriteId?: string
   side: 'player' | 'rival'
   title: string
   members: PartyMember[]
@@ -57,7 +60,7 @@ type SidePanelProps = {
  * pulse otro de abajo) con PS, estado, estadísticas, objeto, habilidad y movimientos, y los demás con su barra de PS. Debajo, la ficha de
  * lo pulsado (movimiento con su eficacia contra el de enfrente, objeto o habilidad).
  */
-export function SidePanel({ side, title, members, boosts, opponent, chart }: SidePanelProps) {
+export function SidePanel({ side, title, members, boosts, opponent, chart, hidePrivate = false, trainerSpriteId, presentation }: SidePanelProps) {
   const activeSlot = members.find((member) => member.active)?.slot ?? null
   const [selection, setSelection] = useState({ forActive: activeSlot, slot: null, detail: null } as Selection)
   // Sale otro al campo: el panel vuelve al que está en combate, sin nada pulsado.
@@ -71,18 +74,19 @@ export function SidePanel({ side, title, members, boosts, opponent, chart }: Sid
   const isPressed = samePressed.bind(null, current.detail)
 
   return (
-    <div className="bt-side" data-side={side}>
+    <div className="bt-side" data-side={side} data-unova={presentation ? true : undefined} style={presentation?.style}>
       <section className="bt-side-panel" aria-label={text.panelLabel(title)}>
         <div className="bt-side-in">
           <header className="bt-side-head">
-            <h2 className="bt-side-title">{title}</h2>
+            {trainerSpriteId && <img src={trainerSprite(trainerSpriteId)} alt="" width={48} height={48} />}
+            {presentation ? <h2 className="bt-side-unova-title">{presentation.title}</h2> : <h2 className="bt-side-title">{title}</h2>}
             <span className="bt-side-balls" role="img" aria-label={text.alive(alive, members.length)}>
               {members.map((member) => (
                 <span key={member.slot} className="bt-ball-dot" data-fainted={member.fainted || undefined} />
               ))}
             </span>
           </header>
-          <MonCard member={shown} boosts={shown.active ? boosts : null} isPressed={isPressed} onDetail={(detail) => select(current.slot, isPressed(detail) ? null : detail)} />
+          <MonCard hidePrivate={hidePrivate} member={shown} boosts={shown.active ? boosts : null} isPressed={isPressed} onDetail={(detail) => select(current.slot, isPressed(detail) ? null : detail)} />
           <ul className="bt-side-bench">
             {members
               .filter((member) => member.slot !== shown.slot)
@@ -90,6 +94,7 @@ export function SidePanel({ side, title, members, boosts, opponent, chart }: Sid
                 <li key={member.slot}>
                   <button type="button" className="bt-side-bench-mon" aria-label={text.showMon(member.name)} data-fainted={member.fainted || undefined} onClick={() => select(member.slot, null)}>
                     <MemberIcon spriteId={member.spriteId} dimmed={member.fainted} />
+                    {presentation && <span className="bt-side-bench-name">{member.name}</span>}
                     <HpBar percent={member.hpPercent} />
                   </button>
                 </li>
@@ -111,13 +116,14 @@ function HpBar({ percent }: { percent: number }) {
 }
 
 type MonCardProps = {
+  hidePrivate: boolean
   member: PartyMember
   boosts: Boosts | null
   isPressed: (detail: Detail) => boolean
   onDetail: (detail: Detail) => void
 }
 
-function MonCard({ member, boosts, isPressed, onDetail }: MonCardProps) {
+function MonCard({ member, boosts, isPressed, onDetail, hidePrivate }: MonCardProps) {
   const summary = es.battle.summary
   const statNames = es.battle.fieldStatus.statsShort as Texts
   const stats = statsWithBoosts(member.stats, boosts)
@@ -146,7 +152,7 @@ function MonCard({ member, boosts, isPressed, onDetail }: MonCardProps) {
         {member.fainted && <img className="bt-side-status" src={uiAsset('status/fnt.png')} alt={es.battle.party.fainted} />}
         <span className="bt-side-hp-text">{memberHpText(member)}</span>
       </p>
-      <dl className="bt-side-stats" aria-label={text.statsLabel}>
+      {!hidePrivate && <dl className="bt-side-stats" aria-label={text.statsLabel}>
         {stats.map((stat) => (
           <div key={stat.key}>
             <dt>{stat.key === 'hp' ? summary.hp : statNames[stat.key]}</dt>
@@ -155,17 +161,23 @@ function MonCard({ member, boosts, isPressed, onDetail }: MonCardProps) {
             <dd className="bt-side-stage-slot" aria-hidden={stat.stage === 0 ? true : undefined}>{stat.stage !== 0 && <StageBadge stage={stat.stage} />}</dd>
           </div>
         ))}
-      </dl>
-      {boosts && <OtherStages boosts={boosts} />}
+      </dl>}
+      {!hidePrivate && boosts && <OtherStages boosts={boosts} />}
       <dl className="bt-side-facts">
-        <dt>{summary.item}</dt>
-        <dd>
-          <button type="button" className="bt-side-link" aria-label={text.showItem(member.itemName)} aria-pressed={isPressed({ kind: 'item' })} disabled={!member.itemId} onClick={() => onDetail({ kind: 'item' })}>{member.itemName}</button>
-        </dd>
-        <dt>{summary.ability}</dt>
-        <dd>
-          <button type="button" className="bt-side-link" aria-label={text.showAbility(member.abilityName)} aria-pressed={isPressed({ kind: 'ability' })} onClick={() => onDetail({ kind: 'ability' })}>{member.abilityName}</button>
-        </dd>
+        {!hidePrivate && (
+          <div className="bt-side-fact">
+            <dt>{summary.item}</dt>
+            <dd>
+              <button type="button" className="bt-side-link" aria-label={text.showItem(member.itemName)} aria-pressed={isPressed({ kind: 'item' })} disabled={!member.itemId} onClick={() => onDetail({ kind: 'item' })}>{member.itemName}</button>
+            </dd>
+          </div>
+        )}
+        <div className="bt-side-fact">
+          <dt>{summary.ability}</dt>
+          <dd>
+            <button type="button" className="bt-side-link" aria-label={text.showAbility(member.abilityName)} aria-pressed={isPressed({ kind: 'ability' })} onClick={() => onDetail({ kind: 'ability' })}>{member.abilityName}</button>
+          </dd>
+        </div>
       </dl>
       <ul className="bt-side-moves" aria-label={es.battle.movesLabel}>
         {member.moves.map((move, index) => (

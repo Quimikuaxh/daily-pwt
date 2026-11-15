@@ -1,6 +1,7 @@
+import type { BattleChallenge } from './battleTypes'
 import { Suspense, lazy, useRef, useState, type CSSProperties } from 'react'
 import type { BattleView, MonView } from '../../battle/protocol'
-import type { Challenge, GameData } from '../../core/types'
+import type { GameData } from '../../core/types'
 import type { IntroPhase, SwitchAnimation } from '../../hooks/useBattle'
 import { Sprite } from '../common/Sprite'
 import { FieldLights } from './FieldLights'
@@ -21,9 +22,10 @@ import { playerHandPoint, playerLandingPoint, rivalHandPoint, rivalLandingPoint 
 const MoveFx = lazy(() => import('./fx/MoveFx').then((module) => ({ default: module.MoveFx })))
 
 type TopScreenProps = {
+  campaign?: boolean
   view: BattleView | null
   data: GameData
-  challenge: Challenge
+  challenge: BattleChallenge
   introPhase: IntroPhase
   /** Cambio de Pokémon en curso (retirada y envío) de ese bando; `null` si no hay. */
   switchAnim: SwitchAnimation | null
@@ -49,7 +51,7 @@ function activeMon(side: BattleView['player']): MonView | null {
 }
 
 /** Tipo del movimiento animado; Poder Oculto, el real del Pokémon que lo usa (sale de sus IV). */
-function moveFxType(event: MoveFxEvent, mon: MonView | null, team: Challenge['playerTeam'], data: GameData): string | null {
+function moveFxType(event: MoveFxEvent, mon: MonView | null, team: BattleChallenge['playerTeam'], data: GameData): string | null {
   const set = mon ? team.find((candidate) => candidate.species === mon.species) : undefined
   return data.dex.moves[resolveHiddenPowerId(event.moveId, set?.ivs)]?.type ?? null
 }
@@ -94,7 +96,7 @@ function MonShadow({ mon, side, data }: { mon: MonView; side: 'front' | 'back'; 
 }
 
 /** Pantalla superior (256x192): fondo del PWT, Pokémon, cajas de datos, clima y caja de mensajes. */
-export function TopScreen({ view, data, challenge, introPhase, switchAnim, avatar, message, onAdvance, speed, reducedMotion, moveFx = null, playerName }: TopScreenProps) {
+export function TopScreen({ view, data, challenge, introPhase, switchAnim, avatar, message, onAdvance, speed, reducedMotion, moveFx = null, playerName, campaign = false }: TopScreenProps) {
   const fieldRef = useRef(null as HTMLElement | null)
   const rivalMon = view ? activeMon(view.rival) : null
   const playerMon = view ? activeMon(view.player) : null
@@ -108,8 +110,8 @@ export function TopScreen({ view, data, challenge, introPhase, switchAnim, avata
       {/* Cámara: fondo, luces, Pokémon y entrenadores se mueven juntos durante la intro (encuadre del rival y vuelta al
           plano general); cajas de PS, mensajes y efectos de movimiento quedan fuera y no se mueven. */}
       <div className="bt-camera">
-      <img className="bt-bg" src={uiAsset('bg/pwt.png')} alt="" />
-      <FieldLights />
+      <img className="bt-bg" src={uiAsset(campaign ? 'bg/building.png' : 'bg/pwt.png')} alt="" />
+      {!campaign && <FieldLights />}
 
       {rivalMon && (
         <div className="bt-mon bt-mon-rival" data-fainted={rivalMon.fainted}>
@@ -143,16 +145,16 @@ export function TopScreen({ view, data, challenge, introPhase, switchAnim, avata
         />
       </Suspense>
       </div>
-      {introPhase === 'enter' && <IntroFlash />}
+      {!campaign && introPhase === 'enter' && <IntroFlash />}
 
-      {rivalMon && <DataBox side="rival" mon={rivalMon} name={speciesLabel(data.names, rivalMon.species)} testId="rival-hp" gender={genderOfSpecies(challenge.rivalTeam, rivalMon.species)} speed={speed} reducedMotion={reducedMotion} />}
-      {playerMon && <DataBox side="player" mon={playerMon} name={speciesLabel(data.names, playerMon.species)} testId="player-hp" gender={genderOfSpecies(challenge.playerTeam, playerMon.species)} speed={speed} reducedMotion={reducedMotion} />}
+      {rivalMon && <DataBox level={challenge.rivalTeam[rivalMon.teamIndex ?? view?.rival.active ?? 0]?.level} side="rival" mon={rivalMon} name={speciesLabel(data.names, rivalMon.species)} testId="rival-hp" gender={genderOfSpecies(challenge.rivalTeam, rivalMon.species)} speed={speed} reducedMotion={reducedMotion} />}
+      {playerMon && <DataBox level={challenge.playerTeam[playerMon.teamIndex ?? view?.player.active ?? 0]?.level} side="player" mon={playerMon} name={speciesLabel(data.names, playerMon.species)} testId="player-hp" gender={genderOfSpecies(challenge.playerTeam, playerMon.species)} speed={speed} reducedMotion={reducedMotion} />}
 
       <MessageBox text={message} onAdvance={onAdvance} />
       {(introPhase === 'loading' || introPhase === 'iris') && <IrisWipe />}
       {introPhase === 'vs' && (
-        <VsBanner playerName={playerName ?? avatar.name} playerSprite={avatar.front} playerSide={avatar.side} rivalName={challenge.trainer.nameEs}
-          rivalSprite={trainerVsSprite(challenge.trainer.sprite)} rivalSide={trainerSideSprite(challenge.trainer.sprite)} speed={speed} reducedMotion={reducedMotion} />
+        <VsBanner campaign={campaign} playerName={playerName ?? avatar.name} playerSprite={avatar.front} playerSide={avatar.side} rivalName={challenge.trainer.nameEs}
+          rivalSprite={campaign ? trainerSprite(challenge.trainer.sprite) : trainerVsSprite(challenge.trainer.sprite)} rivalSide={trainerSideSprite(challenge.trainer.sprite)} speed={speed} reducedMotion={reducedMotion} />
       )}
     </section>
   )

@@ -57,6 +57,16 @@ export function exportScreens(stage: HTMLElement, zoom: number): HTMLCanvasEleme
       // Los sprites de hoja (frente de 64 × 128) enseñan su primer fotograma: se copia la esquina de arriba del tamaño del elemento.
       const sw = Math.min(box.w, source instanceof HTMLImageElement ? source.naturalWidth : source.width)
       const sh = Math.min(box.h, source instanceof HTMLImageElement ? source.naturalHeight : source.height)
+      // Con `data-export-scale`, la imagen entera reducida a su caja (los sprites del Salón de la Fama de Teselia, que se ven más pequeños).
+      if (element.hasAttribute('data-export-scale')) {
+        const nw = source instanceof HTMLImageElement ? source.naturalWidth : source.width
+        const nh = source instanceof HTMLImageElement ? source.naturalHeight : source.height
+        if (nw > 0 && nh > 0 && g) {
+          g.imageSmoothingEnabled = false
+          g.drawImage(grayscale(element) ? toGray(source, nw, nh) : source, 0, 0, nw, nh, box.x, box.y + h * i, box.w, box.h)
+        }
+        continue
+      }
       if (sw > 0 && sh > 0) g?.drawImage(grayscale(element) ? toGray(source, sw, sh) : source, 0, 0, sw, sh, box.x, box.y + h * i, sw, sh)
     }
   })

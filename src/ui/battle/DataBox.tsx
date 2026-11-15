@@ -11,6 +11,7 @@ type DataBoxProps = {
   mon: MonView
   name: string
   testId: string
+  level?: number
   gender?: 'M' | 'F'
   /** x1, x2 o x4: la barra y el número tardan 700 ms / velocidad en llegar a su valor. */
   speed?: number
@@ -18,7 +19,6 @@ type DataBoxProps = {
 }
 
 const BAR_WIDTH = 50
-const LEVEL = 50
 
 
 const digitsOf = (value: number): number[] => String(Math.max(0, Math.trunc(value))).split('').map(Number)
@@ -42,7 +42,7 @@ function Digits({ kind, value, className }: { kind: 'hp' | 'level'; value: numbe
  * Lo visible es decorativo (aria-hidden) y el texto accesible va aparte, así el lector de pantalla no oye los dígitos suelta a suelta.
  */
 
-export function DataBox({ side, mon, name, testId, gender, speed = 1, reducedMotion = false }: DataBoxProps) {
+export function DataBox({ side, mon, name, testId, gender, level = 50, speed = 1, reducedMotion = false }: DataBoxProps) {
   const targetPercent = Math.max(0, Math.min(100, mon.hpPercent))
   const status = statusLabel(mon.status)
   const isPlayer = side === 'player'
@@ -70,13 +70,13 @@ export function DataBox({ side, mon, name, testId, gender, speed = 1, reducedMot
           <span className="bt-databox-name">{name}</span>
           {gender && <img className="bt-databox-gender" src={uiAsset(`icons/gender-${gender === 'M' ? 'male' : 'female'}.png`)} alt="" />}
         </span>
-        <Digits kind="level" value={LEVEL} className="bt-databox-level" />
+        <Digits kind="level" value={level} className="bt-databox-level" />
         {status && <img className="bt-databox-status" src={uiAsset(`status/${mon.status}.png`)} alt="" />}
         {hasNumbers && <Digits kind="hp" value={shownHp} className="bt-databox-hp-now" />}
         {hasNumbers && <Digits kind="hp" value={mon.maxHp as number} className="bt-databox-hp-max" />}
       </div>
       <p className="sr-only">
-        {name} {es.battle.level}. {es.battle.hpLabel} {hpText}
+        {name} {level === 50 ? es.battle.level : es.battle.party.levelLong(level)}. {es.battle.hpLabel} {hpText}
         {status ? `. ${status}` : ''}
       </p>
     </div>

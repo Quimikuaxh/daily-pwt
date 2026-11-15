@@ -62,6 +62,19 @@ describe('registro local versionado de campaña', () => {
     expect(storage.getItem(STORAGE_KEY)).toBe('diario intacto')
   })
 
+  // UT-237 (15/11/2026): el combate de Teselia es de 5.ª generación y se guarda igual que el de Hoenn (3.ª); antes solo se aceptaba la 3.ª y
+  // el primer combate de Teselia fallaba al guardar la preparación.
+  it.each([3, 5, 4])('guarda la preparación de un combate de %i.ª generación solo si es la de una campaña (3 o 5)', generation => {
+    const store = new LocalCampaignStore(new MemoryStorage())
+    const initial = source()
+    const flat = (value: number) => ({ hp: value, atk: value, def: value, spa: value, spd: value, spe: value })
+    const mon = { species: 'patrat', nameEs: 'Patrat', item: '', ability: 'runaway', nature: 'Hardy', level: 11, ivs: flat(20), evs: flat(0), moves: ['tackle'] }
+    const init = { battleSeed: 'semilla', generation, ai: 'heuristic', maxTurns: 100, player: [mon], rival: [mon] }
+    const write = () => store.write({ ...initial.state, phase: 'battle', battleSeed: 'semilla' }, { source: initial, init: init as never, decisions: [], checkpoint: null }, 0)
+    if (generation === 4) expect(write).toThrow(/no se puede guardar/)
+    else expect(write().battle?.init).toMatchObject({ generation })
+  })
+
   it.each(['{', 'null', '{"version":2}', '{"version":1,"revision":1,"state":{},"battle":null}'])('conserva sin sobrescribir un formato desconocido o corrupto: %s', raw => {
     const storage = new MemoryStorage()
     storage.setItem(CAMPAIGN_STORAGE_KEY, raw)

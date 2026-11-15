@@ -758,3 +758,23 @@ describe('sustituto', () => {
     expect(document.querySelector('.bt-mon-rival .bt-sprite')).not.toBeNull()
   })
 })
+
+// UT-238 (15/11/2026): en la campaña (Teselia) no se sale del combate ni se rinde, como en Hoenn: sin «Salir» y con HUIR, que solo avisa.
+describe('combate de campaña: sin salir ni rendirse', () => {
+  it('no hay «Salir»; HUIR enseña el aviso y no rinde', async () => {
+    const client = mockClient()
+    const campaign = {
+      intro: { rivalLead: 'Snorlax', playerLead: 'Garchomp' }, music: 'gym-unova', playSfx: vi.fn(), playCry: vi.fn(), preload: vi.fn(), onRetry: vi.fn(),
+      retryLabel: 'Reintentar combate', runLabel: 'HUIR', noRun: '¡No puedes huir de un combate contra un entrenador!', modeLabel: 'Nuzlocke · Teselia',
+    }
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<BattleScreen client={client as any} data={data} challenge={challenge} playerLead={0} battleSeed="seed-1" campaign={campaign} onFinish={vi.fn()} onExit={vi.fn()} />)
+    client.emit(mkUpdate())
+    await settle()
+    expect(screen.queryByRole('button', { name: /^salir$/i })).toBeNull()
+    await user.click(screen.getByRole('button', { name: 'HUIR' }))
+    expect(screen.queryByRole('dialog')).toBeNull()
+    expect(client.forfeit).not.toHaveBeenCalled()
+    expect(screen.getAllByText('¡No puedes huir de un combate contra un entrenador!').length).toBeGreaterThan(0)
+  })
+})

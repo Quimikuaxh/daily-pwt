@@ -6,6 +6,7 @@
  * MOCHILA y HUIR responden con los textos del juego: no hay objetos en combate ni se huye de un entrenador.
  */
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import type { SoundPrefs } from '../../storage/settings'
 import { ConsoleStage } from '../console/ConsoleStage'
 import { MoveFx } from '../battle/fx/MoveFx'
 import { GameText } from '../console/GameText'
@@ -56,7 +57,12 @@ const TYPE_LINE_WIDTH = 66
 const TYPE_FACES = ['normal', 'narrow', 'small'] as const
 const typeFace = (line: string) => TYPE_FACES.find((face) => { return TYPE_LINE_WIDTH >= textWidth(font, line, face) }) ?? 'small'
 
-type EmeraldBattleProps = {
+export type CampaignBattleProps = {
+  /** Preferencias de sonido de Ajustes (Teselia: temas de último Pokémon y de vida baja, como el diario). */
+  sound?: SoundPrefs
+  /** Protagonista estable y nombre del jugador para la presentación de Teselia. */
+  protagonist?: 'brendan' | 'may'
+  playerName?: string
   session: LocalCampaignSession
   /** Prepara el combate o reanuda el guardado. */
   start: StartBattle
@@ -101,7 +107,7 @@ type Menu = 'actions' | 'moves' | 'party'
 /** Lo que enseña DATOS: la ficha (como en el draft), el nivel y el objeto. */
 export type SummaryData = { mon: Candidate; level: number; item: string | null }
 
-export function EmeraldBattle({ session, start, onRetry, data, trainer, trainerId, resumed = false, summaryOf, intro, rivalLevels, playerLevels, music, registerMusic, sounds = hoennSounds, lineup = [], onEnded, sides, reservedHeight, scale }: EmeraldBattleProps) {
+export function EmeraldBattle({ session, start, onRetry, data, trainer, trainerId, resumed = false, summaryOf, intro, rivalLevels, playerLevels, music, registerMusic, sounds = hoennSounds, lineup = [], onEnded, sides, reservedHeight, scale }: CampaignBattleProps) {
   const { playSfx, preloadSfx, playCry, preloadCries, moveSoundIds, playMoveSounds } = sounds
   const client = useMemo(() => sessionBattleClient(session, start), [session, start])
   const battleNames = useMemo(() => emeraldBattleNames(data.names), [data.names])

@@ -1,5 +1,6 @@
+import type { BattleTeamSet } from './battleTypes'
 import type { BattleRequest, BattleView, RequestPokemon } from '../../battle/protocol'
-import type { GameData, NamesEs, ResolvedSet } from '../../core/types'
+import type { GameData, NamesEs } from '../../core/types'
 import { es } from '../../i18n/es'
 import { toId } from '../../core/id'
 import { isFaintedCondition } from '../../battle/condition'
@@ -127,6 +128,6 @@ export const canChoose = (request: BattleRequest | null): boolean =>
   request !== null && !request.wait && (Boolean(request.active?.length) || isForcedSwitch(request))
 
 /** Género del Pokémon en su equipo (el simulador no lo manda en la vista): para el símbolo de la caja de datos. */
-export const genderOfSpecies = (team: readonly ResolvedSet[], speciesId: string): 'M' | 'F' | undefined => team.find((set) => set.species === speciesId)?.gender
+export const genderOfSpecies = (team: readonly Pick<BattleTeamSet, 'species' | 'gender'>[], speciesId: string): 'M' | 'F' | undefined => team.find((set) => set.species === speciesId)?.gender
 
 export const speciesLabel = (names: NamesEs, speciesId: string): string => names.species[speciesId] ?? speciesId

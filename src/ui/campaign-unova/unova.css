@@ -371,7 +371,7 @@
 .unova-result-badge { transform: translateX(-50%); }
 
 /* Salón de la Fama (UnovaHallStage): fondo, Poké Ball, banda y barra van en un canvas; encima, los destellos y los sprites. */
-.unova-hall { position: relative; width: 256px; height: 192px; overflow: hidden; background: #101018; }
+.unova-hall { position: relative; width: 256px; height: 192px; overflow: hidden; background: #1c1c20; }
 .unova-hall-sparkle {
   position: absolute;
   width: 3px;
@@ -382,10 +382,11 @@
 }
 @keyframes unova-hall-twinkle { 50% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .unova-hall-sparkle { animation: none; } }
-.unova-hall-mon { position: absolute; width: 96px; height: 96px; image-rendering: pixelated; }
-.unova-hall-protagonist { position: absolute; width: 80px; height: 80px; image-rendering: pixelated; }
+.unova-hall-mon { position: absolute; image-rendering: pixelated; }
+.unova-hall-protagonist { position: absolute; image-rendering: pixelated; }
 
 /* Texto y fondos en canvas (PixelText, CanvasFill): se colocan como las imágenes. */
 .unova-pixel-text, .unova-canvas-fill, .unova-hall-backdrop { position: absolute; image-rendering: pixelated; }
 .unova-canvas-fill, .unova-hall-backdrop { left: 0; top: 0; }
 .unova-hall-fallen { filter: grayscale(1); }
+.unova-abs li { list-style: none; }

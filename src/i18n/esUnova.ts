@@ -6,6 +6,7 @@
 export const esUnova = {
   modeLabel: 'Nuzlocke · Teselia',
   region: 'TESELIA',
+  battle: { retry: 'Reintentar combate' },
   cities: {
     cheren: 'Ciudad Engobe', hiedra: 'Ciudad Hormigón', camus: 'Ciudad Porcelana', camila: 'Ciudad Mayólica', yakon: 'Ciudad Fayenza',
     gerania: 'Ciudad Loza', lirio: 'Ciudad Caolín', ciprian: 'Ciudad Marga', iris: 'Liga Pokémon',
@@ -64,6 +65,7 @@ export const esUnova = {
   // Salón de la Fama de Teselia (maqueta aprobada, 14/11/2026).
   hallBand: '¡Campeón de la Liga! ¡Enhorabuena!',
   hallTeam: 'Equipo campeón.',
+  hallTitle: 'SALÓN DE LA FAMA',
   hallLabel: (names: string) => `Salón de la Fama. Campeones: ${names}. Continuar`,
   hallNext: 'Continuar a la pantalla final',
   // Imagen para compartir de Teselia (PRD §0, «Locke de N2/B2: compartir», 14/11/2026).

@@ -189,3 +189,72 @@ test('T5 Liga: evoluciones, los seis del PC, elección de participantes y combat
   expect(saved.state.leagueEvolved).toBe(true)
   expect(saved.battle.source.preparation.leadId).toBe('b')
 })
+
+// E2E-83 · Teselia usa la consola del diario y el motor de campaña; el guardado reanuda el turno tras recargar.
+test('T6 Teselia: combate contra Cheren, reanudación y cierre en la Ruta', async ({ page }) => {
+  test.setTimeout(400_000)
+  const today = new TodayPage(page)
+  await today.goto()
+  const enter = async () => {
+    await page.getByRole('button', { name: 'Modos de juego' }).click()
+    await page.getByRole('button', { name: 'Nuzlocke de Teselia' }).click()
+  }
+  await enter()
+  await page.getByRole('button', { name: 'Empezar campaña', exact: true }).click()
+  await page.getByRole('button', { name: 'Empezar', exact: true }).click()
+  await page.getByRole('button', { name: /^Continuar/ }).click()
+  for (let pick = 0; pick < 4; pick++) {
+    await page.getByRole('button', { name: /^Candidato/ }).first().click()
+    await page.getByRole('button', { name: /^Reclutar a/ }).click()
+  }
+  await page.getByRole('button', { name: /^Continuar/ }).click()
+  await page.getByRole('button', { name: 'Aceptar el equipo y preparar los movimientos' }).click()
+  const battle = page.getByTestId('battle-screen')
+  await expect(battle).toHaveAttribute('data-campaign', 'unova')
+  await expect(page.locator('.emerald-battle')).toHaveCount(0)
+  await expect(battle.locator('.bt-fight')).toBeEnabled({ timeout: 60_000 })
+  await battle.locator('.bt-fight').click()
+  await battle.locator('.bt-move:not([disabled])').first().click()
+  const saved = () => page.evaluate(() => JSON.parse(localStorage.getItem('daily-pwt:nuzlocke:v1') ?? 'null'))
+  await expect.poll(async () => (await saved())?.battle?.decisions.length ?? 0).toBeGreaterThan(0)
+  const before = await saved()
+  await page.reload()
+  await today.challengeNumber.waitFor()
+  await enter()
+  await expect(battle).toBeVisible()
+  expect((await saved()).battle.decisions).toEqual(before.battle.decisions)
+  await expect(battle.locator('.bt-vs')).toHaveCount(0)
+  await expect(battle.locator('.bt-fight, .bt-party').first()).toBeVisible({ timeout: 60_000 })
+  // Capturas reproducibles para contrastar con las maquetas; los paneles solo aparecen si caben sin reducir la consola.
+  await page.setViewportSize({ width: 1600, height: 1100 })
+  await expect(battle.locator('.bt-side')).toHaveCount(2)
+  await expect(battle.locator('.bt-side[data-side="rival"] .bt-side-stats')).toHaveCount(0)
+  await expect(battle.locator('.bt-side[data-side="rival"] .bt-side-facts')).not.toContainText('Objeto')
+  await page.screenshot({ path: 'e2e-artifacts/combate-teselia/escritorio.png' })
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.screenshot({ path: 'e2e-artifacts/combate-teselia/movil.png' })
+  await expect(battle.locator('.bt-side')).toHaveCount(0)
+  await page.setViewportSize({ width: 1280, height: 900 })
+  const tap = (target: import('@playwright/test').Locator) => target.click({ timeout: 800 }).catch(() => undefined)
+  for (let step = 0; step < 650 && await battle.count(); step++) {
+    const switchButton = battle.locator('.bt-party-options button:not([aria-disabled="true"])').filter({ hasText: /^Cambiar$/ })
+    if (await switchButton.count()) await tap(switchButton)
+    else if (await battle.locator('.bt-party').count()) {
+      if (await battle.locator('.bt-party-options').count()) await tap(battle.locator('.bt-party-options button').last())
+      else await tap(battle.locator('.bt-party-panel[data-state="ready"]').first())
+    } else if (await battle.locator('.bt-move:not([disabled])').count()) await tap(battle.locator('.bt-move:not([disabled])').first())
+    else if (await battle.locator('.bt-fight:not([disabled])').count()) await tap(battle.locator('.bt-fight:not([disabled])'))
+    else { await tap(battle.locator('.bt-message')); await page.waitForTimeout(80) }
+  }
+  await expect(battle).toHaveCount(0)
+  await expect(page.locator('.result-screen')).toBeVisible()
+  while (await page.locator('.unova-result-continue').count()) await page.locator('.unova-result-continue').click()
+  expect((await saved()).battle).toBeNull()
+  if ((await saved()).state.phase === 'lost') {
+    // Como T4: si se pierde con las elecciones aleatorias, se ofrece empezar otra campaña.
+    await expect(page.locator('.share-screen')).toBeVisible()
+  } else {
+    await expect(page.getByRole('heading', { name: 'Ruta' })).toBeAttached()
+    expect((await saved()).state.phase).toBe('draft')
+  }
+})

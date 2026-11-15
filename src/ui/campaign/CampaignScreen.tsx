@@ -28,7 +28,6 @@ import { LocalCampaignSession } from '../../battle/campaignSession'
 import { createCampaignWorkerClient, type CampaignBattleClient } from '../../battle/client'
 import { battleInput } from './campaignBattle'
 import { useStartWhenReady } from './useStartWhenReady'
-import { EmeraldBattle } from './EmeraldBattle'
 import { itemName as emeraldItemName } from './bagModel'
 import { buyExchangeItem, equipItem, exchangeItems, heldItemStock } from '../../core/nuzlocke/heldItems'
 import { leagueEvolutions } from './evolutionModel'
@@ -559,7 +558,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     const leadId = record?.battle?.source.preparation.leadId ?? state.leagueRoster?.[0] ?? team?.[0]
     const lead = state.members.find((member) => { return member.id === leadId })
     return (
-      <EmeraldBattle
+      <kit.screens.Battle
         key={battleAttempt}
         session={session}
         start={startBattle}
@@ -567,13 +566,16 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
         data={data}
         trainer={trainerOf(encounter)}
         trainerId={encounter.id}
+        protagonist={protagonistOf(state.seed)}
+        playerName={playerNameOf(state.seed, playerName, kit.protagonistNames)}
+        sound={sound}
         summaryOf={(species, occurrence) => {
           const ids = battleContext?.lineup ?? []
           const member = ids.map((id) => state.members.find((candidate) => { return candidate.id === id })).filter((candidate) => candidate?.species === species)[occurrence]
           return member ? memberSummary(state, member) : null
         }}
         resumed={resumedBattle}
-        intro={{ rivalLead: speciesName(encounter.team[0].species).toUpperCase(), playerLead: lead ? speciesName(lead.species).toUpperCase() : '' }}
+        intro={{ rivalLead: kit.speciesLabel(speciesName(encounter.team[0].species)), playerLead: lead ? kit.speciesLabel(speciesName(lead.species)) : '' }}
         rivalLevels={encounter.team.map((member) => member.level)}
         playerLevels={Object.fromEntries(state.members.map((member) => [member.species, member.level]))}
         music={kit.music.battle(encounter.kind)}

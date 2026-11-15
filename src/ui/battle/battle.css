@@ -2637,3 +2637,6 @@
 [data-reduced-motion="true"] .bt-vs-flash,
 [data-reduced-motion="true"] .bt-vs-clash,
 [data-reduced-motion="true"] .bt-vs-sparks { display: none; }
+
+/* La campaña conserva la cabecera del portal; el combate usa solo el alto restante. */
+.bt-root[data-campaign="unova"] { min-height: calc(100dvh - 150px); width: 100%; }

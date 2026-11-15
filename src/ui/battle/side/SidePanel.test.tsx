@@ -111,3 +111,19 @@ describe('subidas y bajadas en el panel (UT-153)', () => {
     expect(document.querySelectorAll('.bt-side-stage-slot')).toHaveLength(6)
   })
 })
+
+// UT-236 · El panel rival de campaña conserva habilidad y ataques, sin objeto ni estadísticas, también al cambiar de ficha.
+it('campaña: el rival oculta estadísticas y objeto en activo y banquillo', async () => {
+  const user = userEvent.setup()
+  render(<SidePanel side="rival" title="Blaine" trainerSpriteId="blaine" hidePrivate members={rivals(view())} boosts={{ atk: 2 }} opponent={null} chart={data.dex.typeChart} />)
+  expect(document.querySelector('img[src$="trainers/blaine.gif"]')).not.toBeNull()
+  const check = () => {
+    expect(screen.queryByLabelText('Estadísticas')).toBeNull()
+    expect(screen.queryByRole('button', { name: /^Ficha del objeto/ })).toBeNull()
+    expect(screen.getByRole('button', { name: /^Ficha de la habilidad/ })).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: /^Ficha del movimiento/ }).length).toBeGreaterThan(0)
+  }
+  check()
+  await user.click(document.querySelector('.bt-side-bench button') as HTMLButtonElement)
+  check()
+})

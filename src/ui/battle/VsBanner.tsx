@@ -12,6 +12,7 @@ import { es } from '../../i18n/es'
 import { PWT_STAGE, VS_EMBLEM, VS_LOGO } from './introAssets'
 
 type VsBannerProps = {
+  campaign?: boolean
   playerName: string
   playerSprite: string
   playerSide: string
@@ -53,9 +54,9 @@ function Stage({ playerName, playerSprite, playerSide, rivalName, rivalSprite, r
   )
 }
 
-export function VsBanner({ playerName, playerSprite, playerSide, rivalName, rivalSprite, rivalSide, speed = 1, reducedMotion = false }: VsBannerProps) {
+export function VsBanner({ playerName, playerSprite, playerSide, rivalName, rivalSprite, rivalSide, speed = 1, reducedMotion = false, campaign = false }: VsBannerProps) {
   // La pancarta se monta al acabar el escenario, así sus animaciones CSS empiezan entonces.
-  const [stage, setStage] = useState(!reducedMotion)
+  const [stage, setStage] = useState(!reducedMotion && !campaign)
   useEffect(() => {
     if (!stage) return
     const timer = setTimeout(() => setStage(false), STAGE_MS / speed)
@@ -68,10 +69,10 @@ export function VsBanner({ playerName, playerSprite, playerSide, rivalName, riva
         <Stage playerName={playerName} playerSprite={playerSprite} playerSide={playerSide} rivalName={rivalName} rivalSprite={rivalSprite} rivalSide={rivalSide} />
       ) : (
         <>
-          <div className="bt-vs-backdrop">
+          {!campaign && <div className="bt-vs-backdrop">
             <Stage playerName={playerName} playerSprite={playerSprite} playerSide={playerSide} rivalName={rivalName} rivalSprite={rivalSprite} rivalSide={rivalSide} />
-          </div>
-          <div className="bt-vs-fence"><img className="bt-vs-emblem" src={VS_EMBLEM} alt="" /></div>
+          </div>}
+          {!campaign && <div className="bt-vs-fence"><img className="bt-vs-emblem" src={VS_EMBLEM} alt="" /></div>}
           {/* El jugador a la izquierda (franja roja) y el rival a la derecha (azul), mirando los dos hacia el centro (Jose, 11/11/2026). */}
           <div className="bt-vs-band bt-vs-band-player">
             <img className="bt-vs-trainer" src={playerSprite} alt="" />

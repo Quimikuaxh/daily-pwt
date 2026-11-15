@@ -9,7 +9,10 @@ import { n2b2Theme } from '../console/themes/n2b2'
 import { esCampaign } from '../../i18n/esCampaign'
 import { esUnova } from '../../i18n/esUnova'
 import { useCampaignMusic } from '../campaign/campaignMusic'
-import { TeamParty } from './UnovaPartyPlates'
+import { uiAsset } from '../common/uiAssets'
+import { MemberIcon } from '../battle/party/MemberIcon'
+import { PANEL, PANEL_HEIGHT, PANEL_WIDTH } from '../battle/party/layout'
+import { unovaVars } from './unovaRoute'
 import { UnovaHallStage } from './UnovaHallStage'
 import { unovaMusic } from './unovaMusic'
 import type { UnovaResultScreenProps } from './UnovaResultScreen'
@@ -32,8 +35,27 @@ export function UnovaHallOfFame({ data, player, protagonist, card, team, onDone,
           <p className="sr-only" role="status">{`${t.hallOfFame} ${t.champions(names)}`}</p>
         </div>
       ), (
-        <TeamParty key="equipo" team={team} prompt={u.hallTeam} screenLabel={t.screen} backLabel={u.hallNext}
-          memberLabel={(member) => t.memberLabel(member.name, member.level, member.fainted, member.hp)} onBack={onDone} />
+        // Abajo, como la maqueta: la barra «SALÓN DE LA FAMA» y una placa azul por superviviente (icono, nombre y nivel; sin PS).
+        <div key="equipo" className="unova-abs unova-screen" style={unovaVars()}>
+          <img src={uiAsset('party/bg-bottom.png')} alt="" style={{ left: 0, top: 0 }} />
+          <span className="unova-bar" style={{ left: 15, top: 6, width: 226, height: 22 }} />
+          <span className="unova-text" style={{ left: 24, top: 11 }}>{u.hallTitle}</span>
+          <ul aria-label={u.hallTeam}>
+            {survivors.map((member, i) => {
+              const x = 1 + (i % 2) * 128
+              const y = 32 + Math.floor(i / 2) * 50
+              return (
+                <li key={i} aria-label={t.memberLabel(member.name, member.level, false, member.hp)} style={{ left: x, top: y, width: PANEL_WIDTH, height: PANEL_HEIGHT }}>
+                  <img src={uiAsset('party/panel-blue-left.png')} alt="" style={{ left: 0, top: 0 }} />
+                  <span style={{ left: PANEL.icon.x, top: PANEL.icon.y }}><MemberIcon spriteId={member.species} /></span>
+                  <span className="unova-text" style={{ left: 36, top: 8 }}>{member.name}</span>
+                  <span className="unova-text" style={{ left: 36, top: 24 }}>{u.level(member.level)}</span>
+                </li>
+              )
+            })}
+          </ul>
+          <button type="button" className="unova-result-continue" aria-label={u.hallNext} onClick={onDone} />
+        </div>
       )]} />
     </div>
   )

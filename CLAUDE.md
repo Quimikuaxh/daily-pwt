@@ -15,6 +15,7 @@ Juego web diario estilo Daily Red contra los entrenadores del Pokémon World Tou
 - **Rama nueva para cada feature** a partir de `main` actualizada; antes de escribir código, pregunta si hace falta rama salvo que sea una corrección de lo que ya se está haciendo. `main` despliega en cada push.
 - **Lo acordado se escribe en el momento** en su documento (sin que lo pidan) y se respeta desde ese momento.
 - **Duplicar es una señal**: si algo se copia a un tercer sitio, se construye el mecanismo que lo tenga una sola vez.
+- **Maquetas aprobadas**: en cuanto Jose aprueba una maqueta, su PNG se guarda en `docs/maquetas/<tema>/` (nunca solo en una carpeta temporal: las de Teselia se perdieron al reiniciar y se rehicieron dos pantallas sin mirarlas). Antes de programar una pantalla, se abre su maqueta y se compara el resultado con capturas; al delegar una pantalla, se pasa su maqueta.
 
 ## Dónde se escribe cada cosa
 
@@ -27,6 +28,7 @@ Juego web diario estilo Daily Red contra los entrenadores del Pokémon World Tou
 | Qué falta, en qué orden y por qué | `docs/PENDIENTE.md` (empezar siempre leyéndolo) |
 | Cómo se extraen y fusionan los datos del PWT | `docs/F2-DATOS.md` |
 | Uso, comandos, construcción, despliegue, créditos | `README.md` |
+| Maquetas aprobadas (PNG) | `docs/maquetas/<tema>/` (las de Teselia, en `docs/maquetas/teselia/`) |
 
 ## Comandos
 
