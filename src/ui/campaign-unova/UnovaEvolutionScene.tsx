@@ -129,7 +129,7 @@ export function UnovaEvolutionScene({ evolutions, nameOf, onDone, data, scale, r
           <TouchBackground />
           <span className="unova-evo-progress">{u.evolutionProgress(index + 1, evolutions.length)}</span>
           {step === 'choose' ? (
-            <div className="bt-moves" role="menu" aria-label={message}>
+            <div className={targets.length > 4 ? "bt-moves unova-evo-options-compact" : "bt-moves"} role="menu" aria-label={message}>
               {targets.map((target, i) => (
                 <button key={target} type="button" role="menuitem" className="bt-move" data-slot={i + 1} autoFocus={i === 0}
                   style={{ '--tile': moveTileColor(data.dex.species[target]?.types[0] ?? null) } as CSSProperties}

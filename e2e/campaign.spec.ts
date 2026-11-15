@@ -258,3 +258,40 @@ test('T6 Teselia: combate contra Cheren, reanudación y cierre en la Ruta', asyn
     expect((await saved()).state.phase).toBe('draft')
   }
 })
+
+// E2E-84 · Las siete formas de Eevee en la Liga de Teselia se pueden elegir con clic o toque.
+test('T7 Teselia: las siete evoluciones de Eevee están disponibles en la Liga', async ({ page }) => {
+  const eevee = { id: 'eevee', species: 'eevee', level: 50, history: [], fainted: false, victories: 8 }
+  const state = { campaign: 'unova-n2b2', seed: 'e2e-liga-teselia', encounterIndex: 8, phase: 'prepare', pick: 3,
+    offer: [], previousOffer: [], leagueRoster: null, battleTeam: [], members: [eevee] }
+  await page.addInitScript((record) => {
+    if (!localStorage.getItem('daily-pwt:nuzlocke:v1')) localStorage.setItem('daily-pwt:nuzlocke:v1', JSON.stringify(record))
+  }, { version: 1, revision: 1, state, battle: null })
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+
+  await new TodayPage(page).goto()
+  await page.getByRole('button', { name: 'Modos de juego' }).click()
+  await page.getByRole('button', { name: 'Nuzlocke de Teselia' }).click()
+  await page.getByRole('button', { name: /^Continuar/ }).click()
+  const advance = page.getByRole('button', { name: /^Continuar: / })
+  await advance.click()
+
+  const options = page.getByRole('menuitem', { name: /^Evolucionar en / })
+  const forms = ['ESPEON', 'FLAREON', 'GLACEON', 'JOLTEON', 'LEAFEON', 'UMBREON', 'VAPOREON']
+  await expect(options).toHaveText(forms)
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 360, height: 740 }]) {
+    await page.setViewportSize(viewport)
+    await expect.poll(() => options.evaluateAll((buttons) => buttons.filter((button) => {
+      const { x, y, width, height } = button.getBoundingClientRect()
+      const hit = document.elementFromPoint(x + width / 2, y + height / 2)
+      return button.contains(hit)
+    }).map((button) => button.textContent))).toEqual(forms)
+  }
+
+  await options.filter({ hasText: /Vaporeon/i }).click()
+  await expect(page.getByRole('status').filter({ hasText: /ha evolucionado en VAPOREON/i })).toBeVisible()
+  await advance.click()
+  await expect(page.getByRole('button', { name: /^Equipo, puesto 1: VAPOREON/i })).toBeVisible()
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('daily-pwt:nuzlocke:v1') ?? 'null'))
+  expect(saved.state.members[0].species).toBe('vaporeon')
+})

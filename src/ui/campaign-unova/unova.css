@@ -335,6 +335,18 @@
 .unova-evo-mon { position: absolute; left: 50%; bottom: 52px; transform: translate(-50%, 0); transform-origin: 50% 100%; image-rendering: pixelated; }
 .unova-evo-silhouette { filter: brightness(0) invert(1); }
 .unova-evo-touch .bt-move-name { font-size: 16px; }
+
+/* Eevee puede elegir siete formas en la Liga. Conserva las teselas del combate y haz sitio para cuatro filas. */
+.unova-evo-options-compact {
+  display: grid;
+  grid-template-columns: repeat(2, 128px);
+  grid-auto-rows: 32px;
+  align-content: start;
+  padding-top: 16px;
+}
+.unova-evo-options-compact .bt-move[data-slot] { position: relative; inset: auto; height: 32px; }
+.unova-evo-options-compact .bt-move-shape { height: 48px; transform: scaleY(calc(2 / 3)); transform-origin: top; }
+.unova-evo-options-compact .bt-move-name { top: 4px; }
 .unova-evo-progress {
   position: absolute;
   left: 0;
