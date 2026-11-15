@@ -104,7 +104,7 @@ function buildCampaignBattleInit(
     ai: lookahead ? 'lookahead' : 'heuristic',
     maxTurns: MAX_TURNS,
     // Lo que cada Pokémon del jugador puede llevar (por nivel y MT desbloqueadas compatibles): de ahí predice la IA sus movimientos.
-    ...(!lookahead ? {} : { foeMovePool: Object.fromEntries(state.battleTeam.map((id) => {
+    ...(!lookahead ? {} : { lookaheadVersion: 2, foeMovePool: Object.fromEntries(state.battleTeam.map((id) => {
       const member = state.members.find((recruit) => recruit.id === id)!
       return [dexOf(definition).species.get(definition.species[member.species]?.simulatorSpecies ?? member.species).id,
         availableMoves(definition.species, member, campaignMachineMoves(definition, state, unlockedMoves))]

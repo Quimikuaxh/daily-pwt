@@ -38,8 +38,9 @@ test('T3 Hoy → Modos → Ruta → cuatro elecciones de Petra → Ruta → Hoy'
   await expect(page.getByRole('region', { name: 'Movimientos' })).toBeVisible()
   // SALIR es la última fila de la lista: con más de cinco movimientos hay que bajar, como en el juego.
   const down = page.getByRole('button', { name: 'Desplazar movimientos hacia abajo' })
-  while (!(await page.getByRole('button', { name: 'Volver al equipo' }).count()) && await down.count()) await down.click()
-  await page.getByRole('button', { name: 'Volver al equipo', exact: true }).click()
+  const exit = page.getByRole('button', { name: 'Volver al equipo', exact: true })
+  while (!(await exit.count()) && await down.count()) await down.click()
+  await exit.click()
   // ACEPTAR empieza el combate (T4); CANCELAR vuelve a la Ruta sin combatir.
   await page.getByRole('button', { name: 'Cancelar y volver a la ruta' }).click()
   await expect(petra).toContainText('LÍDER PETRA')
@@ -91,7 +92,7 @@ async function playCampaignBattle(page: import('@playwright/test').Page, { reloa
       const members = battle.locator('.battle-party .team-cell:not([disabled])')
       for (let i = 0; i < await members.count(); i++) {
         const label = await members.nth(i).getAttribute('aria-label') ?? ''
-        if (!/KO|activo|vacío/.test(label)) { await tap(members.nth(i)); break }
+        if (!/\bKO\b|activo|vacío/.test(label)) { await tap(members.nth(i)); break }
       }
       await page.waitForTimeout(100)
     }

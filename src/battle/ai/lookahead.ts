@@ -44,8 +44,8 @@ const LAST_MOVE_WEIGHT = 0.5
  * - que quien entra no reciba `MAX_SWITCH_HIT` de sus PS o más con la respuesta del jugador (el peor de sus ataques, o el último que
  *   usó si lo repite): un golpe muy alto al entrar no compensa;
  * - que, tras ese golpe, gane con claridad al Pokémon del jugador el turno siguiente (`MIN_SWITCH_EDGE` de `matchup`): el beneficio
- *   tiene que durar, no ser un poco menos malo. Si quedarse es caer sin actuar (el jugador va antes y le debilita), basta con que quien
- *   entra no pierda (`matchup` ≥ 0): salvarlo ya es el beneficio.
+ *   tiene que durar. Exige esa misma ventaja si el activo puede caer antes de atacar. La excepción de ese caso solo se conserva para
+ *   reconstruir y continuar combates guardados con la política anterior.
  * Se quitó la excepción de «apenas hace daño» (menos del 30 % de los PS, sin margen), que sacaba, p. ej., a un Dusclops inmune a los
  * ataques de un Machamp para meter a un Banette frágil. Descartado subir el margen a 0,5: ni con el del campo sin hacer nada y otro
  * que gana de calle llegaba (la ganancia típica de un cambio claro es 0,2-0,3).
@@ -158,7 +158,11 @@ function stuck(me: AiMon, foe: AiMon, danger: ActiveDanger | undefined, field: D
   return bestHit(me, foe, field, true) < foe.hp * USELESS_FRACTION
 }
 
-export function chooseLookaheadAction(state: AiState & { danger?: ActiveDanger; foeLastMove?: string | null; justIn?: boolean }, rng: Prng): Choice {
+export function chooseLookaheadAction(
+  state: AiState & { danger?: ActiveDanger; foeLastMove?: string | null; justIn?: boolean },
+  rng: Prng,
+  legacyDoomedSwitch = false,
+): Choice {
   const base = chooseRivalAction(state, rng)
   if (state.self.mustSwitch) return base
   const me = state.self.pokemon[0]
@@ -213,7 +217,7 @@ export function chooseLookaheadAction(state: AiState & { danger?: ActiveDanger; 
   if (!options.length) return base
   const scores = options.map(({ action }) => score(action))
   const foeFirst = effectiveSpeed(side(foe), field) >= effectiveSpeed(side(me), field)
-  const doomed = foeFirst && (last ? [last] : responses).some((response) => {
+  const doomed = legacyDoomedSwitch && foeFirst && (last ? [last] : responses).some((response) => {
     const info = response ? moveInfo(response, field.generation) : null
     return !!response && info?.kind === 'attack' && expected(foe, me, response, info, field) >= me.hp
   })

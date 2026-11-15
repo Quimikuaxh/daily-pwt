@@ -39,6 +39,7 @@ function set(v: unknown): boolean {
 function init(v: unknown): boolean {
   // 3.ª generación en Hoenn (Esmeralda) y 5.ª en Teselia (N2/B2).
   return object(v) && text(v.battleSeed) && (v.generation === 3 || v.generation === 5) && (v.ai === 'heuristic' || v.ai === 'trivial' || v.ai === 'lookahead') &&
+    (v.lookaheadVersion === undefined || (v.ai === 'lookahead' && v.lookaheadVersion === 2)) &&
     count(v.maxTurns) && v.maxTurns > 0 && Array.isArray(v.player) && v.player.length > 0 && v.player.length <= 6 && v.player.every(set) &&
     Array.isArray(v.rival) && v.rival.length > 0 && v.rival.length <= 6 && v.rival.every(set) &&
     (v.playerLead === undefined || (count(v.playerLead) && v.playerLead < v.player.length)) &&

@@ -23,6 +23,8 @@ export type EngineInit = {
   /** `rival[0]` es el inicial. */
   rival: BattleSet[]
   ai: AiKind
+  /** Los combates guardados sin versión conservan la política de cambios original. */
+  lookaheadVersion?: 2
   maxTurns: number
   /**
    * Para `lookahead`: los movimientos que cada Pokémon del jugador (por especie) puede tener según las reglas de la campaña. La IA no

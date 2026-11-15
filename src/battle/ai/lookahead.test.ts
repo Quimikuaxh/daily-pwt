@@ -10,7 +10,7 @@ import { mkResolved } from '../../test-utils/fixtures'
 // UT-195 · IA del Alto Mando y del campeón de la Nuzlocke (Jose, 12/11/2026): mira un turno por delante (opción 2) con solo lo que ha
 // visto del jugador. La heurística del diario no cambia (sus tests siguen igual).
 const SEEDS = Array.from({ length: 12 }, (_, i) => `semilla-${i}`)
-const choose = (state: unknown, seed: string) => chooseLookaheadAction(state as never, new Prng(aiSeed(seed)))
+const choose = (state: unknown, seed: string, legacy = false) => chooseLookaheadAction(state as never, new Prng(aiSeed(seed)), legacy)
 
 describe('mirar un turno por delante', () => {
   it('con dos golpes que debilitan, usa el de prioridad si el jugador es más rápido y le debilitaría antes', () => {
@@ -22,13 +22,16 @@ describe('mirar un turno por delante', () => {
     expect(SEEDS.some((seed) => chooseRivalAction(state as never, new Prng(aiSeed(seed))).slot === slotOf(state, 'outrage'))).toBe(true)
   })
 
-  it('cambia a quien no recibe daño si el ataque que le ha visto al jugador le debilitaría sin poder responder', () => {
+  it('exige ventaja clara aunque el activo pueda caer antes de actuar, salvo con la política guardada anterior', () => {
     const heatran = rs('heatran', 'leftovers', 'flashfire', ['fireblast', 'flashcannon', 'earthpower', 'lavaplume'])
     const skarmory = rs('skarmory', 'leftovers', 'sturdy', ['bravebird', 'roost', 'spikes', 'whirlwind'])
     const garchomp = rs('garchomp', 'leftovers', 'roughskin', ['earthquake', 'outrage', 'swordsdance', 'stoneedge'])
     const foe = mkMon(garchomp, { moves: [{ id: 'earthquake', pp: 10, disabled: false }] })
     const state = mkState([mkMon(heatran, { hpFraction: 0.5 }), mkMon(skarmory)], [foe])
-    expect(SEEDS.map((seed) => choose(state, seed))).toEqual(SEEDS.map(() => ({ type: 'switch', slot: 2 })))
+    for (const seed of SEEDS) {
+      expect(choose(state, seed, true)).toEqual({ type: 'switch', slot: 2 })
+      expect(choose(state, seed).type).toBe('move')
+    }
   })
 
   it('respeta los movimientos de estado y los cambios forzados de la heurística', () => {

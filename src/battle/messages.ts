@@ -62,6 +62,8 @@ export function createWorkerHandler() {
           const { source, init, decisions, checkpoint } = battle
           const prepared = beginCampaignBattle(definition, source.state,
             { ...source.preparation, unlockedMoves: new Set(source.preparation.unlockedMoves) }, source.selected)
+          // Los registros antiguos omiten la versión y el motor conserva sus decisiones de IA al reconstruirlos.
+          if (init.lookaheadVersion === undefined) delete prepared.init.lookaheadVersion
           if (!sameJson(prepared.init, init) || !sameJson(prepared.state, state)) throw new Error('campaign preparation')
           if (checkpoint && (!Number.isInteger(checkpoint.decisions) || checkpoint.decisions < 0 || checkpoint.decisions > decisions.length)) throw new Error('campaign checkpoint')
           const next = createBattleEngine(init)

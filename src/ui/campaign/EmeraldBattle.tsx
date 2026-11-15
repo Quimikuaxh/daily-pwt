@@ -355,9 +355,7 @@ export function EmeraldBattle({ session, start, onRetry, data, trainer, trainerI
               <img src={emeraldTheme.asset(hb(false).image)} alt="" style={{ left: hb(false).left, top: hb(false).top }} />
               <GameText text={nameOf(rival.species)} x={hb(false).name.x} y={hb(false).name.y} face="small" color="combate-nombre" hidden />
               {rivalLevel > 0 && <GameText text={`{LV_2}${rivalLevel}`} x={hb(false).level.x} y={hb(false).level.y} face="small" color="combate-nombre" hidden />}
-              <HpBar x={hb(false).bar.x} y={hb(false).bar.y} ratio={rivalHp ? rivalBar / rivalHp.maxHp : 0} />
-              {/* Después de la barra: el icono va encima de su rótulo PS; pintado antes, la barra lo pisaba (Jose, 14/11/2026). */}
-              <StatusBadge status={rival.fainted ? null : rival.status} x={hb(false).status.x} y={hb(false).status.y} coverLabel />
+              <RivalHpBar status={rival.fainted ? null : rival.status} ratio={rivalHp ? rivalBar / rivalHp.maxHp : 0} />
             </div>
           )}
           {player && playerHp && (
@@ -486,19 +484,19 @@ export function EmeraldBattle({ session, start, onRetry, data, trainer, trainerI
   )
 }
 
-/**
- * Estado alterado en la caja de PS: el icono de 24 x 8 de Esmeralda con las letras de la edición española (`estado-*`, de
- * `status_icons` en la receta del decompilado). La etiqueta de colores con el texto encima se salía de la píldora y pisaba la barra
- * del rival (Jose, 13/11/2026).
- */
-export function StatusBadge({ status, x, y, coverLabel = false }: { status: string | null; x: number; y: number; coverLabel?: boolean }) {
+/** Estado alterado con el sprite de 24 × 8 de la edición española de Esmeralda. */
+export function StatusBadge({ status, x, y }: { status: string | null; x: number; y: number }) {
   const icon = status ? STATUS_ICON[status] : undefined
-  if (!icon) return null
+  return icon ? <img src={emeraldTheme.asset(`estado-${icon}`)} alt="" width={24} height={8} style={{ left: x, top: y }} /> : null
+}
+
+export function RivalHpBar({ status, ratio }: { status: string | null; ratio: number }) {
+  const box = healthbox(false)
   return (
     <>
-      {/* En la caja del rival el icono ocupa el sitio del rótulo PS: se tapa el resto con el fondo de la caja, como el juego. */}
-      {coverLabel && <div style={{ left: x + 24, top: y, width: 8, height: 8, background: '#ffffde' }} />}
-      <img src={emeraldTheme.asset(`estado-${icon}`)} alt="" style={{ left: x, top: y }} />
+      <StatusBadge status={status} x={box.status.x} y={box.status.y} />
+      {/* La barra va encima de los 4 px de fondo a la derecha del sprite de estado. */}
+      <HpBar x={box.bar.x} y={box.bar.y} ratio={ratio} />
     </>
   )
 }
