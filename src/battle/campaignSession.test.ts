@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createCampaignWorkerClient, type CampaignWorkerLike } from './client'
 import { createWorkerHandler, type CampaignClientMessage } from './messages'
+import { createBattleEngine } from './engine'
 import { LocalCampaignSession } from './campaignSession'
 import { LocalCampaignStore, CAMPAIGN_STORAGE_KEY } from '../storage/campaignStore'
 import { MemoryStorage } from '../test-utils/memoryStorage'
@@ -53,6 +54,37 @@ describe('sesión local de campaña', () => {
     resumed.session.choose(choice)
     expect(latestUpdate(resumed)).toEqual(latestUpdate(live))
     expect(JSON.stringify(before)).not.toContain('"definition"')
+  })
+
+  it.each([false, true])('reanuda la IA difícil con la política guardada (anterior=%s)', (legacy) => {
+    const input = campaignInput()
+    input.state.difficulty = { ai: 'hard', draft: 'normal' }
+    const storage = new MemoryStorage()
+    const original = mount(storage)
+    original.session.prepare(input)
+    const checkpoint = original.session.snapshot()!
+    const battle = checkpoint.battle!
+    const init = battle.init!
+    expect(init.lookaheadVersion).toBe(2)
+    if (legacy) delete init.lookaheadVersion
+
+    const engine = createBattleEngine(init)
+    let update = engine.start()
+    for (let i = 0; i < 2; i++) {
+      const move = firstEnabled(update.request!)
+      battle.decisions.push(move)
+      update = engine.choose(move)
+    }
+    battle.checkpoint = { decisions: battle.decisions.length, update }
+    storage.setItem(CAMPAIGN_STORAGE_KEY, JSON.stringify(checkpoint))
+
+    const resumed = mount(storage)
+    resumed.session.resume(input.definition)
+    expect(latestUpdate(resumed)).toEqual(update)
+    const next = firstEnabled(update.request!)
+    resumed.session.choose(next)
+    expect(latestUpdate(resumed)).toEqual(engine.choose(next))
+    expect(resumed.session.snapshot()?.battle?.init?.lookaheadVersion).toBe(legacy ? undefined : 2)
   })
 
   it('conserva las identidades repetidas y las bajas con otro inicial al reanudar un cambio forzado', () => {

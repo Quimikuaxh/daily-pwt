@@ -34,6 +34,7 @@ describe('combates de la campaña de Hoenn', () => {
     expect(at(0, 'easy').ai).toBe('heuristic')
     expect(at(12, 'easy').ai).toBe('heuristic')
     expect(at(0, 'hard').ai).toBe('lookahead')
+    expect(at(0, 'hard').lookaheadVersion).toBe(2)
     expect(at(0, 'hard').foeMovePool).toBeDefined()
   })
 

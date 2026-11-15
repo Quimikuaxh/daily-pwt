@@ -51,9 +51,8 @@ export function healthbox(player: boolean) {
     name: { x: left + (player ? 16 : 8), y: top + 3 },
     level: { x: left + (player ? 77 : 69), y: top + 3 },
     bar: { x: x + (player ? 16 : 8) - 16, y },
-    // Estado alterado (UpdateStatusIconInHealthbox): icono de 24 x 8 en la tesela 0x1A de la caja del jugador (x + 16, y + 24 desde su
-    // esquina) y en la 0x11 de la del rival (x + 8, y + 16), donde tapa el rótulo PS de la barra.
-    status: player ? { x: left + 16, y: top + 24 } : { x: left + 8, y: top + 16 },
+    // Estado del rival a la izquierda de PS: los 20 px pintados del icono llegan hasta el inicio de la barra.
+    status: player ? { x: left + 16, y: top + 24 } : { x: left + 4, y: top + 16 },
     // PS en y + 20: a y + 21 tocaban el borde inferior de la caja y a y + 19 pisaban la barra (Jose, 11 y 12/11/2026); así queda
     // un píxel libre por encima.
     hp: { x: left + 60, y: top + 20 },
