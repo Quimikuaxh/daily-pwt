@@ -64,6 +64,10 @@ export function createWorkerHandler() {
             { ...source.preparation, unlockedMoves: new Set(source.preparation.unlockedMoves) }, source.selected)
           // Los registros antiguos omiten la versión y el motor conserva sus decisiones de IA al reconstruirlos.
           if (init.lookaheadVersion === undefined) delete prepared.init.lookaheadVersion
+          // Los combates de Teselia guardados sin sexo en el equipo rival reproducen el equipo con el que empezaron.
+          if (init.generation === 5 && init.rival.every((set) => set.gender === undefined)) {
+            for (const set of prepared.init.rival) delete set.gender
+          }
           if (!sameJson(prepared.init, init) || !sameJson(prepared.state, state)) throw new Error('campaign preparation')
           if (checkpoint && (!Number.isInteger(checkpoint.decisions) || checkpoint.decisions < 0 || checkpoint.decisions > decisions.length)) throw new Error('campaign checkpoint')
           const next = createBattleEngine(init)

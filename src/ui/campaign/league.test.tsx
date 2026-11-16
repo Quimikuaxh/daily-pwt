@@ -98,6 +98,20 @@ describe('pantallas de la Liga', () => {
     expect(onAccept).toHaveBeenCalledWith(['a'])
   })
 
+  it('al conservar una forma opcional, el siguiente Pokémon empieza con la primera opción enfocada', () => {
+    render(<EvolutionScene evolutions={[
+      { id: 'a', species: 'gloom', level: 45, targets: ['bellossom', 'gloom', 'vileplume'] },
+      { id: 'b', species: 'tyrogue', level: 45, targets: ['hitmonchan', 'hitmonlee', 'hitmontop'] },
+    ]} nameOf={(id) => id.toUpperCase()} hpOf={() => 100} onDone={vi.fn()} scale={2} />)
+    const next = () => fireEvent.click(screen.getByRole('button', { name: /^Continuar: / }))
+    next()
+    const keep = screen.getByRole('menuitem', { name: 'Seguir como GLOOM' })
+    keep.focus()
+    fireEvent.click(keep)
+    next()
+    expect(screen.getByRole('menuitem', { name: 'Evolucionar en HITMONCHAN' })).toHaveFocus()
+  })
+
   it('escena de evolución: anuncia, pregunta si hay varias formas, felicita y devuelve las elegidas', () => {
     const onDone = vi.fn()
     render(<EvolutionScene evolutions={[{ id: 'a', species: 'gloom', level: 45, targets: ['bellossom', 'vileplume'] }, { id: 'b', species: 'kirlia', level: 45, targets: ['gardevoir'] }]}

@@ -8,6 +8,7 @@ interfaz usa, con los recortes de las maquetas:
 - `franja.png` y `franja-pestana.png`: la barra seleccionada partida en dos para los títulos: la franja entera, oscura, y la pestaña clara
   con su muesca (x 0 a 120), que se estira hasta el ancho del título.
 - `medalla-<n>.png` y `medalla-<n>-off.png`: las ocho medallas de Teselia, ganada y sin ganar (fondo transparente, 14 x 26 como mucho).
+- `medalla-estuche-<n>.png`: las ocho medallas ganadas a tamaño original, recortadas para encajar en las siluetas del estuche.
 - `caja-<n>.png` y `caja-<n>-titulo.png`: fondos de caja del PC (156 x 114) y su pestaña de título (112 x 19), de la hoja de fondos de
   caja: `caja-1`, el del bosque (CAJA 1), y `caja-2`, el de Kyurem gris (BAJAS).
 
@@ -73,7 +74,7 @@ def sheet(name):
 
 
 def badge(card, index, row):
-    """Medalla recortada de la ficha, con su fondo gris (128, 128) vuelto transparente y reducida a 14 x 26."""
+    """Medalla de la ficha a tamaño original, con el fondo de la hoja vuelto transparente."""
     (x0, x1), (y0, y1) = BADGE_X[index], BADGE_ROWS[row]
     out = card.crop((x0, y0, x1 + 1, y1 + 1))
     px = out.load()
@@ -82,7 +83,6 @@ def badge(card, index, row):
             r, g, b, _ = px[x, y]
             if r + abs(g - 128) + abs(b - 128) < 30:
                 px[x, y] = (0, 0, 0, 0)
-    out.thumbnail((14, 26))
     return out
 
 
@@ -128,7 +128,11 @@ def main():
     pieces['franja-pestana'] = bar.crop((0, 0, 120, bar.height))
     for index in range(8):
         for row in BADGE_ROWS:
-            pieces[f'medalla-{index + 1}{row}'] = badge(card, index, row)
+            icon = badge(card, index, row)
+            if row == '':
+                pieces[f'medalla-estuche-{index + 1}'] = cropped(icon)
+            icon.thumbnail((14, 26))
+            pieces[f'medalla-{index + 1}{row}'] = icon
     pieces['ficha-estuche'] = card.crop((2, 2, 258, 194))
     # Cara de la Ficha sin el rótulo inglés «TRAINER'S CARD» (x 20 a 143, entre los corchetes): cada fila, con el color de la franja en x 21,
     # donde no hay letra. La interfaz pinta «FICHA DE ENTRENADOR» encima.

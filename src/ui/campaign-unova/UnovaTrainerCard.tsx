@@ -12,8 +12,8 @@ import { CanvasFill, PixelText } from './PixelText'
 const u = esUnova
 /** Pieza de la ficha en la pantalla y su franja de abajo (x de inicio y ancho; y de la medalla). */
 const CARD = { left: 6, top: 13 }
-/** Renglones de la pieza (marcados por sus puntos de la izquierda): el nombre en el primero, el ID y la primera fila en las dos franjas claras (y 60 y 76) y el resto debajo, cada 16 px, antes de la franja de abajo (y 132). */
-const LINES = { name: 41, id: 61, rows: 77 }
+/** Centra la tinta del ID y del primer dato en las franjas claras; los demás datos siguen el paso de 16 px. */
+const LINES = { name: 41, id: 60, rows: 75, left: 22, right: 152 }
 const STRIP = { left: CARD.left + 15, width: 218, top: CARD.top + 121 }
 
 /** Centro (x) de cada uno de los ocho huecos iguales de la franja; la medalla se centra en él (`.unova-result-badge`). */
@@ -34,12 +34,12 @@ export function UnovaTrainerCard({ player, id, rows, protagonist, badges }: Trai
       <CanvasFill color="#1e3c8c" />
       <img src={n2b2Ui('ficha')} alt="" style={CARD} />
       <PixelText text={u.cardTitle} left={CARD.left + 20} top={CARD.top + 5} width={124} align="center" shadow="#182c78" />
-      <PixelText text={u.cardName(player)} left={18} top={LINES.name} />
-      <PixelText text={u.cardId(id)} left={18} top={LINES.id} />
+      <PixelText text={u.cardName(player)} left={LINES.left} top={LINES.name} />
+      <PixelText text={u.cardId(id)} left={LINES.left} top={LINES.id} />
       {rows.map(([label, value], i) => (
         <span key={label}>
-          <PixelText text={label} left={18} top={LINES.rows + i * 16} color="#d0d8f8" />
-          <PixelText text={value} left={18} top={LINES.rows + i * 16} width={134} align="right" />
+          <PixelText text={label} left={LINES.left} top={LINES.rows + i * 16} color="#d0d8f8" />
+          <PixelText text={value} left={LINES.left} top={LINES.rows + i * 16} width={LINES.right - LINES.left} align="right" />
         </span>
       ))}
       <img className="unova-result-protagonist" src={uiAsset(`trainers/${who}-front.png`)} alt="" style={{ left: 160, top: 20 }} />

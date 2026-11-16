@@ -29,7 +29,8 @@
             "bite",
             "tackle",
             "detect"
-          ]
+          ],
+          "gender": "M"
         },
         {
           "species": "lillipup",
@@ -41,7 +42,8 @@
             "bite",
             "tackle",
             "helpinghand"
-          ]
+          ],
+          "gender": "M"
         }
       ]
     },
@@ -61,7 +63,8 @@
             "assurance",
             "tackle",
             "clearsmog"
-          ]
+          ],
+          "gender": "F"
         },
         {
           "species": "whirlipede",
@@ -73,7 +76,8 @@
             "poisonsting",
             "protect",
             "pursuit"
-          ]
+          ],
+          "gender": "F"
         }
       ]
     },
@@ -93,7 +97,8 @@
             "razorleaf",
             "stringshot",
             "protect"
-          ]
+          ],
+          "gender": "M"
         },
         {
           "species": "dwebble",
@@ -105,7 +110,8 @@
             "smackdown",
             "feintattack",
             "rockpolish"
-          ]
+          ],
+          "gender": "M"
         },
         {
           "species": "leavanny",
@@ -117,7 +123,8 @@
             "razorleaf",
             "cut",
             "stringshot"
-          ]
+          ],
+          "gender": "M"
         }
       ]
     },
@@ -137,7 +144,8 @@
             "quickattack",
             "pursuit",
             "electroball"
-          ]
+          ],
+          "gender": "F"
         },
         {
           "species": "flaaffy",
@@ -149,7 +157,8 @@
             "takedown",
             "thunderwave",
             "electroball"
-          ]
+          ],
+          "gender": "F"
         },
         {
           "species": "zebstrika",
@@ -161,7 +170,8 @@
             "flamecharge",
             "quickattack",
             "pursuit"
-          ]
+          ],
+          "gender": "F"
         }
       ]
     },
@@ -181,7 +191,8 @@
             "crunch",
             "sandtomb",
             "torment"
-          ]
+          ],
+          "gender": "M"
         },
         {
           "species": "sandslash",
@@ -193,7 +204,8 @@
             "crushclaw",
             "rollout",
             "furycutter"
-          ]
+          ],
+          "gender": "M"
         },
         {
           "species": "excadrill",
@@ -205,7 +217,8 @@
             "metalclaw",
             "slash",
             "rockslide"
-          ]
+          ],
+          "gender": "M"
         }
       ]
     },
@@ -225,7 +238,8 @@
             "heartstamp",
             "assurance",
             "attract"
-          ]
+          ],
+          "gender": "F"
         },
         {
           "species": "skarmory",
@@ -237,7 +251,8 @@
             "steelwing",
             "furyattack",
             "agility"
-          ]
+          ],
+          "gender": "F"
         },
         {
           "species": "swanna",
@@ -249,7 +264,8 @@
             "bubblebeam",
             "roost",
             "featherdance"
-          ]
+          ],
+          "gender": "F"
         }
       ]
     },
@@ -269,7 +285,8 @@
             "revenge",
             "slash",
             "crunch"
-          ]
+          ],
+          "gender": "M"
         },
         {
           "species": "flygon",
@@ -281,7 +298,8 @@
             "crunch",
             "earthpower",
             "rockslide"
-          ]
+          ],
+          "gender": "M"
         },
         {
           "species": "haxorus",
@@ -293,7 +311,8 @@
             "slash",
             "assurance",
             "dragondance"
-          ]
+          ],
+          "gender": "M"
         }
       ]
     },
@@ -313,7 +332,8 @@
             "smackdown",
             "crunch",
             "shellsmash"
-          ]
+          ],
+          "gender": "M"
         },
         {
           "species": "wailord",
@@ -325,7 +345,8 @@
             "rollout",
             "bounce",
             "amnesia"
-          ]
+          ],
+          "gender": "M"
         },
         {
           "species": "jellicent",
@@ -337,7 +358,8 @@
             "ominouswind",
             "brine",
             "recover"
-          ]
+          ],
+          "gender": "M"
         }
       ]
     },
@@ -357,7 +379,8 @@
             "grassknot",
             "psychic",
             "shadowball"
-          ]
+          ],
+          "gender": "F"
         },
         {
           "species": "drifblim",
@@ -369,7 +392,8 @@
             "thunderbolt",
             "acrobatics",
             "shadowball"
-          ]
+          ],
+          "gender": "F"
         },
         {
           "species": "golurk",
@@ -381,7 +405,8 @@
             "earthquake",
             "brickbreak",
             "shadowpunch"
-          ]
+          ],
+          "gender": null
         },
         {
           "species": "chandelure",
@@ -393,7 +418,8 @@
             "fireblast",
             "psychic",
             "shadowball"
-          ]
+          ],
+          "gender": "F"
         }
       ]
     },
@@ -413,7 +439,8 @@
             "fakeout",
             "aerialace",
             "attract"
-          ]
+          ],
+          "gender": "F"
         },
         {
           "species": "scrafty",
@@ -425,7 +452,8 @@
             "brickbreak",
             "poisonjab",
             "rocktomb"
-          ]
+          ],
+          "gender": "F"
         },
         {
           "species": "krookodile",
@@ -437,7 +465,8 @@
             "dragonclaw",
             "earthquake",
             "rocktomb"
-          ]
+          ],
+          "gender": "F"
         },
         {
           "species": "bisharp",
@@ -449,7 +478,8 @@
             "xscissor",
             "metalclaw",
             "aerialace"
-          ]
+          ],
+          "gender": "F"
         }
       ]
     },
@@ -469,7 +499,8 @@
             "dreameater",
             "yawn",
             "reflect"
-          ]
+          ],
+          "gender": "F"
         },
         {
           "species": "reuniclus",
@@ -481,7 +512,8 @@
             "energyball",
             "focusblast",
             "recover"
-          ]
+          ],
+          "gender": "F"
         },
         {
           "species": "sigilyph",
@@ -493,7 +525,8 @@
             "shadowball",
             "icebeam",
             "airslash"
-          ]
+          ],
+          "gender": "F"
         },
         {
           "species": "gothitelle",
@@ -505,7 +538,8 @@
             "shadowball",
             "thunderbolt",
             "calmmind"
-          ]
+          ],
+          "gender": "F"
         }
       ]
     },
@@ -525,7 +559,8 @@
             "bulldoze",
             "rocktomb",
             "payback"
-          ]
+          ],
+          "gender": "M"
         },
         {
           "species": "sawk",
@@ -537,7 +572,8 @@
             "retaliate",
             "rockslide",
             "payback"
-          ]
+          ],
+          "gender": "M"
         },
         {
           "species": "mienshao",
@@ -549,7 +585,8 @@
             "uturn",
             "bounce",
             "retaliate"
-          ]
+          ],
+          "gender": "M"
         },
         {
           "species": "conkeldurr",
@@ -561,7 +598,8 @@
             "bulkup",
             "stoneedge",
             "retaliate"
-          ]
+          ],
+          "gender": "M"
         }
       ]
     },
@@ -581,7 +619,8 @@
             "chargebeam",
             "dragonpulse",
             "surf"
-          ]
+          ],
+          "gender": "F"
         },
         {
           "species": "druddigon",
@@ -593,7 +632,8 @@
             "flamethrower",
             "dragontail",
             "focusblast"
-          ]
+          ],
+          "gender": "F"
         },
         {
           "species": "archeops",
@@ -605,7 +645,8 @@
             "rockslide",
             "dragonclaw",
             "endeavor"
-          ]
+          ],
+          "gender": "M"
         },
         {
           "species": "aggron",
@@ -617,7 +658,8 @@
             "doubleedge",
             "rockslide",
             "autotomize"
-          ]
+          ],
+          "gender": "F"
         },
         {
           "species": "lapras",
@@ -629,7 +671,8 @@
             "icebeam",
             "thunderbolt",
             "sing"
-          ]
+          ],
+          "gender": "F"
         },
         {
           "species": "haxorus",
@@ -641,7 +684,8 @@
             "xscissor",
             "dualchop",
             "dragondance"
-          ]
+          ],
+          "gender": "F"
         }
       ]
     }

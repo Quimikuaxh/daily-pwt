@@ -524,15 +524,15 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
   // con la habilidad de la especie; cuando llega la preparación, los del registro (los del motor).
   const provisionalSets = (current: CampaignState, lineup: readonly string[]): SideSets => {
     const flat = (value: number) => ({ hp: value, atk: value, def: value, spa: value, spd: value, spe: value })
-    const set = (species: string, level: number, item: string | null | undefined, moves: readonly string[]) => ({
+    const set = (species: string, level: number, item: string | null | undefined, moves: readonly string[], gender?: 'M' | 'F' | null) => ({
       species: toId(battleDefinition.species[species]?.simulatorSpecies ?? species), nameEs: species, level, item: item ?? '',
-      ability: toId(data.dex.species[species]?.abilities[0] ?? ''), moves: [...moves], nature: NEUTRAL_NATURE, ivs: flat(20), evs: flat(0),
+      ability: toId(data.dex.species[species]?.abilities[0] ?? ''), moves: [...moves], gender: gender ?? undefined, nature: NEUTRAL_NATURE, ivs: flat(20), evs: flat(0),
     })
     const player = lineup.flatMap((id) => {
       const member = current.members.find((candidate) => { return candidate.id === id })
-      return member ? [set(member.species, member.level, member.item, equippedMoves(definition, current, member))] : []
+      return member ? [set(member.species, member.level, member.item, equippedMoves(definition, current, member), member.gender)] : []
     })
-    return { player, rival: battleDefinition.encounters[current.encounterIndex].team.map((member) => set(member.species, member.level, member.item, member.moves)) }
+    return { player, rival: battleDefinition.encounters[current.encounterIndex].team.map((member) => set(member.species, member.level, member.item, member.moves, member.gender)) }
   }
 
   // DATOS de un miembro (Jose, 12/11/2026): la ficha del draft con sus movimientos equipados, su nivel y su objeto.
@@ -547,7 +547,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     const mon = candidateOf(member.species, member.level, definition, data, member.history)
     return {
       mon: { ...mon, moves: equippedMoves(definition, current, member).map((id) => moveInfo(id, data, { level: member.level })) },
-      level: member.level, item: member.item ? emeraldItemName(member.item) : null,
+      level: member.level, item: member.item ? emeraldItemName(member.item) : null, itemId: member.item ?? undefined,
     }
   }
 

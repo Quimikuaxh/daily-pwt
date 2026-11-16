@@ -395,6 +395,23 @@ test.describe('Paneles laterales', () => {
     // La franja de eficacia está desactivada (Jose, 05/11/2026).
     await expect(page.locator('.bt-side-eff')).toHaveCount(0)
 
+    const canvas = page.locator('.bt-ds')
+    const originalCanvas = (await canvas.boundingBox())!
+    await page.setViewportSize({ width: 1606, height: 800 })
+    await expect(page.locator('.bt-layout')).toHaveAttribute('data-layout', 'panels-side')
+    await expect(player).toBeVisible()
+    await expect(rival).toBeVisible()
+    const [compactStage, chrome] = await Promise.all([page.locator('.bt-stage').boundingBox(), page.locator('.bt-chrome').boundingBox()])
+    expect((await canvas.boundingBox())!.width).toEqual(originalCanvas.width)
+    expect(chrome!.x).toBeGreaterThan(compactStage!.x + compactStage!.width)
+    const compactRival = (await rival.boundingBox())!
+    const rightEdge = compactRival.x + compactRival.width
+    const buttons = page.locator('.bt-chrome-buttons button')
+    for (const button of await buttons.all()) {
+      const bounds = (await button.boundingBox())!
+      expect(bounds.x + bounds.width).toBeLessThanOrEqual(rightEdge + 1)
+    }
+
     await page.setViewportSize({ width: 1280, height: 720 })
     await expect(player).toHaveCount(0)
     await expect(page.getByTestId('remaining-player')).toBeVisible()

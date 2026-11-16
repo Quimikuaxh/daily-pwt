@@ -154,7 +154,7 @@ export function TopScreen({ view, data, challenge, introPhase, switchAnim, avata
       {(introPhase === 'loading' || introPhase === 'iris') && <IrisWipe />}
       {introPhase === 'vs' && (
         <VsBanner campaign={campaign} playerName={playerName ?? avatar.name} playerSprite={avatar.front} playerSide={avatar.side} rivalName={challenge.trainer.nameEs}
-          rivalSprite={campaign ? trainerSprite(challenge.trainer.sprite) : trainerVsSprite(challenge.trainer.sprite)} rivalSide={trainerSideSprite(challenge.trainer.sprite)} speed={speed} reducedMotion={reducedMotion} />
+          rivalSprite={trainerVsSprite(challenge.trainer.sprite)} rivalSide={trainerSideSprite(challenge.trainer.sprite)} speed={speed} reducedMotion={reducedMotion} />
       )}
     </section>
   )

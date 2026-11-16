@@ -18,6 +18,8 @@ const OUTER_MARGIN = 16
 export const SIDE_PANEL_WIDTH = 340
 const SIDE_PANEL_GAP = 20
 const PANELS_BAR_HEIGHT = 52
+/** Alto máximo de los botones del daily y el hueco hasta el panel derecho. */
+const RIGHT_CHROME_HEIGHT = 56
 /**
  * Con sitio de sobra los paneles crecen (Jose, 06/11/2026: a 1920 x 1080 se leían pequeños), hasta x1,3 y sin pisar la consola ni salirse
  * de alto: a x1 la columna más alta (panel y ficha con una descripción larga) mide unos 700 px. Va en pasos de 0,05.
@@ -32,9 +34,9 @@ export const CONSOLE_FRAME_Y = 32
 /**
  * `frame`: hay sitio para el marco de consola sin bajar la escala del lienzo (solo en el diseño ancho). `layout`: `stacked` (botones
  * encima y contadores debajo), `wide` (botones y contadores en una columna a la derecha) o `panels` (paneles laterales a los dos lados y la
- * barra encima de la consola). `wide` es cierto en los dos últimos.
+ * barra encima de la consola) o `panels-side` (con los botones encima del panel rival).
  */
-export type StageLayout = 'stacked' | 'wide' | 'panels'
+export type StageLayout = 'stacked' | 'wide' | 'panels' | 'panels-side'
 export type StageScale = { scale: number; wide: boolean; frame: boolean; layout: StageLayout; sideZoom: number }
 
 /**
@@ -65,7 +67,7 @@ const frameFits = (availableWidth: number, availableHeight: number, scale: numbe
  * fraccionaria (el pixel art se ve sin suavizar: `image-rendering: pixelated`); a partir de x2 solo múltiplos enteros, que no deforman los píxeles.
  * Nunca baja de 1 y no crece por encima de MAX_SCALE. Siempre cabe entero (ancho y alto) en la ventana. El marco de consola solo se pone si
  * cabe alrededor sin cambiar la escala (decisión de Jose, 22/10/2026: la nitidez manda sobre el marco). Los paneles laterales, igual: solo
- * si con ellos la escala es la misma que sin ellos y al menos x2 (RF-44c).
+ * si caben sin reducir la escala (RF-44c). En una ventana ancha y baja deja los botones sobre el panel rival.
  */
 export function stageScaleFor(containerWidth: number, viewportHeight: number): StageScale {
   const wide = containerWidth >= WIDE_LAYOUT_MIN_WIDTH
@@ -79,6 +81,10 @@ export function stageScaleFor(containerWidth: number, viewportHeight: number): S
     if (panelsScale >= INTEGER_FROM_SCALE && panelsScale >= scale) {
       const frame = frameFits(panelsWidth, panelsHeight, panelsScale)
       return { scale: panelsScale, wide, frame, layout: 'panels', sideZoom: sideZoomFor(containerWidth, viewportHeight, panelsScale, frame) }
+    }
+    const sideWidth = panelsWidth - PANELS_PADDING_X
+    if (availableHeight - RIGHT_CHROME_HEIGHT >= SIDE_COLUMN_BASE_HEIGHT && sideWidth >= SCREEN_WIDTH * scale) {
+      return { scale, wide, frame: frameFits(sideWidth, availableHeight, scale), layout: 'panels-side', sideZoom: 1 }
     }
   }
   return { scale, wide, frame: wide && frameFits(availableWidth, availableHeight, scale), layout: wide ? 'wide' : 'stacked', sideZoom: 1 }

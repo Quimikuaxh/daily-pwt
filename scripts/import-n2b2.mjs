@@ -40,6 +40,23 @@ export const N2B2_ENCOUNTERS = [
   { id: 'iris', nameEs: 'Iris', kind: 'champion', page: 'elite', title: 'Champion Iris' },
 ]
 
+// Sexo observado en los equipos originales de modo Normal. Las claves por especie conservan el dato aunque cambie el orden de la tabla.
+const OPPONENT_GENDERS = {
+  cheren: { patrat: 'M', lillipup: 'M' },
+  hiedra: { koffing: 'F', whirlipede: 'F' },
+  camus: { swadloon: 'M', dwebble: 'M', leavanny: 'M' },
+  camila: { emolga: 'F', flaaffy: 'F', zebstrika: 'F' },
+  yakon: { krokorok: 'M', sandslash: 'M', excadrill: 'M' },
+  gerania: { swoobat: 'F', skarmory: 'F', swanna: 'F' },
+  lirio: { druddigon: 'M', flygon: 'M', haxorus: 'M' },
+  ciprian: { carracosta: 'M', wailord: 'M', jellicent: 'M' },
+  anis: { cofagrigus: 'F', drifblim: 'F', golurk: null, chandelure: 'F' },
+  aza: { liepard: 'F', scrafty: 'F', krookodile: 'F', bisharp: 'F' },
+  catleya: { musharna: 'F', reuniclus: 'F', sigilyph: 'F', gothitelle: 'F' },
+  lotto: { throh: 'M', sawk: 'M', mienshao: 'M', conkeldurr: 'M' },
+  iris: { hydreigon: 'F', druddigon: 'F', archeops: 'M', aggron: 'F', lapras: 'F', haxorus: 'F' },
+}
+
 const slugOf = (href, folder) => new RegExp(`/${folder}/([a-z0-9-]+)\\.shtml`).exec(href)?.[1] ?? null
 
 /**
@@ -88,6 +105,7 @@ export function validateN2b2Catalog(catalog) {
     for (const [slot, member] of encounter.team.entries()) {
       const label = `${encounter.id}, Pokémon ${slot + 1}`
       if (gen5.species.get(member.species)?.id !== member.species) throw new Error(`${label}: especie inválida (${member.species})`)
+      if (member.gender === undefined || member.gender !== OPPONENT_GENDERS[encounter.id][member.species]) throw new Error(`${label}: sexo original incorrecto`)
       if (!inRange(member.level, 1, 100)) throw new Error(`${label}: nivel inválido`)
       if (gen5.abilities.get(member.ability)?.id !== member.ability) throw new Error(`${label}: habilidad inválida (${member.ability})`)
       if (member.item !== null && gen5.items.get(member.item)?.id !== member.item) throw new Error(`${label}: objeto inválido (${member.item})`)
@@ -107,7 +125,8 @@ export async function buildN2b2Catalog({ offline = false, refresh = false } = {}
   }
   const encounters = N2B2_ENCOUNTERS.map((encounter) => ({
     id: encounter.id, nameEs: encounter.nameEs, kind: encounter.kind, sourceTrainer: encounter.title,
-    team: parseSerebiiTeam(pages[encounter.page], encounter.title),
+    team: parseSerebiiTeam(pages[encounter.page], encounter.title)
+      .map((member) => ({ ...member, gender: OPPONENT_GENDERS[encounter.id][member.species] })),
   }))
   const catalog = { schemaVersion: 1, region: 'unova', edition: 'n2b2', source, encounters }
   validateN2b2Catalog(catalog)

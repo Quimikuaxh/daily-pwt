@@ -3,6 +3,7 @@ import type { GameData } from '../../../core/types'
 import { es } from '../../../i18n/es'
 import { CategoryIcon } from '../../common/CategoryIcon'
 import { Sprite } from '../../common/Sprite'
+import { SummaryItemDetail } from '../../common/SummaryItemDetail'
 import { speciesSprite } from '../../common/spriteUrls'
 import { TypeBadge } from '../../common/TypeBadge'
 import { useImagesLoadedIn } from '../preloadAssets'
@@ -49,8 +50,8 @@ type ValueSize = 'normal' | 'small' | 'tiny'
 /** Tamaño según lo largo del texto: la fuente baja solo cuando no cabe, como último recurso antes de la elipsis (`maxWidth`). */
 const sizeFor = (text: string, smallFrom: number, tinyFrom: number): ValueSize => (text.length > tinyFrom ? 'tiny' : text.length > smallFrom ? 'small' : 'normal')
 
-function Value({ children, x, band, right = false, size = 'normal', maxWidth }: { children: ReactNode; x: number; band: Band; right?: boolean; size?: ValueSize; maxWidth?: number }) {
-  const y = topInBand(band, size)
+function Value({ children, x, band, right = false, size = 'normal', maxWidth, offsetY = 0 }: { children: ReactNode; x: number; band: Band; right?: boolean; size?: ValueSize; maxWidth?: number; offsetY?: number }) {
+  const y = topInBand(band, size) - offsetY
   const position: CSSProperties = right ? { right: 256 - x, top: y } : at({ x, y })
   const style: CSSProperties = maxWidth === undefined ? position : { ...position, maxWidth }
   return (
@@ -75,7 +76,13 @@ function FrontSprite({ member, data }: { member: PartyMember; data: GameData }) 
   )
 }
 
-function SharedBottom({ member, data }: { member: PartyMember; data: GameData }) {
+function SharedBottom({ member, data, inspectItem }: { member: PartyMember; data: GameData; inspectItem: boolean }) {
+  const itemSize = sizeFor(member.itemName, 13, 18)
+  const canInspect = inspectItem && Boolean(member.itemId)
+  const itemTop = 325
+  const itemX = 158
+  const itemWidth = 96
+  const itemValue = { band: BANDS.itemValue, size: itemSize, maxWidth: itemWidth }
   const status = member.fainted ? 'fnt' : member.status
   return (
     <>
@@ -86,7 +93,12 @@ function SharedBottom({ member, data }: { member: PartyMember; data: GameData })
       <FrontSprite member={member} data={data} />
       {member.gender && <span className="sr-only">{text.gender[member.gender]}</span>}
       <Label x={167} band={BANDS.itemLabel}>{text.item}</Label>
-      <Value x={158} band={BANDS.itemValue} size={sizeFor(member.itemName, 13, 18)} maxWidth={96}>{member.itemName}</Value>
+      {canInspect
+        ? <SummaryItemDetail key={member.slot} id={member.itemId} name={member.itemName}
+            style={{ left: itemX, top: itemTop, width: itemWidth, height: 35 }}>
+            <Value x={0} offsetY={itemTop} {...itemValue}>{member.itemName}</Value>
+          </SummaryItemDetail>
+        : <Value x={itemX} {...itemValue}>{member.itemName}</Value>}
     </>
   )
 }
@@ -230,6 +242,7 @@ type SummaryScreenProps = {
   onMovePick?: (index: number) => void
   /** Contenido propio en la pantalla de abajo, encima del sprite (en píxeles de la pantalla de datos: la de abajo empieza en y 192). */
   aside?: ReactNode
+  inspectItem?: boolean
 }
 
 /**
@@ -237,7 +250,7 @@ type SummaryScreenProps = {
  * (detalle del movimiento elegido). El fondo es la captura de Negro/Blanco limpiada por script; todo lo demás se pinta en ejecución con datos reales.
  * Teclado: ← → cambian de página, ↑ ↓ de Pokémon, Escape vuelve.
  */
-export default function SummaryScreen({ members, initialSlot, data, onClose, initialPage = 0, detailMove = null, onMovePick, aside }: SummaryScreenProps) {
+export default function SummaryScreen({ members, initialSlot, data, onClose, initialPage = 0, detailMove = null, onMovePick, aside, inspectItem = false }: SummaryScreenProps) {
   const [slot, setSlot] = useState(initialSlot)
   const [page, setPage] = useState(initialPage)
   const [moveIndex, setMoveIndex] = useState(0)
@@ -309,8 +322,8 @@ export default function SummaryScreen({ members, initialSlot, data, onClose, ini
       {page === 0 && <InfoPage member={member} />}
       {page === 1 && <SkillsPage member={member} />}
       {page === 2 && <MovesTopPage member={member} moveIndex={moveIndex} data={data} detail={detailMove} />}
-      {page !== 0 && <MoveSlots member={member} page={page} moveIndex={moveIndex} onPick={pickMove} />}
-      <SharedBottom member={member} data={data} />
+      {page !== 0 && <MoveSlots member={member} page={page} moveIndex={detailMove ? -1 : moveIndex} onPick={pickMove} />}
+      <SharedBottom member={member} data={data} inspectItem={inspectItem} />
 
       <button type="button" className="bt-sum-hit bt-sum-tab-info" aria-pressed={page === 0} onClick={() => goToPage(0)} aria-label={text.pageNames[0]} />
       <button type="button" className="bt-sum-hit bt-sum-tab-skills" aria-pressed={page !== 0} onClick={() => goToPage(1)} aria-label={text.pageNames[1]} />

@@ -232,7 +232,7 @@ export function PartyScreen({ members, data, forced, enabled, onChoose, onClose,
 
       {summarySlot !== null && summaryReady && (
         <Suspense fallback={null}>
-          <SummaryScreen members={members} initialSlot={summarySlot} data={data} onClose={() => setSummarySlot(null)} />
+          <SummaryScreen members={members} initialSlot={summarySlot} data={data} inspectItem onClose={() => setSummarySlot(null)} />
         </Suspense>
       )}
     </section>

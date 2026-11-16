@@ -22,7 +22,7 @@ const team = [
 ]
 const base = {
   data, player: 'RIZZO', protagonist: 'brendan' as const, badges: 2, badgeNames: ['BÁSICA', 'TOXIN'],
-  card: { id: '12345', points: 40, pokedex: 9, minutes: 75 }, team, trainer: 'lider-hiedra', scale: 2,
+  card: { id: '12345', points: 40, pokedex: 9, minutes: 75 }, team, trainer: 'hiedra', scale: 2,
 }
 
 describe('Resultado de Teselia', () => {
@@ -30,13 +30,19 @@ describe('Resultado de Teselia', () => {
     const onDone = vi.fn()
     const { container } = render(<UnovaResultScreen {...base} mode="medal" message="¡RIZZO recibió la MEDALLA TOXIN de HIEDRA!" onDone={onDone} />)
     expect(screen.getByRole('status')).toHaveTextContent('MEDALLA TOXIN')
+    expect(container.querySelector('.unova-result-trainer.bt-trainer-rival')).toHaveAttribute('src', expect.stringContaining('/hiedra.gif'))
     // Abajo, las placas del equipo: el caído, en rojo.
     expect(screen.getAllByRole('listitem')).toHaveLength(3)
     expect(screen.getByRole('listitem', { name: /PIKACHU, nivel 29, baja permanente/ })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: /^Continuar/ }))
     expect(screen.getByRole('status')).toHaveTextContent('Ficha de Entrenador. RIZZO. Nº de ID 12345. Puntos Batalla: 40')
     // En el estuche, solo las medallas conseguidas.
-    expect(container.querySelectorAll('img.unova-result-badge')).toHaveLength(2)
+    const medals = [...container.querySelectorAll('img.unova-result-case-badge')]
+    expect(medals.map((medal) => medal.getAttribute('src'))).toEqual([
+      expect.stringContaining('/medalla-estuche-1.png'),
+      expect.stringContaining('/medalla-estuche-2.png'),
+    ])
+    expect(medals.every((medal) => Number(medal.getAttribute('height')) > 50)).toBe(true)
     fireEvent.click(screen.getByRole('button', { name: 'Volver a la ruta desde la Ficha de Entrenador' }))
     expect(onDone).toHaveBeenCalledOnce()
     expect(audio.playMusic).toHaveBeenCalledWith('unova-gym-victory')

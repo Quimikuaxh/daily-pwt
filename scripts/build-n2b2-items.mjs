@@ -105,14 +105,18 @@ export function parseItemsPage(html) {
   })
 }
 
-/** Tienda de PB del Metro Batalla: objeto y precio, solo los equipables (fuera vitaminas, piedras y Caramelo Raro). */
+/** Objetos recios retirados del canje de campaña. Sus fuentes del recorrido siguen en el calendario. */
+const POWER_ITEMS = new Set(['powerbracer', 'powerbelt', 'powerlens', 'powerband', 'poweranklet', 'powerweight'])
+const isSubwayOffer = (id) => hasBattleEffect(id) && !POWER_ITEMS.has(id)
+
+/** Tienda de PB del Metro Batalla: objeto y precio de los equipables del canje. */
 export function parseSubwayShop(html) {
   const text = html.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g, '|').replace(/\s+/g, ' ').replace(/(\|\s*)+/g, '|')
   const shop = text.slice(text.indexOf('|Item|Price|'), text.indexOf('|Game Names|'))
   return [...shop.matchAll(/\|([A-Za-z' .-]+)\|(\d+)BP/gi)]
     .map((match) => ({ item: dex.items.get(match[1]).id, price: Number(match[2]) }))
     // Los equipables, también los que además hacen evolucionar (Garra Afilada, Colmillo Agudo); fuera piedras y vitaminas.
-    .filter((entry) => hasBattleEffect(entry.item))
+    .filter((entry) => isSubwayOffer(entry.item))
 }
 
 function placeSource(source) {
@@ -142,7 +146,9 @@ export async function buildN2b2Items({ offline = false, refresh = false } = {}) 
     const placed = item.sources.map(placeSource)
     const usable = placed.filter((entry) => entry.before)
     if (!usable.length) {
-      excluded[item.id] = [...new Set(placed.map((entry) => entry.excluded))].join('; ') || 'sin fuente'
+      const reasons = placed.map((entry) => POWER_ITEMS.has(item.id) && entry.excluded === 'tienda de PB (canje)'
+        ? 'objeto recio retirado del canje' : entry.excluded)
+      excluded[item.id] = [...new Set(reasons)].join('; ') || 'sin fuente'
       continue
     }
     const first = earliest(usable)
@@ -178,7 +184,7 @@ export function validateN2b2Items(items) {
   for (const [id, entry] of [...Object.entries(items.held), ...Object.entries(items.evolution)]) {
     if (!kindOf(id) || !MILESTONES.includes(entry.before)) throw new Error(`${id}: objeto o hito inválido`)
   }
-  if (!items.exchange.length || items.exchange.some((entry) => !hasBattleEffect(entry.item) || !Number.isInteger(entry.price) || entry.price < 1)) {
+  if (!items.exchange.length || items.exchange.some((entry) => !isSubwayOffer(entry.item) || !Number.isInteger(entry.price) || entry.price < 1)) {
     throw new Error('unova-n2b2-items.json: canje inválido')
   }
 }

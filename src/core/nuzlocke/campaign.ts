@@ -334,7 +334,7 @@ export function evolveRecruit(
 /**
  * Vías de evolución que no necesitan objeto (Jose, 11/11/2026): al entrar en la Liga se aplican sin esperar nivel ni condición, para que
  * se puedan usar Pokémon que tardan demasiado en evolucionar (Tyranitar, Salamence). Las de piedra u objeto evolutivo (`ITEM`,
- * `TRADE_ITEM`) siguen en `evolveRecruit` con el inventario. Wurmple ya se resolvió por semilla al subir de nivel y Shedinja no es una
+ * `TRADE_ITEM`) se usan con el inventario: en la preparación con `evolveRecruit` y en la propia Liga, si hay objeto libre (`leaguePaths`). Wurmple ya se resolvió por semilla al subir de nivel y Shedinja no es una
  * evolución del miembro.
  */
 const LEAGUE_FREE_EVOLUTIONS = new Set(['LEVEL', 'LEVEL_NINJASK', 'LEVEL_ATK_LT_DEF', 'LEVEL_ATK_GT_DEF', 'LEVEL_ATK_EQ_DEF',
@@ -392,7 +392,7 @@ export function leagueEvolutionOptions(definition: CampaignDefinition, species: 
     .map(([target, path]) => ({ target, items: path.items })).sort((a, b) => a.target.localeCompare(b.target))
 }
 
-/** Formas finales a las que puede llegar un miembro en la Liga sin objeto; con más de una, elige el jugador. */
+/** Formas finales de la Liga. Con `items` también se ofrecen las que gastan un objeto de evolución libre. */
 export function leagueEvolutionTargets(definition: CampaignDefinition, species: string, gender?: CampaignMember['gender'],
   items: ReadonlySet<string> = new Set()): string[] {
   return leagueEvolutionOptions(definition, species, gender, items).map(option => option.target)

@@ -100,18 +100,15 @@ export function EvolutionScene({ evolutions, nameOf, hpOf, onDone, scale, reserv
       setChoices(all)
       setIndex(next)
       setStep(firstStep)
-      return true
+      setCursor(0)
+      return
     }
     onDone(all)
-    return false
   }
   const advance = () => {
     const next = nextStep(step, targets.length)
     if (next) { setFrame(0); setStep(next); return }
-    const all = { ...choices, [current.id]: chosen }
-    if (finish(all)) {
-      setCursor(0)
-    }
+    finish({ ...choices, [current.id]: chosen })
   }
   const choose = (target: string) => {
     // Quedarse como está: sin animación, al siguiente.

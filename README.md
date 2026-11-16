@@ -23,7 +23,11 @@ Fecha de lanzamiento (`#1`): 2026-10-24 (ver [Configuración](#lanzamiento-launc
 
 ## Campañas Nuzlocke
 
-Abre «Modos de juego» y elige «Nuzlocke de Hoenn» (Esmeralda) o «Nuzlocke de Teselia» (Negro 2 y Blanco 2, con pantallas en desarrollo). No hace falta una URL de prueba para Teselia.
+Abre «Modos de juego» y elige «Nuzlocke de Hoenn» (Esmeralda) o «Nuzlocke de Teselia» (Negro 2 y Blanco 2). No hace falta una URL de prueba para Teselia.
+
+En el editor de movimientos de Teselia, usa las flechas bajo «Puede aprender» para subir o bajar una fila con clic o toque. También funciona la rueda del ratón.
+
+En combate, pulsa el nombre del objeto equipado en «Pokémon → Datos» para consultar su efecto. En Hoenn aparece en la pestaña «Estadísticas». La ficha se cierra al pulsar fuera o con Escape.
 
 Solo hay una partida de campaña por navegador o cuenta. «En curso · Medallas n/8» o «En curso · Liga» identifica la guardada; con cuenta aparece cuando su estado está cargado. Empezar la otra campaña pide confirmar la pérdida de la anterior, salvo si ya está perdida. La sustitución se guarda al aceptar la dificultad.
 

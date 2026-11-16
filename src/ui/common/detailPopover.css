@@ -1,0 +1,13 @@
+.detail-popover {
+  position: fixed;
+  z-index: 6;
+  visibility: hidden;
+  width: 340px;
+  max-width: calc(100vw - 24px);
+  font-family: var(--font-game);
+}
+
+.detail-popover[data-surface="summary"] {
+  z-index: 56;
+  width: 308px;
+}

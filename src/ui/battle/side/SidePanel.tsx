@@ -1,16 +1,16 @@
 import { useState, type ReactNode, type CSSProperties } from 'react'
 import type { Boosts } from '../../../battle/fieldState'
-import descriptions from '../../../generated/descriptions-es.json'
 import { es } from '../../../i18n/es'
 import { CategoryIcon } from '../../common/CategoryIcon'
 import { TypeBadge } from '../../common/TypeBadge'
-import { trainerSprite, itemIconUrl } from '../../common/spriteUrls'
+import { trainerSprite } from '../../common/spriteUrls'
 import { uiAsset } from '../../common/uiAssets'
 import { boostEntries } from '../fieldText'
 import { hpFillColor } from '../party/hpBar'
 import { MemberIcon } from '../party/MemberIcon'
 import { memberHpText, type PartyMember, type PartyMove } from '../party/partyModel'
-import { effectivenessTone, factValueClass, moveEffectiveness, statsWithBoosts } from './sideModel'
+import { effectivenessTone, moveEffectiveness, statsWithBoosts } from './sideModel'
+import { BattleDetailCard } from './BattleDetailCard'
 import './side.css'
 
 const text = es.battle.side
@@ -20,7 +20,6 @@ const text = es.battle.side
  */
 const SHOW_EFFECTIVENESS = false
 type Texts = { [id: string]: string | undefined }
-const descriptionTable = descriptions as { moves: Texts; abilities: Texts; items: Texts }
 /** Color del valor de una estadística según suba (1) o baje (−1). */
 const STAGE_TONE: { [sign: number]: 'up' | 'down' | undefined } = { 1: 'up', [-1]: 'down' }
 
@@ -249,67 +248,17 @@ type DetailCardProps = {
 
 function DetailCard({ member, detail, opponent, chart }: DetailCardProps) {
   if (!detail) return <p className="bt-side-hint">{text.hint}</p>
-  if (detail.kind !== 'move') {
-    const name = detail.kind === 'item' ? member.itemName : member.abilityName
-    const body = detail.kind === 'item' ? descriptionTable.items[member.itemId] : descriptionTable.abilities[member.abilityId]
-    // El objeto, con su icono en un círculo a la izquierda, como el sprite de la franja de eficacia (Jose, 06/11/2026).
-    const icon = detail.kind === 'item' && member.itemId ? itemIconUrl(member.itemId) : null
-    return (
-      <section className="bt-side-info" data-icon={icon ? 'true' : undefined} aria-live="polite">
-        {icon && (
-          <span className="bt-side-item-icon">
-            <img src={icon} alt="" width={30} height={30} />
-          </span>
-        )}
-        <div className="bt-side-info-body">
-          <header className="bt-side-info-head">
-            <span className="bt-side-kind">{text.kinds[detail.kind]}</span>
-            <h3>{name}</h3>
-          </header>
-          <p>{body ?? text.noDescription}</p>
-        </div>
-      </section>
-    )
+  if (detail.kind === 'item') {
+    return <BattleDetailCard detail={{ kind: 'item', id: member.itemId, name: member.itemName }} />
+  }
+  if (detail.kind === 'ability') {
+    return <BattleDetailCard detail={{ kind: 'ability', id: member.abilityId, name: member.abilityName }} />
   }
   const move = member.moves[detail.index]
-  if (!move) return null
-  return (
-    <section className="bt-side-info" aria-live="polite">
-      <header className="bt-side-info-head">
-        <h3>{move.name}</h3>
-        {move.typeName && <TypeBadge typeName={move.typeName} label={move.typeLabel ?? move.typeName} />}
-      </header>
-      <MoveFacts move={move} />
-      <p>{descriptionTable.moves[move.id] ?? text.noDescription}</p>
+  return move && (
+    <BattleDetailCard detail={{ kind: 'move', move }}>
       {SHOW_EFFECTIVENESS && opponent && <Effectiveness move={move} attacker={member} opponent={opponent} chart={chart} />}
-    </section>
-  )
-}
-
-function MoveFacts({ move }: { move: PartyMove }) {
-  const summary = es.battle.summary
-  return (
-    <dl className="bt-side-move-facts">
-      <div>
-        <dt>{summary.category}</dt>
-        <dd>
-          {move.category && <CategoryIcon category={move.category} />}
-          {move.categoryLabel}
-        </dd>
-      </div>
-      <div>
-        <dt>{summary.power}</dt>
-        <dd className={factValueClass(move.power)}>{move.power}</dd>
-      </div>
-      <div>
-        <dt>{summary.accuracy}</dt>
-        <dd className={factValueClass(move.accuracy)}>{move.accuracy}</dd>
-      </div>
-      <div>
-        <dt>{summary.pp}</dt>
-        <dd className={factValueClass(move.maxPp)}>{move.maxPp ?? es.today.notApplicable}</dd>
-      </div>
-    </dl>
+    </BattleDetailCard>
   )
 }
 

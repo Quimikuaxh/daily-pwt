@@ -61,7 +61,9 @@ Fuentes: objetos y zonas de Serebii (`items.shtml`), tramo de cada zona según l
 
 ## Canje de PB: tienda del Metro Batalla
 
-Todos sus equipables con sus precios: Periscopio 8, Lupa 8, Cinta Fuerte 8, Gafas Especiales 8, Garra Afilada 8, Colmillo Agudo 8, Banda Atadura 8, Polvo Brillo 12, Cinta Aguante 12, Telescopio 12, Bola Férrea 12, Globo Helio 12, Brazal Recio 16, Cinto Recio 16, Lente Recia 16, Banda Recia 16, Franja Recia 16, Pesa Recia 16, Toxisfera 16, Llamasfera 16, Hierba Blanca 16, Hierba Única 16, Tubérculo 16, Pila 16, Tarjeta Roja 16, Botón Escape 16, Cinta Elección 24, Gafas Elección 24, Pañuelo Elección 24, Banda Focus 24, Vidasfera 24.
+Equipables del canje con sus precios: Periscopio 8, Lupa 8, Cinta Fuerte 8, Gafas Especiales 8, Garra Afilada 8, Colmillo Agudo 8, Banda Atadura 8, Polvo Brillo 12, Cinta Aguante 12, Telescopio 12, Bola Férrea 12, Globo Helio 12, Toxisfera 16, Llamasfera 16, Hierba Blanca 16, Hierba Única 16, Tubérculo 16, Pila 16, Tarjeta Roja 16, Botón Escape 16, Cinta Elección 24, Gafas Elección 24, Pañuelo Elección 24, Banda Focus 24, Vidasfera 24.
+
+Excluye del canje los seis objetos recios (Jose, 15/11/2026). Las partidas conservan los que ya compraron y los que se consiguen en el recorrido.
 
 **PB (aprobado):** en Hoenn, 20 PB por gimnasio y 8 más si no cae nadie, con precios de 48 y 64 (160 PB pasando los gimnasios: dos o tres de los caros). Con los precios del Metro (el caro, 24), la misma proporción da **8 PB por gimnasio y 3 más sin bajas**: 64 PB en los ocho gimnasios (dos o tres de los de 24) y 88 sin bajas.
 
@@ -69,3 +71,11 @@ Todos sus equipables con sus precios: Periscopio 8, Lupa 8, Cinta Fuerte 8, Gafa
 
 - **Fragata Plasma** (Electrizador, Magmatizador, Banda Recia): como la MT67, en la última visita (tramo de la Liga).
 - **Zumo de Baya** de Pueblo Arenisca cuenta; los de Pueblo Arcilla (después de la Liga), del martes en el Gran Tour Teselia y del minijuego de Pokéwood, no.
+
+## Sexo de los equipos rivales
+
+Usa el sexo que muestra el combate original en modo Normal para las 44 plazas de los 13 rivales. El importador lo guarda por entrenador y especie. Golurk no tiene sexo. La decompilación confirma las especies y los niveles, y las tablas de los gimnasios y la Liga documentan los símbolos que muestra el juego.
+
+El registro de un combate empezado conserva el equipo con el que se creó para reproducir los turnos guardados.
+
+[Datos de los entrenadores extraídos de N2/B2](https://github.com/fuddlesworth/pokebw2/tree/main/res/trainers/data) · [Tablas de gimnasios](https://bulbapedia.bulbagarden.net/wiki/User:TehPerson/Gym_Leader/Unova_League#Pok%C3%A9mon_Black_2_and_White_2) · [Tablas de la Liga](https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_League_(Unova)#Pok%C3%A9mon_Black_2_and_White_2)

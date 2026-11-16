@@ -871,11 +871,11 @@
     "mindplate": "después de la Liga",
     "muscleband": "tienda de PB (canje)",
     "nevermeltice": "después de la Liga",
-    "poweranklet": "tienda de PB (canje)",
-    "powerbelt": "tienda de PB (canje)",
-    "powerbracer": "tienda de PB (canje)",
+    "poweranklet": "objeto recio retirado del canje",
+    "powerbelt": "objeto recio retirado del canje",
+    "powerbracer": "objeto recio retirado del canje",
     "powerherb": "tienda de PB (canje)",
-    "powerweight": "tienda de PB (canje)",
+    "powerweight": "objeto recio retirado del canje",
     "psychicgem": "después de la Liga; aleatorio (nubes de polvo)",
     "quickpowder": "sin fuente",
     "redcard": "tienda de PB (canje)",
@@ -944,30 +944,6 @@
     {
       "item": "airballoon",
       "price": 12
-    },
-    {
-      "item": "powerbracer",
-      "price": 16
-    },
-    {
-      "item": "powerbelt",
-      "price": 16
-    },
-    {
-      "item": "powerlens",
-      "price": 16
-    },
-    {
-      "item": "powerband",
-      "price": 16
-    },
-    {
-      "item": "poweranklet",
-      "price": 16
-    },
-    {
-      "item": "powerweight",
-      "price": 16
     },
     {
       "item": "toxicorb",

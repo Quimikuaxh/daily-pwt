@@ -21,7 +21,6 @@ import type { BattleMode, DayRecord, GameStore, VoidReason } from './storage/gam
 import { readTestHooks } from './testHooks'
 import { getAudio } from './audio/audio'
 import { preloadBattleImages } from './ui/battle/preloadAssets'
-import { ResultScreen } from './ui/result/ResultScreen'
 import { TodayScreen } from './ui/today/TodayScreen'
 import { useBattleScreen } from './ui/battle/battleScreenLoader'
 import type { ReplaySource } from './ui/replay/ReplayScreen'
@@ -32,6 +31,9 @@ import { REPLAY_PARAM, replayIdFrom, replayLink } from './ui/replay/replayLink'
 // F5: el visor de repeticiones solo hace falta al abrir una (fuera de la ruta crítica, E2E-21).
 const ReplayScreen = lazy(() => import('./ui/replay/replayModule').then((module) => ({ default: module.ReplayScreen })))
 const LiveScreen = lazy(() => import('./ui/replay/replayModule').then((module) => ({ default: module.LiveScreen })))
+// El resultado no hace falta en Hoy. Se precarga al entrar en combate (E2E-21).
+const loadResultScreen = () => import('./ui/result/ResultScreen').then((module) => ({ default: module.ResultScreen }))
+const ResultScreen = lazy(loadResultScreen)
 // Campaña Nuzlocke de Hoenn (D7): aparte, fuera de la ruta crítica del reto diario.
 const loadCampaignScreen = () => import('./ui/campaign/CampaignScreen')
 const CampaignScreen = lazy(loadCampaignScreen)
@@ -109,6 +111,9 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
     const id = replayIdFrom(window.location.search)
     return id ? { name: 'replay', source: { kind: 'shared', id } } : { name: 'today' }
   })
+  useEffect(() => {
+    if (screen.name === 'battle') void loadResultScreen().catch(() => undefined)
+  }, [screen.name])
   const [battlesStarted, setBattlesStarted] = useState(0)
   const today = useChallengeDay(hooks.date)
 
@@ -381,27 +386,29 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
     const { challenge, leadIndex, ended, mode, replay, replaySaved } = screen
     const playing = accountState.status === 'guest' || accountState.status === 'signedIn'
     return (
-      <ResultScreen
-        replay={
-          replay && {
-            onWatch: () => setScreen({ name: 'replay', source: { kind: 'local', replay }, back: screen }),
-            onShare:
-              account && playing && replaySaved
-                ? async () => {
-                    await replaySaved
-                    return replayLink(await account.shareReplay(challenge.date))
-                  }
-                : undefined,
+      <Suspense fallback={null}>
+        <ResultScreen
+          replay={
+            replay && {
+              onWatch: () => setScreen({ name: 'replay', source: { kind: 'local', replay }, back: screen }),
+              onShare:
+                account && playing && replaySaved
+                  ? async () => {
+                      await replaySaved
+                      return replayLink(await account.shareReplay(challenge.date))
+                    }
+                  : undefined,
+            }
           }
-        }
-        ended={ended}
-        mode={mode}
-        store={store}
-        date={challenge.date}
-        menu={menu}
-        onBackToToday={() => setScreen({ name: 'today' })}
-        onRematch={() => startBattle(challenge, leadIndex, 'practice')}
-      />
+          ended={ended}
+          mode={mode}
+          store={store}
+          date={challenge.date}
+          menu={menu}
+          onBackToToday={() => setScreen({ name: 'today' })}
+          onRematch={() => startBattle(challenge, leadIndex, 'practice')}
+        />
+      </Suspense>
     )
   }
 

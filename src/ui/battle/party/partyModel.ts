@@ -4,11 +4,11 @@ import { battleIdentity, parseBattleIdentity } from '../../../battle/identity'
 import { isFaintedCondition } from '../../../battle/condition'
 import { calcStats, natureEffect } from '../../../core/stats'
 import { toId } from '../../../core/id'
-import type { DexMove, GameData, StatsTable } from '../../../core/types'
+import type { GameData, StatsTable } from '../../../core/types'
 import { es } from '../../../i18n/es'
 import { moveModel, STAT_KEYS, type MoveModel } from '../../today/cardModel'
 
-export type PartyMove = MoveModel & { pp: number | null; maxPp: number | null; basePower: number; category: DexMove['category'] | null }
+export type PartyMove = MoveModel & { pp: number | null; basePower: number }
 
 export type PartyMember = {
   /** Posición en `request.side.pokemon`, empezando en 1 (lo que espera `choose`). */
@@ -65,8 +65,7 @@ const levelOf = (details: string): number => Number(/L(\d+)/.exec(details)?.[1] 
 export function partyMove(moveId: string, data: GameData, ivs: StatsTable | undefined, hiddenPowerPower?: number): PartyMove {
   const model = moveModel(moveId, data, ivs, hiddenPowerPower)
   const dexMove = data.dex.moves[moveId]
-  const fullPp = dexMove ? Math.floor((dexMove.pp * 8) / 5) : null
-  return { ...model, pp: fullPp, maxPp: fullPp, basePower: Number(model.power) || 0, category: dexMove?.category ?? null }
+  return { ...model, pp: model.maxPp, basePower: Number(model.power) || 0, category: dexMove?.category ?? null }
 }
 
 /** Movimientos con los PP que le quedan según la vista del combate (llenos si aún no hay vista). */

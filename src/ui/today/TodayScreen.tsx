@@ -8,6 +8,8 @@ import { es } from '../../i18n/es'
 import { PlayerCard } from './PlayerCard'
 import { usePreloadChallengeSprites } from '../battle/preloadAssets'
 import { RivalSection, type DayWins } from './RivalSection'
+import { DetailInspection } from '../common/DetailInspection'
+import './todayDetails.css'
 import { TodayFooter } from './TodayFooter'
 import { TodayHeader } from './TodayHeader'
 import type { MenuContext } from '../menu/AppMenu'
@@ -82,7 +84,7 @@ function TodayContent({ challenge, data, onStart, onResume, store, dayWins }: To
   const practiceLocked = store !== undefined && !officialDone
 
   return (
-    <>
+    <DetailInspection>
       <RivalSection challenge={challenge} data={data} dayWins={dayWins} />
 
       <section aria-labelledby={playerHeadingId} className="panel">
@@ -127,7 +129,7 @@ function TodayContent({ challenge, data, onStart, onResume, store, dayWins }: To
         {practiceLocked && <p id={practiceHintId} className="fight-hint">{es.today.practiceAfterOfficial}</p>}
         {store && !store.persistent && <p className="fight-hint" role="status">{es.today.official.notSaved}</p>}
       </div>
-    </>
+    </DetailInspection>
   )
 }
 

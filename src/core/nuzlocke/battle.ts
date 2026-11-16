@@ -11,7 +11,7 @@ import { availableMoves, validateCampaignMoveSelection } from './progression'
 import { campaignMachineMoves } from './calendar'
 import { rulesOf } from './rules'
 
-/** `ability`: la de la tabla del rival (Teselia); sin ella, la primera de la especie. `gender`: el del recluta. */
+/** `ability`: la de la tabla del rival (Teselia); sin ella, la primera de la especie. `gender`: el del recluta o el del equipo original del rival. */
 type RivalMember = { species: string; level: number; item: string | null; moves: readonly string[]; ability?: string; gender?: 'M' | 'F' | null }
 export type CampaignBattleDefinition = {
   encounters: readonly (Omit<CampaignDefinition['encounters'][number], 'team'> & { team: readonly RivalMember[] })[]

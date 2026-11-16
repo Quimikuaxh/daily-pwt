@@ -4,6 +4,7 @@ import progression from '../../../data/nuzlocke/hoenn-emerald-progression.json'
 import { createCampaign, type CampaignDefinition, type CampaignState } from '../../core/nuzlocke/campaign'
 import { availableCampaignMoves } from '../../core/nuzlocke/progression'
 import { loadGameData } from '../../data/gameData'
+import { unovaKit } from '../campaign-unova/unovaKit'
 import { equippedMoves, learnMove, legalMoves } from './movesModel'
 
 // UT-176 · Modelo de la pantalla Movimientos (D7).
@@ -26,6 +27,21 @@ describe('lista del Recordador', () => {
     const watergun = legalMoves(definition, state, state.members[0], data).find((move) => move.id === 'watergun')!
     expect(watergun).toMatchObject({ name: 'PISTOLA AGUA', type: 'water', typeName: 'AGUA', category: 'Special', power: 40, accuracy: 100, pp: 25 })
     expect(watergun.text.split('\n')).toHaveLength(2)
+  })
+
+  it('en Teselia lista ataques de Gen 5 y etiqueta las MT de su calendario', () => {
+    const members = [
+      { ...totodile, species: 'tepig' },
+      { ...totodile, id: 'patrat-1', species: 'patrat' },
+    ]
+    const unova = { ...createCampaign('moves-gen5', undefined, 'unova-n2b2'), phase: 'prepare' as const, encounterIndex: 1, members }
+    const { definition } = unovaKit
+    expect(legalMoves(definition, unova, members[0], data)).toContainEqual(expect.objectContaining({
+      id: 'flamecharge', name: 'Nitrocarga', type: 'fire', category: 'Physical', power: 50, pp: 20, source: { level: 15 },
+    }))
+    expect(legalMoves(definition, unova, members[1], data)).toContainEqual(expect.objectContaining({
+      id: 'workup', source: { machine: 'MT83' },
+    }))
   })
 
   it('entra con los elegidos o, sin ellos, con los de por defecto', () => {

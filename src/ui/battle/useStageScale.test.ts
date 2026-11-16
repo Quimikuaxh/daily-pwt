@@ -28,7 +28,7 @@ describe('stageScaleFor', () => {
   })
 
   it('desde x2 solo usa enteros (1280x800 vale 2)', () => {
-    expect(stageScaleFor(1280, 800)).toEqual({ scale: 2, wide: true, frame: false, layout: 'wide', sideZoom: 1 })
+    expect(stageScaleFor(1280, 800)).toEqual({ scale: 2, wide: true, frame: false, layout: 'panels-side', sideZoom: 1 })
     for (const [width, height] of [[600, 1000], [1024, 1100], [1920, 1200]]) {
       const { scale } = stageScaleFor(width, height)
       if (scale >= 2) expect(Number.isInteger(scale), `${width}x${height}`).toBe(true)
@@ -54,11 +54,11 @@ describe('stageScaleFor', () => {
     expect(stageScaleFor(360, 740).frame, 'móvil: nunca').toBe(false)
   })
 
-  // UT-152 · Paneles laterales (RF-44c): solo si con ellos la escala es la misma que sin ellos y al menos x2.
+  // UT-152 · Paneles laterales (RF-44c): la consola mantiene su escala también con la barra sobre el rival.
   it('paneles laterales: con sitio a los lados y sin bajar la escala de la consola', () => {
     expect(stageScaleFor(1440, 900).layout).toBe('panels')
     expect(stageScaleFor(1920, 1080).layout).toBe('panels')
-    expect(stageScaleFor(1280, 800).layout, 'con los paneles bajaría de x2').toBe('wide')
+    expect(stageScaleFor(1280, 800).layout, 'caben los dos paneles con la barra sobre el rival').toBe('panels-side')
     expect(stageScaleFor(1366, 768).layout, 'portátil bajo: la escala ya es menor que x2').toBe('wide')
     expect(stageScaleFor(1100, 1200).layout, 'estrecho para dos paneles').toBe('wide')
     expect(stageScaleFor(360, 740).layout).toBe('stacked')
@@ -66,12 +66,19 @@ describe('stageScaleFor', () => {
     expect(stageScaleFor(2560, 1440)).toMatchObject({ scale: 3, layout: 'panels' })
   })
 
+  it('ventana ancha y baja: conserva la escala con los controles sobre el rival en el daily y Teselia', () => {
+    expect(stageScaleFor(1606, 800)).toMatchObject({ scale: 2, layout: 'panels-side', sideZoom: 1 })
+    expect(stageScaleFor(1606, 929 - 150)).toMatchObject({ scale: 1.98, layout: 'panels-side', sideZoom: 1 })
+    expect(stageScaleFor(1606, 760).layout).toBe('wide')
+    expect(stageScaleFor(1200, 800).layout).toBe('wide')
+  })
+
   // UT-157 (Jose, 06/11/2026): con sitio de sobra los paneles crecen hasta x1,3, sin pisar la consola ni salirse de alto.
   it('zoom de los paneles: hasta x1,3, lo que quepa a lo ancho y a lo alto, nunca menos de 1', () => {
     expect(stageScaleFor(1920, 950).sideZoom, 'pantalla de PC habitual (1920x1080 sin las barras)').toBe(MAX_SIDE_ZOOM)
     expect(stageScaleFor(1440, 900).sideZoom).toBe(1.15)
     expect(stageScaleFor(1920, 850).sideZoom, 'bajo: lo limita el alto').toBe(1.15)
-    expect(stageScaleFor(1280, 800).sideZoom, 'sin paneles').toBe(1)
+    expect(stageScaleFor(1280, 800).sideZoom, 'paneles con la barra sobre el rival').toBe(1)
     for (const [width, height] of [[1440, 900], [1600, 900], [1920, 950], [2560, 1440]]) {
       const stage = stageScaleFor(width, height)
       const consoleWidth = SCREEN_WIDTH * stage.scale + (stage.frame ? 2 * CONSOLE_FRAME_X : 0)

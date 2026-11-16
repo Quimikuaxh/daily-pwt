@@ -58,6 +58,7 @@ export function TouchScreen(props: TouchScreenProps) {
   const fightRef = useRef(null as HTMLButtonElement | null)
   const wasActing = useRef(false)
   const { mode, canAct, switchBlockedReason } = props
+  const switchReasonClass = switchBlockedReason === es.battle.switchReasons.nobody ? 'sr-only' : 'bt-switch-reason'
 
   // Al reaparecer el menú tras resolverse el turno, si el foco se perdió (el botón pulsado desapareció) vuelve a Luchar.
   useEffect(() => {
@@ -102,7 +103,7 @@ export function TouchScreen(props: TouchScreenProps) {
             <img src={uiAsset('touch/run.png')} alt="" />
             <span className="bt-plate-label">{props.runLabel ?? es.battle.forfeit}</span>
           </button>
-          {switchBlockedReason && <p id={reasonId} className="bt-switch-reason">{switchBlockedReason}</p>}
+          {switchBlockedReason && <p id={reasonId} className={switchReasonClass}>{switchBlockedReason}</p>}
         </div>
       )}
     </section>

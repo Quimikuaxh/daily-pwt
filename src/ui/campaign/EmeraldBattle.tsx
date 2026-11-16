@@ -105,7 +105,7 @@ export type CampaignBattleProps = {
 
 type Menu = 'actions' | 'moves' | 'party'
 /** Lo que enseña DATOS: la ficha (como en el draft), el nivel y el objeto. */
-export type SummaryData = { mon: Candidate; level: number; item: string | null }
+export type SummaryData = { mon: Candidate; level: number; item: string | null; itemId?: string }
 
 export function EmeraldBattle({ session, start, onRetry, data, trainer, trainerId, resumed = false, summaryOf, intro, rivalLevels, playerLevels, music, registerMusic, sounds = hoennSounds, lineup = [], onEnded, sides, reservedHeight, scale }: CampaignBattleProps) {
   const { playSfx, preloadSfx, playCry, preloadCries, moveSoundIds, playMoveSounds } = sounds
@@ -295,10 +295,12 @@ export function EmeraldBattle({ session, start, onRetry, data, trainer, trainerI
     )
   }
   // Props de la ficha: PS de la petición y, del que está en combate, los PP que le quedan.
-  const summaryProps = (summary: SummaryData, member: PartyMember) => {
+  const summaryProps = (summary: SummaryData, member: PartyMember, index: number) => {
+    const itemId = request?.side.pokemon[index]?.item ?? summary.itemId
     const active = member.active ? request?.active?.[0]?.moves ?? battle.lastChoiceRequest?.active?.[0]?.moves ?? null : null
     return {
-      mon: summary.mon, level: summary.level, item: summary.item, hp: member.hp,
+      mon: summary.mon, level: summary.level, itemId,
+      item: itemId === undefined ? summary.item : itemId ? emeraldItemName(itemId, data.names) : null, hp: member.hp,
       pp: active ? summary.mon.moves.map((move) => active.find((entry) => entry.id === move.id)?.pp ?? null) : undefined,
       profile: esCampaign.draft.trainedProfile(summary.level), heading: t.summaryHeading(member.name),
     }
@@ -431,7 +433,7 @@ export function EmeraldBattle({ session, start, onRetry, data, trainer, trainerI
       ), (
         // Llaves: la guarda de literales tomaba el código entre dos JSX por texto.
         (() => { return summaryAt !== null && summaryFor(summaryAt) ? (
-          <SummaryPages key="summary" {...summaryProps(summaryFor(summaryAt)!, party[summaryAt])} page={summaryPage} onPage={setSummaryPage} onExit={() => setSummaryAt(null)} />
+          <SummaryPages key="summary" {...summaryProps(summaryFor(summaryAt)!, party[summaryAt], summaryAt)} page={summaryPage} onPage={setSummaryPage} onExit={() => setSummaryAt(null)} />
         ) : (
         <div key="party" className="battle-party">
           <img src={emeraldTheme.asset('equipo-fondo-combate')} alt="" style={{ left: 0, top: 0 }} />

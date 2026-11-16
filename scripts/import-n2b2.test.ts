@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
-import { importScript } from '../src/test-utils/paths'
+import { existsInRoot, importScript } from '../src/test-utils/paths'
 
 const { N2B2_CATALOG, N2B2_ENCOUNTERS, parseSerebiiTeam, validateN2b2Catalog } = await importScript('scripts/import-n2b2.mjs')
 
@@ -32,11 +32,20 @@ describe('importador de la locke de N2/B2', () => {
     expect(() => parseSerebiiTeam(broken, 'Leader Roxie')).toThrow(/descuadradas/)
   })
 
+  it('cada rival de campaña tiene su retrato recortado para el VS', () => {
+    for (const { id } of N2B2_ENCOUNTERS) {
+      expect(existsInRoot('public/sprites/trainers', `${id}-vs.png`), id).toBe(true)
+    }
+  })
+
   it('el catálogo versionado tiene los 13 rivales en orden, con datos de Gen 5 válidos y sin IV (20 a todos en combate)', () => {
     const catalog = JSON.parse(readFileSync(N2B2_CATALOG, 'utf8'))
     expect(() => validateN2b2Catalog(catalog)).not.toThrow()
     expect(catalog.encounters.map((encounter: { id: string }) => encounter.id)).toEqual(N2B2_ENCOUNTERS.map((encounter: { id: string }) => encounter.id))
     expect(catalog.encounters.flatMap((encounter: { team: object[] }) => encounter.team).some((member: object) => 'iv' in member)).toBe(false)
+    const wrongGender = structuredClone(catalog)
+    wrongGender.encounters[0].team[0].gender = 'F'
+    expect(() => validateN2b2Catalog(wrongGender)).toThrow(/sexo original incorrecto/)
     const wrongMove = structuredClone(catalog)
     wrongMove.encounters[0].team[0].moves = ['notamove']
     expect(() => validateN2b2Catalog(wrongMove)).toThrow(/movimientos inválidos/)

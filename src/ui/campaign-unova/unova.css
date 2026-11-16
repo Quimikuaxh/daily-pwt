@@ -201,6 +201,43 @@
   .campaign-page[data-campaign="unova-n2b2"] .campaign-restart { font-size: 13px; line-height: 13px; }
 }
 
+/* Una selección no cambia el ancho ni el contorno de las otras opciones. */
+.campaign-page[data-campaign="unova-n2b2"] .campaign-difficulty-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* Reserva dos líneas exactas para que el diálogo no se mueva al cambiar la explicación. */
+.campaign-page[data-campaign="unova-n2b2"] .campaign-difficulty-hint { min-height: 2lh; }
+
+.campaign-page[data-campaign="unova-n2b2"] .campaign-difficulty-options .campaign-restart {
+  min-height: 52px;
+  padding: 0 4px 8px;
+  background: #171719;
+  border: 3px solid #30313a;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 2px #505264;
+  outline: none;
+}
+
+.campaign-page[data-campaign="unova-n2b2"] .campaign-difficulty-options .campaign-restart[aria-pressed="true"] {
+  background: #b81840;
+  border-color: #681028;
+  box-shadow: inset 0 0 0 3px #f8f8f8;
+}
+
+.campaign-page[data-campaign="unova-n2b2"] .campaign-difficulty-options .campaign-restart:focus-visible {
+  outline: 3px solid #f85838;
+  outline-offset: 1px;
+}
+
+@media (max-width: 400px) {
+  .campaign-page[data-campaign="unova-n2b2"] .campaign-difficulty-options .campaign-restart {
+    min-height: 44px;
+    padding-bottom: 2px;
+  }
+}
+
 /* Draft: la pantalla de datos del diario en la pantalla de arriba (sus 384 px los recorta la sección) y los candidatos abajo. */
 .unova-draft-summary { position: relative; width: 256px; height: 384px; }
 
@@ -299,8 +336,29 @@
 .unova-moves-aside .unova-moves-row.unova-bar { border: 8px solid transparent; border-image: var(--unova-bar) 8 fill / 8px stretch; }
 .unova-moves-aside .unova-moves-row.unova-bar-off { border: 6px solid transparent; border-image: var(--unova-bar-off) 6 fill / 6px stretch; }
 .unova-moves-aside .unova-moves-row.unova-bar > * { margin: -2px 0 0 -2px; }
-.unova-moves-aside .unova-moves-scroll { border: 0; }
-.unova-moves-aside .unova-moves-row:focus-visible { outline: 1px solid #ffd65a; }
+.unova-moves-aside .unova-moves-scroll {
+  border: 6px solid transparent;
+  border-image: var(--unova-bar-off) 6 fill / 6px stretch;
+  touch-action: manipulation;
+  color: #e5f5ff;
+}
+/* Las dos flechas comparten el centro de la placa. El reflejo vertical no desplaza el dibujo. */
+.unova-moves-scroll::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 10px;
+  height: 6px;
+  background: currentColor;
+  clip-path: polygon(0 33%, 20% 0, 50% 50%, 80% 0, 100% 33%, 50% 100%);
+}
+.unova-moves-scroll[data-direction="up"]::before { transform: scaleY(-1); }
+@media (hover: hover) {
+  .unova-moves-aside .unova-moves-scroll:enabled:hover { border-image-source: var(--unova-bar); }
+}
+.unova-moves-aside .unova-moves-scroll:disabled { opacity: .45; cursor: default; }
+.unova-moves-aside :is(.unova-moves-row, .unova-moves-scroll):focus-visible { outline: 1px solid #ffd65a; }
 .unova-moves-track { width: 2px; background: #28283c; }
 .unova-moves-thumb { width: 2px; background: #78c8ff; }
 .unova-moves-message { pointer-events: auto; }
@@ -373,11 +431,28 @@
 
 /* Resultado: el escenario del combate del diario con el rival, el botón que avanza a toda la pantalla de arriba y la Ficha. */
 .unova-result-top { position: relative; width: 256px; height: 192px; overflow: hidden; background: #000; }
+/* El fondo liso separa la pantalla de equipo del mosaico que rodea la consola. */
+.result-screen .unova-league-party .bt-party { background: #253743; }
+.result-screen .unova-league-party .bt-party-bg-bottom { display: none; }
+.result-screen .unova-league-party .bt-party::before {
+  content: "";
+  position: absolute;
+  inset: 192px 0 0;
+  border: 1px solid #58707f;
+  pointer-events: none;
+}
 .unova-result-field { position: absolute; inset: 0; }
 .unova-result-bg { position: absolute; left: 0; top: 0; width: 256px; height: 192px; image-rendering: pixelated; }
-.unova-result-trainer { position: absolute; left: 150px; top: 18px; image-rendering: pixelated; }
+.unova-result-trainer {
+  position: absolute;
+  translate: -50% -100%;
+  image-rendering: pixelated;
+}
 .unova-result-continue { position: absolute; inset: 0; width: 256px; height: 192px; border: 0; background: none; cursor: pointer; z-index: 5; }
 .unova-result-continue:focus-visible { outline: 2px solid #ffd65a; outline-offset: -2px; }
+/* La silueta más alta alcanza y=155. Reserva debajo espacio para las dos líneas del mensaje. */
+.unova-abs .unova-result-message { top: 156px; height: 36px; padding-top: 1px; }
+.unova-result-message .bt-message-text { line-height: 16px; }
 .unova-result-protagonist { left: 160px; top: 20px; width: 80px; height: 80px; }
 /* Centrada en su x (cada medalla tiene su ancho); el desplazamiento cuenta en la caja que copia exportScreens. */
 .unova-result-badge { transform: translateX(-50%); }

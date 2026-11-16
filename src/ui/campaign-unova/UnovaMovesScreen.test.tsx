@@ -37,6 +37,22 @@ describe('Movimientos de Teselia', () => {
     expect(status()).toContain('Tepig ya conoce Placaje.')
   })
 
+  it('muestra arriba el detalle de la placa equipada y vuelve a la lista al señalar otra opción', () => {
+    const { onChange } = mount(['tackle', 'growl', 'ember'])
+    fireEvent.focus(row(/^Lanzallamas, /))
+    expect(screen.getByText('Lanzallamas', { selector: '.bt-summary > .sr-only' })).toBeInTheDocument()
+    const move = screen.getByRole('button', { name: 'Ver detalle de Gruñido' })
+    fireEvent.click(move)
+    expect(move).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByText('Gruñido', { selector: '.bt-summary > .sr-only' })).toBeInTheDocument()
+    expect(row(/^Lanzallamas, /)).not.toHaveAttribute('aria-current')
+    expect(onChange).not.toHaveBeenCalled()
+
+    fireEvent.focus(row(/^Ascuas, /))
+    expect(move).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.getByText('Ascuas', { selector: '.bt-summary > .sr-only' })).toBeInTheDocument()
+  })
+
   it('con cuatro, pide cuál olvidar y la placa tocada lo sustituye', () => {
     const { onChange } = mount(['tackle', 'growl', 'ember', 'bite'])
     fireEvent.click(row(/^Lanzallamas, /))

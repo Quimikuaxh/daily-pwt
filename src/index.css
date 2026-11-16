@@ -903,6 +903,13 @@ img.sprite,
   }
 }
 
+/* Mantén la cabecera dentro de 360 px con un número de reto y una cuenta atrás largos. */
+@media (max-width: 375px) {
+  .today-header-inner { gap: 4px; padding-inline: 6px; }
+  .today-header-info { gap: 5px; }
+  .today-header-inner .header-actions { gap: 4px; }
+}
+
 .page-main {
   flex: 1;
   width: 100%;

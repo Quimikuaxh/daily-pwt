@@ -4,10 +4,12 @@
  */
 import { useState, type ReactNode } from 'react'
 import { GameText } from '../console/GameText'
+import { SummaryItemDetail } from '../common/SummaryItemDetail'
 import { emeraldSprite, emeraldTheme } from '../console/themes/emerald'
 import { esCampaign } from '../../i18n/esCampaign'
 import { candidateNotes, type Candidate } from './draftModel'
 import { SummaryValue } from './SummaryValue'
+import { itemText } from './bagModel'
 
 const t = esCampaign.draft
 
@@ -20,6 +22,7 @@ type SummaryPagesProps = {
   profile: string
   /** Objeto que lleva (nombre); sin él, NINGUNO. */
   item?: string | null
+  itemId?: string
   /** PS que le quedan (si no, los máximos). */
   hp?: number
   /** PP que le quedan a cada movimiento (si no, los máximos). */
@@ -30,7 +33,7 @@ type SummaryPagesProps = {
   onExit?: () => void
 }
 
-export function SummaryPages({ mon, level, page, onPage, profile, item = null, hp, pp, heading, onExit }: SummaryPagesProps) {
+export function SummaryPages({ mon, level, page, onPage, profile, item = null, itemId, hp, pp, heading, onExit }: SummaryPagesProps) {
   const [moveCursor, setMoveCursor] = useState(0)
   const notes = candidateNotes(mon)
   const setPage = onPage
@@ -89,7 +92,7 @@ export function SummaryPages({ mon, level, page, onPage, profile, item = null, h
             <GameText text={t.ribbons} x={178} y={20} face="small" color="tira" hidden />
             <GameText text={t.stats} x={98} y={44} width={58} face="small" color="tira" hidden />
             <GameText text={t.exp} x={98} y={100} face="small" color="tira" hidden />
-            <GameText text={item ?? t.none} x={86} y={33} width={72} align="center" color="datos" fit hidden />
+            {(!itemId || !item) && <GameText text={item ?? t.none} x={86} y={33} width={72} align="center" color="datos" fit hidden />}
             <GameText text={t.noneF} x={166} y={33} width={70} align="center" color="datos" hidden />
             {t.statNames.slice(0, 3).map((label, r) => (
               <span key={label}>
@@ -108,6 +111,13 @@ export function SummaryPages({ mon, level, page, onPage, profile, item = null, h
           </>
         )}
       </div>
+      {page === 1 && itemId && item && (
+        <SummaryItemDetail id={itemId} name={item} description={itemText(itemId) || undefined} className="summary-item-trigger-emerald"
+          style={{ left: 86, top: 20, width: 72, height: 30 }}>
+          <GameText text={item} y={13} width={72} align="center" color="datos" fit hidden />
+          <span className="sr-only">{item}</span>
+        </SummaryItemDetail>
+      )}
       {page === 2 && Array.from({ length: 4 }, (_, i) => {
         const move = mon.moves[i]
         return (

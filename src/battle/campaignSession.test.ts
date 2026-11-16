@@ -7,6 +7,9 @@ import { LocalCampaignStore, CAMPAIGN_STORAGE_KEY } from '../storage/campaignSto
 import { MemoryStorage } from '../test-utils/memoryStorage'
 import { campaignInput } from '../test-utils/campaign'
 import { firstEnabled } from '../test-utils/harness'
+import { readJson } from '../test-utils/paths'
+import { createCampaign } from '../core/nuzlocke/campaign'
+import type { CampaignBattleDefinition } from '../core/nuzlocke/battle'
 
 function mount(storage: Storage | null = new MemoryStorage(), defer = false) {
   const handle = createWorkerHandler()
@@ -85,6 +88,26 @@ describe('sesión local de campaña', () => {
     resumed.session.choose(next)
     expect(latestUpdate(resumed)).toEqual(engine.choose(next))
     expect(resumed.session.snapshot()?.battle?.init?.lookaheadVersion).toBe(legacy ? undefined : 2)
+  })
+
+  it('reanuda un combate antiguo de Teselia aunque el catálogo incorpore el sexo de los rivales', () => {
+    const { encounters } = readJson<Pick<CampaignBattleDefinition, 'encounters'>>('data', 'nuzlocke', 'unova-n2b2.json')
+    const { species } = readJson<Pick<CampaignBattleDefinition, 'species'>>('data', 'nuzlocke', 'unova-n2b2-progression.json')
+    const definition = { campaign: 'unova-n2b2' as const, encounters, species }
+    const legacy = { ...definition, encounters: encounters.map((encounter) => ({
+      ...encounter, team: encounter.team.map((member) => ({ ...member, gender: undefined })),
+    })) }
+    const state = { ...createCampaign('teselia-guardado-antiguo', undefined, 'unova-n2b2'), phase: 'prepare' as const,
+      members: [{ id: 'starter', species: 'tepig', level: 13, history: [], fainted: false, victories: 0 }] }
+    const preparation = { unlockedMoves: [], movesByMember: { starter: ['ember'] }, leadId: 'starter' }
+    const storage = new MemoryStorage()
+    const live = mount(storage)
+    live.session.prepare({ definition: legacy, state, preparation, selected: ['starter'] })
+    live.session.choose(firstEnabled(latestUpdate(live).request!))
+    const resumed = mount(storage)
+    resumed.session.resume(definition)
+    expect(latestUpdate(resumed)).toEqual(latestUpdate(live))
+    expect(resumed.session.snapshot()?.battle?.init?.rival.every((set) => set.gender === undefined)).toBe(true)
   })
 
   it('conserva las identidades repetidas y las bajas con otro inicial al reanudar un cambio forzado', () => {

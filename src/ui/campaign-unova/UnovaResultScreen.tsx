@@ -30,8 +30,11 @@ import './unova.css'
 
 const t = esCampaign.result
 const u = esUnova
-/** Hueco de cada medalla en el estuche (x de inicio y fin, en píxeles de la pantalla), medidos sobre la pieza de la Ficha. */
-const BADGE_SLOTS: readonly [number, number][] = [[9, 23], [32, 63], [66, 93], [99, 125], [134, 153], [164, 186], [191, 223], [228, 253]]
+/** Izquierda, arriba, ancho y alto de cada medalla a escala original, alineada con su silueta en ficha-estuche.png. */
+const BADGE_SLOTS = [
+  [10, 97, 12, 58], [33, 99, 30, 55], [68, 98, 24, 56], [100, 97, 24, 57],
+  [135, 97, 17, 56], [165, 98, 20, 57], [192, 98, 30, 54], [229, 99, 23, 55],
+] as const
 
 export type UnovaResultScreenProps = {
   data: GameData
@@ -78,16 +81,16 @@ function BattleResult({ mode, message, player, protagonist, badges, badgeNames, 
   const top = showCard ? (
     <div key="estuche" className="unova-abs unova-screen" style={unovaVars()}>
       <img src={n2b2Ui('ficha-estuche')} alt="" style={{ left: 0, top: 0 }} />
-      {Array.from({ length: badges }, (_, i) => {
-        const [x0, x1] = BADGE_SLOTS[i]
-        return <img key={i} className="unova-result-badge" src={n2b2Ui(`medalla-${i + 1}`)} alt="" style={{ left: Math.round((x0 + x1) / 2), top: 96 }} />
-      })}
+      {BADGE_SLOTS.slice(0, badges).map(([left, top, width, height], i) => (
+        <img key={i} className="unova-result-case-badge" src={n2b2Ui(`medalla-estuche-${i + 1}`)} alt=""
+          width={width} height={height} style={{ left, top }} />
+      ))}
       <div className="bt-message unova-result-message"><p className="bt-message-text">{pages.at(-1)?.join(' ')}</p></div>
     </div>
   ) : (
     <div key="campo" className="unova-result-field">
       <img className="unova-result-bg" src={uiAsset('bg/building.png')} alt="" />
-      {trainer && mode !== 'whiteout' && <img className="unova-result-trainer" src={trainerSprite(trainer)} alt="" />}
+      {trainer && mode !== 'whiteout' && <img className="unova-result-trainer bt-trainer-rival" src={trainerSprite(trainer)} alt="" />}
       <div className="bt-message"><p className="bt-message-text">{(pages[page] ?? []).join(' ')}</p></div>
     </div>
   )

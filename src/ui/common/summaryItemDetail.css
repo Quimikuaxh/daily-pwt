@@ -1,0 +1,23 @@
+.summary-item-trigger {
+  position: absolute;
+  display: block;
+  border: 0;
+  padding: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.summary-item-trigger:focus-visible { outline: 2px solid #926314; outline-offset: -2px; }
+.summary-item-trigger .bt-sum-value { text-decoration: underline; text-underline-offset: 2px; }
+.summary-item-trigger[data-inspected] .bt-sum-value { text-decoration-color: #926314; }
+.summary-item-trigger-emerald::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 2px;
+  border-bottom: 1px solid #77674b;
+}
+.summary-item-trigger-emerald[data-inspected]::after { border-color: #926314; }

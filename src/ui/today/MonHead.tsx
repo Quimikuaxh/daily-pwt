@@ -5,6 +5,7 @@ import { Sprite } from '../common/Sprite'
 import { speciesSprite } from '../common/spriteUrls'
 import { TypeBadge } from '../common/TypeBadge'
 import { TODAY_SPRITE_BOX, pokemonSpriteClass } from './spriteBox'
+import { DetailTrigger } from '../common/DetailInspection'
 import type { CardModel } from './cardModel'
 
 type MonHeadProps = { card: CardModel; data: GameData; headingAs?: ElementType }
@@ -28,12 +29,14 @@ export function MonHead({ card, data, headingAs: Heading = 'h3' }: MonHeadProps)
         <div>
           <dt>{es.today.itemLabel}</dt>
           {' '}
-          <dd>{card.itemName}</dd>
+          <dd>{card.itemId ? <DetailTrigger
+            detail={{ kind: 'item', id: card.itemId, name: card.itemName }}>{card.itemName}</DetailTrigger> : card.itemName}</dd>
         </div>
         <div>
           <dt>{es.today.abilityLabel}</dt>
           {' '}
-          <dd>{card.abilityName}</dd>
+          <dd>{card.abilityId ? <DetailTrigger
+            detail={{ kind: 'ability', id: card.abilityId, name: card.abilityName }}>{card.abilityName}</DetailTrigger> : card.abilityName}</dd>
         </div>
       </dl>
     </div>

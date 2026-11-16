@@ -212,7 +212,7 @@
 }
 
 /* Paneles laterales (RF-44c): tu equipo | barra y consola | el rival. */
-.bt-layout[data-layout="panels"] {
+.bt-layout:is([data-layout="panels"], [data-layout="panels-side"]) {
   display: grid;
   /* Cada columna mide lo que el panel con su zoom (`--side-zoom`, hasta x1,3; Jose 06/11/2026): así no pisa la consola. */
   grid-template-columns: calc(var(--side-width, 340px) * var(--side-zoom, 1)) auto calc(var(--side-width, 340px) * var(--side-zoom, 1));
@@ -226,29 +226,44 @@
   box-sizing: border-box;
 }
 
-.bt-layout[data-layout="panels"] .bt-side-col[data-side="player"] {
+/* El lienzo usa todo el alto si la barra cabe encima del rival. */
+.bt-layout[data-layout="panels-side"] {
+  grid-template-areas: "left console bar" "left console right";
+}
+
+.bt-layout:is([data-layout="panels"], [data-layout="panels-side"]) .bt-side-col[data-side="player"] {
   grid-area: left;
 }
 
-.bt-layout[data-layout="panels"] .bt-side-col[data-side="rival"] {
+.bt-layout:is([data-layout="panels"], [data-layout="panels-side"]) .bt-side-col[data-side="rival"] {
   grid-area: right;
 }
 
-.bt-layout[data-layout="panels"] .bt-chrome {
+.bt-layout:is([data-layout="panels"], [data-layout="panels-side"]) .bt-chrome {
   grid-area: bar;
   padding: 0;
 }
 
-.bt-layout[data-layout="panels"] .bt-console {
+.bt-layout:is([data-layout="panels"], [data-layout="panels-side"]) .bt-console {
   grid-area: console;
   justify-self: center;
 }
 
-.bt-layout[data-layout="panels"] .bt-chrome-buttons {
+.bt-layout:is([data-layout="panels"], [data-layout="panels-side"]) .bt-chrome-buttons {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: 1fr;
   gap: 6px;
+}
+
+.bt-layout[data-layout="panels-side"] .bt-chrome-buttons {
+  grid-auto-columns: auto;
+}
+
+.bt-layout[data-layout="panels-side"] .bt-chrome-btn {
+  gap: 6px;
+  padding-inline: 4px;
+  white-space: nowrap;
 }
 
 .bt-side-col {

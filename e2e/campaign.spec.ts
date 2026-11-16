@@ -214,6 +214,7 @@ test('T6 Teselia: combate contra Cheren, reanudación y cierre en la Ruta', asyn
   await expect(battle).toHaveAttribute('data-campaign', 'unova')
   await expect(page.locator('.emerald-battle')).toHaveCount(0)
   await expect(battle.locator('.bt-fight')).toBeEnabled({ timeout: 60_000 })
+  await expect(battle.getByTestId('rival-hp').locator('.bt-databox-gender')).toHaveAttribute('src', /gender-male\.png$/)
   await battle.locator('.bt-fight').click()
   await battle.locator('.bt-move:not([disabled])').first().click()
   const saved = () => page.evaluate(() => JSON.parse(localStorage.getItem('daily-pwt:nuzlocke:v1') ?? 'null'))
@@ -232,6 +233,9 @@ test('T6 Teselia: combate contra Cheren, reanudación y cierre en la Ruta', asyn
   await expect(battle.locator('.bt-side[data-side="rival"] .bt-side-stats')).toHaveCount(0)
   await expect(battle.locator('.bt-side[data-side="rival"] .bt-side-facts')).not.toContainText('Objeto')
   await page.screenshot({ path: 'e2e-artifacts/combate-teselia/escritorio.png' })
+  await page.setViewportSize({ width: 1606, height: 929 })
+  await expect(battle.locator('.bt-layout')).toHaveAttribute('data-layout', 'panels-side')
+  await expect(battle.locator('.bt-side')).toHaveCount(2)
   await page.setViewportSize({ width: 390, height: 844 })
   await page.screenshot({ path: 'e2e-artifacts/combate-teselia/movil.png' })
   await expect(battle.locator('.bt-side')).toHaveCount(0)
@@ -295,4 +299,96 @@ test('T7 Teselia: las siete evoluciones de Eevee están disponibles en la Liga',
   await expect(page.getByRole('button', { name: /^Equipo, puesto 1: VAPOREON/i })).toBeVisible()
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('daily-pwt:nuzlocke:v1') ?? 'null'))
   expect(saved.state.members[0].species).toBe('vaporeon')
+})
+
+// E2E-85 · El editor de Teselia abre y guarda ataques de Gen 5 desde el PC.
+test('T8 Teselia: edita un movimiento de Gen 5 y lo guarda', async ({ page }) => {
+  const tepig = { id: 'tepig', species: 'tepig', level: 15, history: [], fainted: false, victories: 1,
+    moves: ['tackle', 'tailwhip', 'ember', 'odorsleuth'] }
+  const state = { campaign: 'unova-n2b2', seed: 'e2e-movimientos-teselia', encounterIndex: 1, phase: 'prepare', pick: 3,
+    offer: [], previousOffer: [], leagueRoster: null, battleTeam: [], members: [tepig] }
+  await page.addInitScript((record) => {
+    if (!localStorage.getItem('daily-pwt:nuzlocke:v1')) localStorage.setItem('daily-pwt:nuzlocke:v1', JSON.stringify(record))
+  }, { version: 1, revision: 1, state, battle: null })
+
+  await new TodayPage(page).goto()
+  await page.getByRole('button', { name: 'Modos de juego' }).click()
+  await page.getByRole('button', { name: 'Nuzlocke de Teselia' }).click()
+  await page.getByRole('button', { name: /^Continuar/ }).click()
+  await page.getByRole('button', { name: /^Equipo, puesto 1: Tepig/i }).click()
+  await page.getByRole('menuitem', { name: /^Movimientos de Tepig/i }).click()
+  await page.getByRole('button', { name: 'Ver detalle de Ascuas' }).click()
+  await expect(page.locator('.bt-sum-move-text')).toHaveText('Ataca con llamas pequeñas que pueden causar quemaduras.')
+  await page.getByRole('button', { name: 'Desplazar movimientos hacia abajo' }).click()
+  await page.getByRole('button', { name: /^Nitrocarga, .*físico/i }).click()
+  await page.getByRole('button', { name: 'Ver detalle de Ascuas' }).click()
+  await expect(page.getByRole('status').filter({ hasText: 'Tepig olvidó Ascuas y aprendió Nitrocarga.' })).toBeVisible()
+  const moves = await page.evaluate(() => JSON.parse(localStorage.getItem('daily-pwt:nuzlocke:v1') ?? 'null').state.members[0].moves)
+  expect(moves).toEqual(['tackle', 'tailwhip', 'flamecharge', 'odorsleuth'])
+})
+
+test.describe('Desplazamiento del editor de Teselia', () => {
+  test.use({ hasTouch: true })
+
+  test('recorre toda la lista con clic y con toque a 360 px', async ({ page }) => {
+    const spoink = { id: 'spoink', species: 'spoink', level: 30, history: [], fainted: false, victories: 3,
+      moves: ['odorsleuth', 'psybeam', 'psychup', 'confuseray'] }
+    const state = { campaign: 'unova-n2b2', seed: 'e2e-scroll-teselia', encounterIndex: 3, phase: 'prepare', pick: 3,
+      offer: [], previousOffer: [], leagueRoster: null, battleTeam: [], members: [spoink] }
+    await page.addInitScript((record) => {
+      if (!localStorage.getItem('daily-pwt:nuzlocke:v1')) localStorage.setItem('daily-pwt:nuzlocke:v1', JSON.stringify(record))
+    }, { version: 1, revision: 1, state, battle: null })
+
+    await new TodayPage(page).goto()
+    await page.getByRole('button', { name: 'Modos de juego' }).click()
+    await page.getByRole('button', { name: 'Nuzlocke de Teselia' }).click()
+    await page.getByRole('button', { name: /^Continuar/ }).click()
+    await page.getByRole('button', { name: /^Equipo, puesto 1: Spoink/i }).click()
+    await page.getByRole('menuitem', { name: /^Movimientos de Spoink/i }).click()
+
+    const list = page.locator('.unova-moves-aside')
+    const up = list.getByRole('button', { name: 'Desplazar movimientos hacia arriba' })
+    const down = list.getByRole('button', { name: 'Desplazar movimientos hacia abajo' })
+    const first = list.locator('[data-row]').first()
+    await expect(up).toBeDisabled()
+    await down.click()
+    await expect(first).toHaveAttribute('data-row', '1')
+    await up.click()
+    await expect(first).toHaveAttribute('data-row', '0')
+
+    await page.setViewportSize({ width: 360, height: 740 })
+    const exit = list.getByRole('button', { name: 'Volver al equipo', exact: true })
+    await expect(exit).toHaveCount(0)
+    for (let i = 0; i < 50 && await down.isEnabled(); i++) await down.tap()
+    await expect(down).toBeDisabled()
+    await expect(exit).toBeVisible()
+    for (let i = 0; i < 50 && await up.isEnabled(); i++) await up.tap()
+    await expect(up).toBeDisabled()
+    await expect(first).toHaveAttribute('data-row', '0')
+  })
+})
+
+// E2E-86 · Elegir una dificultad de Teselia no mueve ni redimensiona las opciones.
+test('T9 Teselia: las opciones de dificultad mantienen la cuadrícula', async ({ page }) => {
+  await new TodayPage(page).goto()
+  await page.getByRole('button', { name: 'Modos de juego' }).click()
+  await page.getByRole('button', { name: 'Nuzlocke de Teselia' }).click()
+  await page.getByRole('button', { name: 'Empezar campaña', exact: true }).click()
+  const options = page.getByRole('group', { name: 'IA de los rivales' }).getByRole('button')
+  const boxes = () => options.evaluateAll((buttons) => buttons.map((button) => {
+    const { x, y, width, height } = button.getBoundingClientRect()
+    return { x, y, width, height }
+  }))
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 360, height: 740 }]) {
+    await page.setViewportSize(viewport)
+    await expect(options.nth(1)).toHaveAttribute('aria-pressed', 'true')
+    const before = await boxes()
+    expect(before).toHaveLength(3)
+    expect(Math.max(...before.map((box) => box.width)) - Math.min(...before.map((box) => box.width))).toBeLessThan(1)
+    expect(before.every((box) => box.y === before[0].y && box.height === before[0].height)).toBe(true)
+    await options.nth(2).click()
+    await expect(options.nth(2)).toHaveAttribute('aria-pressed', 'true')
+    expect(await boxes()).toEqual(before)
+    await options.nth(1).click()
+  }
 })

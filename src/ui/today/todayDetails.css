@@ -1,0 +1,39 @@
+.today-detail-trigger {
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  scroll-margin-block: 80px 150px;
+}
+
+.today-detail-trigger .move-name,
+.mon-facts .today-detail-trigger {
+  text-decoration: underline dotted 1px #909090;
+  text-underline-offset: 3px;
+}
+
+.mon-facts .today-detail-trigger {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  margin-top: -22px;
+  padding: 22px 0 0;
+  border: 0;
+  background: transparent;
+  overflow-wrap: anywhere;
+}
+
+.today-detail-trigger.move-row {
+  width: 100%;
+  min-height: 44px;
+}
+
+.today-detail-trigger:focus-visible {
+  outline: 2px solid #f8f8f8;
+  outline-offset: 2px;
+}
+
+.today-detail-trigger[data-inspected] .move-name,
+.mon-facts .today-detail-trigger[data-inspected] {
+  color: #f8c830;
+  text-decoration-color: #f8c830;
+}

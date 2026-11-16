@@ -24,8 +24,10 @@ describe('objetos de N2/B2', () => {
     ])
   })
 
-  it('el canje toma los equipables de la tienda del Metro con su precio y deja fuera vitaminas y piedras', () => {
-    const html = '<td>Right Counter</td><td>Item</td><td>Price</td><td>Protein</td><td>1BP</td><td>Fire Stone</td><td>3BP</td><td>Razor Claw</td><td>8BP</td><td>Choice Band</td><td>24BP</td><td>Game Names</td>'
+  it('el canje toma los equipables de la tienda del Metro con su precio y deja fuera vitaminas, piedras y objetos recios', () => {
+    const recios = ['Power Bracer', 'Power Belt', 'Power Lens', 'Power Band', 'Power Anklet', 'Power Weight']
+      .map((name) => `<td>${name}</td><td>16BP</td>`).join('')
+    const html = `<td>Right Counter</td><td>Item</td><td>Price</td><td>Protein</td><td>1BP</td><td>Fire Stone</td><td>3BP</td><td>Razor Claw</td><td>8BP</td><td>Choice Band</td><td>24BP</td>${recios}<td>Game Names</td>`
     expect(parseSubwayShop(html)).toEqual([{ item: 'razorclaw', price: 8 }, { item: 'choiceband', price: 24 }])
   })
 

@@ -4,7 +4,7 @@ import { chooseRecruit, createCampaign, finishEncounter, leagueEvolutionTargets,
   type CampaignState } from './campaign'
 import { campaignEvolutionItems, campaignMachineMoves, isEmeraldCampaign } from './calendar'
 import { beginCampaignBattle, type CampaignBattleDefinition } from './battle'
-import { heldItemStock } from './heldItems'
+import { buyExchangeItem, heldItemStock } from './heldItems'
 import { campaignRules, rulesOf } from './rules'
 import { advanceLevel } from './progression'
 
@@ -40,6 +40,11 @@ describe('reglas por campaña', () => {
     expect(campaignEvolutionItems(definition, prepared(2)).has('thunderstone')).toBe(false)
     expect(heldItemStock(UNOVA, { encounterIndex: 2 }).leftovers).toBe(1)
     expect(heldItemStock(UNOVA, { encounterIndex: 4 }).fullincense).toBe(Infinity)
+  })
+  it('retira los objetos recios del canje y conserva las compras de partidas guardadas', () => {
+    const state = { ...prepared(1), battlePoints: 24, purchases: ['powerbracer'] }
+    expect(() => buyExchangeItem(UNOVA, state, 'powerbracer')).toThrow(/no está en el canje/)
+    expect(heldItemStock(UNOVA, state).powerbracer).toBe(1)
   })
 })
 
@@ -96,11 +101,12 @@ describe('evoluciones de Gen 5 en la preparación', () => {
 })
 
 describe('combate de Gen 5', () => {
-  it('prepara el combate en la generación 5, con la habilidad de la tabla del rival y el sexo del recluta', () => {
+  it('prepara el combate en la generación 5, con la habilidad y el sexo del equipo rival y el sexo del recluta', () => {
     const state = { ...prepared(0, member('a', 'oshawott', 13, { gender: 'F' })) }
     const { init } = beginCampaignBattle(definition, state, { unlockedMoves: new Set(), movesByMember: { a: ['tackle'] }, leadId: 'a' }, ['a'])
     expect(init.generation).toBe(5)
     expect(init.rival.map((set) => set.ability)).toEqual(encounters[0].team.map((mon) => (mon as { ability?: string }).ability))
+    expect(init.rival.map((set) => set.gender)).toEqual(['M', 'M'])
     expect(init.player[0]).toMatchObject({ species: 'oshawott', gender: 'F' })
   })
 

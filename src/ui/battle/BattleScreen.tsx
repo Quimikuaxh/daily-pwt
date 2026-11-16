@@ -1,4 +1,4 @@
-import { trainerSprite } from '../common/spriteUrls'
+import { trainerSprite, trainerVsSprite } from '../common/spriteUrls'
 import type { BattleChallenge } from './battleTypes'
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { battleMusicFor, CRITICAL_HEALTH_MUSIC, getAudio, LAST_POKEMON_MUSIC, SFX_IDS } from '../../audio/audio'
@@ -118,14 +118,14 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
     onSpeedChange,
     playSfx: campaign?.playSfx,
     playCry: campaign?.playCry ?? ((species, faint) => getAudio().playCry(cryIdOf(species), { faint })),
-    introReady: () => introImages(campaign ? [avatar.front, trainerSprite(trainer.sprite), VS_LOGO] : introImageUrls(avatar, trainer.sprite)),
+    introReady: () => introImages(campaign ? [avatar.front, trainerVsSprite(trainer.sprite), trainerSprite(trainer.sprite), VS_LOGO] : introImageUrls(avatar, trainer.sprite)),
   })
 
   const reducedMotion = useReducedMotion(animations)
   const layoutRef = useRef(null as HTMLDivElement | null)
   const { scale, layout, frame, sideZoom } = useStageScale(layoutRef, campaign?.reservedHeight ?? 0)
   const BattleSidePanel = campaign?.SidePanel ?? SidePanel
-  const panels = layout === 'panels'
+  const panels = layout === 'panels' || layout === 'panels-side'
   const [touchChoice, setTouchChoice] = useState({ request: null, mode: 'main' } as TouchChoice)
   const [dialog, setDialog] = useState(null as PendingDialog)
   // Petición de cambio forzado ya contestada: la pantalla de equipo se cierra al elegir para que se vea el lanzamiento de la Poké Ball del nuevo Pokémon.
