@@ -19,7 +19,7 @@ function uniqueVariants(variants: readonly TeamVariant[]): TeamVariant[] {
   })
 }
 
-function spanishName(data: GameData, speciesId: string): string {
+export function spanishName(data: GameData, speciesId: string): string {
   const name = data.names.species[speciesId]
   if (!name) throw new DataError(`Falta el nombre en español del Pokémon «${speciesId}».`)
   return name
@@ -42,7 +42,7 @@ function resolveRivalSet(set: PokemonSet, trainer: Trainer, abilityRng: Prng, da
   return resolved
 }
 
-function withFixedHiddenPower(team: ResolvedSet[]): ResolvedSet[] {
+export function withFixedHiddenPower(team: ResolvedSet[]): ResolvedSet[] {
   return team.map((set) => (set.moves.includes('hiddenpower') ? { ...set, hiddenPowerPower: HIDDEN_POWER_FIXED_POWER } : set))
 }
 
@@ -57,6 +57,38 @@ function putLeadFirst(team: ResolvedSet[], trainer: Trainer, leadRng: Prng): Res
     leadIndex = leadRng.nextInt(team.length)
   }
   return [team[leadIndex], ...team.filter((_, index) => index !== leadIndex)]
+}
+
+/** Resuelve los sets PWT de un rival a partir de un flujo propio. */
+export function resolvePwtRival(data: GameData, trainerId: string, seed: string, variantId?: string): Pick<Challenge, 'trainer' | 'variant' | 'rivalTeam'> {
+  const trainer = data.trainers.find((candidate) => candidate.id === trainerId)
+  if (!trainer) throw new DataError(`El entrenador «${trainerId}» no existe en los datos.`)
+
+  const variants = uniqueVariants(trainer.variants)
+  if (variants.length === 0) throw new DataError(`El entrenador «${trainer.nameEs}» no tiene equipos.`)
+  const variant = variantId === undefined
+    ? variants[new Prng(deriveSeed(seed, 'variant')).nextInt(variants.length)]
+    : variants.find((candidate) => candidate.id === variantId)
+  if (!variant) throw new DataError(`El entrenador «${trainer.nameEs}» no tiene la variante «${variantId}».`)
+
+  const abilityRng = new Prng(deriveSeed(seed, 'abilities'))
+  const resolvedTeam = variant.team.map((set) => resolveRivalSet(set, trainer, abilityRng, data))
+  const rivalTeam = putLeadFirst(resolvedTeam, trainer, new Prng(deriveSeed(seed, 'lead')))
+  const challengeTrainer: Challenge['trainer'] = {
+    id: trainer.id,
+    nameEs: trainer.nameEs,
+    gender: trainer.gender ?? 'M',
+    category: trainer.category,
+    region: trainer.region,
+    sprite: trainer.sprite,
+  }
+  if (trainer.specialtyType) challengeTrainer.specialtyType = trainer.specialtyType
+
+  return {
+    trainer: challengeTrainer,
+    variant: { id: variant.id, sourceTournament: variant.sourceTournament, sourceUrl: variant.sourceUrl },
+    rivalTeam,
+  }
 }
 
 /** Qué reto construir: entrenador y variante opcional se eligen por id; la fecha aporta número y semillas (DEC-17). */
@@ -86,19 +118,7 @@ export function getDailyChallenge(date: string, data: GameData): Challenge {
 export function challengeFor({ date, trainerId, variantId }: ChallengeSelection, data: GameData): Challenge {
   const daySeed = SEED_PREFIX + date
 
-  const trainer = data.trainers.find((candidate) => candidate.id === trainerId)
-  if (!trainer) throw new DataError(`El entrenador «${trainerId}» no existe en los datos.`)
-
-  const variants = uniqueVariants(trainer.variants)
-  if (variants.length === 0) throw new DataError(`El entrenador «${trainer.nameEs}» no tiene equipos.`)
-  const variant = variantId === undefined
-    ? variants[new Prng(deriveSeed(daySeed, 'variant')).nextInt(variants.length)]
-    : variants.find((candidate) => candidate.id === variantId)
-  if (!variant) throw new DataError(`El entrenador «${trainer.nameEs}» no tiene la variante «${variantId}».`)
-
-  const abilityRng = new Prng(deriveSeed(daySeed, 'abilities'))
-  const resolvedTeam = variant.team.map((set) => resolveRivalSet(set, trainer, abilityRng, data))
-  const rivalTeam = putLeadFirst(resolvedTeam, trainer, new Prng(deriveSeed(daySeed, 'lead')))
+  const { trainer, variant, rivalTeam } = resolvePwtRival(data, trainerId, daySeed, variantId)
 
   // Desde `POOL_RULES_FROM`, sin los sets del PWT sin sinergia (Jose, 04/11/2026).
   const fullPool = poolWithoutRival(data.playerSets, trainer.id)
@@ -113,22 +133,12 @@ export function challengeFor({ date, trainerId, variantId }: ChallengeSelection,
   const finalRivalTeam = fixedHiddenPower ? withFixedHiddenPower(gendered.rival) : gendered.rival
   const playerTeam = fixedHiddenPower ? withFixedHiddenPower(gendered.player) : gendered.player
 
-  const challengeTrainer: Challenge['trainer'] = {
-    id: trainer.id,
-    nameEs: trainer.nameEs,
-    gender: trainer.gender ?? 'M',
-    category: trainer.category,
-    region: trainer.region,
-    sprite: trainer.sprite,
-  }
-  if (trainer.specialtyType) challengeTrainer.specialtyType = trainer.specialtyType
-
   return {
     number: challengeNumber(date, LAUNCH_DATE),
     date,
     dataVersion: data.dataVersion,
-    trainer: challengeTrainer,
-    variant: { id: variant.id, sourceTournament: variant.sourceTournament, sourceUrl: variant.sourceUrl },
+    trainer,
+    variant,
     rivalTeam: finalRivalTeam,
     playerTeam,
     meta: { teamAttempts: player.attempts, relaxedRules: player.relaxed },

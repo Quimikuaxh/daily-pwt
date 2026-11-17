@@ -11,6 +11,7 @@ import type { ReplayPlan } from './hooks/useBattle'
 import { useChallengeDay } from './hooks/useToday'
 import { es } from './i18n/es'
 import { esCampaign } from './i18n/esCampaign'
+import { esTower } from './i18n/esTower'
 import { LocalStorageStore } from './storage/localStorageStore'
 import { clearSettings, DEFAULT_SETTINGS, loadSettings, saveSettings, type Settings } from './storage/settings'
 import { browserStorage } from './storage/browserStorage'
@@ -41,6 +42,8 @@ const CampaignScreen = lazy(loadCampaignScreen)
 const loadUnovaCampaignScreen = () => Promise.all([loadCampaignScreen(), import('./ui/campaign-unova/unovaKit')])
   .then(([screen, { unovaKit }]) => ({ default: (props: ComponentProps<typeof screen.default>) => <screen.default {...props} kit={unovaKit} /> }))
 const UnovaCampaignScreen = lazy(loadUnovaCampaignScreen)
+const loadTowerScreen = () => import('./ui/battle-tower/TowerScreen')
+const TowerScreen = lazy(loadTowerScreen)
 
 type AppProps = {
   data: GameData | null
@@ -66,6 +69,7 @@ type Screen =
   | { name: 'live'; nickname: string }
   // Campañas Nuzlocke (D7).
   | { name: 'campaign'; region: 'hoenn' | 'unova' }
+  | { name: 'tower' }
 
 const noSubscription = () => () => {}
 /** Gimnasios de cada campaña Nuzlocke antes de la Liga (Hoenn y Teselia). */
@@ -202,6 +206,7 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
     modes: [
       { id: 'nuzlocke-hoenn', label: esCampaign.entry, hint: esCampaign.entryHint, progress: campaignProgress(false), onOpen: () => setScreen({ name: 'campaign', region: 'hoenn' }), prefetch: () => { void loadCampaignScreen() } },
       { id: 'nuzlocke-teselia', label: esCampaign.unovaEntry.entry, hint: esCampaign.unovaEntry.entryHint, progress: campaignProgress(true), onOpen: () => setScreen({ name: 'campaign', region: 'unova' }), prefetch: () => { void loadUnovaCampaignScreen() } },
+      { id: 'tower', label: esTower.name, hint: esTower.hint, onOpen: () => setScreen({ name: 'tower' }), prefetch: () => { void loadTowerScreen() } },
     ],
     onWatchFriendReplay: (nickname, date) => setScreen({ name: 'replay', source: { kind: 'friend', nickname, date } }),
     onWatchLive: (nickname) => setScreen({ name: 'live', nickname }),
@@ -278,6 +283,16 @@ export default function App({ data, createClient, store: injectedStore, cloud = 
       name: 'battle',
       battle: { challenge, leadIndex: saved.leadIndex, seed: saved.seed, ai: saved.ai, mode: 'official', ...battleClient('official'), replay: { decisions: saved.decisions, expected } },
     })
+  }
+
+  if (screen.name === 'tower' && data) {
+    return (
+      <Suspense fallback={null}>
+        <TowerScreen data={data} playerName={campaignName} createClient={createClient}
+          ai={hooks.ai === 'trivial' ? 'trivial' : 'heuristic'} settings={settings} onSettingsChange={changeSettings}
+          cloud={accountState.status === 'signedIn' ? account?.tower : undefined} onExit={() => setScreen({ name: 'today' })} />
+      </Suspense>
+    )
   }
 
   if (screen.name === 'campaign' && data) {

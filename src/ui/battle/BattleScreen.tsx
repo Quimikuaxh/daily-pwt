@@ -33,6 +33,7 @@ import { menuSoundFor } from './menuSounds'
 import { SCREEN_HEIGHT, OUTER_MARGIN, SCREEN_WIDTH, STAGE_HEIGHT, useStageScale } from './useStageScale'
 import type { CampaignPresentation } from './battleTypes'
 export type { CampaignPresentation } from './battleTypes'
+import { esTower } from '../../i18n/esTower'
 import './battle.css'
 
 // Paneles laterales (RF-44c): solo se descargan con la ventana ancha (llevan las descripciones de movimientos, objetos y habilidades).
@@ -40,6 +41,7 @@ const SidePanel = lazy(() => import('./side/SidePanel').then((module) => ({ defa
 
 type BattleScreenProps = {
   campaign?: CampaignPresentation
+  tower?: { round: number; total: number }
   /** Espera de la intro por sus imágenes (UT-181); por defecto, decodificarlas con tope (`introImagesReady`). */
   introImages?: IntroImagesWait
   client: BattleClient
@@ -93,8 +95,9 @@ type TouchChoice = { request: BattleRequest | null; mode: TouchMode }
 
 const isInteractive = (target: EventTarget | null): boolean => target instanceof HTMLElement && target.closest('button, a, input, select, textarea, [role="dialog"]') !== null
 
-export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', replayBadge, playerLabel = es.battle.you, liveApi, controls, replay, onDecision, onSettled, onReplayFailed, paused, initialSpeed, onSpeedChange, animations = 'always', sound, onSoundChange, musicMuted = false, onFinish, onExit, trainerName, introImages = introImagesReady, campaign }: BattleScreenProps) {
+export function BattleScreen({ client, data, challenge, playerLead, battleSeed, ai = 'heuristic', mode = 'practice', replayBadge, playerLabel = es.battle.you, liveApi, controls, replay, onDecision, onSettled, onReplayFailed, paused, initialSpeed, onSpeedChange, animations = 'always', sound, onSoundChange, musicMuted = false, onFinish, onExit, trainerName, introImages = introImagesReady, campaign, tower }: BattleScreenProps) {
   const { trainer, rivalTeam, playerTeam } = challenge
+  const towerLabel = tower ? esTower.mode(tower.round, tower.total) : undefined
   const speciesName = (speciesId: string, fallback: string): string => data.names.species[speciesId] ?? fallback
   // Grito de una especie: va por su `spriteId` (las formas tienen el suyo o el de la especie base; `gen:cries`).
   const cryIdOf = useCallback((speciesId: string): string => data.dex.species[speciesId]?.spriteId ?? speciesId, [data])
@@ -337,8 +340,8 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
                 }
               }}
             >
-              <span data-testid="battle-mode" data-mode={campaign ? 'campaign' : replayBadge ? 'live' : mode} className={`bt-mode bt-mode-${replayBadge ? 'live' : mode}`} role="img" aria-label={campaign ? campaign.modeLabel : replayBadge ? replayBadge.label : mode === 'replay' ? es.battle.modeReplayLabel : es.battle.modeLabel(mode === 'official')}>
-                {campaign ? campaign.modeLabel : replayBadge ? replayBadge.text : mode === 'replay' ? es.battle.modeReplay : mode === 'official' ? es.battle.modeOfficial : es.battle.modePractice}
+              <span data-testid="battle-mode" data-mode={campaign ? 'campaign' : tower ? 'tower' : replayBadge ? 'live' : mode} className={`bt-mode bt-mode-${replayBadge ? 'live' : mode}`} role="img" aria-label={campaign ? campaign.modeLabel : towerLabel ?? (replayBadge ? replayBadge.label : mode === 'replay' ? es.battle.modeReplayLabel : es.battle.modeLabel(mode === 'official'))}>
+                {campaign ? campaign.modeLabel : towerLabel ?? (replayBadge ? replayBadge.text : mode === 'replay' ? es.battle.modeReplay : mode === 'official' ? es.battle.modeOfficial : es.battle.modePractice)}
               </span>
               {liveInbox.watching > 0 && <LiveWatching count={liveInbox.watching} />}
               {partyOpen && (
@@ -446,7 +449,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
       {dialog === 'forfeit' && (
         <Dialog
           title={es.battle.forfeitTitle}
-          body={mode === 'official' ? es.battle.forfeitBodyOfficial : es.battle.forfeitBody}
+          body={tower ? esTower.forfeitBody : mode === 'official' ? es.battle.forfeitBodyOfficial : es.battle.forfeitBody}
           confirmLabel={es.battle.forfeitConfirm}
           cancelLabel={es.battle.cancel}
           onConfirm={confirmDialog}
@@ -456,7 +459,7 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
       {dialog === 'exit' && (
         <Dialog
           title={es.battle.exitTitle}
-          body={mode === 'official' ? es.battle.exitBodyOfficial : es.battle.exitBody}
+          body={tower ? esTower.exitBody : mode === 'official' ? es.battle.exitBodyOfficial : es.battle.exitBody}
           confirmLabel={es.battle.exitConfirm}
           cancelLabel={es.battle.cancel}
           onConfirm={confirmDialog}

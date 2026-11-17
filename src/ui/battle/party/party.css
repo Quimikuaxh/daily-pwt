@@ -252,3 +252,14 @@
 .bt-summary[data-loading] {
   visibility: hidden;
 }
+
+/* Solo se montan destinos de arrastre en la preparación de la Torre. */
+.bt-party[data-reorder] .bt-party-panel { touch-action: none; }
+.bt-party[data-reorder] .bt-party-panel[data-dragging] { opacity: 0.45; }
+
+.bt-party-drag-preview {
+  position: fixed;
+  z-index: 100;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(var(--drag-scale, 1));
+}

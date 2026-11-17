@@ -6,7 +6,7 @@ import type { CloudAuth, Session } from './auth'
 import type { GoogleCredential } from './googleIdentity'
 import { CloudSync, outboxKey, type TurnState } from './cloudSync'
 import { isPlayer, type AccountState } from './state'
-import { AccountCampaign } from './campaign'
+import { AccountCampaign, AccountTower } from './campaign'
 
 export { isPlayer, type AccountState }
 
@@ -30,6 +30,7 @@ export type ConflictListener = (date: string) => void
  */
 export class Account {
   readonly campaign: AccountCampaign
+  readonly tower: AccountTower
   private campaignSuspended = false
   private state: AccountState
   private readonly listeners = new Set<() => void>()
@@ -47,6 +48,7 @@ export class Account {
   ) {
     this.state = cloudLoader ? { status: 'connecting' } : { status: 'disabled' }
     this.campaign = new AccountCampaign(storage)
+    this.tower = new AccountTower(storage)
   }
 
   getState = (): AccountState => this.state
@@ -63,9 +65,15 @@ export class Account {
 
   private set(state: AccountState): void {
     this.state = state
-    this.campaign.setAccount(!this.campaignSuspended && state.status === 'signedIn' ? this.cloud?.api ?? null : null,
-      !this.campaignSuspended && state.status === 'signedIn' ? state.userId : null)
+    this.setProgressAccount(state)
     for (const listener of this.listeners) listener()
+  }
+
+  private setProgressAccount(state: AccountState | null) {
+    const userId = !this.campaignSuspended && state?.status === 'signedIn' ? state.userId : null
+    const api = userId ? this.cloud?.api ?? null : null
+    this.campaign.setAccount(api, userId)
+    this.tower.setAccount(api, userId)
   }
 
   get api(): CloudApi | null {
@@ -210,13 +218,12 @@ export class Account {
     }
     let session: Session
     this.campaignSuspended = true
-    this.campaign.setAccount(null, null)
+    this.setProgressAccount(null)
     try {
       session = await this.cloud.auth.signInWithGoogle(credential)
     } catch (error) {
       this.campaignSuspended = false
-      this.campaign.setAccount(this.state.status === 'signedIn' ? this.cloud.api : null,
-        this.state.status === 'signedIn' ? this.state.userId : null)
+      this.setProgressAccount(this.state)
       try {
         this.storage?.removeItem(GUEST_CLAIM_KEY)
       } catch {
@@ -240,7 +247,7 @@ export class Account {
   async signOut(): Promise<void> {
     if (!this.cloud) return
     this.campaignSuspended = true
-    this.campaign.setAccount(null, null)
+    this.setProgressAccount(null)
     try {
       this.storage?.removeItem(ACCOUNT_SESSION_KEY)
     } catch {

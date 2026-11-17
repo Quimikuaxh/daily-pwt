@@ -19,6 +19,10 @@
 | Roster completo y calendario (21/10/2026) | **Los 53 entrenadores se barajan todos juntos** (solo azar, sin restricciones de región; el 27/10/2026 se añadió el reparto: ver «Reparto de entrenadores») en una única entrada base del `rosterSchedule`, rebarajada desde el inicio: no se mantienen los 6 de F1 delante ni se añaden los 47 en una entrada posterior. `LAUNCH_DATE` sigue provisional (2026-10-19) y la fija Jose al final; con la fecha actual los días ya jugados (19 a 21 de octubre) pasan a Hiedra, Fredo y Antón y Máximo toca el 2026-11-26 (ver `F2-DATOS.md`, «Calendario») | Decisión de Jose. Cambia los retos ya publicados. Descartado: mantener los 6 delante, entrada de calendario nueva en fecha futura y restricciones por región |
 | Skills de diseño | `web-design-guidelines` (revisión UI/accesibilidad) y `playwright-cli` (verificación visual con capturas) | `taste-skill` excluye pantallas de app; solo se aprovecha su bucle mirar-y-corregir sobre capturas. `image-to-code` no aplica (requiere generar imágenes) |
 
+### Torre Batalla (17/11/2026)
+
+Las reglas de la serie y el contrato de guardado están en [Torre Batalla](TORRE-BATALLA.md).
+
 ### Ajustes de campaña e IA (16/11/2026)
 
 - Oculta el Pokémon y su sombra durante la fase de Vuelo, Buceo, Excavar y movimientos equivalentes. Conserva su caja de PS y vuelve a mostrarlo al atacar o interrumpirse.

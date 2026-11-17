@@ -2,7 +2,10 @@ import type { AiKind, EndReason, EngineEnd } from '../battle/protocol'
 import type { DayRecord, Decision, NewOfficial, VoidReason } from '../storage/gameStore'
 import type { CampaignRecord } from '../storage/campaignStore'
 
-export type CampaignOperation = { operationId: string; expectedRevision: number; record: CampaignRecord }
+import type { TowerRecord } from '../storage/towerStore'
+
+export type ProgressOperation<Record> = { operationId: string; expectedRevision: number; record: Record }
+export type CampaignOperation = ProgressOperation<CampaignRecord>
 export type CampaignReceipt = { operationId: string; revision: number }
 
 /**
@@ -75,6 +78,8 @@ export type LiveBattle =
   | { state: 'void'; date: string }
 
 export interface CloudApi {
+  getTower(): Promise<unknown>
+  saveTower(operation: ProgressOperation<TowerRecord>): Promise<CampaignReceipt>
   getCampaign(): Promise<unknown>
   saveCampaign(operation: CampaignOperation): Promise<CampaignReceipt>
   ensureProfile(): Promise<{ nickname: string; created: boolean; registered: boolean }>

@@ -1,4 +1,7 @@
-import { Suspense, lazy, useEffect, useRef, useState, type CSSProperties } from 'react'
+import { Suspense, lazy, useEffect, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent } from 'react'
+import { createPortal } from 'react-dom'
+import { arrowTarget, placeKey, placeOf, useMonDrag } from '../../campaign/teamDrag'
+import type { Place } from '../../campaign/teamModel'
 import type { GameData } from '../../../core/types'
 import { es } from '../../../i18n/es'
 import { uiAsset } from '../../common/uiAssets'
@@ -27,6 +30,12 @@ type PartyScreenProps = {
   readOnly?: { prompt: string; label: string }
   /** Motivo por el que no se puede cambiar a nadie (atrapado): Cambiar queda desactivado con él, y Datos sigue (Jose, 03/11/2026). */
   switchBlocked?: string | null
+  /** Solo en la preparación de la Torre. El combate usa siempre la pantalla sin arrastre. */
+  reorder?: {
+    action: string
+    destination: string
+    onSwap: (fromSlot: number, toSlot: number) => void
+  }
 }
 
 type PanelColor = 'blue' | 'red' | 'green'
@@ -37,7 +46,19 @@ function panelAsset(member: PartyMember, selected: boolean, side: 'left' | 'righ
   return uiAsset(`party/panel-${color}-${side}${lit ? '-lit' : ''}.png`)
 }
 
-function PartyPanel({ member, index, selected, enabled, onSelect, buttonRef }: { member: PartyMember; index: number; selected: boolean; enabled: boolean; onSelect: () => void; buttonRef: (element: HTMLButtonElement | null) => void }) {
+type PanelInteractions = { onClick: () => void } & Partial<ReturnType<ReturnType<typeof useMonDrag>['handlers']>>
+
+function PartyPanel({ member, index, selected, enabled, interactions, place, dragging, held, buttonRef }: {
+  member: PartyMember
+  index: number
+  selected: boolean
+  enabled: boolean
+  interactions: PanelInteractions
+  place?: string
+  dragging?: boolean
+  held?: boolean
+  buttonRef: (element: HTMLButtonElement | null) => void
+}) {
   const position = panelPosition(index)
   const bar = hpBar(member, PANEL.barFill.width)
   const stateLabel = memberStateLabel(member)
@@ -46,7 +67,7 @@ function PartyPanel({ member, index, selected, enabled, onSelect, buttonRef }: {
     top: position.y,
     width: PANEL_WIDTH,
     height: PANEL_HEIGHT,
-    backgroundImage: `url(${panelAsset(member, selected, position.side)})`,
+    backgroundImage: `url(${panelAsset(member, selected || !!held, position.side)})`,
   } as CSSProperties
   const statusIcon = member.fainted ? 'fnt' : member.status
 
@@ -58,11 +79,13 @@ function PartyPanel({ member, index, selected, enabled, onSelect, buttonRef }: {
       style={style}
       data-state={member.fainted ? 'fainted' : member.active ? 'active' : 'ready'}
       data-selected={selected ? 'true' : undefined}
+      data-place={place}
+      data-dragging={dragging || undefined}
       disabled={!enabled}
       aria-haspopup="true"
       aria-expanded={selected}
       aria-label={es.battle.party.memberAria(member.name, es.battle.party.levelShort(member.level), memberHpText(member), stateLabel)}
-      onClick={onSelect}
+      {...interactions}
     >
       <span className="bt-party-visual" aria-hidden="true">
         <span className="bt-party-icon" style={{ left: PANEL.icon.x, top: PANEL.icon.y }}>
@@ -92,11 +115,13 @@ function whyCannotSwitch(member: PartyMember): string | null {
  * Pantalla de equipo del combate (ocupa las dos pantallas, como en el juego): cuadrícula de 6 placas y, al elegir una,
  * el menú Cambiar / Datos / Cancelar. Datos abre la pantalla de datos del Pokémon. En el cambio forzado no hay Cancelar ni Volver.
  */
-export function PartyScreen({ members, data, forced, enabled, onChoose, onClose, onRival, readOnly, switchBlocked = null }: PartyScreenProps) {
+export function PartyScreen({ members, data, forced, enabled, onChoose, onClose, onRival, readOnly, switchBlocked = null, reorder }: PartyScreenProps) {
+  const [heldSlot, setHeldSlot] = useState(null as number | null)
   const [selectedSlot, setSelectedSlot] = useState(null as number | null)
   const [summarySlot, setSummarySlot] = useState(null as number | null)
   const summaryReady = useImagesReady(SUMMARY_SCREEN_IMAGES, summarySlot !== null)
   const panelRefs = useRef(new Map<number, HTMLButtonElement>())
+  const moveRef = useRef(null as HTMLButtonElement | null)
   const switchRef = useRef(null as HTMLButtonElement | null)
   const summaryRef = useRef(null as HTMLButtonElement | null)
   const summaryReturnSlot = useRef(null as number | null)
@@ -106,8 +131,39 @@ export function PartyScreen({ members, data, forced, enabled, onChoose, onClose,
   const selected = members.find((member) => member.slot === selectedSlot) ?? null
   const blockedReason = selected ? (whyCannotSwitch(selected) ?? switchBlocked) : null
 
+  function swap(from: number, to: number) {
+    if (!reorder || !enabled) return
+    if (from !== to) reorder.onSwap(from, to)
+    setHeldSlot(null)
+    requestAnimationFrame(() => panelRefs.current.get(to)?.focus())
+  }
+
+  function select(slot: number) {
+    if (heldSlot !== null) swap(heldSlot, slot)
+    else setSelectedSlot(slot)
+  }
+
+  const drag = useMonDrag({
+    box: 0,
+    canDrag: (place) => !!reorder && enabled && heldSlot === null && place.area === 'party',
+    onTap: (place) => { if (place.area === 'party' && members[place.i]) select(members[place.i].slot) },
+    onDrop: (from, to) => {
+      if (from.area === 'party' && to.area === 'party' && members[from.i] && members[to.i]) swap(members[from.i].slot, members[to.i].slot)
+    },
+  })
+  const draggingMember = drag.dragging ? members[drag.dragging.from.i] : undefined
+
+  function onTeamKeyDown(event: ReactKeyboardEvent<HTMLElement>) {
+    if (!reorder || !(event.target instanceof HTMLElement)) return
+    const place = placeOf(event.target.dataset.place, 0)
+    const next = place && arrowTarget(place, event.key)
+    if (!next || !members[next.i]) return
+    event.preventDefault()
+    panelRefs.current.get(members[next.i].slot)?.focus()
+  }
+
   useEffect(() => {
-    if (selected) (switchRef.current ?? summaryRef.current)?.focus()
+    if (selected) (moveRef.current ?? switchRef.current ?? summaryRef.current)?.focus()
   }, [selected])
 
   // Al abrirse (o al activarse los controles), el foco entra en la primera placa que se puede elegir si no estaba ya dentro: el botón que
@@ -133,23 +189,26 @@ export function PartyScreen({ members, data, forced, enabled, onChoose, onClose,
     }
   }, [selected, summarySlot])
 
+  function closeOptions() {
+    const slot = selectedSlot
+    setSelectedSlot(null)
+    if (slot !== null) requestAnimationFrame(() => panelRefs.current.get(slot)?.focus())
+  }
+
   useEffect(() => {
     if (summarySlot !== null) return
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return
       event.preventDefault()
       if (selectedSlot !== null) closeOptions()
-      else if (!forced) onClose()
+      else if (heldSlot !== null) {
+        setHeldSlot(null)
+        panelRefs.current.get(heldSlot)?.focus()
+      } else if (!forced) onClose()
     }
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
   })
-
-  function closeOptions() {
-    const slot = selectedSlot
-    setSelectedSlot(null)
-    if (slot !== null) requestAnimationFrame(() => panelRefs.current.get(slot)?.focus())
-  }
 
   function openSummary(slot: number) {
     summaryReturnSlot.current = slot
@@ -157,27 +216,33 @@ export function PartyScreen({ members, data, forced, enabled, onChoose, onClose,
     setSummarySlot(slot)
   }
 
-  const prompt = readOnly ? readOnly.prompt : forced ? es.battle.party.forcedPrompt : es.battle.party.choosePrompt
+  const prompt = reorder && heldSlot !== null ? reorder.destination : readOnly ? readOnly.prompt : forced ? es.battle.party.forcedPrompt : es.battle.party.choosePrompt
 
   return (
-    <section ref={rootRef} className="bt-party" aria-label={readOnly?.label ?? es.battle.party.label} data-loading={imagesLoaded ? undefined : 'true'}>
+    <section ref={rootRef} className="bt-party" data-reorder={!!reorder || undefined} onKeyDown={onTeamKeyDown} aria-label={readOnly?.label ?? es.battle.party.label} data-loading={imagesLoaded ? undefined : 'true'}>
       <img className="bt-party-bg bt-party-bg-top" src={uiAsset('party/bg-top.png')} alt="" />
       <img className="bt-party-bg bt-party-bg-bottom" src={uiAsset('party/bg-bottom.png')} alt="" />
       <div className="bt-party-members" role="group" aria-label={readOnly?.label ?? es.battle.party.label} inert={selected !== null || summarySlot !== null ? true : undefined}>
-        {members.map((member, index) => (
-          <PartyPanel
-            key={member.slot}
-            member={member}
-            index={index}
-            selected={member.slot === selectedSlot}
-            enabled={enabled}
-            onSelect={() => setSelectedSlot(member.slot)}
-            buttonRef={(element) => {
-              if (element) panelRefs.current.set(member.slot, element)
-              else panelRefs.current.delete(member.slot)
-            }}
-          />
-        ))}
+        {members.map((member, index) => {
+          const place: Place = { area: 'party', i: index }
+          return (
+            <PartyPanel
+              key={member.slot}
+              member={member}
+              index={index}
+              selected={member.slot === selectedSlot}
+              enabled={enabled}
+              interactions={reorder ? drag.handlers(place) : { onClick: () => select(member.slot) }}
+              place={reorder ? placeKey(place) : undefined}
+              held={heldSlot === member.slot}
+              dragging={!!reorder && draggingMember?.slot === member.slot}
+              buttonRef={(element) => {
+                if (element) panelRefs.current.set(member.slot, element)
+                else panelRefs.current.delete(member.slot)
+              }}
+            />
+          )
+        })}
       </div>
 
       <img className="bt-party-toolbar" src={uiAsset('party/bar.png')} alt="" />
@@ -202,7 +267,12 @@ export function PartyScreen({ members, data, forced, enabled, onChoose, onClose,
         <div className="bt-party-options-layer">
           <button type="button" className="bt-party-dismiss" tabIndex={-1} aria-hidden="true" onClick={closeOptions} />
           <div className="bt-party-options" role="group" aria-label={es.battle.party.optionsLabel(selected.name)}>
-            {!readOnly && (
+            {reorder && (
+              <button ref={moveRef} type="button" className="bt-party-option" onClick={() => { setHeldSlot(selected.slot); closeOptions() }}>
+                {reorder.action}
+              </button>
+            )}
+            {!readOnly && !reorder && (
               <button
                 ref={switchRef}
                 type="button"
@@ -230,6 +300,12 @@ export function PartyScreen({ members, data, forced, enabled, onChoose, onClose,
         </div>
       )}
 
+      {reorder && drag.dragging && draggingMember && createPortal(
+        <div className="bt-party-drag-preview" aria-hidden="true" style={{ left: drag.dragging.x, top: drag.dragging.y, '--drag-scale': drag.dragging.scale } as CSSProperties}>
+          <MemberIcon spriteId={draggingMember.spriteId} />
+        </div>,
+        document.body,
+      )}
       {summarySlot !== null && summaryReady && (
         <Suspense fallback={null}>
           <SummaryScreen members={members} initialSlot={summarySlot} data={data} inspectItem onClose={() => setSummarySlot(null)} />

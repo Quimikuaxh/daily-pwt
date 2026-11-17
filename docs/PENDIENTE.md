@@ -4,6 +4,11 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 **Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). El sonido va en `feature/f3-sonido` (desde `main`): los audios ya están descargados y versionados (se descargaron en local, desde la nube las fuentes están bloqueadas); falta implementarlo según «Sonido: plan de implementación».
 
+## Torre Batalla (`feature/torre-batalla`)
+
+- **Implementada el 17/11/2026.** Reglas y contrato de guardado en [TORRE-BATALLA.md](TORRE-BATALLA.md). Verificación completa: `validate:data`, `tsc -b`, lint, build, Vitest 3827/3827, E2E 253/253 y tanda de tiempos 25/25 (uno omitido por configuración).
+- **Antes de llevarla a `main`:** aplicar en producción la migración `20261117000000_pwt_tower.sql` (con autorización de Jose); sin ella, el guardado por cuenta de la Torre falla. Jose la prueba en local antes de fusionar.
+
 ## Campaña Nuzlocke de Hoenn Esmeralda
 
 - **Verificación T4, 11/11/2026:** 33 tests nuevos en `leagueEvolution.test.ts`; `calendar.test.ts` adaptado a evolucionar antes de fijar la plantilla (DEC-93). Tanda focalizada: 44/44. TypeScript, lint, `validate:data`, build y `git diff --check` pasan. Vitest completo: 2600 aprobados, tres fallos y uno omitido. Antes de acreditar la regresión completa, resuelve los dos casos del importador afectados por T5 (`import-emerald-items.test.ts`: total antiguo de 70 frente a 134 y fixture sin `src/data/items.h`) y reconcilia la evidencia del calendario de `draft-results-100.json` con el calendario usado para el informe (`report-nuzlocke-draft.test.ts`). No actualices solo el hash sin comprobar la validez de la simulación histórica. T5 queda pendiente de su siguiente etapa; los E2E los ejecuta Claude según el reparto del backlog común.

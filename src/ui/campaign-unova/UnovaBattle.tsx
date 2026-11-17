@@ -33,8 +33,6 @@ export function UnovaBattle({ session, start, onRetry, data, trainer, trainerId,
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, start])
   const challenge = useMemo((): BattleChallenge => ({
-    number: 0, date: '', dataVersion: data.dataVersion,
-    variant: { id: '', sourceTournament: '', sourceUrl: '' }, meta: { teamAttempts: 0, relaxedRules: [] },
     trainer: { ...trainer, id: trainerId ?? '', sprite: trainerId ?? '', region: 'unova' },
     playerTeam: resolvedTeam(sets.player, data), rivalTeam: resolvedTeam(sets.rival, data),
   }), [sets, data, trainer, trainerId])

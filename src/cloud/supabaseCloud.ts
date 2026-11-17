@@ -44,6 +44,11 @@ export function supabaseApi(client: SupabaseClient, functionsUrl: string): Cloud
   const numeric = <T extends Record<string, unknown>>(rows: T[], key: keyof T) => rows.map((row) => ({ ...row, [key]: Number(row[key]) }))
 
   return {
+    getTower: async () => fromCloudJson(await rpc('get_tower')),
+    saveTower: ({ operationId, expectedRevision, record }) => rpc('save_tower', {
+      p_operation_id: operationId, p_expected_revision: expectedRevision,
+      p_version: record.version, p_state: toCloudJson(record.state), p_battle: toCloudJson(record.battle),
+    }),
     getCampaign: async () => fromCloudJson(await rpc('get_campaign')),
     saveCampaign: ({ operationId, expectedRevision, record }) => rpc('save_campaign', {
       p_operation_id: operationId, p_expected_revision: expectedRevision,

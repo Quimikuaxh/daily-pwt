@@ -2,7 +2,7 @@
 import type { Challenge, ResolvedSet } from '../../core/types'
 
 export type BattleTeamSet = Omit<ResolvedSet, 'level' | 'moves'> & { level: number; moves: string[] }
-export type BattleChallenge = Omit<Challenge, 'playerTeam' | 'rivalTeam'> & { playerTeam: BattleTeamSet[]; rivalTeam: BattleTeamSet[] }
+export type BattleChallenge = Pick<Challenge, 'trainer'> & { playerTeam: BattleTeamSet[]; rivalTeam: BattleTeamSet[] }
 
 import type { ComponentType } from 'react'
 import type { BattleParams } from '../../hooks/useBattle'
