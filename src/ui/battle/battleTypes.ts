@@ -7,6 +7,7 @@ export type BattleChallenge = Omit<Challenge, 'playerTeam' | 'rivalTeam'> & { pl
 import type { ComponentType } from 'react'
 import type { BattleParams } from '../../hooks/useBattle'
 import type { Avatar } from './introAssets'
+import type { PartyMember } from './party/partyModel'
 import type { SidePanelProps } from './side/SidePanel'
 
 /** Opciones de una sesión de campaña; el diario conserva sus valores por defecto. */
@@ -27,5 +28,6 @@ export type CampaignPresentation = {
   noRun: string
   retryLabel: string
   modeLabel: string
+  evolutionsOf?: (species: string) => PartyMember['evolutions']
 }
 

@@ -129,6 +129,14 @@ export const esCampaign = {
     keepLabel: (name: string) => `Seguir como ${name}`,
   },
   // Mochila (item_menu.c) y opciones de objeto del menú del PC (DAR / QUITAR, como el menú de equipo del juego).
+  rewards: {
+    title: 'Has conseguido',
+    items: 'Objetos',
+    machines: 'MT y MO',
+    continue: 'Continuar',
+    unlimited: 'Disponibilidad ilimitada',
+    amount: (name: string, count: number) => `${name} ×${count}`,
+  },
   bag: {
     screen: 'Mochila',
     pockets: { items: 'OBJETOS', berries: 'BAYAS', evolution: 'OBJ. EVOL.', machines: 'MT/MO' } as Record<string, string>,

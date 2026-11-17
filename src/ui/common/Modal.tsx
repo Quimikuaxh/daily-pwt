@@ -7,12 +7,13 @@ type ModalProps = {
   onClose: () => void
   children: ReactNode
   className?: string
+  footer?: ReactNode
 }
 
 const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
 /** Ventana modal con contenido libre (Estadísticas, Ayuda, Ajustes): foco dentro, Escape o «Cerrar» la cierran y el foco vuelve a donde estaba. */
-export function Modal({ title, onClose, children, className }: ModalProps) {
+export function Modal({ title, onClose, children, className, footer }: ModalProps) {
   const titleId = useId()
   const panelRef = useRef(null as HTMLDivElement | null)
   const closeRef = useRef(null as HTMLButtonElement | null)
@@ -52,6 +53,7 @@ export function Modal({ title, onClose, children, className }: ModalProps) {
         </div>
         {/* Enfocable: si el contenido no cabe, se desplaza también con el teclado. */}
         <div className="modal-body" tabIndex={0}>{children}</div>
+        {footer && <div className="modal-footer">{footer}</div>}
       </div>
     </div>
   )

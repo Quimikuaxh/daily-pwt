@@ -355,3 +355,22 @@
 .bt-sum-bar:not([data-current]) {
   visibility: hidden;
 }
+
+/* La mitad superior de Información deja espacio después de la naturaleza para los métodos de Teselia. */
+.bt-summary .bt-sum-evolutions {
+  position: absolute;
+  left: 33px;
+  top: 76px;
+  width: 204px;
+  max-height: 111px;
+  overflow: auto;
+  padding: 0 4px 3px 0;
+  color: #45454e;
+  font-size: 12px;
+  line-height: 13px;
+}
+.bt-sum-evolutions :is(h3, dl, dd, p) { margin: 0; }
+.bt-sum-evolutions h3 { font-size: 13px; color: #353b70; }
+.bt-sum-evolutions dl > div { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 6fr); gap: 4px; }
+.bt-sum-evolutions dd { overflow-wrap: anywhere; }
+.bt-sum-evolutions:focus-visible { outline: 1px solid #535d9e; outline-offset: 1px; }

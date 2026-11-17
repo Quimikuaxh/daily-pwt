@@ -125,7 +125,24 @@
   order: 1;
 }
 
-.bt-layout[data-layout="stacked"] .bt-counters {
+.bt-layout[data-layout="stacked"] /* Con los controles al lado, limita la altura de cada columna sin ocultar la ficha ni su contenido. */
+.bt-layout[data-layout="panels-side"] .bt-side-col {
+  min-inline-size: 0;
+  max-block-size: var(--side-height);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.bt-layout[data-layout="panels-side"] .bt-side-col[data-side="rival"] {
+  /* Barra y hueco encima del panel rival. */
+  max-block-size: calc(var(--side-height) - 56px);
+}
+
+.bt-layout[data-layout="panels-side"] .bt-side-col > .bt-side {
+  width: 100%;
+}
+
+.bt-counters {
   order: 2;
   flex-wrap: nowrap;
   width: 100%;

@@ -3,6 +3,7 @@ import { battleIdentity } from './identity'
 import { toId } from '../core/id'
 import { Prng } from '../core/prng'
 import { buildAiState } from './ai/state'
+import { moveInfo } from './ai/moveInfo'
 import { aiSeed, chooseRivalAction } from './ai/heuristic'
 import { chooseLookaheadAction } from './ai/lookahead'
 import { buildVisibleAiState } from './ai/visible'
@@ -199,6 +200,7 @@ export function createBattleEngine(init: EngineInit): BattleEngine {
         view.maxHp = pokemon.maxhp
       }
       if (pokemon.volatiles['substitute']) view.substitute = true
+      if (!fainted && pokemon.isActive && pokemon.isSemiInvulnerable()) view.semiInvulnerable = true
       view.item = pokemon.item
       // PP de los dos bandos (los del rival, para el botón RIVAL: decisión de Jose). Los del simulador ya cuentan Presión.
       view.moves = pokemon.moveSlots.map((slot) => ({ id: slot.id, pp: slot.pp, maxPp: slot.maxpp }))
@@ -287,9 +289,33 @@ export function createBattleEngine(init: EngineInit): BattleEngine {
 
   function makeRivalChoice(): void {
     const request = rivalSide.activeRequest as BattleRequest
-    const choice = init.ai === 'trivial' ? chooseTrivialAction(request)
-      : init.ai === 'lookahead' ? chooseLookaheadAction(buildVisibleAiState(battle, init.foeMovePool), aiRng, init.lookaheadVersion === undefined)
-        : chooseRivalAction(buildAiState(battle), aiRng)
+    const generation = battle.gen === 3 ? 3 : 5
+    const canAttack = (id: string) => moveInfo(id, generation).category !== 'Status'
+    const active = request.active?.[0]
+    const substitute = init.substituteAi !== 'legacy' && Boolean(playerSide.active[0]?.volatiles.substitute)
+    const usable = substitute && active ? active.moves.filter((move) => !move.disabled && (move.pp ?? 1) > 0) : []
+    const filterStatus = usable.some((move) => !canAttack(move.id))
+    const hasAttack = usable.some((move) => canAttack(move.id))
+    // Si solo quedan movimientos de estado, intenta pasar a una reserva que pueda atacar. Un Pokémon atrapado o sin
+    // relevo capaz de atacar conserva sus opciones legales para que la partida pueda avanzar.
+    const reserve = filterStatus && !hasAttack && !active?.trapped ? rivalSide.pokemon.findIndex((mon, index) =>
+      index > 0 && !mon.fainted && mon.moveSlots.some((move) => move.pp > 0 && canAttack(move.id))) : -1
+    let choice: Choice
+    if (reserve >= 0) {
+      choice = { type: 'switch', slot: reserve + 1 }
+    } else if (init.ai === 'trivial') {
+      const filtered = filterStatus && hasAttack && active
+        ? { ...request, active: [{ ...active, moves: active.moves.map((move) => canAttack(move.id) ? move : { ...move, disabled: true }) }] }
+        : request
+      choice = chooseTrivialAction(filtered)
+    } else {
+      const state = init.ai === 'lookahead' ? buildVisibleAiState(battle, init.foeMovePool) : buildAiState(battle)
+      if (filterStatus && hasAttack) {
+        const mon = state.self.pokemon[0]
+        mon.moves = mon.moves.map((move) => canAttack(move.id) ? move : { ...move, disabled: true })
+      }
+      choice = init.ai === 'lookahead' ? chooseLookaheadAction(state, aiRng, init.lookaheadVersion === undefined) : chooseRivalAction(state, aiRng)
+    }
     // Una decisión de la IA que el sim rechaza no puede dejar la partida colgada: se deja que el sim elija.
     if (!rivalSide.choose(describeChoice(choice))) rivalSide.autoChoose()
   }

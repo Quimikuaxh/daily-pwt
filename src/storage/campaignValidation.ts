@@ -23,6 +23,7 @@ function state(v: unknown): boolean {
     (v.difficulty === undefined || (object(v.difficulty) && level(v.difficulty.ai) && level(v.difficulty.draft))) &&
     (v.scannerChoice === undefined || v.scannerChoice === 'deepseatooth' || v.scannerChoice === 'deepseascale') &&
     (v.draftTypeCovered === undefined || typeof v.draftTypeCovered === 'boolean') &&
+    (v.pendingRewards === undefined || v.pendingRewards === true) &&
     (v.leagueEvolved === undefined || typeof v.leagueEvolved === 'boolean') &&
     (v.teamLayout === undefined || (object(v.teamLayout) && list(v.teamLayout.party) &&
       Array.isArray(v.teamLayout.box) && v.teamLayout.box.every((id) => id === null || text(id))))
@@ -40,6 +41,7 @@ function init(v: unknown): boolean {
   // 3.ª generación en Hoenn (Esmeralda) y 5.ª en Teselia (N2/B2).
   return object(v) && text(v.battleSeed) && (v.generation === 3 || v.generation === 5) && (v.ai === 'heuristic' || v.ai === 'trivial' || v.ai === 'lookahead') &&
     (v.lookaheadVersion === undefined || (v.ai === 'lookahead' && v.lookaheadVersion === 2)) &&
+    (v.substituteAi === undefined || v.substituteAi === 'avoid-status') &&
     count(v.maxTurns) && v.maxTurns > 0 && Array.isArray(v.player) && v.player.length > 0 && v.player.length <= 6 && v.player.every(set) &&
     Array.isArray(v.rival) && v.rival.length > 0 && v.rival.length <= 6 && v.rival.every(set) &&
     (v.playerLead === undefined || (count(v.playerLead) && v.playerLead < v.player.length)) &&

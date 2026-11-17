@@ -179,16 +179,22 @@ function MonCard({ member, boosts, isPressed, onDetail, hidePrivate }: MonCardPr
         </div>
       </dl>
       <ul className="bt-side-moves" aria-label={es.battle.movesLabel}>
-        {member.moves.map((move, index) => (
-          <li key={`${move.id}-${index}`}>
-            <button type="button" className="bt-side-move" aria-label={text.showMove(move.name)} aria-pressed={isPressed({ kind: 'move', index })} onClick={() => onDetail({ kind: 'move', index })}>
-              {move.typeName && <TypeBadge typeName={move.typeName} label={move.typeLabel ?? move.typeName} />}
-              {move.category && <CategoryIcon category={move.category} />}
-              <span className="bt-side-move-name">{move.name}</span>
-              {move.pp !== null && <span className="bt-side-pp">{es.battle.hpValues(move.pp, move.maxPp ?? move.pp)}</span>}
-            </button>
-          </li>
-        ))}
+        {member.moves.map((move, index) => {
+          const type = move.typeLabel ?? move.typeName
+          const pp = move.pp === null ? null : es.battle.hpValues(move.pp, move.maxPp ?? move.pp)
+          // El nombre accesible incluye el texto visible de la fila en el mismo orden.
+          const label = text.showMove([type, move.name, pp].filter(Boolean).join(' '))
+          return (
+            <li key={`${move.id}-${index}`}>
+              <button type="button" className="bt-side-move" aria-label={label} aria-pressed={isPressed({ kind: 'move', index })} onClick={() => onDetail({ kind: 'move', index })}>
+                {move.typeName && <TypeBadge typeName={move.typeName} label={type ?? move.typeName} />}
+                {move.category && <CategoryIcon category={move.category} />}
+                {' '}<span className="bt-side-move-name">{move.name}</span>{' '}
+                {pp !== null && <span className="bt-side-pp">{pp}</span>}
+              </button>
+            </li>
+          )
+        })}
       </ul>
     </article>
   )

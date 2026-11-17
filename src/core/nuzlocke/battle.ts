@@ -103,6 +103,7 @@ function buildCampaignBattleInit(
     // visto y los gimnasios usan la heurística (Jose, 12/11/2026); Fácil, la heurística en todos; Difícil, mirar por delante en todos.
     ai: lookahead ? 'lookahead' : 'heuristic',
     maxTurns: MAX_TURNS,
+    substituteAi: 'avoid-status',
     // Lo que cada Pokémon del jugador puede llevar (por nivel y MT desbloqueadas compatibles): de ahí predice la IA sus movimientos.
     ...(!lookahead ? {} : { lookaheadVersion: 2, foeMovePool: Object.fromEntries(state.battleTeam.map((id) => {
       const member = state.members.find((recruit) => recruit.id === id)!

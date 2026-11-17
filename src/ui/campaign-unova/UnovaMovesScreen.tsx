@@ -15,6 +15,7 @@ import { esCampaign } from '../../i18n/esCampaign'
 import { esUnova } from '../../i18n/esUnova'
 import { learnMove, type MoveInfo } from '../campaign/movesModel'
 import { scrollList, wheelRows } from '../campaign/listScroll'
+import { UnovaListArrows } from './UnovaListArrows'
 import { unovaVars } from './unovaRoute'
 import '../battle/party/party.css'
 import '../battle/party/summary.css'
@@ -65,7 +66,11 @@ export function UnovaMovesScreen({ mon, legal, equipped, onChange, onExit, membe
     if (i === legal.length) { onExit(); return }
     const move = legal[i]
     moveCursor(i)
-    if (equipped.includes(move.id)) { setNote(t.known(name, nameOf(move.id))); return }
+    if (equipped.includes(move.id)) {
+      setLearning(null)
+      setNote(t.known(name, nameOf(move.id)))
+      return
+    }
     const added = learnMove(equipped, move.id)
     if (added) { onChange(added); setNote(t.learned(name, nameOf(move.id))); return }
     setLearning(move.id)
@@ -86,7 +91,7 @@ export function UnovaMovesScreen({ mon, legal, equipped, onChange, onExit, membe
   const onKeyDown = (event: KeyboardEvent) => {
     if (event.key === 'Escape' && learning) { event.preventDefault(); event.stopPropagation(); setLearning(null); return }
     const row = (event.target as HTMLElement).dataset.row
-    if (row === undefined || learning || (event.key !== 'ArrowUp' && event.key !== 'ArrowDown')) return
+    if (row === undefined || (event.key !== 'ArrowUp' && event.key !== 'ArrowDown')) return
     event.preventDefault()
     event.stopPropagation()
     const next = Number(row) + (event.key === 'ArrowDown' ? 1 : -1)
@@ -99,13 +104,13 @@ export function UnovaMovesScreen({ mon, legal, equipped, onChange, onExit, membe
 
   // Bloque con llaves: la guarda de literales (literals.test.ts) tomaba el código entre dos JSX por texto.
   const aside = (() => { return (
-    <div className="unova-moves-aside" style={unovaVars()} onKeyDown={onKeyDown} onWheel={(event) => { if (!learning) scrollBy(wheelRows(event.deltaY)) }}>
+    <div className="unova-moves-aside" style={unovaVars()} onKeyDown={onKeyDown} onWheel={(event) => scrollBy(wheelRows(event.deltaY))}>
       <span className="unova-panel" style={{ left: LIST.x, top: LIST.y, width: LIST.w, height: LIST.h }} />
       <span className="unova-text unova-soft" style={{ left: LIST.x + 8, top: LIST.y + 6 }}>{u.canLearn}</span>
       {Array.from({ length: Math.min(visible, items - scroll) }, (_, k) => {
         const i = scroll + k
         const move = legal[i]
-        const current = !showEquipped && i === cursor
+        const current = learning ? move?.id === learning : !showEquipped && i === cursor
         return (
           <button key={i} type="button" className={`unova-moves-row ${current ? 'unova-bar' : 'unova-bar-off'}`} data-row={i}
             style={{ left: LIST.x + 6, top: LIST.y + LIST.rowY + k * LIST.step, width: 100, height: LIST.rowH }}
@@ -121,12 +126,8 @@ export function UnovaMovesScreen({ mon, legal, equipped, onChange, onExit, membe
         <>
           <span className="unova-moves-track" style={{ left: LIST.x + 108, top: LIST.y + LIST.rowY, height: visible * LIST.step - 2 }} />
           <span className="unova-moves-thumb" style={{ left: LIST.x + 108, top: LIST.y + LIST.rowY + thumb.top, height: Math.max(6, thumb.height - 2) }} />
-          {[false, true].map((down) => (
-            <button key={String(down)} type="button" className="unova-moves-scroll" data-direction={down ? 'down' : 'up'}
-              style={{ left: LIST.x + (down ? 58 : 6), top: LIST.y + LIST.h - 36, width: 48, height: 32 }}
-              aria-label={t.scroll(down)} onClick={() => scrollBy(down ? 1 : -1)}
-              disabled={learning !== null || (down ? scroll + visible >= items : scroll === 0)} />
-          ))}
+          <UnovaListArrows x={LIST.x + 6} y={LIST.y + LIST.h - 36} width={100} scroll={scroll}
+            visible={visible} total={items} label={t.scroll} onScroll={scrollBy} />
         </>
       )}
       <span className="unova-bar-off unova-moves-message" style={{ left: 0, top: 170, width: 256, height: 22 }}>

@@ -12,6 +12,7 @@ import { itemIconUrl } from '../common/spriteUrls'
 import { usePreloadImages } from '../campaign/usePreloadImages'
 import { esCampaign } from '../../i18n/esCampaign'
 import { esUnova } from '../../i18n/esUnova'
+import { UnovaListArrows } from './UnovaListArrows'
 import { scrollList, wheelRows } from '../campaign/listScroll'
 import { wrapText } from '../campaign/draftModel'
 import { n2b2Ui, unovaVars } from './unovaRoute'
@@ -22,7 +23,7 @@ import './unova.css'
 
 const t = esCampaign.exchange
 const u = esUnova
-const VISIBLE = 7
+const MAX_VISIBLE = 7
 const ROW = { x: 96, y: 9, w: 152, h: 17 }
 
 export type UnovaExchangeScreenProps = {
@@ -46,6 +47,7 @@ export function UnovaExchangeScreen({ points, offers, onBuy, onExit, itemName, i
   const [asking, setAsking] = useState(null as string | null)
   const [note, setNote] = useState(null as string | null)
   const rows = offers.length + 1 // la última fila es SALIR
+  const visible = rows > MAX_VISIBLE ? 5 : MAX_VISIBLE
   usePreloadImages(offers.map((offer) => itemIconUrl(offer.item)))
   const selected = offers[cursor] ?? null
   const message = note ?? (asking ? t.confirm(itemName(asking), offers.find((offer) => { return offer.item === asking })?.price ?? 0) : null)
@@ -55,12 +57,12 @@ export function UnovaExchangeScreen({ points, offers, onBuy, onExit, itemName, i
     const next = Math.max(0, Math.min(rows - 1, i))
     setCursor(next)
     if (next < scroll) setScroll(next)
-    if (next >= scroll + VISIBLE) setScroll(next - VISIBLE + 1)
+    if (next >= scroll + visible) setScroll(next - visible + 1)
     setNote(null)
     if (focus) requestAnimationFrame(() => (document.querySelector(`[data-exchange-row="${next}"]`) as HTMLElement | null)?.focus())
   }
   const scrollBy = (by: number) => {
-    const next = scrollList(scroll, cursor, rows, VISIBLE, by)
+    const next = scrollList(scroll, cursor, rows, visible, by)
     setScroll(next.scroll)
     setCursor(next.cursor)
     setNote(null)
@@ -119,7 +121,7 @@ export function UnovaExchangeScreen({ points, offers, onBuy, onExit, itemName, i
           <span className="unova-text unova-soft" style={{ left: 6, top: 24 }}>{u.shopOwned}</span>
           <span className="unova-text unova-soft" style={{ right: 176, top: 24 }}>{selected ? owned(selected.item) : ''}</span>
           {selected && <img className="unova-shop-big" src={itemIconUrl(selected.item)} alt="" style={{ left: 12, top: 60 }} />}
-          {Array.from({ length: Math.min(VISIBLE, rows - scroll) }, (_, k) => {
+          {Array.from({ length: Math.min(visible, rows - scroll) }, (_, k) => {
             const i = scroll + k
             const offer = offers[i]
             return (
@@ -132,6 +134,8 @@ export function UnovaExchangeScreen({ points, offers, onBuy, onExit, itemName, i
               </button>
             )
           })}
+          <UnovaListArrows x={ROW.x} y={102} width={ROW.w} scroll={scroll} visible={visible} total={rows}
+            blocked={asking !== null} label={esCampaign.bag.scroll} onScroll={scrollBy} />
           {description.map((line, i) => <span key={i} className="unova-text" style={{ left: 6, top: 142 + i * 15 }}>{line}</span>)}
           {asking && (
             <span className="unova-pc-menu" role="menu" aria-label={message ?? ''} style={{ left: 188, top: 92, width: 64, height: 44 }}>

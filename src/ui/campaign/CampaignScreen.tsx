@@ -35,6 +35,8 @@ import { leagueBeaten } from './leagueModel'
 import { type CampaignResult, minutesSince, playerNameOf, protagonistOf, recruitedSpecies, resultOf, trainerId } from './resultModel'
 import { useCampaignMusic } from './campaignMusic'
 import { DifficultyDialog } from './DifficultyDialog'
+import { CampaignRewardsDialog } from './CampaignRewardsDialog'
+import { campaignRewards } from './campaignRewards'
 import { Modal } from '../common/Modal'
 import { SoundSettings } from '../menu/SoundSettings'
 import type { SoundPrefs } from '../../storage/settings'
@@ -208,6 +210,12 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     return next
   }
   const openNext = (current: CampaignState) => save(current.offer.length ? current : openDraft(definition, current))
+  const readRewards = () => {
+    if (!state?.pendingRewards) return state
+    const next = { ...state }
+    delete next.pendingRewards
+    return save(next)
+  }
   const continueCampaign = () => {
     if (state?.phase === 'prepare' && inLeague(state)) {
       // Liga: evoluciones (una vez), después los 6 en Equipo y PC y la elección de participantes; con la plantilla fijada, el rival.
@@ -224,7 +232,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     // La colocación de Equipo y PC se conserva al salir y volver a entrar (Jose, 12/11/2026); `fittingLayout` la descarta si ya no vale.
     if (state?.phase === 'prepare') { setView('team'); return }
     if (state?.phase !== 'draft') return
-    openNext(state)
+    openNext({ ...state, pendingRewards: undefined })
     setView('draft')
   }
   const recruit = (id: string) => {
@@ -467,6 +475,13 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     if (!lineup?.length) return
     return session.prepare(battleInput(battleDefinition, record.state, lineup))
   }, [session, store, team, battleDefinition])
+
+  const rewardsScreen = () => {
+    if (view !== 'route' || !state?.pendingRewards) return null
+    const rewards = campaignRewards(state, definition, rules, (current) => { return kit.bagContents(current, 'machines', '', data) })
+    if (!rewards.items.length && !rewards.machines.length) return null
+    return <CampaignRewardsDialog rewards={rewards} itemName={kit.itemName} onContinue={readRewards} />
+  }
 
   const resultScreen = () => {
     if (view !== 'result' || !result) return null
@@ -784,6 +799,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
             <SoundSettings settings={sound} onChange={onSoundChange} showTitle={false} />
           </Modal>
         )}
+        {rewardsScreen()}
         {choosingDifficulty && <DifficultyDialog onStart={startWith} onCancel={() => setChoosingDifficulty(false)} />}
         {store instanceof LocalCampaignStore && !store.persistent && <p className="fight-hint" role="status">{esCampaign.notSaved}</p>}
       </main>

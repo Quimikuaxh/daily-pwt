@@ -48,6 +48,8 @@ export type CampaignState = {
   scannerChoice?: ScannerChoice
   /** Alguna oferta del tramo ya incluyó un tipo propio supereficaz. */
   draftTypeCovered?: boolean
+  /** Aviso de objetos y MT/MO sin leer tras ganar un gimnasio. */
+  pendingRewards?: true
   /** Ya se aplicaron las evoluciones de la Liga (`evolveForLeague`). */
   leagueEvolved?: boolean
   /** Puntos Batalla por gastar y objetos comprados en el canje (heldItems.ts). */
@@ -493,6 +495,7 @@ export function finishEncounter(
   return {
     ...finished,
     encounterIndex: nextIndex,
+    ...(rules && encounterAt(definition, state).kind === 'gym' ? { pendingRewards: true as const } : {}),
     phase: state.leagueRoster ? 'prepare' : 'draft',
     pick: 0,
     offer: [],

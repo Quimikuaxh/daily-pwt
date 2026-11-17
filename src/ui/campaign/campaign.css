@@ -446,3 +446,13 @@
 
 /* Fallo del combate (no arranca el motor o falla un guardado): el aviso con «Reintentar», encima de la consola para que se vea en móvil. */
 .emerald-battle-failed { order: -1; margin-top: 0.75rem; }
+
+.campaign-rewards.modal-panel { max-height: min(76dvh, 560px); }
+.campaign-rewards .modal-footer { margin-top: 12px; }
+.campaign-reward-groups { display: grid; gap: 16px; }
+.campaign-reward-groups h3 { margin: 0 0 4px; font-size: 1rem; }
+.campaign-reward-groups ul { list-style: none; margin: 0; padding: 0; }
+.campaign-reward-groups li { display: flex; align-items: center; gap: 8px; min-height: 28px; }
+.campaign-reward-groups img { flex: none; image-rendering: pixelated; }
+.campaign-reward-groups small { margin-left: auto; }
+.campaign-rewards .campaign-action { min-height: 44px; width: 100%; }

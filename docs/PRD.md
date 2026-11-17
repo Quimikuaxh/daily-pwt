@@ -19,6 +19,18 @@
 | Roster completo y calendario (21/10/2026) | **Los 53 entrenadores se barajan todos juntos** (solo azar, sin restricciones de región; el 27/10/2026 se añadió el reparto: ver «Reparto de entrenadores») en una única entrada base del `rosterSchedule`, rebarajada desde el inicio: no se mantienen los 6 de F1 delante ni se añaden los 47 en una entrada posterior. `LAUNCH_DATE` sigue provisional (2026-10-19) y la fija Jose al final; con la fecha actual los días ya jugados (19 a 21 de octubre) pasan a Hiedra, Fredo y Antón y Máximo toca el 2026-11-26 (ver `F2-DATOS.md`, «Calendario») | Decisión de Jose. Cambia los retos ya publicados. Descartado: mantener los 6 delante, entrada de calendario nueva en fecha futura y restricciones por región |
 | Skills de diseño | `web-design-guidelines` (revisión UI/accesibilidad) y `playwright-cli` (verificación visual con capturas) | `taste-skill` excluye pantallas de app; solo se aprovecha su bucle mirar-y-corregir sobre capturas. `image-to-code` no aplica (requiere generar imágenes) |
 
+### Ajustes de campaña e IA (16/11/2026)
+
+- Oculta el Pokémon y su sombra durante la fase de Vuelo, Buceo, Excavar y movimientos equivalentes. Conserva su caja de PS y vuelve a mostrarlo al atacar o interrumpirse.
+- Mantén el desplazamiento del editor de Teselia por rueda, flechas y teclado durante la elección de un reemplazo. Se puede elegir otro movimiento antes de pulsar el que se va a sustituir.
+- En combate muestra los paneles del daily y Teselia cuando quepan a lo ancho sin reducir la consola. En ventanas bajas, cada columna se desplaza y los controles quedan encima del rival.
+- Da el mismo ancho a todas las etiquetas de tipo de la lista de reclutas de Teselia, con espacio para dos tipos y la cifra de estadísticas.
+
+- Usa flechas visibles que desplazan una fila en la Mochila y el Canje de PB de Teselia. Conserva el desplazamiento por rueda y teclado.
+- Muestra los requisitos de evolución de la campaña de Teselia en la página Información de Datos. El intercambio usa el nivel de la campaña y los lugares se describen por el tramo que los habilita.
+- Tras ganar un gimnasio de Hoenn o Teselia, muestra un aviso con los objetos equipables, evolutivos y MT/MO que añade el siguiente tramo. El aviso conserva su estado hasta confirmarlo. No repitas existencias anteriores, compras de PB ni premios opcionales aún sin escoger.
+- Con el Sustituto del jugador activo al elegir, las IAs priorizan sus opciones de daño sobre los movimientos de estado. Si solo tienen movimientos de estado, pueden enviar a una reserva capaz de atacar. Si no hay otra acción legal, conserva los movimientos disponibles para permitir que avance el combate. Conserva la política de las partidas que ya estaban guardadas para que puedan reproducirse.
+
 ### Ambiente del estadio (10/11/2026)
 
 | Tema | Decisión | Motivo / alcance |

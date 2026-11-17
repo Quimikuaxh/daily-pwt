@@ -759,6 +759,13 @@ describe('sustituto', () => {
   })
 })
 
+it('oculta el sprite y su sombra durante la preparación sin ocultar los PS', async () => {
+  await ready({ view: mkView({ rival: [rMon('snorlax', 100, { semiInvulnerable: true })] }) })
+  expect(document.querySelector('.bt-mon-rival')).toHaveStyle({ visibility: 'hidden' })
+  expect(screen.getByTestId('rival-hp')).toBeVisible()
+  expect(document.querySelector('.bt-mon-player')).not.toHaveStyle({ visibility: 'hidden' })
+})
+
 // UT-238 (15/11/2026): en la campaña (Teselia) no se sale del combate ni se rinde, como en Hoenn: sin «Salir» y con HUIR, que solo avisa.
 describe('combate de campaña: sin salir ni rendirse', () => {
   it('no hay «Salir»; HUIR enseña el aviso y no rinde', async () => {

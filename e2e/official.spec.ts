@@ -9,13 +9,21 @@ const STORAGE_KEY = 'daily-pwt:v1'
 type StoredDays = { version: number; days: Record<string, { status: string; battle: { decisions: unknown[] } | null }> }
 const storedDays = (page: Page): Promise<StoredDays> => page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{"version":1,"days":{}}'), STORAGE_KEY)
 
+async function remaining(page: Page, side: 'player' | 'rival') {
+  const counter = page.getByTestId(`remaining-${side}`).locator('.sr-only')
+  const panel = page.locator(`.bt-side[data-side="${side}"] .bt-side-balls`)
+  const indicator = counter.or(panel)
+  // El contador se pinta debajo de la consola o en el encabezado del panel lateral, según el ancho.
+  return (await indicator.getAttribute('aria-label')) ?? (await indicator.textContent())
+}
+
 /** Todo lo que debe coincidir tras reanudar: historial, PS de ambos bandos y contadores. */
 async function snapshot(page: Page, battle: BattlePage) {
   return {
     log: await battle.logLines(),
     playerHp: await page.getByTestId('player-hp').textContent(),
     rivalHp: await page.getByTestId('rival-hp').textContent(),
-    remaining: [await page.getByTestId('remaining-player').textContent(), await page.getByTestId('remaining-rival').textContent()],
+    remaining: [await remaining(page, 'player'), await remaining(page, 'rival')],
   }
 }
 

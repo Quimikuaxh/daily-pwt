@@ -367,9 +367,9 @@ test.describe('Pantalla «Estado»', () => {
 
 // E2E-77 · Paneles laterales (RF-44c, DEC-81): a 1440x900 salen tu equipo a la izquierda y el del rival a la derecha, la barra encima de
 // la consola y sin contadores; al pulsar un movimiento del panel, su ficha (sin la franja de eficacia, desactivada); nada desborda. A
-// 1280x720 (escala menor que x2 con ellos) no salen y quedan los contadores.
+// 1280x720 los paneles siguen a los lados y la página conserva su ancho. Los contadores vuelven si no caben de ancho.
 test.describe('Paneles laterales', () => {
-  test('E2E-77 a 1440x900 salen los dos paneles con la ficha de un movimiento; a 1280x720, no', async ({ page }) => {
+  test('E2E-77 a 1440x900 salen los dos paneles con la ficha de un movimiento; también en ventanas bajas', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     const { battle } = await startBattle(page)
     await battle.maxSpeed()
@@ -388,7 +388,7 @@ test.describe('Paneles laterales', () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'sin desbordar a lo ancho').toBe(true)
 
     const firstMove = player.getByRole('button', { name: /^Ficha del movimiento / }).first()
-    const moveName = ((await firstMove.getAttribute('aria-label')) ?? '').replace('Ficha del movimiento ', '')
+    const moveName = await firstMove.locator('.bt-side-move-name').innerText()
     await firstMove.click()
     await expect(firstMove).toHaveAttribute('aria-pressed', 'true')
     await expect(page.getByRole('heading', { name: moveName })).toBeVisible()
@@ -404,7 +404,7 @@ test.describe('Paneles laterales', () => {
     const [compactStage, chrome] = await Promise.all([page.locator('.bt-stage').boundingBox(), page.locator('.bt-chrome').boundingBox()])
     expect((await canvas.boundingBox())!.width).toEqual(originalCanvas.width)
     expect(chrome!.x).toBeGreaterThan(compactStage!.x + compactStage!.width)
-    const compactRival = (await rival.boundingBox())!
+    const compactRival = (await page.locator('.bt-side-col[data-side="rival"]').boundingBox())!
     const rightEdge = compactRival.x + compactRival.width
     const buttons = page.locator('.bt-chrome-buttons button')
     for (const button of await buttons.all()) {
@@ -413,6 +413,11 @@ test.describe('Paneles laterales', () => {
     }
 
     await page.setViewportSize({ width: 1280, height: 720 })
+    await expect(page.locator('.bt-layout')).toHaveAttribute('data-layout', 'panels-side')
+    await expect(player).toBeVisible()
+    await expect(rival).toBeVisible()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(1280)
+    await page.setViewportSize({ width: 1050, height: 720 })
     await expect(player).toHaveCount(0)
     await expect(page.getByTestId('remaining-player')).toBeVisible()
   })

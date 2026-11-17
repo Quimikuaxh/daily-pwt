@@ -1,4 +1,5 @@
 import type { BattleClient } from '../battle/client'
+import { substituteAiForSeed } from '../battle/seed'
 import type { AiKind, EngineEnd } from '../battle/protocol'
 import { MAX_TURNS } from '../config'
 import type { Challenge } from '../core/types'
@@ -36,7 +37,7 @@ export class LiveRecorder {
       this.onChange(this.snapshot())
     })
     const { challenge } = start
-    client.init({ battleSeed: start.seed, player: challenge.playerTeam, playerLead: start.leadIndex, rival: challenge.rivalTeam, ai: start.ai, maxTurns: MAX_TURNS })
+    client.init({ battleSeed: start.seed, player: challenge.playerTeam, playerLead: start.leadIndex, rival: challenge.rivalTeam, ai: start.ai, maxTurns: MAX_TURNS, substituteAi: substituteAiForSeed(start.seed) })
   }
 
   snapshot(): LiveSnapshot {

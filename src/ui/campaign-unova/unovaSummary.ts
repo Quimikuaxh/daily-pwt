@@ -9,6 +9,7 @@ import type { CampaignDefinition } from '../../core/nuzlocke/campaign'
 import { defaultMoves } from '../../core/nuzlocke/progression'
 import type { GameData, StatsTable } from '../../core/types'
 import { es } from '../../i18n/es'
+import { unovaEvolutionDetails } from './unovaEvolutionDetails'
 import { partyMove, type PartyMember } from '../battle/party/partyModel'
 
 const all = (value: number): StatsTable => ({ hp: value, atk: value, def: value, spa: value, spd: value, spe: value })
@@ -55,6 +56,7 @@ export function unovaSummaryMember(source: SummarySource, definition: CampaignDe
     natureUp: null,
     natureDown: null,
     stats,
+    evolutions: unovaEvolutionDetails(definition, data, source.species),
     moves: moves.map((move) => partyMove(move, data, undefined)),
   }
 }

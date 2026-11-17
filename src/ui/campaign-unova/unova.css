@@ -137,7 +137,8 @@
 .unova-type .type-chip {
   --s: 1;
   position: static;
-  width: auto;
+  width: 48px;
+  flex-shrink: 0;
   height: 16px;
   padding: 0 6px 3px;
   font-size: 13px;
@@ -256,12 +257,13 @@
   transform-origin: 50% 50%;
 }
 
-/* Tipos con la etiqueta corta del diario a 13 px, uno junto a otro. */
+/* Reserva el mismo ancho para cada tipo, incluidos los rótulos de seis letras. */
 .unova-row-types { left: 84px; top: -3px; display: flex; gap: 2px; }
 .unova-row-types .type-chip {
   --s: 1;
   position: static;
-  width: auto;
+  width: 48px;
+  flex-shrink: 0;
   height: 16px;
   padding: 0 4px 3px;
   font-size: 13px;
@@ -336,14 +338,16 @@
 .unova-moves-aside .unova-moves-row.unova-bar { border: 8px solid transparent; border-image: var(--unova-bar) 8 fill / 8px stretch; }
 .unova-moves-aside .unova-moves-row.unova-bar-off { border: 6px solid transparent; border-image: var(--unova-bar-off) 6 fill / 6px stretch; }
 .unova-moves-aside .unova-moves-row.unova-bar > * { margin: -2px 0 0 -2px; }
-.unova-moves-aside .unova-moves-scroll {
+:is(.unova-moves-aside, .console-screen) .unova-list-arrow {
+  position: absolute;
+  cursor: pointer;
   border: 6px solid transparent;
   border-image: var(--unova-bar-off) 6 fill / 6px stretch;
   touch-action: manipulation;
   color: #e5f5ff;
 }
 /* Las dos flechas comparten el centro de la placa. El reflejo vertical no desplaza el dibujo. */
-.unova-moves-scroll::before {
+.unova-list-arrow::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -353,12 +357,13 @@
   background: currentColor;
   clip-path: polygon(0 33%, 20% 0, 50% 50%, 80% 0, 100% 33%, 50% 100%);
 }
-.unova-moves-scroll[data-direction="up"]::before { transform: scaleY(-1); }
+.unova-list-arrow[data-direction="up"]::before { transform: scaleY(-1); }
 @media (hover: hover) {
-  .unova-moves-aside .unova-moves-scroll:enabled:hover { border-image-source: var(--unova-bar); }
+  :is(.unova-moves-aside, .console-screen) .unova-list-arrow:enabled:hover { border-image-source: var(--unova-bar); }
 }
-.unova-moves-aside .unova-moves-scroll:disabled { opacity: .45; cursor: default; }
-.unova-moves-aside :is(.unova-moves-row, .unova-moves-scroll):focus-visible { outline: 1px solid #ffd65a; }
+:is(.unova-moves-aside, .console-screen) .unova-list-arrow:disabled { opacity: .45; cursor: default; }
+.unova-moves-aside .unova-moves-row:focus-visible,
+.unova-list-arrow:focus-visible { outline: 1px solid #ffd65a; }
 .unova-moves-track { width: 2px; background: #28283c; }
 .unova-moves-thumb { width: 2px; background: #78c8ff; }
 .unova-moves-message { pointer-events: auto; }

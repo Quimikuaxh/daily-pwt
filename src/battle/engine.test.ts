@@ -563,6 +563,26 @@ describe('sustituto en la vista', () => {
   })
 })
 
+describe('decisión de la IA ante un sustituto activo', () => {
+  it.each(['trivial', 'heuristic', 'lookahead'])('%s elige un golpe en vez de un movimiento de estado', (ai) => {
+    const player = mon('mew', ['substitute', 'splash', 'splash', 'splash'], { ability: 'synchronize' })
+    const rival = mon('shuckle', ['toxic', 'tackle', 'tackle', 'tackle'], { ability: 'gluttony' })
+    const engine = make({ player: [player], rival: [rival], ai })
+    engine.start()
+    expect(engine.choose(moveOf(1)).view.player.team[0].substitute).toBe(true)
+    expect(engine.choose(moveOf(2)).lines).toContainEqual(expect.stringMatching(/^\|move\|p2a: shuckle\|Tackle\|/))
+  })
+
+  it('la política anterior conserva las decisiones del oficial que ya estaba guardado', () => {
+    const player = mon('mew', ['substitute', 'splash', 'splash', 'splash'], { ability: 'synchronize' })
+    const rival = mon('shuckle', ['toxic', 'tackle', 'tackle', 'tackle'], { ability: 'gluttony' })
+    const engine = make({ player: [player], rival: [rival], substituteAi: 'legacy' })
+    engine.start()
+    engine.choose(moveOf(1))
+    expect(engine.choose(moveOf(2)).lines).toContainEqual(expect.stringMatching(/^\|move\|p2a: shuckle\|Toxic\|/))
+  })
+})
+
 // UT-114 · Objeto que lleva cada Pokémon en ese momento (la pantalla de datos lo enseña): cambia con Truco y con Desarme.
 describe('objeto actual en la vista', () => {
   it('Truco intercambia los objetos de los dos', () => {
@@ -583,5 +603,31 @@ describe('objeto actual en la vista', () => {
     const update = engine.choose({ type: 'move', slot: 1 })
     expect(update.lines.some((line) => line.startsWith('|-enditem|p1a:'))).toBe(true)
     expect(update.view.player.team[0].item).toBe('')
+  })
+})
+
+describe('visibilidad en movimientos de dos turnos', () => {
+  it.each(['fly', 'dive', 'dig', 'bounce', 'shadowforce'])('oculta al usuario de %s hasta que reaparece al atacar', (move) => {
+    const player = harmlessTeam(mon('mew', [move, 'tackle', 'recover', 'protect']))
+    const battle = make({ player })
+    const start = battle.start()
+    const charge = battle.choose(moveOf(1))
+    if (!charge) throw new Error('Falta el turno de preparación')
+    const active = charge.view.player.active!
+    expect(charge.view.player.team[active].semiInvulnerable).toBe(true)
+    expect(viewReducer(start.view, { type: 'lines', lines: charge.lines }).player.team[active].semiInvulnerable).toBe(true)
+    const hit = battle.choose(firstEnabled(charge.request!))
+    if (!hit) throw new Error('Falta el turno de ataque')
+    expect(hit.view.player.team[active].semiInvulnerable).toBeUndefined()
+    expect(viewReducer(charge.view, { type: 'lines', lines: hit.lines }).player.team[active].semiInvulnerable).toBeUndefined()
+  })
+
+  it.each([{ move: 'solarbeam', item: '' }, { move: 'fly', item: 'powerherb' }])('deja visible al usuario de $move con objeto «$item» al terminar el turno', ({ move, item }) => {
+    const player = harmlessTeam(mon('mew', [move, 'tackle', 'recover', 'protect'], { item }))
+    const battle = make({ player })
+    const start = battle.start()
+    const result = battle.choose(moveOf(1))
+    expect(result.view.player.team[0].semiInvulnerable).toBeUndefined()
+    expect(viewReducer(start.view, { type: 'lines', lines: result.lines }).player.team[0].semiInvulnerable).toBeUndefined()
   })
 })

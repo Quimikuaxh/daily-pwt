@@ -59,7 +59,7 @@ describe('stageScaleFor', () => {
     expect(stageScaleFor(1440, 900).layout).toBe('panels')
     expect(stageScaleFor(1920, 1080).layout).toBe('panels')
     expect(stageScaleFor(1280, 800).layout, 'caben los dos paneles con la barra sobre el rival').toBe('panels-side')
-    expect(stageScaleFor(1366, 768).layout, 'portátil bajo: la escala ya es menor que x2').toBe('wide')
+    expect(stageScaleFor(1366, 768).layout, 'si caben de ancho, también a escala fraccionaria').toBe('panels-side')
     expect(stageScaleFor(1100, 1200).layout, 'estrecho para dos paneles').toBe('wide')
     expect(stageScaleFor(360, 740).layout).toBe('stacked')
     // A 2560x1440 sin paneles saldría x3; con ellos, también: se ponen.
@@ -69,7 +69,8 @@ describe('stageScaleFor', () => {
   it('ventana ancha y baja: conserva la escala con los controles sobre el rival en el daily y Teselia', () => {
     expect(stageScaleFor(1606, 800)).toMatchObject({ scale: 2, layout: 'panels-side', sideZoom: 1 })
     expect(stageScaleFor(1606, 929 - 150)).toMatchObject({ scale: 1.98, layout: 'panels-side', sideZoom: 1 })
-    expect(stageScaleFor(1606, 760).layout).toBe('wide')
+    expect(stageScaleFor(1606, 760).layout).toBe('panels-side')
+    expect(stageScaleFor(1920, 900 - 150).layout).toBe('panels-side')
     expect(stageScaleFor(1200, 800).layout).toBe('wide')
   })
 

@@ -14,7 +14,7 @@ test.describe('Menú de equipo y datos', () => {
     await expect(panels).toHaveCount(6)
     await expect(page.locator('.bt-party-level').first()).toHaveText('Nv.50')
     await expect(panels.first(), 'el activo se anuncia en combate').toHaveAccessibleName(/en combate/i)
-    await expect(page.locator('.bt-member-icon')).toHaveCount(6)
+    await expect(panels.locator('.bt-member-icon')).toHaveCount(6)
     await expect(page.getByText('Elige un Pokémon.')).toBeVisible()
     await page.getByRole('button', { name: 'Volver', exact: true }).click()
     await expect(page.locator('.bt-party-panel')).toHaveCount(0)

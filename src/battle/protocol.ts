@@ -25,6 +25,8 @@ export type EngineInit = {
   ai: AiKind
   /** Los combates guardados sin versión conservan la política de cambios original. */
   lookaheadVersion?: 2
+  /** Se guarda en campañas para reconstruir partidas anteriores con las mismas decisiones. */
+  substituteAi?: 'avoid-status' | 'legacy'
   maxTurns: number
   /**
    * Para `lookahead`: los movimientos que cada Pokémon del jugador (por especie) puede tener según las reglas de la campaña. La IA no
@@ -71,6 +73,8 @@ export type MonView = {
   fainted: boolean
   /** Tiene un sustituto en pie (solo el activo): en el campo se ve el muñeco en vez del Pokémon (decisión de Jose, 27/10/2026). */
   substitute?: boolean
+  /** El Pokémon está fuera de vista durante la preparación de Vuelo y movimientos afines. */
+  semiInvulnerable?: boolean
   /** Solo el bando del jugador conoce los PS reales. */
   hp?: number
   maxHp?: number

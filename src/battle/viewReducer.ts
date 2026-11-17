@@ -25,6 +25,9 @@ function parseCondition(text: string | undefined): Condition | null {
   return { hp: Number(match[1]), maxHp: Number(match[2] ?? 0), fainted: false, status: match[3] ?? null }
 }
 
+// Son los movimientos que ocultan al usuario, según isSemiInvulnerable del simulador.
+const VANISH_MOVES = new Set(['fly', 'bounce', 'dive', 'dig', 'phantomforce', 'shadowforce', 'skydrop'])
+
 type Target = { side: 'player' | 'rival'; name: string }
 
 /** "p2a: Snorlax" -> rival, snorlax. */
@@ -58,12 +61,46 @@ function applyCondition(side: SideView, mon: MonView, condition: Condition, isPl
   side.remaining = side.team.filter((member) => !member.fainted).length
 }
 
+function lineMon(view: BattleView, identity: string | undefined): MonView | undefined {
+  const target = parseTarget(identity)
+  if (!target) return undefined
+  const side = view[target.side]
+  return side.team[indexOfMon(side, target.name, false)]
+}
+
 function applyLine(view: BattleView, line: string): void {
   const fields = line.split('|')
   const type = fields[1]
   if (view.field) applyFieldLine(view.field, line)
 
   switch (type) {
+    case '-prepare': {
+      const move = toId(fields[3] ?? '')
+      if (!VANISH_MOVES.has(move)) return
+      const mon = lineMon(view, fields[2])
+      if (mon) mon.semiInvulnerable = true
+      const lifted = move === 'skydrop' ? lineMon(view, fields[4]) : undefined
+      if (lifted) lifted.semiInvulnerable = true
+      return
+    }
+    case 'move':
+    case 'cant': {
+      const mon = lineMon(view, fields[2])
+      if (mon?.semiInvulnerable) delete mon.semiInvulnerable
+      if (type === 'move' && toId(fields[3] ?? '') === 'skydrop') {
+        const lifted = lineMon(view, fields[4])
+        if (lifted?.semiInvulnerable) delete lifted.semiInvulnerable
+      }
+      return
+    }
+    case '-enditem': {
+      // Hierba Única resuelve el ataque en el mismo turno.
+      if (toId(fields[3] ?? '') === 'powerherb') {
+        const mon = lineMon(view, fields[2])
+        if (mon?.semiInvulnerable) delete mon.semiInvulnerable
+      }
+      return
+    }
     case 'turn':
       view.turn = Number(fields[2])
       return
@@ -84,7 +121,11 @@ function applyLine(view: BattleView, line: string): void {
       const index = indexOfMon(side, parseBattleIdentity(target.name).teamIndex !== undefined ? target.name : detailsSpecies || target.name, true)
       if (index < 0) return
       // El que se va pierde el sustituto (con Relevo pasa al nuevo: lo trae la instantánea del final del turno).
-      if (side.active !== null && side.team[side.active]) delete side.team[side.active].substitute
+      const previous = side.active !== null ? side.team[side.active] : undefined
+      if (previous) {
+        delete previous.substitute
+        delete previous.semiInvulnerable
+      }
       side.active = index
       const condition = parseCondition(fields[4])
       if (condition) applyCondition(side, side.team[index], condition, target.side === 'player')
@@ -97,6 +138,7 @@ function applyLine(view: BattleView, line: string): void {
       const index = indexOfMon(side, target.name, false)
       if (index < 0) return
       delete side.team[index].substitute
+      delete side.team[index].semiInvulnerable
       applyCondition(side, side.team[index], { hp: 0, maxHp: 0, fainted: true, status: null }, target.side === 'player')
       return
     }
@@ -114,8 +156,14 @@ function applyLine(view: BattleView, line: string): void {
     }
     case '-start':
     case '-end': {
-      // Sustituto: el muñeco aparece y se va con su mensaje (el resto de `-start`/`-end` no cambian la vista).
-      if (toId((fields[3] ?? '').replace(/^move:\s*/, '')) !== 'substitute') return
+      const effect = toId((fields[3] ?? '').replace(/^move:\s*/, ''))
+      if (type === '-end' && effect === 'skydrop') {
+        const lifted = lineMon(view, fields[2])
+        if (lifted?.semiInvulnerable) delete lifted.semiInvulnerable
+        return
+      }
+      // Sustituto: el muñeco aparece y se va con su mensaje.
+      if (effect !== 'substitute') return
       const target = parseTarget(fields[2])
       if (!target) return
       const side = view[target.side]

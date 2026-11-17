@@ -13,13 +13,11 @@ const SCALE_PRECISION = 100
 const WIDE_LAYOUT_MIN_WIDTH = 700
 const SIDE_COLUMN_WIDTH = 304
 const STACKED_CHROME_HEIGHT = 84
-const OUTER_MARGIN = 16
+export const OUTER_MARGIN = 16
 /** Paneles laterales (RF-44c, DEC-81): ancho de cada uno, hueco hasta la consola y alto de la barra de botones, que va encima. */
 export const SIDE_PANEL_WIDTH = 340
 const SIDE_PANEL_GAP = 20
 const PANELS_BAR_HEIGHT = 52
-/** Alto máximo de los botones del daily y el hueco hasta el panel derecho. */
-const RIGHT_CHROME_HEIGHT = 56
 /**
  * Con sitio de sobra los paneles crecen (Jose, 06/11/2026: a 1920 x 1080 se leían pequeños), hasta x1,3 y sin pisar la consola ni salirse
  * de alto: a x1 la columna más alta (panel y ficha con una descripción larga) mide unos 700 px. Va en pasos de 0,05.
@@ -83,7 +81,8 @@ export function stageScaleFor(containerWidth: number, viewportHeight: number): S
       return { scale: panelsScale, wide, frame, layout: 'panels', sideZoom: sideZoomFor(containerWidth, viewportHeight, panelsScale, frame) }
     }
     const sideWidth = panelsWidth - PANELS_PADDING_X
-    if (availableHeight - RIGHT_CHROME_HEIGHT >= SIDE_COLUMN_BASE_HEIGHT && sideWidth >= SCREEN_WIDTH * scale) {
+    // En ventanas bajas cada panel puede desplazarse en vertical. El ancho decide si caben a los lados.
+    if (sideWidth >= SCREEN_WIDTH * scale) {
       return { scale, wide, frame: frameFits(sideWidth, availableHeight, scale), layout: 'panels-side', sideZoom: 1 }
     }
   }

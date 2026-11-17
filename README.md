@@ -25,7 +25,9 @@ Fecha de lanzamiento (`#1`): 2026-10-24 (ver [Configuración](#lanzamiento-launc
 
 Abre «Modos de juego» y elige «Nuzlocke de Hoenn» (Esmeralda) o «Nuzlocke de Teselia» (Negro 2 y Blanco 2). No hace falta una URL de prueba para Teselia.
 
-En el editor de movimientos de Teselia, usa las flechas bajo «Puede aprender» para subir o bajar una fila con clic o toque. También funciona la rueda del ratón.
+En el editor de movimientos de Teselia, usa las flechas bajo «Puede aprender» para subir o bajar una fila con clic o toque. También funciona la rueda del ratón. Puedes seguir recorriendo la lista y elegir otro movimiento hasta que pulses el que quieres sustituir. La Mochila y el Canje de PB de Teselia usan las mismas flechas cuando hay más filas de las que caben.
+
+En «Datos → Información» de Teselia se ven las evoluciones y sus requisitos. Al ganar un gimnasio de Hoenn o Teselia, confirma el aviso para ver la ruta si el nuevo tramo incorpora objetos o MT/MO.
 
 En combate, pulsa el nombre del objeto equipado en «Pokémon → Datos» para consultar su efecto. En Hoenn aparece en la pestaña «Estadísticas». La ficha se cierra al pulsar fuera o con Escape.
 

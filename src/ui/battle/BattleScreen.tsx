@@ -1,4 +1,5 @@
 import { trainerSprite, trainerVsSprite } from '../common/spriteUrls'
+import { substituteAiForSeed } from '../../battle/seed'
 import type { BattleChallenge } from './battleTypes'
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { battleMusicFor, CRITICAL_HEALTH_MUSIC, getAudio, LAST_POKEMON_MUSIC, SFX_IDS } from '../../audio/audio'
@@ -29,7 +30,7 @@ import type { CloudApi } from '../../cloud/api'
 import { canChoose, hasOnlyForcedMove, isForcedSwitch, moveOptions, playerInPinch, lastPokemonThemeOn, switchBlockedReason, switchOptions } from './battleModel'
 import { VS_LOGO, avatarForSeed } from './introAssets'
 import { menuSoundFor } from './menuSounds'
-import { SCREEN_HEIGHT, SCREEN_WIDTH, STAGE_HEIGHT, useStageScale } from './useStageScale'
+import { SCREEN_HEIGHT, OUTER_MARGIN, SCREEN_WIDTH, STAGE_HEIGHT, useStageScale } from './useStageScale'
 import type { CampaignPresentation } from './battleTypes'
 export type { CampaignPresentation } from './battleTypes'
 import './battle.css'
@@ -101,7 +102,9 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   const avatar = useMemo(() => campaign?.avatar ?? avatarForSeed(battleSeed), [battleSeed, campaign?.avatar])
   const battle = useBattle({
     client,
-    init: { battleSeed, player: playerTeam, playerLead, rival: rivalTeam, ai, maxTurns: MAX_TURNS },
+    init: { battleSeed, player: playerTeam, playerLead, rival: rivalTeam, ai, maxTurns: MAX_TURNS,
+      substituteAi: mode === 'official' ? substituteAiForSeed(battleSeed) : 'avoid-status',
+    },
     translateContext: { names: data.names, trainer: { nameEs: trainer.nameEs, category: trainer.category, gender: trainer.gender } },
     intro: campaign?.intro ?? {
       rivalLead: speciesName(rivalTeam[0].species, rivalTeam[0].nameEs),
@@ -123,7 +126,8 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
 
   const reducedMotion = useReducedMotion(animations)
   const layoutRef = useRef(null as HTMLDivElement | null)
-  const { scale, layout, frame, sideZoom } = useStageScale(layoutRef, campaign?.reservedHeight ?? 0)
+  const reservedHeight = campaign?.reservedHeight ?? 0
+  const { scale, layout, frame, sideZoom } = useStageScale(layoutRef, reservedHeight)
   const BattleSidePanel = campaign?.SidePanel ?? SidePanel
   const panels = layout === 'panels' || layout === 'panels-side'
   const [touchChoice, setTouchChoice] = useState({ request: null, mode: 'main' } as TouchChoice)
@@ -149,7 +153,11 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   const blockedReason = menuRequest === null ? null : switchBlockedReason(menuRequest, switchOptions(menuRequest, data.names))
   // En el visor no hay petición del simulador: las placas salen de la vista grabada.
   const partyRequest = mode === 'replay' ? requestFromView(battle.view, playerTeam) : menuRequest
-  const members = useMemo(() => partyMembers(partyRequest, battle.view, data, playerTeam), [partyRequest, battle.view, data, playerTeam])
+  const evolutionsOf = campaign?.evolutionsOf
+  const members = useMemo(() => {
+    const team = partyMembers(partyRequest, battle.view, data, playerTeam)
+    return evolutionsOf ? team.map((member) => ({ ...member, evolutions: evolutionsOf(member.speciesId) })) : team
+  }, [partyRequest, battle.view, data, playerTeam, evolutionsOf])
   const rivals = useMemo(() => rivalMembers(battle.view, data, rivalTeam), [battle.view, data, rivalTeam])
   // Paneles laterales (RF-44c): los PS y el estado, de la vista que se está enseñando (la petición llega antes de que acabe de animarse el
   // turno y adelantaría el resultado).
@@ -262,7 +270,10 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
   const { inbox: liveInbox, answer: answerLive } = useLiveInbox(liveApi, mode === 'official' && !ended)
   const liveAsk = liveInbox.pending[0] ?? null
 
-  const rootStyle = { '--speed': battle.speed, '--k': scale, '--side-zoom': sideZoom } as CSSProperties
+  const rootStyle = {
+    '--speed': battle.speed, '--k': scale, '--side-zoom': sideZoom,
+    '--side-height': `calc(100dvh - ${reservedHeight + OUTER_MARGIN}px)`,
+  } as CSSProperties
   const stageStyle = { width: SCREEN_WIDTH * scale, height: STAGE_HEIGHT * scale } as CSSProperties
 
   return (

@@ -37,6 +37,7 @@ export type PartyMember = {
   /** Id de la habilidad (clave de las descripciones). */
   abilityId: string
   natureName: string
+  evolutions?: readonly { species: string; name: string; requirement: string }[]
   natureUp: keyof StatsTable | null
   natureDown: keyof StatsTable | null
   stats: StatsTable

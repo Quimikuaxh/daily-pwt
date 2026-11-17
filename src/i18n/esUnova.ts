@@ -4,6 +4,25 @@
  * entrada de Modos de juego, que sí usa la portada, sigue en `esCampaign.unovaEntry`.
  */
 export const esUnova = {
+  evolutionDetails: {
+    title: 'Evolución',
+    none: 'No evoluciona.',
+    male: 'macho',
+    female: 'hembra',
+    day: 'de día',
+    night: 'de noche',
+    choice: 'a elegir',
+    byPokemon: 'al azar',
+    league: 'En la Liga',
+    level: (level: number) => `Nv. ${level}`,
+    levelGender: (level: number, gender: string) => `Nv. ${level} · ${gender}`,
+    levelTest: (level: number, test: string) => `Nv. ${level} · ${test}`,
+    itemTest: (item: string, test: string) => `${item} · ${test}`,
+    wins: (wins: number) => `${wins} victorias`,
+    moveAt: (move: string, level: number) => `${move} al Nv. ${level}`,
+    move: (move: string) => `Al poder aprender ${move}`,
+    after: (rival: string) => `Tras vencer a ${rival}`,
+  },
   modeLabel: 'Nuzlocke · Teselia',
   region: 'TESELIA',
   battle: { retry: 'Reintentar combate' },

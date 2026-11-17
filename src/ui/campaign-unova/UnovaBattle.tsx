@@ -5,6 +5,8 @@ import { BattleScreen, type CampaignPresentation } from '../battle/BattleScreen'
 import type { CampaignBattleProps } from '../campaign/EmeraldBattle'
 import { sessionBattleClient } from '../campaign/campaignBattle'
 import type { SideSets } from '../campaign/sidePanelsModel'
+import { unovaDefinition } from './unovaDefinition'
+import { unovaEvolutionDetails } from './unovaEvolutionDetails'
 import { unovaSounds } from './unovaMusic'
 import { AVATARS } from '../battle/introAssets'
 import { esUnova } from '../../i18n/esUnova'
@@ -39,6 +41,7 @@ export function UnovaBattle({ session, start, onRetry, data, trainer, trainerId,
   const campaign = useMemo((): CampaignPresentation => ({
     avatar: protagonist ? AVATARS[protagonist === 'may' ? 'rosa' : 'nate'] : undefined,
     SidePanel: UnovaBattleSide, reservedHeight, resumed, intro, music, registerMusic, onRetry,
+    evolutionsOf: (species) => unovaEvolutionDetails(unovaDefinition, data, species),
     retryLabel: esUnova.battle.retry, runLabel: esCampaign.battle.run, noRun: esCampaign.battle.noRun, modeLabel: esUnova.modeLabel,
     playSfx: (id) => {
       // useBattle ya sincroniza las bolas de N2/B2; el filtro de Esmeralda no se aplica a estos dos efectos.
@@ -47,7 +50,7 @@ export function UnovaBattle({ session, start, onRetry, data, trainer, trainerId,
     },
     playCry: (species, faint) => sounds.playCry(data.dex.species[species]?.spriteId ?? species, faint),
     preload: (species) => { sounds.preloadSfx(sounds.battleIds); sounds.preloadCries(species.map((id) => data.dex.species[id]?.spriteId ?? id)) },
-  }), [resumed, intro, music, registerMusic, onRetry, sounds, reservedHeight, protagonist, data.dex.species])
+  }), [resumed, intro, music, registerMusic, onRetry, sounds, reservedHeight, protagonist, data])
   return <BattleScreen client={client} data={data} challenge={challenge} playerLead={0} battleSeed={trainerId ?? ''}
     campaign={campaign} sound={sound} trainerName={playerName} onFinish={onEnded} onExit={() => undefined} />
 }

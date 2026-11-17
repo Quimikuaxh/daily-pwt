@@ -114,13 +114,13 @@ export function TopScreen({ view, data, challenge, introPhase, switchAnim, avata
       {!campaign && <FieldLights />}
 
       {rivalMon && (
-        <div className="bt-mon bt-mon-rival" data-fainted={rivalMon.fainted}>
+        <div className="bt-mon bt-mon-rival" data-fainted={rivalMon.fainted} style={{ visibility: rivalMon.semiInvulnerable ? 'hidden' : undefined }}>
           <MonShadow mon={rivalMon} side="front" data={data} />
           <MonSprite mon={rivalMon} side="front" data={data} />
         </div>
       )}
       {playerMon && (
-        <div className="bt-mon bt-mon-player" data-fainted={playerMon.fainted} data-oversize={playerSpriteScale(playerSpriteHeight) < PLAYER_SPRITE_SCALE || undefined} style={playerSpriteStyle(playerSpriteHeight)}>
+        <div className="bt-mon bt-mon-player" data-fainted={playerMon.fainted} data-oversize={playerSpriteScale(playerSpriteHeight) < PLAYER_SPRITE_SCALE || undefined} style={{ ...playerSpriteStyle(playerSpriteHeight), visibility: playerMon.semiInvulnerable ? 'hidden' : undefined }}>
           <MonShadow mon={playerMon} side="back" data={data} />
           <MonSprite mon={playerMon} side="back" data={data} />
         </div>

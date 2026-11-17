@@ -12,6 +12,7 @@ import { itemIconUrl } from '../common/spriteUrls'
 import { usePreloadImages } from '../campaign/usePreloadImages'
 import { esCampaign } from '../../i18n/esCampaign'
 import { POCKETS, type BagItem, type Pocket } from '../campaign/bagModel'
+import { UnovaListArrows } from './UnovaListArrows'
 import { scrollList, wheelRows } from '../campaign/listScroll'
 import { wrapText } from '../campaign/draftModel'
 import type { Protagonist } from '../campaign/resultModel'
@@ -20,7 +21,7 @@ import { textWidth13 } from './unovaText'
 import './unova.css'
 
 const t = esCampaign.bag
-const VISIBLE = 6
+const MAX_VISIBLE = 6
 const ROW = { x: 106, y: 10, w: 136, h: 22, step: 24 }
 /** Bolsillos de la hoja de bolsas y dónde va cada uno en la pantalla de abajo (a la izquierda de la lista). */
 const POCKET_PIECE: Record<Pocket, { piece: string; x: number; y: number }> = {
@@ -51,6 +52,7 @@ export function UnovaBagScreen({ protagonist, member, contents, itemName, onGive
   const items = contents(pocket)
   usePreloadImages(POCKETS.flatMap((each) => contents(each).map((item) => itemIconUrl(item.id))))
   const rows = items.length + 1 // la última fila es CERRAR MOCHILA
+  const visible = rows > MAX_VISIBLE ? 5 : MAX_VISIBLE
   const selected = items[cursor] ?? null
   const message = asking && member.item ? t.swap(member.name, itemName(member.item)) : t.give(member.name)
 
@@ -58,11 +60,11 @@ export function UnovaBagScreen({ protagonist, member, contents, itemName, onGive
     const next = Math.max(0, Math.min(rows - 1, i))
     setCursor(next)
     if (next < scroll) setScroll(next)
-    if (next >= scroll + VISIBLE) setScroll(next - VISIBLE + 1)
+    if (next >= scroll + visible) setScroll(next - visible + 1)
     if (focus) requestAnimationFrame(() => (document.querySelector(`[data-bag-row="${next}"]`) as HTMLElement | null)?.focus())
   }
   const scrollBy = (by: number) => {
-    const next = scrollList(scroll, cursor, rows, VISIBLE, by)
+    const next = scrollList(scroll, cursor, rows, visible, by)
     setScroll(next.scroll)
     setCursor(next.cursor)
   }
@@ -92,7 +94,8 @@ export function UnovaBagScreen({ protagonist, member, contents, itemName, onGive
     move()
   }
   const description = selected ? wrapText(selected.text, 222, textWidth13).slice(0, 3) : items.length ? [] : [t.empty]
-  const thumb = rows > VISIBLE ? { top: (scroll / rows) * 132, height: (VISIBLE / rows) * 132 } : null
+  const trackHeight = visible * ROW.step - 2
+  const thumb = rows > visible ? { top: (scroll / rows) * trackHeight, height: (visible / rows) * trackHeight } : null
 
   return (
     <div className="bag-screen" onKeyDown={onKeyDown}>
@@ -132,7 +135,7 @@ export function UnovaBagScreen({ protagonist, member, contents, itemName, onGive
               <img src={n2b2Ui(`mochila-${who}-${POCKET_PIECE[each].piece}-${each === pocket ? 2 : 0}`)} alt="" style={{ left: 0, top: 0 }} />
             </button>
           ))}
-          {Array.from({ length: Math.min(VISIBLE, rows - scroll) }, (_, k) => {
+          {Array.from({ length: Math.min(visible, rows - scroll) }, (_, k) => {
             const i = scroll + k
             const item = items[i]
             const count = item && pocket === 'items' && Number.isFinite(item.free) ? t.count(item.free) : ''
@@ -147,7 +150,9 @@ export function UnovaBagScreen({ protagonist, member, contents, itemName, onGive
               </button>
             )
           })}
-          {thumb && <span className="unova-moves-thumb" style={{ left: 246, top: 18 + thumb.top, height: Math.max(6, thumb.height) }} />}
+          <UnovaListArrows x={ROW.x} y={132} width={ROW.w} scroll={scroll} visible={visible} total={rows}
+            blocked={asking !== null} label={t.scroll} onScroll={scrollBy} />
+          {thumb && <span className="unova-moves-thumb" style={{ left: 246, top: ROW.y + thumb.top, height: Math.max(6, thumb.height) }} />}
           <span className="unova-bar-off" style={{ left: 0, top: 168, width: 256, height: 24 }} />
           {([[-1, '‹', 6], [1, '›', 106]] as const).map(([step, arrow, x]) => (
             <button key={arrow} type="button" className="unova-text unova-arrow" style={{ left: x, top: 172 }}

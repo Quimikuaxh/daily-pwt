@@ -1,7 +1,6 @@
 /** Fixtures de BattleView (forma documentada en src/test-utils/harness.ts). */
-export type MonView = { species: string; hpPercent: number; status: string | null; fainted: boolean; hp?: number; maxHp?: number; substitute?: boolean }
-export type SideView = { remaining: number; active: number | null; team: MonView[] }
-export type BattleView = { turn: number; weather: string | null; weatherTurns?: number | null; player: SideView; rival: SideView }
+import type { BattleView, MonView } from '../battle/protocol'
+export type { BattleView, MonView, SideView } from '../battle/protocol'
 
 export const pMon = (species: string, hp = 150, maxHp = 150, over: Partial<MonView> = {}): MonView =>
   ({ species, hp, maxHp, hpPercent: Math.round((hp / maxHp) * 100), status: null, fainted: hp <= 0, ...over })

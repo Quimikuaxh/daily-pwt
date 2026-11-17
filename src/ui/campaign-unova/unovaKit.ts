@@ -4,14 +4,12 @@
  */
 import { UnovaBattle } from './UnovaBattle'
 import { unovaMusic, unovaSounds } from './unovaMusic'
-import unovaCatalog from '../../../data/nuzlocke/unova-n2b2.json'
-import unovaProgression from '../../../data/nuzlocke/unova-n2b2-progression.json'
 import { moveDescription as gen5MoveDescription } from '../battle/party/summaryModel'
-import type { CampaignDefinition } from '../../core/nuzlocke/campaign'
 import { campaignRules } from '../../core/nuzlocke/rules'
 import { esUnova } from '../../i18n/esUnova'
 import type { CampaignKit } from '../campaign/campaignKit'
-import { routePlaces, type CampaignEncounter } from '../campaign/hoennRoute'
+import { routePlaces } from '../campaign/hoennRoute'
+import { unovaDefinition, unovaEncounters } from './unovaDefinition'
 import { UnovaRouteScreen } from './UnovaRouteScreen'
 import { UnovaCampaignCard, UnovaTeamPanel } from './UnovaSide'
 import { UnovaDraftScreen } from './UnovaDraftScreen'
@@ -28,12 +26,8 @@ import descriptions from '../../generated/descriptions-es.json'
 import names from '../../generated/names-es.json'
 import { UNOVA_PLACES, unovaVars } from './unovaRoute'
 
-const unovaEncounters = unovaCatalog.encounters as readonly CampaignEncounter[]
 /** Rivales femeninas de Teselia (Hiedra, Camila, Gerania, Anís, Catleya, Iris). */
 const UNOVA_FEMALE = new Set(['hiedra', 'camila', 'gerania', 'anis', 'catleya', 'iris'])
-
-/** Teselia (N2/B2, PRD §0 del 13/11/2026): mismos datos de combate que el diario (Gen 5), con sus descripciones de movimientos. */
-const unovaDefinition = { campaign: 'unova-n2b2', encounters: unovaEncounters, species: unovaProgression.species } as unknown as CampaignDefinition
 
 export const unovaKit: CampaignKit = {
   id: 'unova-n2b2',

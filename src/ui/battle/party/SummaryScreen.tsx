@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import type { GameData } from '../../../core/types'
 import { es } from '../../../i18n/es'
+import { esUnova } from '../../../i18n/esUnova'
 import { CategoryIcon } from '../../common/CategoryIcon'
 import { Sprite } from '../../common/Sprite'
 import { SummaryItemDetail } from '../../common/SummaryItemDetail'
@@ -113,6 +114,16 @@ function InfoPage({ member }: { member: PartyMember }) {
         .
       </Value>
       <Value x={33} band={infoLine(1)} maxWidth={200}>{natureEffectText(member)}</Value>
+      {member.evolutions && (
+        <section className="bt-sum-evolutions" tabIndex={0} aria-label={esUnova.evolutionDetails.title}>
+          <h3>{esUnova.evolutionDetails.title}</h3>
+          {member.evolutions.length ? (
+            <dl>{member.evolutions.map(({ species, name, requirement }) => (
+              <div key={species}><dt>{name}</dt><dd>{requirement}</dd></div>
+            ))}</dl>
+          ) : <p>{esUnova.evolutionDetails.none}</p>}
+        </section>
+      )}
       <Label x={17} band={infoRow(0)}>{text.dexNumber}</Label>
       <Value x={81} band={infoRow(0)} maxWidth={60}>{dexNumberText(member.spriteId)}</Value>
       <Label x={17} band={infoRow(1)}>{text.name}</Label>
@@ -282,6 +293,8 @@ export default function SummaryScreen({ members, initialSlot, data, onClose, ini
         Escape: back,
       }
       const handler = handlers[event.key]
+      if ((event.key === 'ArrowUp' || event.key === 'ArrowDown') && event.target instanceof Element &&
+        event.target.closest('.bt-sum-evolutions')) return
       if (!handler || (event.target instanceof HTMLElement && event.target.closest('input, textarea, select'))) return
       event.preventDefault()
       event.stopPropagation()

@@ -36,7 +36,7 @@ describe('panel lateral (UT-153)', () => {
     expect(within(card).getByLabelText('Estadísticas')).toHaveTextContent(/AtE145 \+1Df/)
     expect(card.querySelector('.bt-side-stage[data-dir="up"]')).not.toBeNull()
     expect(within(card).getByRole('button', { name: 'Ficha del objeto Baya Yapati' })).toBeInTheDocument()
-    expect(within(card).getByRole('button', { name: 'Ficha del movimiento Bola Sombra' })).toHaveTextContent('24/24')
+    expect(within(card).getByRole('button', { name: /^Ficha del movimiento Fantasma Bola Sombra 24\/24$/i })).toBeVisible()
     expect(screen.getByText(/Pulsa un movimiento/)).toBeInTheDocument()
   })
 
@@ -44,7 +44,7 @@ describe('panel lateral (UT-153)', () => {
   it('al pulsar un movimiento sale su ficha (sin la franja de eficacia); al pulsarlo otra vez se quita', async () => {
     const user = userEvent.setup()
     renderPlayer()
-    const shadowBall = screen.getByRole('button', { name: 'Ficha del movimiento Bola Sombra' })
+    const shadowBall = screen.getByRole('button', { name: /^Ficha del movimiento .*Bola Sombra/ })
     await user.click(shadowBall)
     expect(shadowBall).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByRole('heading', { name: 'Bola Sombra' })).toBeInTheDocument()
@@ -73,7 +73,7 @@ describe('panel lateral (UT-153)', () => {
     expect(screen.getByRole('img', { name: '5 de 6 en pie' })).toBeInTheDocument()
     const card = screen.getByRole('article', { name: 'Arcanine' })
     expect(card).toHaveTextContent('62 %')
-    const bulldoze = within(card).getByRole('button', { name: 'Ficha del movimiento Terratemblor' })
+    const bulldoze = within(card).getByRole('button', { name: /^Ficha del movimiento .*Terratemblor/ })
     expect(bulldoze).toHaveTextContent('32/32')
     await user.click(bulldoze)
     expect(screen.getByRole('heading', { name: 'Terratemblor' })).toBeInTheDocument()
@@ -84,7 +84,7 @@ describe('panel lateral (UT-153)', () => {
     const { rerender } = renderPlayer()
     await user.click(screen.getByRole('button', { name: 'Ver los datos de Kingdra' }))
     expect(screen.getByRole('article', { name: 'Kingdra' })).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Ficha del movimiento Hidrobomba' }))
+    await user.click(screen.getByRole('button', { name: /^Ficha del movimiento .*Hidrobomba/ }))
     // Sale Scizor (el segundo) al campo.
     const next = view(1)
     rerender(<SidePanel side="player" title="Tu equipo" members={players(next)} boosts={null} opponent={rivals(next).find((member) => member.active) ?? null} chart={data.dex.typeChart} />)

@@ -325,12 +325,12 @@ export function EmeraldBattle({ session, start, onRetry, data, trainer, trainerI
             // Recorte en el borde de abajo del sprite: al caer se borra por abajo, como SpriteCB_AnimFaintOpponent.
             <div className="mon-clip" style={{ left: frontSpot(rival.species).x, top: 4, width: 64, height: frontSpot(rival.species).y + 60 }}>
               <MonSprite key={`${view?.rival.active}-${rival.species}`} kind="front" species={rival.species} left={0} top={frontSpot(rival.species).y - 4}
-                hidden={rivalHidden} motion={rivalMotion} faint={rival.fainted ? faintStyle(false, rival.species, battle.speed) : undefined} />
+                hidden={rivalHidden || !!rival.semiInvulnerable} motion={rivalMotion} faint={rival.fainted ? faintStyle(false, rival.species, battle.speed) : undefined} />
             </div>
           )}
           {player && (
             <MonSprite key={`${view?.player.active}-${player.species}`} kind="back" species={player.species} left={backSpot(player.species).x} top={backSpot(player.species).y}
-              hidden={playerHidden} motion={playerMotion} faint={player.fainted ? faintStyle(true, player.species, battle.speed) : undefined} />
+              hidden={playerHidden || !!player.semiInvulnerable} motion={playerMotion} faint={player.fainted ? faintStyle(true, player.species, battle.speed) : undefined} />
           )}
           {moveFx && (rival || player) && (
             <MoveFx event={moveFx} type={moves[moveFx.moveId]?.type ?? null} speed={battle.speed} fieldRef={fieldRef} width={240} height={160}
