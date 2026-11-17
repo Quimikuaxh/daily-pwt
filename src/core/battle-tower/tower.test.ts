@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { loadGameData } from '../../data/gameData'
-import { finishTowerRound, newTowerRun, setTowerOrder, startTowerRound, towerBattleSeed, TOWER_ROUNDS } from './tower'
+import { continueTowerRun, finishTowerRound, newTowerRun, setTowerOrder, startTowerRound, towerBattleSeed, towerBeaten, towerRemaining, towerTrainerTotal, TOWER_ROUNDS, type TowerRun } from './tower'
 
 const data = loadGameData()
 const run = newTowerRun('tower-test', data)
@@ -50,5 +50,48 @@ describe('Torre Batalla', () => {
     expect(lost.index).toBe(run.index)
     expect(lost.rivals).toBe(run.rivals)
     expect(startTowerRound(lost)).toBe(lost)
+  })
+
+  // UT-249 (Jose, 17/11/2026, PRD §0 «Torre: seguir con el mismo equipo»).
+  describe('seguir con el mismo equipo (UT-249)', () => {
+    const win = (series: TowerRun) => {
+      let current = series
+      for (let i = 0; i < current.rivals.length; i += 1) current = finishTowerRound(startTowerRound(current), 'win')
+      return current
+    }
+
+    it('encadena siete series de 6 líderes y un campeón y una final con los 4 líderes que quedan, sin repetir a nadie', () => {
+      const seen: string[] = []
+      const seeds = new Set<string>()
+      let current = run
+      const shapes: string[] = []
+      for (;;) {
+        expect(current.team).toBe(run.team)
+        seen.push(...current.rivals.map(({ trainer }) => trainer.id))
+        shapes.push(current.rivals.map(({ trainer }) => trainer.category === 'champion' ? 'C' : 'L').join(''))
+        current.rivals.forEach((_, index) => seeds.add(towerBattleSeed({ ...current, index })))
+        current = win(current)
+        expect(towerBeaten(current)).toBe(seen.length)
+        if (towerRemaining(current, data) === 0) break
+        current = continueTowerRun(current, data)
+        expect([current.phase, current.index, current.series]).toEqual(['between', 0, shapes.length])
+      }
+      expect(shapes).toEqual([...Array(7).fill('LLLLLLC'), 'LLLL'])
+      expect(new Set(seen).size).toBe(seen.length)
+      expect(seen).toHaveLength(towerTrainerTotal(data))
+      expect(towerTrainerTotal(data)).toBe(53)
+      expect(seeds.size).toBe(53)
+      expect(continueTowerRun(current, data)).toBe(current)
+    })
+
+    it('solo sigue tras ganar; es reproducible y la primera serie conserva sus semillas', () => {
+      expect(continueTowerRun(run, data)).toBe(run)
+      const won = win(run)
+      expect(continueTowerRun(won, data)).toEqual(continueTowerRun(won, data))
+      expect(towerBattleSeed({ ...run, index: 2 })).toBe(towerBattleSeed({ ...run, index: 2, series: 0 }))
+      const lost = finishTowerRound(startTowerRound(continueTowerRun(won, data)), 'loss')
+      expect([lost.phase, towerBeaten(lost)]).toEqual(['lost', 7])
+      expect(continueTowerRun(lost, data)).toBe(lost)
+    })
   })
 })

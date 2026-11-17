@@ -7,6 +7,8 @@ export const esTower = {
   continue: 'Combatir',
   back: 'Volver a Hoy',
   round: (current: number, total: number) => `Combate ${current} de ${total}`,
+  // Series encadenadas (PRD §0, 17/11/2026): desde la segunda, el número de serie delante.
+  roundIn: (series: number, current: number, total: number) => `Serie ${series} · Combate ${current} de ${total}`,
   drag: 'Arrastra para ordenar.',
   move: 'Mover',
   destination: 'Elige el nuevo puesto.',
@@ -18,6 +20,12 @@ export const esTower = {
   // Pantalla de victoria (maqueta aprobada el 17/11/2026, docs/maquetas/torre/victoria.png).
   victory: {
     band: '¡Torre Batalla superada!',
+    bandSeries: (series: number) => `¡Serie ${series} superada!`,
+    // Al completar los 53 (maqueta A, 17/11/2026, docs/maquetas/torre/victoria-final.png).
+    bandAll: '¡Torre Batalla completada!',
+    seriesCount: (series: number) => `${series} series`,
+    progress: (beaten: number, total: number) => `${beaten} de ${total} vencidos`,
+    continue: 'Seguir con este equipo',
     teamTitle: 'TU EQUIPO',
     you: 'TÚ',
     beaten: 'Rivales vencidos',

@@ -121,7 +121,7 @@ test('Torre: una serie ganada muestra la victoria con los vencidos y el equipo, 
   await page.reload()
   await today.challengeNumber.waitFor()
   await openTower(page)
-  await expect(page.getByRole('heading', { name: 'Torre completada. 7 de 7 victorias' })).toBeAttached()
+  await expect(page.getByRole('heading', { name: '¡Serie 1 superada! 7 de 53 vencidos' })).toBeAttached()
   const champion = initial.state.rivals[6].trainer.nameEs
   await expect(page.locator('.tower-victory ol li').last()).toHaveText(`${champion}, campeón`)
   await expect(page.locator('.tower-victory ul li')).toHaveCount(6)
@@ -130,4 +130,27 @@ test('Torre: una serie ganada muestra la victoria con los vencidos y el equipo, 
   await page.getByRole('button', { name: 'Nueva serie' }).click()
   await expect(page.locator('[data-place="party-0"]')).toBeVisible()
   expect((await read(page)).state.seed).not.toEqual(initial.state.seed)
+})
+
+// E2E-91 (Jose, 17/11/2026, PRD §0 «Torre: seguir con el mismo equipo»): tras ganar una serie, «Seguir con este equipo» sortea la
+// siguiente sin repetir rivales, con el mismo equipo, y empieza por su primer combate.
+test('Torre: seguir con el mismo equipo lleva a la serie 2 con rivales nuevos', async ({ page }) => {
+  const today = new TodayPage(page)
+  await today.goto(undefined, 'ai=trivial')
+  await openTower(page)
+  await page.getByRole('button', { name: 'Nueva serie' }).click()
+  const initial = await read(page)
+  await page.evaluate(([key, value]) => localStorage.setItem(key, JSON.stringify(value)), [key, { ...initial, state: { ...initial.state, phase: 'won', index: 6 } }] as const)
+  await page.reload()
+  await today.challengeNumber.waitFor()
+  await openTower(page)
+  await page.getByRole('button', { name: 'Seguir con este equipo' }).click()
+  await expect(page.getByRole('heading', { name: 'Serie 2 · Combate 1 de 7' })).toBeVisible()
+  const next = await read(page)
+  const before = initial.state.rivals.map((rival) => rival.trainer.id)
+  expect(next.state.beaten).toEqual(before)
+  expect(next.state.rivals.some((rival) => before.includes(rival.trainer.id))).toBe(false)
+  expect(next.state.team).toEqual(initial.state.team)
+  await page.getByRole('button', { name: 'Combatir', exact: true }).click()
+  await expect(page.getByTestId('battle-mode')).toHaveText('Torre · 1/7')
 })

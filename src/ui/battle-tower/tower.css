@@ -66,4 +66,6 @@
    con caja `auto` se medía a sí misma y en móvil quedaba a más escala de la que cabe. */
 .tower-victory > section { display: contents; }
 .tower-victory > section > * { grid-column: 2; }
-.tower-victory-actions { display: flex; gap: 12px; justify-self: center; }
+/* Con tres botones en móvil, bajan de fila en vez de partir su texto («Seguir con este equipo» en dos líneas). */
+.tower-victory-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; justify-self: center; }
+.tower-victory-actions .btn { white-space: nowrap; }

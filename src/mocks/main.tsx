@@ -440,6 +440,8 @@ if (shareMode === 'ataques') {
       )}
     </div>,
   )
+} else if (shareMode === 'torre-final') {
+  createRoot(document.getElementById('root')!).render(<TowerVictoryMock final />)
 } else if (shareMode === 'torre-victoria') {
   createRoot(document.getElementById('root')!).render(<TowerVictoryMock />)
 } else if (shareMode === 'estados') {

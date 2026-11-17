@@ -3,7 +3,7 @@ import type { AccountTower } from '../../cloud/campaign'
 import type { EngineEnd } from '../../battle/protocol'
 import type { BattleClient } from '../../battle/client'
 import type { GameData } from '../../core/types'
-import { finishTowerRound, newTowerRun, setTowerOrder, startTowerRound, towerBattleSeed, TOWER_ROUNDS, type TowerRun } from '../../core/battle-tower/tower'
+import { continueTowerRun, finishTowerRound, newTowerRun, setTowerOrder, startTowerRound, towerBattleSeed, towerBeaten, towerRemaining, towerTrainerTotal, type TowerRun } from '../../core/battle-tower/tower'
 import { es } from '../../i18n/es'
 import { esTower as t } from '../../i18n/esTower'
 import { browserStorage } from '../../storage/browserStorage'
@@ -74,6 +74,14 @@ export default function TowerScreen({ data, playerName, createClient, ai, settin
     catch { setLocal(previous => ({ ...previous, error: t.saveError })) }
   }
 
+  // Seguir con el mismo equipo tras ganar una serie (PRD §0, 17/11/2026): la siguiente, sin repetir rivales de la racha.
+  function continueSeries() {
+    const latest = current()
+    if (!latest) return
+    const next = continueTowerRun(latest.state, data)
+    if (next !== latest.state) write(next, null, latest.revision)
+  }
+
   function orderTeam(ids: readonly string[]) {
     const latest = current()
     if (!latest) return
@@ -130,11 +138,12 @@ export default function TowerScreen({ data, playerName, createClient, ai, settin
     ) }
     // Serie ganada: la pantalla de victoria (maqueta aprobada el 17/11/2026); la derrota sigue con su tarjeta.
     if (run?.phase === 'won') {
-      return <TowerVictory data={data} run={run} title={t.name} playerName={playerName} busy={cloudStatus === 'saving'} onNewSeries={beginSeries} onExit={onExit} />
+      return <TowerVictory data={data} run={run} title={t.name} playerName={playerName} beaten={towerBeaten(run)} total={towerTrainerTotal(data)}
+        busy={cloudStatus === 'saving'} onContinue={towerRemaining(run, data) > 0 ? continueSeries : undefined} onNewSeries={beginSeries} onExit={onExit} />
     }
     if (!run || finished) { return (
       <div className="tower-card">
-        {finished ? <><h2>{t.lost}</h2><p>{t.wins(run.index, TOWER_ROUNDS)}</p></> : <p>{t.hint}</p>}
+        {finished ? <><h2>{t.lost}</h2><p>{t.victory.progress(towerBeaten(run), towerTrainerTotal(data))}</p></> : <p>{t.hint}</p>}
         <button type="button" className="btn btn-primary" disabled={cloudStatus === 'saving'} onClick={beginSeries}>{t.newRun}</button>
       </div>
     ) }
@@ -158,7 +167,7 @@ export default function TowerScreen({ data, playerName, createClient, ai, settin
           </ol>
         </section>
         <section className="tower-card tower-rival">
-          <h2>{t.round(run.index + 1, TOWER_ROUNDS)}</h2>
+          <h2>{run.series ? t.roundIn(run.series + 1, run.index + 1, run.rivals.length) : t.round(run.index + 1, run.rivals.length)}</h2>
           <img src={trainerSprite(run.rivals[run.index].trainer.sprite)} alt="" width={144} height={144} />
           <p>{run.rivals[run.index].trainer.nameEs}</p>
           <button type="button" className="btn btn-primary" disabled={cloudStatus === 'saving'} onClick={beginRound}>
@@ -202,7 +211,7 @@ function RoundBattle({ run, decisions, createClient, data, playerName, settings,
   }))
   return (
     <BattleScreen client={initial.client} data={data} challenge={initial.challenge} replay={initial.replay}
-      tower={{ round: run.index + 1, total: TOWER_ROUNDS }} battleSeed={towerBattleSeed(run)} playerLead={0}
+      tower={{ round: run.index + 1, total: run.rivals.length }} battleSeed={towerBattleSeed(run)} playerLead={0}
       ai={run.ai} trainerName={playerName} initialSpeed={settings.speed} animations={settings.animations} sound={settings}
       onSpeedChange={(speed) => onSettingsChange({ ...settings, speed })} onSoundChange={(sound) => onSettingsChange({ ...settings, ...sound })}
       paused={paused} onDecision={onDecision} onFinish={onFinish} onExit={onExit} onReplayFailed={onReplayFailed} />

@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest'
-import { newTowerRun, startTowerRound } from '../core/battle-tower/tower'
+import { continueTowerRun, finishTowerRound, newTowerRun, startTowerRound } from '../core/battle-tower/tower'
 import { loadGameData } from '../data/gameData'
 import { fakeApi } from '../test-utils/cloud'
 import { MemoryStorage } from '../test-utils/memoryStorage'
@@ -52,4 +52,19 @@ it('usa el registro de Torre de la cuenta y separa la caché de cada usuario y d
   account.setAccount(fakeApi(), 'cuenta-b')
   await account.load()
   expect(account.read()).toBeNull()
+})
+
+// UT-249 (Jose, 17/11/2026): las series siguientes se guardan y validan; los vencidos no pueden repetirse ni volver a salir.
+it('acepta las series siguientes y la final de líderes, y rechaza vencidos repetidos', () => {
+  const data = loadGameData()
+  let current = run
+  for (let i = 0; i < current.rivals.length; i += 1) current = finishTowerRound(startTowerRound(current), 'win')
+  const next = continueTowerRun(current, data)
+  const record = (state: typeof run) => ({ version: 1, revision: 1, state, battle: null })
+  expect(validTowerRecord(record(next))).toBe(true)
+  expect(validTowerRecord(record({ ...next, rivals: next.rivals.slice(0, 4).map((rival) => rival) }))).toBe(true)
+  expect(validTowerRecord(record({ ...next, beaten: [...next.beaten!, next.beaten![0]] }))).toBe(false)
+  expect(validTowerRecord(record({ ...next, beaten: [...next.beaten!, next.rivals[0].trainer.id] }))).toBe(false)
+  expect(validTowerRecord(record({ ...run, series: 0, beaten: ['brock'] }))).toBe(false)
+  expect(validTowerRecord(record({ ...next, phase: 'prepare' }))).toBe(false)
 })

@@ -8,11 +8,13 @@
 - Inicia cada combate con los PS, PP y objetos del equipo restaurados y sin estados alterados.
 - Tras las seis primeras victorias, muestra el siguiente rival y permite volver a Hoy dejando la partida guardada. La séptima victoria completa la serie. Una derrota cierra la serie y la siguiente se sortea de nuevo.
 - Al completar la serie, muestra la pantalla de victoria (maqueta en `docs/maquetas/torre/victoria.png`): arriba, el escenario del PWT con la banda «¡Torre Batalla superada!», los seis líderes al fondo en el orden en que cayeron y el campeón delante; abajo, el equipo en las placas de la pantalla de equipo. Nueva serie sortea otra; Volver a Hoy la deja guardada. Una derrota sigue mostrando la tarjeta de fin de serie.
+- Ofrece seguir con el mismo equipo al ganar una serie (PRD §0, «Torre: seguir con el mismo equipo»). La siguiente sortea rivales que no hayan salido en la racha: 6 líderes y 1 campeón mientras queden campeones; agotados, los líderes que quedan forman la serie final. Con 46 líderes y 7 campeones salen siete series de 7 y una final de 4. Guarda la serie en curso (`series`) y los vencidos de las anteriores (`beaten`); las partidas guardadas sin esos campos son la primera serie. Una derrota cierra toda la racha.
+- Al vencer a los 53, muestra la victoria final (maqueta en `docs/maquetas/torre/victoria-final.png`): los 53 en cuadrícula en el orden en que cayeron, «53 de 53 vencidos» y las series jugadas; sin «Seguir».
 - Conserva tanto la pausa entre rondas como las decisiones del combate en curso. Usa el navegador como invitado y la cuenta con sesión iniciada, como en los lockes. La Torre tiene su propia partida guardada.
 
 ## Integración
 
-- Resuelve los sets del PWT con el generador del daily. Usa semillas independientes para el sorteo de entrenadores, las variantes, el equipo del jugador y cada combate. Fija los sets resueltos en la partida guardada para que un cambio de catálogo deje intacta una serie en curso.
+- Resuelve los sets del PWT con el generador del daily. Usa semillas independientes para el sorteo de entrenadores de cada serie, las variantes, el equipo del jugador y cada combate. La primera serie conserva las semillas de antes de poder seguir, para que las partidas guardadas se reanuden igual. Fija los sets resueltos en la partida guardada para que un cambio de catálogo deje intacta una serie en curso.
 - Monta un motor nuevo para cada ronda con los sets originales y las decisiones de esa ronda. Así se restauran los recursos sin copiar estado interno del combate anterior.
 - Reutiliza las reglas del diario para generar un equipo válido tomando el primer rival como referencia. El resto de rivales usa el equipo ya sorteado.
 - Reutiliza la interfaz de combate del daily y su reanudación por decisiones. Guarda el avance de ronda y la limpieza de esas decisiones en una sola operación.
