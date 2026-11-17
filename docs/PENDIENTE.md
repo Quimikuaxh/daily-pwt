@@ -7,7 +7,8 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 ## Torre Batalla (`feature/torre-batalla`)
 
 - **Implementada el 17/11/2026.** Reglas y contrato de guardado en [TORRE-BATALLA.md](TORRE-BATALLA.md). Verificación completa: `validate:data`, `tsc -b`, lint, build, Vitest 3827/3827, E2E 253/253 y tanda de tiempos 25/25 (uno omitido por configuración).
-- **Antes de llevarla a `main`:** aplicar en producción la migración `20261117000000_pwt_tower.sql` (con autorización de Jose); sin ella, el guardado por cuenta de la Torre falla. Jose la prueba en local antes de fusionar.
+- **Migración en producción (17/11/2026, autorizada por Jose):** `20261117000000_pwt_tower.sql` aplicada. Comprobado: RLS y políticas en `tower_runs` y `tower_operations`, sin privilegios directos para `anon`/`authenticated`, `get_tower`/`save_tower` solo para `authenticated` (un invitado recibe 401).
+- **En `main` desde el 17/11/2026** (fast-forward de `feature/torre-batalla`, decisión de Jose).
 
 ## Campaña Nuzlocke de Hoenn Esmeralda
 
