@@ -494,7 +494,11 @@ def battle_screen():
     battle = jasc(p / 'text.pal')
     write_json(f'{DATA}/battle-colors.json', {
         'combate-menu': [battle[13], battle[15]], 'combate-mensaje': [colors[1], colors[6]],
-        'combate-pp': [battle[12], battle[11]], 'combate-nombre': [pngpal(Image.open(p / 'ball_status_bar.png'))[1], pngpal(Image.open(p / 'ball_status_bar.png'))[3]]
+        'combate-pp': [battle[12], battle[11]], 'combate-nombre': [pngpal(Image.open(p / 'ball_status_bar.png'))[1], pngpal(Image.open(p / 'ball_status_bar.png'))[3]],
+        # Sexo detrás del nombre (strings.c, gText_HealthboxGender_*): ♂ con DYNAMIC_COLOR2 (índice 11) y ♀ con DYNAMIC_COLOR1 (10), con la
+        # sombra del nombre (Jose, 17/11/2026).
+        'combate-macho': [pngpal(Image.open(p / 'ball_status_bar.png'))[11], pngpal(Image.open(p / 'ball_status_bar.png'))[3]],
+        'combate-hembra': [pngpal(Image.open(p / 'ball_status_bar.png'))[10], pngpal(Image.open(p / 'ball_status_bar.png'))[3]],
     })
 
 
@@ -616,6 +620,9 @@ def evolution_bg():
     save(sprite(G / 'misc/evo_sparkle.png', (0, 0, 8, 8)), 'evolucion-destello.png')
     # Poké Ball del envío y la retirada (balls/poke.png): tres fotogramas de 16 x 16, cerrada, abriéndose y abierta (pokeball.c).
     save(sprite(G / 'balls/poke.png'), 'combate-poke-ball.png')
+    # Icono de objeto equipado (party_menu/hold_icons.png: objeto arriba y carta abajo, 8 x 8 cada uno), el que party_menu.c pinta junto
+    # al icono del Pokémon que lleva algo. Va en Equipo y PC y en la selección de la Liga (Jose, 17/11/2026).
+    save(sprite(G / 'party_menu/hold_icons.png', (0, 0, 8, 8)), 'objeto-equipado.png')
     # Flecha ▼ de «pulsa para seguir» al final de un mensaje (fonts/down_arrow.png, TextPrinterDrawDownArrow): 8 x 16 que se dibuja
     # bajando 0, 1, 2 y 1 px cada 8 fotogramas.
     # Con los colores del texto de la caja de mensajes del combate (tinta blanca y sombra), donde se usa.

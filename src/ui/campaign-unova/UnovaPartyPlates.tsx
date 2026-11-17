@@ -4,6 +4,7 @@
  * `.bt-party` subida 192 px (`unova-league-party`): las placas empiezan en y 201, la pantalla de abajo.
  */
 import type { CSSProperties } from 'react'
+import { HeldItemIcon } from '../battle/party/HeldItemIcon'
 import { MemberIcon } from '../battle/party/MemberIcon'
 import { hpBar } from '../battle/party/hpBar'
 import { PANEL, PANEL_HEIGHT, PANEL_WIDTH, panelPosition } from '../battle/party/layout'
@@ -15,7 +16,7 @@ import '../battle/party/party.css'
 
 const u = esUnova
 
-export type PlateMember = { id: string; species: string; name: string; level: number; hp: number; maxHp?: number; fainted: boolean }
+export type PlateMember = { id: string; species: string; name: string; level: number; hp: number; maxHp?: number; fainted: boolean; item?: string | null }
 
 type PlateProps = {
   member: PlateMember
@@ -40,6 +41,7 @@ export function PartyPlate({ member, index, order, hpText, label, lit = false, o
   const visual = (
     <span className="bt-party-visual" aria-hidden="true">
       <span className="bt-party-icon" style={{ left: PANEL.icon.x, top: PANEL.icon.y }}><MemberIcon spriteId={member.species} dimmed={member.fainted} /></span>
+      <HeldItemIcon item={member.item} />
       <span className="bt-party-name" style={{ left: PANEL.name.x, top: PANEL.name.y }}>{member.name}</span>
       {order !== null && <span className="bt-party-name unova-league-order" style={{ left: PANEL.gender.x - 4, top: PANEL.name.y }}>{u.leagueOrder(order + 1)}</span>}
       <img className="bt-party-bar" style={{ left: PANEL.bar.x, top: PANEL.bar.y }} src={uiAsset('party/hp-track.png')} alt="" />

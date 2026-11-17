@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, type CSSProperties } from 'react'
 import { es } from '../../i18n/es'
 import { Modal } from '../common/Modal'
 
@@ -10,7 +10,8 @@ const base = import.meta.env.BASE_URL
 /**
  * Miniatura de cada modo (Jose, 12/11/2026, opción A de `maquetas.html?v=modos-a`): el reto diario, con el escenario del PWT, Máximo,
  * Cintia y el VS; la Nuzlocke de Hoenn, con el mapa de Hoenn y los dos protagonistas (Bruno y Aura); la de Teselia, con el mapa de N2/B2 y
- * Nate y Rosa. Sin miniatura propia, ninguna.
+ * Nate y Rosa; la Torre Batalla (Jose, 17/11/2026, opción C), seis líderes en pirámide y Máximo en la cima, sobre el escenario del PWT.
+ * Sin miniatura propia, ninguna.
  */
 function ModeArt({ id }: { id: string }) {
   if (id === 'daily') {
@@ -41,8 +42,30 @@ function ModeArt({ id }: { id: string }) {
       </span>
     )
   }
+  if (id === 'tower') {
+    // De arriba abajo: las filas de atrás se pintan antes y las de delante las tapan, como en un grupo de pie.
+    return (
+      <span className="modes-art modes-art-tower" aria-hidden="true">
+        <img src={`${base}ui/battle/pwt-stage.png`} alt="" className="modes-art-bg" />
+        {TOWER_ART.map(({ trainer, row, col }) => (
+          <img key={trainer} src={`${base}sprites/trainers/${trainer}-mini.png`} alt="" data-row={row} style={{ '--col': col } as CSSProperties} />
+        ))}
+      </span>
+    )
+  }
   return null
 }
+
+/** Pirámide de la miniatura de la Torre: fila 3 (cima) con el campeón; 2, 1 y 0 con los líderes. `col` en medias celdas desde el centro. */
+const TOWER_ART = [
+  { trainer: 'maximo', row: 3, col: 0 },
+  { trainer: 'cheren', row: 2, col: 0 },
+  { trainer: 'aloe', row: 1, col: -1 },
+  { trainer: 'anton', row: 1, col: 1 },
+  { trainer: 'brock', row: 0, col: -2 },
+  { trainer: 'blanca', row: 0, col: 0 },
+  { trainer: 'candela', row: 0, col: 2 },
+] as const
 
 /**
  * Modos de juego (Jose, 11/11/2026): el reto diario, que es donde se está, y las campañas Nuzlocke disponibles.

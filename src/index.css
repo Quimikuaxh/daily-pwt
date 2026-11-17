@@ -1521,6 +1521,12 @@ img.sprite,
 /* Reto diario: Máximo y Cintia pegados a los bordes y el VS arriba, entre las cabezas; centrado y más grande tapaba a Máximo (Jose, 12/11/2026). */
 .modes-art-daily .modes-art-left { left: -4%; }
 .modes-art-daily .modes-art-right { right: -4%; }
+/* Torre Batalla: minis de 22×32 a 26 px de alto (escala ~0,8), 12 px por media celda y 17 px por fila; la cima queda dentro de los 84 px. */
+.modes-art-tower img[data-row] { height: 26px; left: calc(50% - 9px + var(--col) * 12px); }
+.modes-art-tower img[data-row="0"] { bottom: 2px; }
+.modes-art-tower img[data-row="1"] { bottom: 19px; }
+.modes-art-tower img[data-row="2"] { bottom: 36px; }
+.modes-art-tower img[data-row="3"] { bottom: 54px; height: 28px; }
 
 .settings-help {
   width: 100%;

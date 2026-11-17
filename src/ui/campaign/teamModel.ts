@@ -47,6 +47,22 @@ export function initialLayout(state: CampaignState, limit: number, preferred: re
   }
 }
 
+/**
+ * Completa el equipo hasta el límite con los vivos de la caja, en su orden (Jose, 17/11/2026). Al preparar la Liga el límite sube a 6,
+ * pero la colocación guardada del octavo gimnasio (5 en Hoenn) dejaba al sexto en la caja: no salía en la selección ni en el combate.
+ */
+export function fillParty(layout: TeamLayout, limit: number): TeamLayout {
+  const party = layout.party.filter((id): id is string => !!id)
+  const box = layout.boxes.findIndex((candidate) => !candidate.ko)
+  if (party.length >= limit || box < 0) return layout
+  const moved = layout.boxes[box].mons.filter((id): id is string => !!id).slice(0, limit - party.length)
+  if (!moved.length) return layout
+  return {
+    party: fill([...party, ...moved], PARTY_SIZE),
+    boxes: layout.boxes.map((candidate, i) => i === box ? { ...candidate, mons: candidate.mons.map((id) => (id && moved.includes(id) ? null : id)) } : candidate),
+  }
+}
+
 export const monAt = (layout: TeamLayout, place: Place): string | null =>
   place.area === 'party' ? layout.party[place.i] ?? null : layout.boxes[place.box]?.mons[place.i] ?? null
 

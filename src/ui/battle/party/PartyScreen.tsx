@@ -5,6 +5,7 @@ import type { Place } from '../../campaign/teamModel'
 import type { GameData } from '../../../core/types'
 import { es } from '../../../i18n/es'
 import { uiAsset } from '../../common/uiAssets'
+import { HeldItemIcon } from './HeldItemIcon'
 import { MemberIcon } from './MemberIcon'
 import { PANEL, PANEL_BANDS, PANEL_HEIGHT, PANEL_WIDTH, panelPosition } from './layout'
 import { memberHpText, memberStateLabel, type PartyMember } from './partyModel'
@@ -91,6 +92,7 @@ function PartyPanel({ member, index, selected, enabled, interactions, place, dra
         <span className="bt-party-icon" style={{ left: PANEL.icon.x, top: PANEL.icon.y }}>
           <MemberIcon spriteId={member.spriteId} dimmed={member.fainted} />
         </span>
+        <HeldItemIcon item={member.itemId} />
         <span className="bt-party-name" data-band={PANEL_BANDS.name.join(',')} data-size="normal" style={{ left: PANEL.name.x, top: PANEL.name.y }}>{member.name}</span>
         {' '}
         {member.gender && <img className="bt-party-gender" style={{ left: PANEL.gender.x, top: PANEL.gender.y }} src={uiAsset(`icons/gender-${member.gender === 'M' ? 'male' : 'female'}.png`)} alt="" />}

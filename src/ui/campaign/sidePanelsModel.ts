@@ -3,6 +3,7 @@
  * equipo) en los menús, y en el combate uno por bando con el estilo de la ficha del Domo Batalla. Aquí, cuándo caben y qué enseña cada
  * Pokémon del combate; el dibujo, en CampaignSide.tsx.
  */
+import { presentedActiveIndex } from '../../battle/presented'
 import type { BattleRequest, BattleSet, EngineInit, MonView, SideView } from '../../battle/protocol'
 import type { Boosts } from '../../battle/fieldState'
 import { consoleScale } from '../battle/useStageScale'
@@ -74,6 +75,7 @@ const speciesOfDetails = (details: string) => toId(details.split(',')[0])
 /** Los Pokémon de un bando en el orden de entrada, con lo que se sabe de cada uno en este momento del combate. */
 export function sideMons({ sets, side, request, statsOf, player }: SideInput): SideMon[] {
   const requested = request?.side.pokemon ?? []
+  const activeSlot = !side || side.active === null ? null : player ? side.active : presentedActiveIndex(side)
   const seen = new Map<string, number>()
   return sets.map((set, index) => {
     const mon: MonView | undefined = side?.team.find((candidate, i) => (candidate.teamIndex ?? i) === index)
@@ -91,7 +93,8 @@ export function sideMons({ sets, side, request, statsOf, player }: SideInput): S
     return {
       index, species: set.species, level: set.level, hp, maxHp, percentOnly,
       status: fainted ? null : mon?.status ?? null, fainted,
-      active: side?.active !== null && side?.active !== undefined && (side.team[side.active]?.teamIndex ?? side.active) === index,
+      // El rival con Ilusión marca como activo al que imita, para no descubrirlo; el jugador ve el suyo real (Jose, 17/11/2026).
+      active: activeSlot !== null && (side!.team[activeSlot]?.teamIndex ?? activeSlot) === index,
       item: mon?.item ?? set.item, ability: set.ability, stats,
       moves: set.moves.map((id) => ({ id, pp: pp.get(id)?.pp ?? null, maxPp: pp.get(id)?.maxPp ?? null })),
     }

@@ -1,3 +1,4 @@
+import { presentedActive } from '../../battle/presented'
 import { useLayoutEffect, useRef, useState } from 'react'
 import type { BattleView } from '../../battle/protocol'
 import { emptyActive, type ActiveState, type FieldEffect } from '../../battle/fieldState'
@@ -66,7 +67,8 @@ export function FieldPanel({ view, names, onNote, onBack }: PanelProps) {
   const field = view.field
   const nameOf = (side: 'player' | 'rival') => {
     const sideView = view[side]
-    const mon = sideView.active === null ? undefined : sideView.team[sideView.active]
+    // Con Ilusión, el nombre que se ve en el campo (Jose, 17/11/2026).
+    const mon = presentedActive(sideView)
     return mon && !mon.fainted ? (names.species[mon.species] ?? mon.species) : text.noActive
   }
   return (

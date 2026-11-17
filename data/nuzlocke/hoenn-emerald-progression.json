@@ -66,6 +66,7 @@
   "species": {
     "bulbasaur": {
       "baseStatTotal": 318,
+      "maleRatio": 0.875,
       "types": [
         "Grass",
         "Poison"
@@ -147,6 +148,7 @@
     },
     "ivysaur": {
       "baseStatTotal": 405,
+      "maleRatio": 0.875,
       "types": [
         "Grass",
         "Poison"
@@ -236,6 +238,7 @@
     },
     "venusaur": {
       "baseStatTotal": 525,
+      "maleRatio": 0.875,
       "types": [
         "Grass",
         "Poison"
@@ -326,6 +329,7 @@
     },
     "charmander": {
       "baseStatTotal": 309,
+      "maleRatio": 0.875,
       "types": [
         "Fire"
       ],
@@ -406,6 +410,7 @@
     },
     "charmeleon": {
       "baseStatTotal": 405,
+      "maleRatio": 0.875,
       "types": [
         "Fire"
       ],
@@ -490,6 +495,7 @@
     },
     "charizard": {
       "baseStatTotal": 534,
+      "maleRatio": 0.875,
       "types": [
         "Fire",
         "Flying"
@@ -582,6 +588,7 @@
     },
     "squirtle": {
       "baseStatTotal": 314,
+      "maleRatio": 0.875,
       "types": [
         "Water"
       ],
@@ -667,6 +674,7 @@
     },
     "wartortle": {
       "baseStatTotal": 405,
+      "maleRatio": 0.875,
       "types": [
         "Water"
       ],
@@ -760,6 +768,7 @@
     },
     "blastoise": {
       "baseStatTotal": 530,
+      "maleRatio": 0.875,
       "types": [
         "Water"
       ],
@@ -854,6 +863,7 @@
     },
     "caterpie": {
       "baseStatTotal": 195,
+      "maleRatio": 0.5,
       "types": [
         "Bug"
       ],
@@ -878,6 +888,7 @@
     },
     "metapod": {
       "baseStatTotal": 205,
+      "maleRatio": 0.5,
       "types": [
         "Bug"
       ],
@@ -902,6 +913,7 @@
     },
     "butterfree": {
       "baseStatTotal": 385,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Flying"
@@ -980,6 +992,7 @@
     },
     "weedle": {
       "baseStatTotal": 195,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Poison"
@@ -1005,6 +1018,7 @@
     },
     "kakuna": {
       "baseStatTotal": 205,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Poison"
@@ -1030,6 +1044,7 @@
     },
     "beedrill": {
       "baseStatTotal": 385,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Poison"
@@ -1098,6 +1113,7 @@
     },
     "pidgey": {
       "baseStatTotal": 251,
+      "maleRatio": 0.5,
       "types": [
         "Normal",
         "Flying"
@@ -1168,6 +1184,7 @@
     },
     "pidgeotto": {
       "baseStatTotal": 349,
+      "maleRatio": 0.5,
       "types": [
         "Normal",
         "Flying"
@@ -1246,6 +1263,7 @@
     },
     "pidgeot": {
       "baseStatTotal": 469,
+      "maleRatio": 0.5,
       "types": [
         "Normal",
         "Flying"
@@ -1323,6 +1341,7 @@
     },
     "rattata": {
       "baseStatTotal": 253,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -1396,6 +1415,7 @@
     },
     "raticate": {
       "baseStatTotal": 413,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -1470,6 +1490,7 @@
     },
     "spearow": {
       "baseStatTotal": 262,
+      "maleRatio": 0.5,
       "types": [
         "Normal",
         "Flying"
@@ -1540,6 +1561,7 @@
     },
     "fearow": {
       "baseStatTotal": 442,
+      "maleRatio": 0.5,
       "types": [
         "Normal",
         "Flying"
@@ -1609,6 +1631,7 @@
     },
     "ekans": {
       "baseStatTotal": 288,
+      "maleRatio": 0.5,
       "types": [
         "Poison"
       ],
@@ -1691,6 +1714,7 @@
     },
     "arbok": {
       "baseStatTotal": 438,
+      "maleRatio": 0.5,
       "types": [
         "Poison"
       ],
@@ -1776,6 +1800,7 @@
     },
     "pikachu": {
       "baseStatTotal": 300,
+      "maleRatio": 0.5,
       "types": [
         "Electric"
       ],
@@ -1859,6 +1884,7 @@
     },
     "raichu": {
       "baseStatTotal": 475,
+      "maleRatio": 0.5,
       "types": [
         "Electric"
       ],
@@ -1910,6 +1936,7 @@
     },
     "sandshrew": {
       "baseStatTotal": 300,
+      "maleRatio": 0.5,
       "types": [
         "Ground"
       ],
@@ -1986,6 +2013,7 @@
     },
     "sandslash": {
       "baseStatTotal": 450,
+      "maleRatio": 0.5,
       "types": [
         "Ground"
       ],
@@ -2065,6 +2093,7 @@
     },
     "nidoranf": {
       "baseStatTotal": 275,
+      "maleRatio": 0,
       "types": [
         "Poison"
       ],
@@ -2148,6 +2177,7 @@
     },
     "nidorina": {
       "baseStatTotal": 365,
+      "maleRatio": 0,
       "types": [
         "Poison"
       ],
@@ -2231,6 +2261,7 @@
     },
     "nidoqueen": {
       "baseStatTotal": 495,
+      "maleRatio": 0,
       "types": [
         "Poison",
         "Ground"
@@ -2302,6 +2333,7 @@
     },
     "nidoranm": {
       "baseStatTotal": 273,
+      "maleRatio": 1,
       "types": [
         "Poison"
       ],
@@ -2384,6 +2416,7 @@
     },
     "nidorino": {
       "baseStatTotal": 365,
+      "maleRatio": 1,
       "types": [
         "Poison"
       ],
@@ -2466,6 +2499,7 @@
     },
     "nidoking": {
       "baseStatTotal": 495,
+      "maleRatio": 1,
       "types": [
         "Poison",
         "Ground"
@@ -2536,6 +2570,7 @@
     },
     "clefairy": {
       "baseStatTotal": 323,
+      "maleRatio": 0.25,
       "types": [
         "Normal"
       ],
@@ -2639,6 +2674,7 @@
     },
     "clefable": {
       "baseStatTotal": 473,
+      "maleRatio": 0.25,
       "types": [
         "Normal"
       ],
@@ -2701,6 +2737,7 @@
     },
     "vulpix": {
       "baseStatTotal": 299,
+      "maleRatio": 0.25,
       "types": [
         "Fire"
       ],
@@ -2780,6 +2817,7 @@
     },
     "ninetales": {
       "baseStatTotal": 505,
+      "maleRatio": 0.25,
       "types": [
         "Fire"
       ],
@@ -2830,6 +2868,7 @@
     },
     "jigglypuff": {
       "baseStatTotal": 270,
+      "maleRatio": 0.25,
       "types": [
         "Normal"
       ],
@@ -2923,6 +2962,7 @@
     },
     "wigglytuff": {
       "baseStatTotal": 425,
+      "maleRatio": 0.25,
       "types": [
         "Normal"
       ],
@@ -2983,6 +3023,7 @@
     },
     "zubat": {
       "baseStatTotal": 245,
+      "maleRatio": 0.5,
       "types": [
         "Poison",
         "Flying"
@@ -3062,6 +3103,7 @@
     },
     "golbat": {
       "baseStatTotal": 455,
+      "maleRatio": 0.5,
       "types": [
         "Poison",
         "Flying"
@@ -3154,6 +3196,7 @@
     },
     "oddish": {
       "baseStatTotal": 320,
+      "maleRatio": 0.5,
       "types": [
         "Grass",
         "Poison"
@@ -3221,6 +3264,7 @@
     },
     "gloom": {
       "baseStatTotal": 395,
+      "maleRatio": 0.5,
       "types": [
         "Grass",
         "Poison"
@@ -3301,6 +3345,7 @@
     },
     "vileplume": {
       "baseStatTotal": 480,
+      "maleRatio": 0.5,
       "types": [
         "Grass",
         "Poison"
@@ -3351,6 +3396,7 @@
     },
     "paras": {
       "baseStatTotal": 285,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Grass"
@@ -3426,6 +3472,7 @@
     },
     "parasect": {
       "baseStatTotal": 405,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Grass"
@@ -3504,6 +3551,7 @@
     },
     "venonat": {
       "baseStatTotal": 305,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Poison"
@@ -3584,6 +3632,7 @@
     },
     "venomoth": {
       "baseStatTotal": 450,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Poison"
@@ -3672,6 +3721,7 @@
     },
     "diglett": {
       "baseStatTotal": 265,
+      "maleRatio": 0.5,
       "types": [
         "Ground"
       ],
@@ -3744,6 +3794,7 @@
     },
     "dugtrio": {
       "baseStatTotal": 405,
+      "maleRatio": 0.5,
       "types": [
         "Ground"
       ],
@@ -3823,6 +3874,7 @@
     },
     "meowth": {
       "baseStatTotal": 290,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -3902,6 +3954,7 @@
     },
     "persian": {
       "baseStatTotal": 440,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -3981,6 +4034,7 @@
     },
     "psyduck": {
       "baseStatTotal": 320,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -4061,6 +4115,7 @@
     },
     "golduck": {
       "baseStatTotal": 500,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -4144,6 +4199,7 @@
     },
     "mankey": {
       "baseStatTotal": 305,
+      "maleRatio": 0.5,
       "types": [
         "Fighting"
       ],
@@ -4228,6 +4284,7 @@
     },
     "primeape": {
       "baseStatTotal": 455,
+      "maleRatio": 0.5,
       "types": [
         "Fighting"
       ],
@@ -4319,6 +4376,7 @@
     },
     "growlithe": {
       "baseStatTotal": 350,
+      "maleRatio": 0.75,
       "types": [
         "Fire"
       ],
@@ -4397,6 +4455,7 @@
     },
     "arcanine": {
       "baseStatTotal": 555,
+      "maleRatio": 0.75,
       "types": [
         "Fire"
       ],
@@ -4450,6 +4509,7 @@
     },
     "poliwag": {
       "baseStatTotal": 300,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -4520,6 +4580,7 @@
     },
     "poliwhirl": {
       "baseStatTotal": 385,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -4608,6 +4669,7 @@
     },
     "poliwrath": {
       "baseStatTotal": 500,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Fighting"
@@ -4673,6 +4735,7 @@
     },
     "abra": {
       "baseStatTotal": 310,
+      "maleRatio": 0.75,
       "types": [
         "Psychic"
       ],
@@ -4721,6 +4784,7 @@
     },
     "kadabra": {
       "baseStatTotal": 400,
+      "maleRatio": 0.75,
       "types": [
         "Psychic"
       ],
@@ -4813,6 +4877,7 @@
     },
     "alakazam": {
       "baseStatTotal": 490,
+      "maleRatio": 0.75,
       "types": [
         "Psychic"
       ],
@@ -4900,6 +4965,7 @@
     },
     "machop": {
       "baseStatTotal": 305,
+      "maleRatio": 0.75,
       "types": [
         "Fighting"
       ],
@@ -4988,6 +5054,7 @@
     },
     "machoke": {
       "baseStatTotal": 405,
+      "maleRatio": 0.75,
       "types": [
         "Fighting"
       ],
@@ -5080,6 +5147,7 @@
     },
     "machamp": {
       "baseStatTotal": 505,
+      "maleRatio": 0.75,
       "types": [
         "Fighting"
       ],
@@ -5167,6 +5235,7 @@
     },
     "bellsprout": {
       "baseStatTotal": 300,
+      "maleRatio": 0.5,
       "types": [
         "Grass",
         "Poison"
@@ -5243,6 +5312,7 @@
     },
     "weepinbell": {
       "baseStatTotal": 390,
+      "maleRatio": 0.5,
       "types": [
         "Grass",
         "Poison"
@@ -5327,6 +5397,7 @@
     },
     "victreebel": {
       "baseStatTotal": 480,
+      "maleRatio": 0.5,
       "types": [
         "Grass",
         "Poison"
@@ -5374,6 +5445,7 @@
     },
     "tentacool": {
       "baseStatTotal": 335,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Poison"
@@ -5450,6 +5522,7 @@
     },
     "tentacruel": {
       "baseStatTotal": 515,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Poison"
@@ -5529,6 +5602,7 @@
     },
     "geodude": {
       "baseStatTotal": 300,
+      "maleRatio": 0.5,
       "types": [
         "Rock",
         "Ground"
@@ -5612,6 +5686,7 @@
     },
     "graveler": {
       "baseStatTotal": 390,
+      "maleRatio": 0.5,
       "types": [
         "Rock",
         "Ground"
@@ -5703,6 +5778,7 @@
     },
     "golem": {
       "baseStatTotal": 485,
+      "maleRatio": 0.5,
       "types": [
         "Rock",
         "Ground"
@@ -5790,6 +5866,7 @@
     },
     "ponyta": {
       "baseStatTotal": 410,
+      "maleRatio": 0.5,
       "types": [
         "Fire"
       ],
@@ -5864,6 +5941,7 @@
     },
     "rapidash": {
       "baseStatTotal": 500,
+      "maleRatio": 0.5,
       "types": [
         "Fire"
       ],
@@ -5949,6 +6027,7 @@
     },
     "slowpoke": {
       "baseStatTotal": 315,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Psychic"
@@ -6042,6 +6121,7 @@
     },
     "slowbro": {
       "baseStatTotal": 490,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Psychic"
@@ -6136,6 +6216,7 @@
     },
     "magnemite": {
       "baseStatTotal": 325,
+      "maleRatio": null,
       "types": [
         "Electric",
         "Steel"
@@ -6214,6 +6295,7 @@
     },
     "magneton": {
       "baseStatTotal": 465,
+      "maleRatio": null,
       "types": [
         "Electric",
         "Steel"
@@ -6295,6 +6377,7 @@
     },
     "farfetchd": {
       "baseStatTotal": 352,
+      "maleRatio": 0.5,
       "types": [
         "Normal",
         "Flying"
@@ -6364,6 +6447,7 @@
     },
     "doduo": {
       "baseStatTotal": 310,
+      "maleRatio": 0.5,
       "types": [
         "Normal",
         "Flying"
@@ -6433,6 +6517,7 @@
     },
     "dodrio": {
       "baseStatTotal": 460,
+      "maleRatio": 0.5,
       "types": [
         "Normal",
         "Flying"
@@ -6507,6 +6592,7 @@
     },
     "seel": {
       "baseStatTotal": 325,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -6576,6 +6662,7 @@
     },
     "dewgong": {
       "baseStatTotal": 475,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Ice"
@@ -6657,6 +6744,7 @@
     },
     "grimer": {
       "baseStatTotal": 325,
+      "maleRatio": 0.5,
       "types": [
         "Poison"
       ],
@@ -6738,6 +6826,7 @@
     },
     "muk": {
       "baseStatTotal": 500,
+      "maleRatio": 0.5,
       "types": [
         "Poison"
       ],
@@ -6822,6 +6911,7 @@
     },
     "shellder": {
       "baseStatTotal": 305,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -6888,6 +6978,7 @@
     },
     "cloyster": {
       "baseStatTotal": 525,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Ice"
@@ -6943,6 +7034,7 @@
     },
     "gastly": {
       "baseStatTotal": 310,
+      "maleRatio": 0.5,
       "types": [
         "Ghost",
         "Poison"
@@ -7019,6 +7111,7 @@
     },
     "haunter": {
       "baseStatTotal": 405,
+      "maleRatio": 0.5,
       "types": [
         "Ghost",
         "Poison"
@@ -7103,6 +7196,7 @@
     },
     "gengar": {
       "baseStatTotal": 500,
+      "maleRatio": 0.5,
       "types": [
         "Ghost",
         "Poison"
@@ -7187,6 +7281,7 @@
     },
     "onix": {
       "baseStatTotal": 385,
+      "maleRatio": 0.5,
       "types": [
         "Rock",
         "Ground"
@@ -7270,6 +7365,7 @@
     },
     "drowzee": {
       "baseStatTotal": 328,
+      "maleRatio": 0.5,
       "types": [
         "Psychic"
       ],
@@ -7353,6 +7449,7 @@
     },
     "hypno": {
       "baseStatTotal": 483,
+      "maleRatio": 0.5,
       "types": [
         "Psychic"
       ],
@@ -7439,6 +7536,7 @@
     },
     "krabby": {
       "baseStatTotal": 325,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -7515,6 +7613,7 @@
     },
     "kingler": {
       "baseStatTotal": 475,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -7594,6 +7693,7 @@
     },
     "voltorb": {
       "baseStatTotal": 330,
+      "maleRatio": null,
       "types": [
         "Electric"
       ],
@@ -7673,6 +7773,7 @@
     },
     "electrode": {
       "baseStatTotal": 480,
+      "maleRatio": null,
       "types": [
         "Electric"
       ],
@@ -7755,6 +7856,7 @@
     },
     "exeggcute": {
       "baseStatTotal": 325,
+      "maleRatio": 0.5,
       "types": [
         "Grass",
         "Psychic"
@@ -7835,6 +7937,7 @@
     },
     "exeggutor": {
       "baseStatTotal": 520,
+      "maleRatio": 0.5,
       "types": [
         "Grass",
         "Psychic"
@@ -7890,6 +7993,7 @@
     },
     "cubone": {
       "baseStatTotal": 320,
+      "maleRatio": 0.5,
       "types": [
         "Ground"
       ],
@@ -7981,6 +8085,7 @@
     },
     "marowak": {
       "baseStatTotal": 425,
+      "maleRatio": 0.5,
       "types": [
         "Ground"
       ],
@@ -8079,6 +8184,7 @@
     },
     "hitmonlee": {
       "baseStatTotal": 455,
+      "maleRatio": 1,
       "types": [
         "Fighting"
       ],
@@ -8162,6 +8268,7 @@
     },
     "hitmonchan": {
       "baseStatTotal": 455,
+      "maleRatio": 1,
       "types": [
         "Fighting"
       ],
@@ -8241,6 +8348,7 @@
     },
     "lickitung": {
       "baseStatTotal": 385,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -8327,6 +8435,7 @@
     },
     "koffing": {
       "baseStatTotal": 340,
+      "maleRatio": 0.5,
       "types": [
         "Poison"
       ],
@@ -8407,6 +8516,7 @@
     },
     "weezing": {
       "baseStatTotal": 490,
+      "maleRatio": 0.5,
       "types": [
         "Poison"
       ],
@@ -8490,6 +8600,7 @@
     },
     "rhyhorn": {
       "baseStatTotal": 345,
+      "maleRatio": 0.5,
       "types": [
         "Ground",
         "Rock"
@@ -8576,6 +8687,7 @@
     },
     "rhydon": {
       "baseStatTotal": 485,
+      "maleRatio": 0.5,
       "types": [
         "Ground",
         "Rock"
@@ -8669,6 +8781,7 @@
     },
     "chansey": {
       "baseStatTotal": 450,
+      "maleRatio": 0,
       "types": [
         "Normal"
       ],
@@ -8773,6 +8886,7 @@
     },
     "tangela": {
       "baseStatTotal": 435,
+      "maleRatio": 0.5,
       "types": [
         "Grass"
       ],
@@ -8852,6 +8966,7 @@
     },
     "kangaskhan": {
       "baseStatTotal": 490,
+      "maleRatio": 0,
       "types": [
         "Normal"
       ],
@@ -8941,6 +9056,7 @@
     },
     "horsea": {
       "baseStatTotal": 295,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -9008,6 +9124,7 @@
     },
     "seadra": {
       "baseStatTotal": 440,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -9088,6 +9205,7 @@
     },
     "goldeen": {
       "baseStatTotal": 320,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -9163,6 +9281,7 @@
     },
     "seaking": {
       "baseStatTotal": 450,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -9237,6 +9356,7 @@
     },
     "staryu": {
       "baseStatTotal": 340,
+      "maleRatio": null,
       "types": [
         "Water"
       ],
@@ -9325,6 +9445,7 @@
     },
     "starmie": {
       "baseStatTotal": 520,
+      "maleRatio": null,
       "types": [
         "Water",
         "Psychic"
@@ -9382,6 +9503,7 @@
     },
     "mrmime": {
       "baseStatTotal": 460,
+      "maleRatio": 0.5,
       "types": [
         "Psychic"
       ],
@@ -9484,6 +9606,7 @@
     },
     "scyther": {
       "baseStatTotal": 500,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Flying"
@@ -9564,6 +9687,7 @@
     },
     "jynx": {
       "baseStatTotal": 455,
+      "maleRatio": 0,
       "types": [
         "Ice",
         "Psychic"
@@ -9656,6 +9780,7 @@
     },
     "electabuzz": {
       "baseStatTotal": 490,
+      "maleRatio": 0.75,
       "types": [
         "Electric"
       ],
@@ -9727,6 +9852,7 @@
     },
     "magmar": {
       "baseStatTotal": 495,
+      "maleRatio": 0.75,
       "types": [
         "Fire"
       ],
@@ -9807,6 +9933,7 @@
     },
     "pinsir": {
       "baseStatTotal": 500,
+      "maleRatio": 0.5,
       "types": [
         "Bug"
       ],
@@ -9881,6 +10008,7 @@
     },
     "tauros": {
       "baseStatTotal": 490,
+      "maleRatio": 1,
       "types": [
         "Normal"
       ],
@@ -9957,6 +10085,7 @@
     },
     "magikarp": {
       "baseStatTotal": 200,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -9985,6 +10114,7 @@
     },
     "gyarados": {
       "baseStatTotal": 540,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Flying"
@@ -10063,6 +10193,7 @@
     },
     "lapras": {
       "baseStatTotal": 535,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Ice"
@@ -10151,6 +10282,7 @@
     },
     "ditto": {
       "baseStatTotal": 288,
+      "maleRatio": null,
       "types": [
         "Normal"
       ],
@@ -10165,6 +10297,7 @@
     },
     "eevee": {
       "baseStatTotal": 325,
+      "maleRatio": 0.875,
       "types": [
         "Normal"
       ],
@@ -10253,6 +10386,7 @@
     },
     "vaporeon": {
       "baseStatTotal": 525,
+      "maleRatio": 0.875,
       "types": [
         "Water"
       ],
@@ -10332,6 +10466,7 @@
     },
     "jolteon": {
       "baseStatTotal": 525,
+      "maleRatio": 0.875,
       "types": [
         "Electric"
       ],
@@ -10408,6 +10543,7 @@
     },
     "flareon": {
       "baseStatTotal": 525,
+      "maleRatio": 0.875,
       "types": [
         "Fire"
       ],
@@ -10483,6 +10619,7 @@
     },
     "porygon": {
       "baseStatTotal": 395,
+      "maleRatio": null,
       "types": [
         "Normal"
       ],
@@ -10568,6 +10705,7 @@
     },
     "omanyte": {
       "baseStatTotal": 355,
+      "maleRatio": 0.875,
       "types": [
         "Rock",
         "Water"
@@ -10648,6 +10786,7 @@
     },
     "omastar": {
       "baseStatTotal": 495,
+      "maleRatio": 0.875,
       "types": [
         "Rock",
         "Water"
@@ -10731,6 +10870,7 @@
     },
     "kabuto": {
       "baseStatTotal": 355,
+      "maleRatio": 0.875,
       "types": [
         "Rock",
         "Water"
@@ -10813,6 +10953,7 @@
     },
     "kabutops": {
       "baseStatTotal": 495,
+      "maleRatio": 0.875,
       "types": [
         "Rock",
         "Water"
@@ -10901,6 +11042,7 @@
     },
     "aerodactyl": {
       "baseStatTotal": 515,
+      "maleRatio": 0.875,
       "types": [
         "Rock",
         "Flying"
@@ -10974,6 +11116,7 @@
     },
     "snorlax": {
       "baseStatTotal": 540,
+      "maleRatio": 0.875,
       "types": [
         "Normal"
       ],
@@ -11068,6 +11211,7 @@
     },
     "articuno": {
       "baseStatTotal": 580,
+      "maleRatio": null,
       "types": [
         "Ice",
         "Flying"
@@ -11139,6 +11283,7 @@
     },
     "zapdos": {
       "baseStatTotal": 580,
+      "maleRatio": null,
       "types": [
         "Electric",
         "Flying"
@@ -11210,6 +11355,7 @@
     },
     "moltres": {
       "baseStatTotal": 580,
+      "maleRatio": null,
       "types": [
         "Fire",
         "Flying"
@@ -11280,6 +11426,7 @@
     },
     "dratini": {
       "baseStatTotal": 300,
+      "maleRatio": 0.5,
       "types": [
         "Dragon"
       ],
@@ -11363,6 +11510,7 @@
     },
     "dragonair": {
       "baseStatTotal": 420,
+      "maleRatio": 0.5,
       "types": [
         "Dragon"
       ],
@@ -11454,6 +11602,7 @@
     },
     "dragonite": {
       "baseStatTotal": 600,
+      "maleRatio": 0.5,
       "types": [
         "Dragon",
         "Flying"
@@ -11558,6 +11707,7 @@
     },
     "mewtwo": {
       "baseStatTotal": 680,
+      "maleRatio": null,
       "types": [
         "Psychic"
       ],
@@ -11656,6 +11806,7 @@
     },
     "mew": {
       "baseStatTotal": 600,
+      "maleRatio": null,
       "types": [
         "Psychic"
       ],
@@ -11749,6 +11900,7 @@
     },
     "chikorita": {
       "baseStatTotal": 318,
+      "maleRatio": 0.875,
       "types": [
         "Grass"
       ],
@@ -11826,6 +11978,7 @@
     },
     "bayleef": {
       "baseStatTotal": 405,
+      "maleRatio": 0.875,
       "types": [
         "Grass"
       ],
@@ -11913,6 +12066,7 @@
     },
     "meganium": {
       "baseStatTotal": 525,
+      "maleRatio": 0.875,
       "types": [
         "Grass"
       ],
@@ -11996,6 +12150,7 @@
     },
     "cyndaquil": {
       "baseStatTotal": 309,
+      "maleRatio": 0.875,
       "types": [
         "Fire"
       ],
@@ -12062,6 +12217,7 @@
     },
     "quilava": {
       "baseStatTotal": 405,
+      "maleRatio": 0.875,
       "types": [
         "Fire"
       ],
@@ -12137,6 +12293,7 @@
     },
     "typhlosion": {
       "baseStatTotal": 534,
+      "maleRatio": 0.875,
       "types": [
         "Fire"
       ],
@@ -12212,6 +12369,7 @@
     },
     "totodile": {
       "baseStatTotal": 314,
+      "maleRatio": 0.875,
       "types": [
         "Water"
       ],
@@ -12289,6 +12447,7 @@
     },
     "croconaw": {
       "baseStatTotal": 405,
+      "maleRatio": 0.875,
       "types": [
         "Water"
       ],
@@ -12373,6 +12532,7 @@
     },
     "feraligatr": {
       "baseStatTotal": 530,
+      "maleRatio": 0.875,
       "types": [
         "Water"
       ],
@@ -12458,6 +12618,7 @@
     },
     "sentret": {
       "baseStatTotal": 215,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -12537,6 +12698,7 @@
     },
     "furret": {
       "baseStatTotal": 415,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -12623,6 +12785,7 @@
     },
     "hoothoot": {
       "baseStatTotal": 262,
+      "maleRatio": 0.5,
       "types": [
         "Normal",
         "Flying"
@@ -12697,6 +12860,7 @@
     },
     "noctowl": {
       "baseStatTotal": 442,
+      "maleRatio": 0.5,
       "types": [
         "Normal",
         "Flying"
@@ -12774,6 +12938,7 @@
     },
     "ledyba": {
       "baseStatTotal": 265,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Flying"
@@ -12854,6 +13019,7 @@
     },
     "ledian": {
       "baseStatTotal": 390,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Flying"
@@ -12933,6 +13099,7 @@
     },
     "spinarak": {
       "baseStatTotal": 250,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Poison"
@@ -13009,6 +13176,7 @@
     },
     "ariados": {
       "baseStatTotal": 390,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Poison"
@@ -13088,6 +13256,7 @@
     },
     "crobat": {
       "baseStatTotal": 535,
+      "maleRatio": 0.5,
       "types": [
         "Poison",
         "Flying"
@@ -13175,6 +13344,7 @@
     },
     "chinchou": {
       "baseStatTotal": 330,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Electric"
@@ -13255,6 +13425,7 @@
     },
     "lanturn": {
       "baseStatTotal": 460,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Electric"
@@ -13334,6 +13505,7 @@
     },
     "pichu": {
       "baseStatTotal": 205,
+      "maleRatio": 0.5,
       "types": [
         "Electric"
       ],
@@ -13388,6 +13560,7 @@
     },
     "cleffa": {
       "baseStatTotal": 218,
+      "maleRatio": 0.25,
       "types": [
         "Normal"
       ],
@@ -13450,6 +13623,7 @@
     },
     "igglybuff": {
       "baseStatTotal": 210,
+      "maleRatio": 0.25,
       "types": [
         "Normal"
       ],
@@ -13511,6 +13685,7 @@
     },
     "togepi": {
       "baseStatTotal": 245,
+      "maleRatio": 0.875,
       "types": [
         "Normal"
       ],
@@ -13592,6 +13767,7 @@
     },
     "togetic": {
       "baseStatTotal": 405,
+      "maleRatio": 0.875,
       "types": [
         "Normal",
         "Flying"
@@ -13674,6 +13850,7 @@
     },
     "natu": {
       "baseStatTotal": 320,
+      "maleRatio": 0.5,
       "types": [
         "Psychic",
         "Flying"
@@ -13748,6 +13925,7 @@
     },
     "xatu": {
       "baseStatTotal": 470,
+      "maleRatio": 0.5,
       "types": [
         "Psychic",
         "Flying"
@@ -13818,6 +13996,7 @@
     },
     "mareep": {
       "baseStatTotal": 280,
+      "maleRatio": 0.5,
       "types": [
         "Electric"
       ],
@@ -13880,6 +14059,7 @@
     },
     "flaaffy": {
       "baseStatTotal": 365,
+      "maleRatio": 0.5,
       "types": [
         "Electric"
       ],
@@ -13950,6 +14130,7 @@
     },
     "ampharos": {
       "baseStatTotal": 500,
+      "maleRatio": 0.5,
       "types": [
         "Electric"
       ],
@@ -14023,6 +14204,7 @@
     },
     "bellossom": {
       "baseStatTotal": 480,
+      "maleRatio": 0.5,
       "types": [
         "Grass"
       ],
@@ -14077,6 +14259,7 @@
     },
     "marill": {
       "baseStatTotal": 250,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -14154,6 +14337,7 @@
     },
     "azumarill": {
       "baseStatTotal": 410,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -14238,6 +14422,7 @@
     },
     "sudowoodo": {
       "baseStatTotal": 410,
+      "maleRatio": 0.5,
       "types": [
         "Rock"
       ],
@@ -14307,6 +14492,7 @@
     },
     "politoed": {
       "baseStatTotal": 500,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -14369,6 +14555,7 @@
     },
     "hoppip": {
       "baseStatTotal": 250,
+      "maleRatio": 0.5,
       "types": [
         "Grass",
         "Flying"
@@ -14443,6 +14630,7 @@
     },
     "skiploom": {
       "baseStatTotal": 340,
+      "maleRatio": 0.5,
       "types": [
         "Grass",
         "Flying"
@@ -14529,6 +14717,7 @@
     },
     "jumpluff": {
       "baseStatTotal": 450,
+      "maleRatio": 0.5,
       "types": [
         "Grass",
         "Flying"
@@ -14610,6 +14799,7 @@
     },
     "aipom": {
       "baseStatTotal": 360,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -14690,6 +14880,7 @@
     },
     "sunkern": {
       "baseStatTotal": 180,
+      "maleRatio": 0.5,
       "types": [
         "Grass"
       ],
@@ -14758,6 +14949,7 @@
     },
     "sunflora": {
       "baseStatTotal": 425,
+      "maleRatio": 0.5,
       "types": [
         "Grass"
       ],
@@ -14825,6 +15017,7 @@
     },
     "yanma": {
       "baseStatTotal": 390,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Flying"
@@ -14896,6 +15089,7 @@
     },
     "wooper": {
       "baseStatTotal": 210,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Ground"
@@ -14979,6 +15173,7 @@
     },
     "quagsire": {
       "baseStatTotal": 430,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Ground"
@@ -15061,6 +15256,7 @@
     },
     "espeon": {
       "baseStatTotal": 525,
+      "maleRatio": 0.875,
       "types": [
         "Psychic"
       ],
@@ -15139,6 +15335,7 @@
     },
     "umbreon": {
       "baseStatTotal": 525,
+      "maleRatio": 0.875,
       "types": [
         "Dark"
       ],
@@ -15216,6 +15413,7 @@
     },
     "murkrow": {
       "baseStatTotal": 405,
+      "maleRatio": 0.5,
       "types": [
         "Dark",
         "Flying"
@@ -15281,6 +15479,7 @@
     },
     "slowking": {
       "baseStatTotal": 490,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Psychic"
@@ -15367,6 +15566,7 @@
     },
     "misdreavus": {
       "baseStatTotal": 435,
+      "maleRatio": 0.5,
       "types": [
         "Ghost"
       ],
@@ -15443,6 +15643,7 @@
     },
     "unown": {
       "baseStatTotal": 336,
+      "maleRatio": null,
       "types": [
         "Psychic"
       ],
@@ -15457,6 +15658,7 @@
     },
     "wobbuffet": {
       "baseStatTotal": 405,
+      "maleRatio": 0.5,
       "types": [
         "Psychic"
       ],
@@ -15483,6 +15685,7 @@
     },
     "girafarig": {
       "baseStatTotal": 455,
+      "maleRatio": 0.5,
       "types": [
         "Normal",
         "Psychic"
@@ -15562,6 +15765,7 @@
     },
     "pineco": {
       "baseStatTotal": 290,
+      "maleRatio": 0.5,
       "types": [
         "Bug"
       ],
@@ -15635,6 +15839,7 @@
     },
     "forretress": {
       "baseStatTotal": 465,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Steel"
@@ -15708,6 +15913,7 @@
     },
     "dunsparce": {
       "baseStatTotal": 415,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -15785,6 +15991,7 @@
     },
     "gligar": {
       "baseStatTotal": 430,
+      "maleRatio": 0.5,
       "types": [
         "Ground",
         "Flying"
@@ -15853,6 +16060,7 @@
     },
     "steelix": {
       "baseStatTotal": 510,
+      "maleRatio": 0.5,
       "types": [
         "Steel",
         "Ground"
@@ -15932,6 +16140,7 @@
     },
     "snubbull": {
       "baseStatTotal": 300,
+      "maleRatio": 0.25,
       "types": [
         "Normal"
       ],
@@ -16022,6 +16231,7 @@
     },
     "granbull": {
       "baseStatTotal": 450,
+      "maleRatio": 0.25,
       "types": [
         "Normal"
       ],
@@ -16109,6 +16319,7 @@
     },
     "qwilfish": {
       "baseStatTotal": 430,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Poison"
@@ -16178,6 +16389,7 @@
     },
     "scizor": {
       "baseStatTotal": 500,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Steel"
@@ -16254,6 +16466,7 @@
     },
     "shuckle": {
       "baseStatTotal": 505,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Rock"
@@ -16314,6 +16527,7 @@
     },
     "heracross": {
       "baseStatTotal": 500,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Fighting"
@@ -16389,6 +16603,7 @@
     },
     "sneasel": {
       "baseStatTotal": 430,
+      "maleRatio": 0.5,
       "types": [
         "Dark",
         "Ice"
@@ -16479,6 +16694,7 @@
     },
     "teddiursa": {
       "baseStatTotal": 330,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -16561,6 +16777,7 @@
     },
     "ursaring": {
       "baseStatTotal": 500,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -16647,6 +16864,7 @@
     },
     "slugma": {
       "baseStatTotal": 250,
+      "maleRatio": 0.5,
       "types": [
         "Fire"
       ],
@@ -16717,6 +16935,7 @@
     },
     "magcargo": {
       "baseStatTotal": 410,
+      "maleRatio": 0.5,
       "types": [
         "Fire",
         "Rock"
@@ -16795,6 +17014,7 @@
     },
     "swinub": {
       "baseStatTotal": 250,
+      "maleRatio": 0.5,
       "types": [
         "Ice",
         "Ground"
@@ -16868,6 +17088,7 @@
     },
     "piloswine": {
       "baseStatTotal": 450,
+      "maleRatio": 0.5,
       "types": [
         "Ice",
         "Ground"
@@ -16948,6 +17169,7 @@
     },
     "corsola": {
       "baseStatTotal": 380,
+      "maleRatio": 0.25,
       "types": [
         "Water",
         "Rock"
@@ -17029,6 +17251,7 @@
     },
     "remoraid": {
       "baseStatTotal": 300,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -17101,6 +17324,7 @@
     },
     "octillery": {
       "baseStatTotal": 480,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -17173,6 +17397,7 @@
     },
     "delibird": {
       "baseStatTotal": 330,
+      "maleRatio": 0.5,
       "types": [
         "Ice",
         "Flying"
@@ -17208,6 +17433,7 @@
     },
     "mantine": {
       "baseStatTotal": 465,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Flying"
@@ -17276,6 +17502,7 @@
     },
     "skarmory": {
       "baseStatTotal": 465,
+      "maleRatio": 0.5,
       "types": [
         "Steel",
         "Flying"
@@ -17349,6 +17576,7 @@
     },
     "houndour": {
       "baseStatTotal": 330,
+      "maleRatio": 0.5,
       "types": [
         "Dark",
         "Fire"
@@ -17431,6 +17659,7 @@
     },
     "houndoom": {
       "baseStatTotal": 500,
+      "maleRatio": 0.5,
       "types": [
         "Dark",
         "Fire"
@@ -17513,6 +17742,7 @@
     },
     "kingdra": {
       "baseStatTotal": 540,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Dragon"
@@ -17588,6 +17818,7 @@
     },
     "phanpy": {
       "baseStatTotal": 330,
+      "maleRatio": 0.5,
       "types": [
         "Ground"
       ],
@@ -17659,6 +17890,7 @@
     },
     "donphan": {
       "baseStatTotal": 500,
+      "maleRatio": 0.5,
       "types": [
         "Ground"
       ],
@@ -17725,6 +17957,7 @@
     },
     "porygon2": {
       "baseStatTotal": 515,
+      "maleRatio": null,
       "types": [
         "Normal"
       ],
@@ -17804,6 +18037,7 @@
     },
     "stantler": {
       "baseStatTotal": 465,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -17878,6 +18112,7 @@
     },
     "smeargle": {
       "baseStatTotal": 250,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -17928,6 +18163,7 @@
     },
     "tyrogue": {
       "baseStatTotal": 210,
+      "maleRatio": 1,
       "types": [
         "Fighting"
       ],
@@ -17977,6 +18213,7 @@
     },
     "hitmontop": {
       "baseStatTotal": 455,
+      "maleRatio": 1,
       "types": [
         "Fighting"
       ],
@@ -18052,6 +18289,7 @@
     },
     "smoochum": {
       "baseStatTotal": 305,
+      "maleRatio": 0,
       "types": [
         "Ice",
         "Psychic"
@@ -18137,6 +18375,7 @@
     },
     "elekid": {
       "baseStatTotal": 360,
+      "maleRatio": 0.75,
       "types": [
         "Electric"
       ],
@@ -18207,6 +18446,7 @@
     },
     "magby": {
       "baseStatTotal": 365,
+      "maleRatio": 0.75,
       "types": [
         "Fire"
       ],
@@ -18279,6 +18519,7 @@
     },
     "miltank": {
       "baseStatTotal": 490,
+      "maleRatio": 0,
       "types": [
         "Normal"
       ],
@@ -18356,6 +18597,7 @@
     },
     "blissey": {
       "baseStatTotal": 540,
+      "maleRatio": 0,
       "types": [
         "Normal"
       ],
@@ -18454,6 +18696,7 @@
     },
     "raikou": {
       "baseStatTotal": 580,
+      "maleRatio": null,
       "types": [
         "Electric"
       ],
@@ -18530,6 +18773,7 @@
     },
     "entei": {
       "baseStatTotal": 580,
+      "maleRatio": null,
       "types": [
         "Fire"
       ],
@@ -18606,6 +18850,7 @@
     },
     "suicune": {
       "baseStatTotal": 580,
+      "maleRatio": null,
       "types": [
         "Water"
       ],
@@ -18684,6 +18929,7 @@
     },
     "larvitar": {
       "baseStatTotal": 300,
+      "maleRatio": 0.5,
       "types": [
         "Rock",
         "Ground"
@@ -18762,6 +19008,7 @@
     },
     "pupitar": {
       "baseStatTotal": 410,
+      "maleRatio": 0.5,
       "types": [
         "Rock",
         "Ground"
@@ -18848,6 +19095,7 @@
     },
     "tyranitar": {
       "baseStatTotal": 600,
+      "maleRatio": 0.5,
       "types": [
         "Rock",
         "Dark"
@@ -18945,6 +19193,7 @@
     },
     "lugia": {
       "baseStatTotal": 680,
+      "maleRatio": null,
       "types": [
         "Psychic",
         "Flying"
@@ -19036,6 +19285,7 @@
     },
     "hooh": {
       "baseStatTotal": 680,
+      "maleRatio": null,
       "types": [
         "Fire",
         "Flying"
@@ -19123,6 +19373,7 @@
     },
     "celebi": {
       "baseStatTotal": 600,
+      "maleRatio": null,
       "types": [
         "Psychic",
         "Grass"
@@ -19198,6 +19449,7 @@
     },
     "treecko": {
       "baseStatTotal": 310,
+      "maleRatio": 0.875,
       "types": [
         "Grass"
       ],
@@ -19284,6 +19536,7 @@
     },
     "grovyle": {
       "baseStatTotal": 405,
+      "maleRatio": 0.875,
       "types": [
         "Grass"
       ],
@@ -19382,6 +19635,7 @@
     },
     "sceptile": {
       "baseStatTotal": 530,
+      "maleRatio": 0.875,
       "types": [
         "Grass"
       ],
@@ -19478,6 +19732,7 @@
     },
     "torchic": {
       "baseStatTotal": 310,
+      "maleRatio": 0.875,
       "types": [
         "Fire"
       ],
@@ -19559,6 +19814,7 @@
     },
     "combusken": {
       "baseStatTotal": 405,
+      "maleRatio": 0.875,
       "types": [
         "Fire",
         "Fighting"
@@ -19656,6 +19912,7 @@
     },
     "blaziken": {
       "baseStatTotal": 530,
+      "maleRatio": 0.875,
       "types": [
         "Fire",
         "Fighting"
@@ -19758,6 +20015,7 @@
     },
     "mudkip": {
       "baseStatTotal": 310,
+      "maleRatio": 0.875,
       "types": [
         "Water"
       ],
@@ -19846,6 +20104,7 @@
     },
     "marshtomp": {
       "baseStatTotal": 405,
+      "maleRatio": 0.875,
       "types": [
         "Water",
         "Ground"
@@ -19948,6 +20207,7 @@
     },
     "swampert": {
       "baseStatTotal": 535,
+      "maleRatio": 0.875,
       "types": [
         "Water",
         "Ground"
@@ -20048,6 +20308,7 @@
     },
     "poochyena": {
       "baseStatTotal": 220,
+      "maleRatio": 0.5,
       "types": [
         "Dark"
       ],
@@ -20134,6 +20395,7 @@
     },
     "mightyena": {
       "baseStatTotal": 420,
+      "maleRatio": 0.5,
       "types": [
         "Dark"
       ],
@@ -20228,6 +20490,7 @@
     },
     "zigzagoon": {
       "baseStatTotal": 240,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -20318,6 +20581,7 @@
     },
     "linoone": {
       "baseStatTotal": 420,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -20413,6 +20677,7 @@
     },
     "wurmple": {
       "baseStatTotal": 195,
+      "maleRatio": 0.5,
       "types": [
         "Bug"
       ],
@@ -20446,6 +20711,7 @@
     },
     "silcoon": {
       "baseStatTotal": 205,
+      "maleRatio": 0.5,
       "types": [
         "Bug"
       ],
@@ -20470,6 +20736,7 @@
     },
     "beautifly": {
       "baseStatTotal": 385,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Flying"
@@ -20542,6 +20809,7 @@
     },
     "cascoon": {
       "baseStatTotal": 205,
+      "maleRatio": 0.5,
       "types": [
         "Bug"
       ],
@@ -20566,6 +20834,7 @@
     },
     "dustox": {
       "baseStatTotal": 385,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Poison"
@@ -20639,6 +20908,7 @@
     },
     "lotad": {
       "baseStatTotal": 220,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Grass"
@@ -20707,6 +20977,7 @@
     },
     "lombre": {
       "baseStatTotal": 340,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Grass"
@@ -20792,6 +21063,7 @@
     },
     "ludicolo": {
       "baseStatTotal": 480,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Grass"
@@ -20849,6 +21121,7 @@
     },
     "seedot": {
       "baseStatTotal": 220,
+      "maleRatio": 0.5,
       "types": [
         "Grass"
       ],
@@ -20912,6 +21185,7 @@
     },
     "nuzleaf": {
       "baseStatTotal": 340,
+      "maleRatio": 0.5,
       "types": [
         "Grass",
         "Dark"
@@ -20995,6 +21269,7 @@
     },
     "shiftry": {
       "baseStatTotal": 480,
+      "maleRatio": 0.5,
       "types": [
         "Grass",
         "Dark"
@@ -21049,6 +21324,7 @@
     },
     "taillow": {
       "baseStatTotal": 270,
+      "maleRatio": 0.5,
       "types": [
         "Normal",
         "Flying"
@@ -21119,6 +21395,7 @@
     },
     "swellow": {
       "baseStatTotal": 430,
+      "maleRatio": 0.5,
       "types": [
         "Normal",
         "Flying"
@@ -21192,6 +21469,7 @@
     },
     "wingull": {
       "baseStatTotal": 270,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Flying"
@@ -21262,6 +21540,7 @@
     },
     "pelipper": {
       "baseStatTotal": 430,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Flying"
@@ -21348,6 +21627,7 @@
     },
     "ralts": {
       "baseStatTotal": 198,
+      "maleRatio": 0.5,
       "types": [
         "Psychic"
       ],
@@ -21431,6 +21711,7 @@
     },
     "kirlia": {
       "baseStatTotal": 278,
+      "maleRatio": 0.5,
       "types": [
         "Psychic"
       ],
@@ -21526,6 +21807,7 @@
     },
     "gardevoir": {
       "baseStatTotal": 518,
+      "maleRatio": 0.5,
       "types": [
         "Psychic"
       ],
@@ -21616,6 +21898,7 @@
     },
     "surskit": {
       "baseStatTotal": 269,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Water"
@@ -21686,6 +21969,7 @@
     },
     "masquerain": {
       "baseStatTotal": 414,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Flying"
@@ -21768,6 +22052,7 @@
     },
     "shroomish": {
       "baseStatTotal": 295,
+      "maleRatio": 0.5,
       "types": [
         "Grass"
       ],
@@ -21843,6 +22128,7 @@
     },
     "breloom": {
       "baseStatTotal": 460,
+      "maleRatio": 0.5,
       "types": [
         "Grass",
         "Fighting"
@@ -21937,6 +22223,7 @@
     },
     "slakoth": {
       "baseStatTotal": 280,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -22019,6 +22306,7 @@
     },
     "vigoroth": {
       "baseStatTotal": 440,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -22116,6 +22404,7 @@
     },
     "slaking": {
       "baseStatTotal": 670,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -22208,6 +22497,7 @@
     },
     "nincada": {
       "baseStatTotal": 266,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Ground"
@@ -22289,6 +22579,7 @@
     },
     "ninjask": {
       "baseStatTotal": 456,
+      "maleRatio": 0.5,
       "types": [
         "Bug",
         "Flying"
@@ -22382,6 +22673,7 @@
     },
     "shedinja": {
       "baseStatTotal": 236,
+      "maleRatio": null,
       "types": [
         "Bug",
         "Ghost"
@@ -22454,6 +22746,7 @@
     },
     "whismur": {
       "baseStatTotal": 240,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -22536,6 +22829,7 @@
     },
     "loudred": {
       "baseStatTotal": 360,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -22637,6 +22931,7 @@
     },
     "exploud": {
       "baseStatTotal": 480,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -22737,6 +23032,7 @@
     },
     "makuhita": {
       "baseStatTotal": 237,
+      "maleRatio": 0.75,
       "types": [
         "Fighting"
       ],
@@ -22827,6 +23123,7 @@
     },
     "hariyama": {
       "baseStatTotal": 474,
+      "maleRatio": 0.75,
       "types": [
         "Fighting"
       ],
@@ -22920,6 +23217,7 @@
     },
     "azurill": {
       "baseStatTotal": 190,
+      "maleRatio": 0.25,
       "types": [
         "Normal"
       ],
@@ -22979,6 +23277,7 @@
     },
     "nosepass": {
       "baseStatTotal": 375,
+      "maleRatio": 0.5,
       "types": [
         "Rock"
       ],
@@ -23051,6 +23350,7 @@
     },
     "skitty": {
       "baseStatTotal": 260,
+      "maleRatio": 0.25,
       "types": [
         "Normal"
       ],
@@ -23141,6 +23441,7 @@
     },
     "delcatty": {
       "baseStatTotal": 380,
+      "maleRatio": 0.25,
       "types": [
         "Normal"
       ],
@@ -23196,6 +23497,7 @@
     },
     "sableye": {
       "baseStatTotal": 380,
+      "maleRatio": 0.5,
       "types": [
         "Dark",
         "Ghost"
@@ -23289,6 +23591,7 @@
     },
     "mawile": {
       "baseStatTotal": 380,
+      "maleRatio": 0.5,
       "types": [
         "Steel"
       ],
@@ -23374,6 +23677,7 @@
     },
     "aron": {
       "baseStatTotal": 330,
+      "maleRatio": 0.5,
       "types": [
         "Steel",
         "Rock"
@@ -23464,6 +23768,7 @@
     },
     "lairon": {
       "baseStatTotal": 430,
+      "maleRatio": 0.5,
       "types": [
         "Steel",
         "Rock"
@@ -23566,6 +23871,7 @@
     },
     "aggron": {
       "baseStatTotal": 530,
+      "maleRatio": 0.5,
       "types": [
         "Steel",
         "Rock"
@@ -23675,6 +23981,7 @@
     },
     "meditite": {
       "baseStatTotal": 280,
+      "maleRatio": 0.5,
       "types": [
         "Fighting",
         "Psychic"
@@ -23761,6 +24068,7 @@
     },
     "medicham": {
       "baseStatTotal": 410,
+      "maleRatio": 0.5,
       "types": [
         "Fighting",
         "Psychic"
@@ -23866,6 +24174,7 @@
     },
     "electrike": {
       "baseStatTotal": 295,
+      "maleRatio": 0.5,
       "types": [
         "Electric"
       ],
@@ -23946,6 +24255,7 @@
     },
     "manectric": {
       "baseStatTotal": 475,
+      "maleRatio": 0.5,
       "types": [
         "Electric"
       ],
@@ -24033,6 +24343,7 @@
     },
     "plusle": {
       "baseStatTotal": 405,
+      "maleRatio": 0.5,
       "types": [
         "Electric"
       ],
@@ -24105,6 +24416,7 @@
     },
     "minun": {
       "baseStatTotal": 405,
+      "maleRatio": 0.5,
       "types": [
         "Electric"
       ],
@@ -24177,6 +24489,7 @@
     },
     "volbeat": {
       "baseStatTotal": 400,
+      "maleRatio": 1,
       "types": [
         "Bug"
       ],
@@ -24253,6 +24566,7 @@
     },
     "illumise": {
       "baseStatTotal": 400,
+      "maleRatio": 0,
       "types": [
         "Bug"
       ],
@@ -24329,6 +24643,7 @@
     },
     "roselia": {
       "baseStatTotal": 400,
+      "maleRatio": 0.5,
       "types": [
         "Grass",
         "Poison"
@@ -24419,6 +24734,7 @@
     },
     "gulpin": {
       "baseStatTotal": 302,
+      "maleRatio": 0.5,
       "types": [
         "Poison"
       ],
@@ -24503,6 +24819,7 @@
     },
     "swalot": {
       "baseStatTotal": 467,
+      "maleRatio": 0.5,
       "types": [
         "Poison"
       ],
@@ -24598,6 +24915,7 @@
     },
     "carvanha": {
       "baseStatTotal": 305,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Dark"
@@ -24677,6 +24995,7 @@
     },
     "sharpedo": {
       "baseStatTotal": 460,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Dark"
@@ -24772,6 +25091,7 @@
     },
     "wailmer": {
       "baseStatTotal": 400,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -24860,6 +25180,7 @@
     },
     "wailord": {
       "baseStatTotal": 500,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -24955,6 +25276,7 @@
     },
     "numel": {
       "baseStatTotal": 305,
+      "maleRatio": 0.5,
       "types": [
         "Fire",
         "Ground"
@@ -25033,6 +25355,7 @@
     },
     "camerupt": {
       "baseStatTotal": 460,
+      "maleRatio": 0.5,
       "types": [
         "Fire",
         "Ground"
@@ -25119,6 +25442,7 @@
     },
     "torkoal": {
       "baseStatTotal": 470,
+      "maleRatio": 0.5,
       "types": [
         "Fire"
       ],
@@ -25196,6 +25520,7 @@
     },
     "spoink": {
       "baseStatTotal": 330,
+      "maleRatio": 0.5,
       "types": [
         "Psychic"
       ],
@@ -25282,6 +25607,7 @@
     },
     "grumpig": {
       "baseStatTotal": 470,
+      "maleRatio": 0.5,
       "types": [
         "Psychic"
       ],
@@ -25376,6 +25702,7 @@
     },
     "spinda": {
       "baseStatTotal": 360,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -25459,6 +25786,7 @@
     },
     "trapinch": {
       "baseStatTotal": 290,
+      "maleRatio": 0.5,
       "types": [
         "Ground"
       ],
@@ -25528,6 +25856,7 @@
     },
     "vibrava": {
       "baseStatTotal": 340,
+      "maleRatio": 0.5,
       "types": [
         "Ground",
         "Dragon"
@@ -25616,6 +25945,7 @@
     },
     "flygon": {
       "baseStatTotal": 520,
+      "maleRatio": 0.5,
       "types": [
         "Ground",
         "Dragon"
@@ -25702,6 +26032,7 @@
     },
     "cacnea": {
       "baseStatTotal": 335,
+      "maleRatio": 0.5,
       "types": [
         "Grass"
       ],
@@ -25789,6 +26120,7 @@
     },
     "cacturne": {
       "baseStatTotal": 475,
+      "maleRatio": 0.5,
       "types": [
         "Grass",
         "Dark"
@@ -25881,6 +26213,7 @@
     },
     "swablu": {
       "baseStatTotal": 310,
+      "maleRatio": 0.5,
       "types": [
         "Normal",
         "Flying"
@@ -25962,6 +26295,7 @@
     },
     "altaria": {
       "baseStatTotal": 490,
+      "maleRatio": 0.5,
       "types": [
         "Dragon",
         "Flying"
@@ -26061,6 +26395,7 @@
     },
     "zangoose": {
       "baseStatTotal": 458,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -26149,6 +26484,7 @@
     },
     "seviper": {
       "baseStatTotal": 458,
+      "maleRatio": 0.5,
       "types": [
         "Poison"
       ],
@@ -26223,6 +26559,7 @@
     },
     "lunatone": {
       "baseStatTotal": 440,
+      "maleRatio": null,
       "types": [
         "Rock",
         "Psychic"
@@ -26298,6 +26635,7 @@
     },
     "solrock": {
       "baseStatTotal": 440,
+      "maleRatio": null,
       "types": [
         "Rock",
         "Psychic"
@@ -26376,6 +26714,7 @@
     },
     "barboach": {
       "baseStatTotal": 288,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Ground"
@@ -26459,6 +26798,7 @@
     },
     "whiscash": {
       "baseStatTotal": 468,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Ground"
@@ -26551,6 +26891,7 @@
     },
     "corphish": {
       "baseStatTotal": 308,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -26638,6 +26979,7 @@
     },
     "crawdaunt": {
       "baseStatTotal": 468,
+      "maleRatio": 0.5,
       "types": [
         "Water",
         "Dark"
@@ -26734,6 +27076,7 @@
     },
     "baltoy": {
       "baseStatTotal": 300,
+      "maleRatio": null,
       "types": [
         "Ground",
         "Psychic"
@@ -26819,6 +27162,7 @@
     },
     "claydol": {
       "baseStatTotal": 500,
+      "maleRatio": null,
       "types": [
         "Ground",
         "Psychic"
@@ -26917,6 +27261,7 @@
     },
     "lileep": {
       "baseStatTotal": 355,
+      "maleRatio": 0.875,
       "types": [
         "Rock",
         "Grass"
@@ -26991,6 +27336,7 @@
     },
     "cradily": {
       "baseStatTotal": 495,
+      "maleRatio": 0.875,
       "types": [
         "Rock",
         "Grass"
@@ -27076,6 +27422,7 @@
     },
     "anorith": {
       "baseStatTotal": 355,
+      "maleRatio": 0.875,
       "types": [
         "Rock",
         "Bug"
@@ -27153,6 +27500,7 @@
     },
     "armaldo": {
       "baseStatTotal": 495,
+      "maleRatio": 0.875,
       "types": [
         "Rock",
         "Bug"
@@ -27240,6 +27588,7 @@
     },
     "feebas": {
       "baseStatTotal": 200,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -27287,6 +27636,7 @@
     },
     "milotic": {
       "baseStatTotal": 540,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -27363,6 +27713,7 @@
     },
     "castform": {
       "baseStatTotal": 420,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -27432,6 +27783,7 @@
     },
     "kecleon": {
       "baseStatTotal": 440,
+      "maleRatio": 0.5,
       "types": [
         "Normal"
       ],
@@ -27530,6 +27882,7 @@
     },
     "shuppet": {
       "baseStatTotal": 295,
+      "maleRatio": 0.5,
       "types": [
         "Ghost"
       ],
@@ -27611,6 +27964,7 @@
     },
     "banette": {
       "baseStatTotal": 455,
+      "maleRatio": 0.5,
       "types": [
         "Ghost"
       ],
@@ -27699,6 +28053,7 @@
     },
     "duskull": {
       "baseStatTotal": 295,
+      "maleRatio": 0.5,
       "types": [
         "Ghost"
       ],
@@ -27783,6 +28138,7 @@
     },
     "dusclops": {
       "baseStatTotal": 455,
+      "maleRatio": 0.5,
       "types": [
         "Ghost"
       ],
@@ -27879,6 +28235,7 @@
     },
     "tropius": {
       "baseStatTotal": 460,
+      "maleRatio": 0.5,
       "types": [
         "Grass",
         "Flying"
@@ -27960,6 +28317,7 @@
     },
     "chimecho": {
       "baseStatTotal": 425,
+      "maleRatio": 0.5,
       "types": [
         "Psychic"
       ],
@@ -28043,6 +28401,7 @@
     },
     "absol": {
       "baseStatTotal": 465,
+      "maleRatio": 0.5,
       "types": [
         "Dark"
       ],
@@ -28133,6 +28492,7 @@
     },
     "wynaut": {
       "baseStatTotal": 260,
+      "maleRatio": 0.5,
       "types": [
         "Psychic"
       ],
@@ -28177,6 +28537,7 @@
     },
     "snorunt": {
       "baseStatTotal": 300,
+      "maleRatio": 0.5,
       "types": [
         "Ice"
       ],
@@ -28257,6 +28618,7 @@
     },
     "glalie": {
       "baseStatTotal": 480,
+      "maleRatio": 0.5,
       "types": [
         "Ice"
       ],
@@ -28347,6 +28709,7 @@
     },
     "spheal": {
       "baseStatTotal": 290,
+      "maleRatio": 0.5,
       "types": [
         "Ice",
         "Water"
@@ -28436,6 +28799,7 @@
     },
     "sealeo": {
       "baseStatTotal": 410,
+      "maleRatio": 0.5,
       "types": [
         "Ice",
         "Water"
@@ -28530,6 +28894,7 @@
     },
     "walrein": {
       "baseStatTotal": 530,
+      "maleRatio": 0.5,
       "types": [
         "Ice",
         "Water"
@@ -28619,6 +28984,7 @@
     },
     "clamperl": {
       "baseStatTotal": 345,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -28675,6 +29041,7 @@
     },
     "huntail": {
       "baseStatTotal": 485,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -28739,6 +29106,7 @@
     },
     "gorebyss": {
       "baseStatTotal": 485,
+      "maleRatio": 0.5,
       "types": [
         "Water"
       ],
@@ -28804,6 +29172,7 @@
     },
     "relicanth": {
       "baseStatTotal": 485,
+      "maleRatio": 0.875,
       "types": [
         "Water",
         "Rock"
@@ -28885,6 +29254,7 @@
     },
     "luvdisc": {
       "baseStatTotal": 330,
+      "maleRatio": 0.25,
       "types": [
         "Water"
       ],
@@ -28951,6 +29321,7 @@
     },
     "bagon": {
       "baseStatTotal": 300,
+      "maleRatio": 0.5,
       "types": [
         "Dragon"
       ],
@@ -29034,6 +29405,7 @@
     },
     "shelgon": {
       "baseStatTotal": 420,
+      "maleRatio": 0.5,
       "types": [
         "Dragon"
       ],
@@ -29133,6 +29505,7 @@
     },
     "salamence": {
       "baseStatTotal": 600,
+      "maleRatio": 0.5,
       "types": [
         "Dragon",
         "Flying"
@@ -29236,6 +29609,7 @@
     },
     "beldum": {
       "baseStatTotal": 300,
+      "maleRatio": null,
       "types": [
         "Steel",
         "Psychic"
@@ -29257,6 +29631,7 @@
     },
     "metang": {
       "baseStatTotal": 420,
+      "maleRatio": null,
       "types": [
         "Steel",
         "Psychic"
@@ -29341,6 +29716,7 @@
     },
     "metagross": {
       "baseStatTotal": 600,
+      "maleRatio": null,
       "types": [
         "Steel",
         "Psychic"
@@ -29431,6 +29807,7 @@
     },
     "regirock": {
       "baseStatTotal": 580,
+      "maleRatio": null,
       "types": [
         "Rock"
       ],
@@ -29501,6 +29878,7 @@
     },
     "regice": {
       "baseStatTotal": 580,
+      "maleRatio": null,
       "types": [
         "Ice"
       ],
@@ -29571,6 +29949,7 @@
     },
     "registeel": {
       "baseStatTotal": 580,
+      "maleRatio": null,
       "types": [
         "Steel"
       ],
@@ -29646,6 +30025,7 @@
     },
     "latias": {
       "baseStatTotal": 600,
+      "maleRatio": 0,
       "types": [
         "Dragon",
         "Psychic"
@@ -29739,6 +30119,7 @@
     },
     "latios": {
       "baseStatTotal": 600,
+      "maleRatio": 1,
       "types": [
         "Dragon",
         "Psychic"
@@ -29832,6 +30213,7 @@
     },
     "kyogre": {
       "baseStatTotal": 670,
+      "maleRatio": null,
       "types": [
         "Water"
       ],
@@ -29916,6 +30298,7 @@
     },
     "groudon": {
       "baseStatTotal": 670,
+      "maleRatio": null,
       "types": [
         "Ground"
       ],
@@ -30003,6 +30386,7 @@
     },
     "rayquaza": {
       "baseStatTotal": 680,
+      "maleRatio": null,
       "types": [
         "Dragon",
         "Flying"
@@ -30095,6 +30479,7 @@
     },
     "jirachi": {
       "baseStatTotal": 600,
+      "maleRatio": null,
       "types": [
         "Steel",
         "Psychic"
@@ -30181,6 +30566,7 @@
     },
     "deoxys": {
       "baseStatTotal": 600,
+      "maleRatio": null,
       "types": [
         "Psychic"
       ],

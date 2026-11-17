@@ -18,7 +18,7 @@ import type { CampaignEncounter } from './hoennRoute'
 
 const t = esCampaign.league
 
-export type LeagueMember = { id: string; species: string; name: string; level: number; hp: number; fainted: boolean }
+export type LeagueMember = { id: string; species: string; name: string; level: number; hp: number; fainted: boolean; item?: string | null }
 
 export type LeagueScreenProps = {
   rival: CampaignEncounter

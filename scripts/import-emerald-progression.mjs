@@ -28,6 +28,11 @@ const moveId = token => canonical(gen3.moves, token === 'SMELLING_SALT' ? 'SMELL
 const simulatorSpecies = id => id === 'deoxys' ? 'deoxysspeed' : id
 const baseStatTotal = id => Object.values(gen3.species.get(simulatorSpecies(id)).baseStats)
   .reduce((total, stat) => total + stat, 0)
+// Proporción de machos (null sin sexo), como en el catálogo de Teselia: el sexo de los reclutas de Hoenn (Jose, 17/11/2026).
+const maleRatio = id => {
+  const entry = gen3.species.get(simulatorSpecies(id))
+  return entry.gender === 'N' ? null : entry.gender === 'M' ? 1 : entry.gender === 'F' ? 0 : entry.genderRatio?.M ?? 0.5
+}
 const inRange = (value, min, max) => Number.isInteger(value) && value >= min && value <= max
 const isCanonical = (table, id) => typeof id === 'string' && table.get(id)?.id === id
 
@@ -73,6 +78,7 @@ export function buildEmeraldProgression(sources) {
 
   const species = Object.fromEntries(nationalSpecies.map(({ id }) => [id, {
     baseStatTotal: baseStatTotal(id),
+    maleRatio: maleRatio(id),
     types: [...gen3.species.get(simulatorSpecies(id)).types],
     levelUp: levelUp.get(id),
     machines: compatibility.get(id),
@@ -111,6 +117,7 @@ export function validateEmeraldProgression(catalog) {
       !inRange(move?.level, 1, 100) || !isCanonical(gen3.moves, move.move) ||
       (index > 0 && move.level < entry.levelUp[index - 1].level))) throw new Error(`${id}: aprendizaje por nivel inválido`)
     if (entry.baseStatTotal !== baseStatTotal(id)) throw new Error(`${id}: suma de estadísticas base inválida`)
+    if (entry.maleRatio !== maleRatio(id)) throw new Error(`${id}: proporción de sexos inválida`)
     if (JSON.stringify(entry.types) !== JSON.stringify(gen3.species.get(simulatorSpecies(id)).types)) {
       throw new Error(`${id}: tipos de tercera generación inválidos`)
     }

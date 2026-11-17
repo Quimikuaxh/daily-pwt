@@ -204,6 +204,9 @@ export function createBattleEngine(init: EngineInit): BattleEngine {
       view.item = pokemon.item
       // PP de los dos bandos (los del rival, para el botón RIVAL: decisión de Jose). Los del simulador ya cuentan Presión.
       view.moves = pokemon.moveSlots.map((slot) => ({ id: slot.id, pp: slot.pp, maxPp: slot.maxpp }))
+      // Ilusión: el registro del simulador ya llega con el disfraz; la vista lo dice para que el combate no pinte al real.
+      const disguise = !fainted && pokemon.isActive && pokemon.illusion ? roster.indexOf(pokemon.illusion) : -1
+      if (disguise >= 0 && disguise !== index) view.illusion = disguise
       return view
     })
     return { remaining: team.filter((mon) => !mon.fainted).length, active: roster.indexOf(side.active[0]), team }

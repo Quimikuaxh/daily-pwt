@@ -53,6 +53,15 @@ describe('Movimientos de Teselia', () => {
     expect(screen.getByText('Ascuas', { selector: '.bt-summary > .sr-only' })).toBeInTheDocument()
   })
 
+  // UT-245 (Jose, 17/11/2026): el movimiento señalado de la lista no tiene placa; su tipo sale en el detalle de arriba.
+  it('el detalle de arriba enseña el tipo del movimiento señalado', () => {
+    mount(['tackle', 'growl'])
+    fireEvent.focus(row(/^Lanzallamas, /))
+    expect(document.querySelector('.bt-summary .bt-sum-types')).toHaveTextContent('Fuego')
+    fireEvent.click(screen.getByRole('button', { name: 'Ver detalle de Gruñido' }))
+    expect(document.querySelector('.bt-summary .bt-sum-types')).toHaveTextContent('Normal')
+  })
+
   it('con cuatro, pide cuál olvidar y la placa tocada lo sustituye', () => {
     const { onChange } = mount(['tackle', 'growl', 'ember', 'bite'])
     fireEvent.click(row(/^Lanzallamas, /))

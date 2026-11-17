@@ -205,6 +205,38 @@ describe('Campaña de Hoenn', () => {
     expect(store.read()!.state.leagueRoster).toEqual(['a', 'b'])
   })
 
+  // UT-242 (Jose, 17/11/2026): tras el octavo gimnasio la Tienda sigue abierta hasta entrar en la Liga (evoluciones de Liga o plantilla).
+  it('la Tienda se ofrece antes de entrar en la Liga y desaparece al aplicar sus evoluciones o fijar la plantilla', () => {
+    const member = (id: string, species: string) => ({ id, species, level: 50, history: [], fainted: false, victories: 0 })
+    const league = { ...createCampaign('tienda'), phase: 'prepare' as const, encounterIndex: 8, pick: 0, offer: [], members: [member('a', 'grovyle')] }
+    const shop = () => screen.queryByRole('button', { name: esCampaign.exchange.openLabel(0) })
+    for (const [state, open] of [
+      [{ ...league, encounterIndex: 7 }, true],
+      [league, true],
+      [{ ...league, leagueEvolved: true }, false],
+      [{ ...league, leagueEvolved: true, leagueRoster: ['a'] }, false],
+    ] as const) {
+      const store = new LocalCampaignStore(new MemoryStorage())
+      store.write(state, null, 0)
+      mount(store)
+      if (open) expect(shop()).toBeInTheDocument(); else expect(shop()).not.toBeInTheDocument()
+      cleanup()
+    }
+  })
+
+  // UT-244 (Jose, 17/11/2026): la colocación del octavo gimnasio (5) dejaba al sexto en la caja al preparar la Liga y no entraba en combate.
+  it('al preparar la Liga, Equipo y PC mete a los seis aunque la colocación guardada traiga cinco', async () => {
+    const store = new LocalCampaignStore(new MemoryStorage())
+    const member = (id: string, species: string) => ({ id, species, level: 50, history: [], fainted: false, victories: 0 })
+    const species = ['grovyle', 'machop', 'wingull', 'ralts', 'aron', 'zubat']
+    const ids = species.map((_, i) => `m${i}`)
+    store.write({ ...createCampaign('liga-seis'), phase: 'prepare', encounterIndex: 8, pick: 0, offer: [], leagueEvolved: true,
+      members: species.map((name, i) => member(ids[i], name)), teamLayout: { party: ids.slice(0, 5), box: [ids[5]] } }, null, 0)
+    const { user } = mount(store)
+    await user.click(screen.getByRole('button', { name: /^Continuar/ }))
+    expect(screen.getByRole('button', { name: /^Equipo, puesto 6: ZUBAT/ })).toBeInTheDocument()
+  })
+
   // UT-222 (Jose, 14/11/2026): al salir de Equipo y PC sin ACEPTAR se guardaban los movimientos pero no el orden del equipo ni la caja.
   it('cada cambio en Equipo y PC se guarda y se conserva al salir con Cerrar y volver a entrar', async () => {
     const store = new LocalCampaignStore(new MemoryStorage())

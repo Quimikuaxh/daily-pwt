@@ -356,6 +356,7 @@ export function EmeraldBattle({ session, start, onRetry, data, trainer, trainerI
             <div aria-hidden="true" style={rival.fainted ? hideAfterFaint(false, rival.species, battle.speed) : boxStyle(rivalHidden || !!rivalRecall, rivalSend)}>
               <img src={emeraldTheme.asset(hb(false).image)} alt="" style={{ left: hb(false).left, top: hb(false).top }} />
               <GameText text={nameOf(rival.species)} x={hb(false).name.x} y={hb(false).name.y} face="small" color="combate-nombre" hidden />
+              <GenderMark species={rival.species} name={nameOf(rival.species)} gender={sideSets?.rival[rival.teamIndex ?? view?.rival.active ?? 0]?.gender} x={hb(false).name.x} y={hb(false).name.y} />
               {rivalLevel > 0 && <GameText text={`{LV_2}${rivalLevel}`} x={hb(false).level.x} y={hb(false).level.y} face="small" color="combate-nombre" hidden />}
               <RivalHpBar status={rival.fainted ? null : rival.status} ratio={rivalHp ? rivalBar / rivalHp.maxHp : 0} />
             </div>
@@ -364,6 +365,7 @@ export function EmeraldBattle({ session, start, onRetry, data, trainer, trainerI
             <div aria-hidden="true" style={player.fainted ? hideAfterFaint(true, player.species, battle.speed) : boxStyle(playerHidden || !!playerRecall, playerSend)}>
               <img src={emeraldTheme.asset(hb(true).image)} alt="" style={{ left: hb(true).left, top: hb(true).top }} />
               <GameText text={nameOf(player.species)} x={hb(true).name.x} y={hb(true).name.y} face="small" color="combate-nombre" hidden />
+              <GenderMark species={player.species} name={nameOf(player.species)} gender={sideSets?.player[player.teamIndex ?? view?.player.active ?? 0]?.gender} x={hb(true).name.x} y={hb(true).name.y} />
               <StatusBadge status={player.fainted ? null : player.status} x={hb(true).status.x} y={hb(true).status.y} />
               <GameText text={`{LV_2}${playerLevels[player.species] ?? own?.level ?? ''}`} x={hb(true).level.x} y={hb(true).level.y} face="small" color="combate-nombre" hidden />
               <HpBar x={hb(true).bar.x} y={hb(true).bar.y} ratio={playerBar / playerHp.maxHp} />
@@ -610,4 +612,13 @@ function useBallSounds(event: string | null, player: boolean, species: string, s
     const timer = setTimeout(() => sounds.playSfx(sounds.ballOpen), frameMs(releaseFrame(player, species), speed))
     return () => clearTimeout(timer)
   }, [event, player, species, speed, sounds])
+}
+
+/**
+ * ♂/♀ justo detrás del nombre en la caja de PS, como UpdateNickInHealthbox (Jose, 17/11/2026). Sin sexo, nada; Nidoran sin mote tampoco
+ * (el juego lo omite porque su nombre ya lo lleva).
+ */
+function GenderMark({ species, name, gender, x, y }: { species: string; name: string; gender: 'M' | 'F' | null | undefined; x: number; y: number }) {
+  if (!gender || species === 'nidoranf' || species === 'nidoranm') return null
+  return <GameText text={gender === 'M' ? '♂' : '♀'} x={x + textWidth(font, name, 'small')} y={y} face="small" color={gender === 'M' ? 'combate-macho' : 'combate-hembra'} hidden />
 }

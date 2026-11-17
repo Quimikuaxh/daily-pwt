@@ -1,3 +1,4 @@
+import { campaignRivalGender } from './emeraldGender'
 import { Dex } from '@pkmn/sim'
 import { MAX_TURNS } from '../../config'
 import type { BattleSet, EngineEnd, EngineInit } from '../../battle/protocol'
@@ -37,6 +38,12 @@ function hiddenPowerIvs(seed: string): StatsTable {
     const ivs = { hp: draw(), atk: draw(), def: draw(), spa: draw(), spd: draw(), spe: draw() }
     if (Object.values(ivs).some(iv => iv !== ivs.hp)) return ivs
   }
+}
+
+/** Proporción de hembras de una especie de la campaña según el simulador (`null` sin sexo). */
+function femaleShare(definition: CampaignBattleDefinition, speciesId: string): number | null {
+  const species = dexOf(definition).species.get(definition.species[speciesId]?.simulatorSpecies ?? speciesId)
+  return species.gender === 'N' ? null : species.gender === 'F' ? 1 : species.gender === 'M' ? 0 : species.genderRatio.F
 }
 
 function battleSet(definition: CampaignBattleDefinition, member: RivalMember, ivs: StatsTable = stats(20)): BattleSet {
@@ -97,7 +104,7 @@ function buildCampaignBattleInit(
       const ivs = hasHiddenPower(member.moves)
         ? hiddenPowerIvs(deriveSeed(state.seed, 'nuzlocke-hidden-power:v1', 'rival', encounter.id, String(slot)))
         : undefined
-      return battleSet(definition, member, ivs)
+      return battleSet(definition, { ...member, gender: campaignRivalGender(encounter.id, rulesOf(definition)?.generation ?? 3, member, (id) => femaleShare(definition, id)) }, ivs)
     }),
     // Según la dificultad de la IA (PRD §0, 13/11/2026): Normal, el Alto Mando y el campeón miran un turno por delante con lo que han
     // visto y los gimnasios usan la heurística (Jose, 12/11/2026); Fácil, la heurística en todos; Difícil, mirar por delante en todos.

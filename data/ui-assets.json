@@ -2010,6 +2010,23 @@
       ]
     },
     {
+      "path": "battle/party/held-item.png",
+      "source": "tsr-misc-icons-bw",
+      "crop": [
+        76,
+        356,
+        6,
+        8
+      ],
+      "transparent": [
+        [
+          66,
+          66,
+          255
+        ]
+      ]
+    },
+    {
       "path": "battle/party/panel-blue-left.png",
       "source": "tsr-party-screen-bw",
       "crop": [

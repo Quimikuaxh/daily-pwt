@@ -1,3 +1,4 @@
+import { presentedActive } from '../../battle/presented'
 import type { BattleChallenge } from './battleTypes'
 import { Suspense, lazy, useRef, useState, type CSSProperties } from 'react'
 import type { BattleView, MonView } from '../../battle/protocol'
@@ -46,8 +47,9 @@ function playerSpriteStyle(spriteHeight: number): CSSProperties {
   return { top: playerSpriteBottom(spriteHeight), '--player-scale': playerSpriteScale(spriteHeight) } as CSSProperties
 }
 
+/** El activo tal como se ve: con Ilusión, el Pokémon que imita (sprite, nombre y género; Jose, 17/11/2026). */
 function activeMon(side: BattleView['player']): MonView | null {
-  return side.active === null ? null : side.team[side.active]
+  return presentedActive(side)
 }
 
 /** Tipo del movimiento animado; Poder Oculto, el real del Pokémon que lo usa (sale de sus IV). */

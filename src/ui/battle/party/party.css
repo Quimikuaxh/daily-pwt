@@ -263,3 +263,6 @@
   pointer-events: none;
   transform: translate(-50%, -50%) scale(var(--drag-scale, 1));
 }
+
+/* Icono de objeto equipado (HeldItemIcon): por encima del icono del Pokémon. */
+.bt-party-held { z-index: 1; image-rendering: pixelated; }

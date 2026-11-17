@@ -65,8 +65,9 @@ export function createWorkerHandler() {
           // Los registros antiguos omiten la versión y el motor conserva sus decisiones de IA al reconstruirlos.
           if (init.lookaheadVersion === undefined) delete prepared.init.lookaheadVersion
           if (init.substituteAi === undefined) delete prepared.init.substituteAi
-          // Los combates de Teselia guardados sin sexo en el equipo rival reproducen el equipo con el que empezaron.
-          if (init.generation === 5 && init.rival.every((set) => set.gender === undefined)) {
+          // Los combates guardados sin sexo en el equipo rival (Teselia antes del 13/11/2026, Hoenn antes del 17/11/2026) reproducen el
+          // equipo con el que empezaron: dar un sexo cambia la secuencia del simulador, que lo sorteaba.
+          if (init.rival.every((set) => set.gender === undefined)) {
             for (const set of prepared.init.rival) delete set.gender
           }
           if (!sameJson(prepared.init, init) || !sameJson(prepared.state, state)) throw new Error('campaign preparation')

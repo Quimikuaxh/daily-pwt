@@ -110,6 +110,26 @@ describe('sesión local de campaña', () => {
     expect(resumed.session.snapshot()?.battle?.init?.rival.every((set) => set.gender === undefined)).toBe(true)
   })
 
+  // UT-247 (Jose, 17/11/2026): Hoenn da a sus rivales el sexo del original; un combate empezado antes, sin él, se reanuda igual.
+  it('reanuda un combate antiguo de Hoenn guardado sin el sexo de los rivales', () => {
+    const input = campaignInput()
+    const legacy = { ...input.definition, encounters: input.definition.encounters.map((encounter) => ({
+      ...encounter, team: encounter.team.map((member) => ({ ...member, gender: null })),
+    })) }
+    const storage = new MemoryStorage()
+    const live = mount(storage)
+    live.session.prepare({ ...input, definition: legacy })
+    expect(live.session.snapshot()?.battle?.init?.rival.every((set) => set.gender === undefined)).toBe(true)
+    live.session.choose(firstEnabled(latestUpdate(live).request!))
+    const resumed = mount(storage)
+    resumed.session.resume(input.definition)
+    expect(latestUpdate(resumed)).toEqual(latestUpdate(live))
+
+    const fresh = mount()
+    fresh.session.prepare(input)
+    expect(fresh.session.snapshot()?.battle?.init?.rival.some((set) => set.gender !== undefined)).toBe(true)
+  })
+
   it('conserva las identidades repetidas y las bajas con otro inicial al reanudar un cambio forzado', () => {
     const storage = new MemoryStorage()
     const input = campaignInput()

@@ -67,7 +67,9 @@ function hoennRules(): CampaignRules {
     beautyBefore: hoennCalendar.beautyBefore,
     tradeLevel: TRADE_LEVEL,
     locations: {},
-    genders: false,
+    // Sexo por sorteo al reclutar, como en Teselia (Jose, 17/11/2026: la caja de PS de Esmeralda lo enseña). En Gen 3 no hay evoluciones
+    // de un solo sexo, así que no cambia ninguna.
+    genders: true,
     gymTypes: { petra: 'Rock', marcial: 'Fighting', erico: 'Electric', candela: 'Fire', norman: 'Normal', alana: 'Flying', 'vito-y-leti': 'Psychic', galano: 'Water' },
   }
 }

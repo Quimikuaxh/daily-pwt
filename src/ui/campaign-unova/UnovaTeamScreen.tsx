@@ -11,6 +11,7 @@ import { useState, type CSSProperties, type KeyboardEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { ConsoleStage } from '../console/ConsoleStage'
 import { n2b2Theme } from '../console/themes/n2b2'
+import { HeldItemIcon } from '../battle/party/HeldItemIcon'
 import { MemberIcon } from '../battle/party/MemberIcon'
 import SummaryScreen from '../battle/party/SummaryScreen'
 import type { PartyMember } from '../battle/party/partyModel'
@@ -166,7 +167,7 @@ export function UnovaTeamScreen({ readOnly = false, canEvolve, onEvolve, mons, i
             return (
               <button key={i} type="button" className="team-cell" data-place={placeKey(place)} style={{ left: cell.x, top: cell.y, width: 26, height: 22 }}
                 aria-label={slotLabel(place, id)} {...drag.handlers(place)} {...hoverHandlers(place)}>
-                {id && !hidden && <span className="unova-pc-icon"><MemberIcon spriteId={mons[id].species} dimmed={layout.boxes[box].ko} /></span>}
+                {id && !hidden && <span className="unova-pc-icon"><MemberIcon spriteId={mons[id].species} dimmed={layout.boxes[box].ko} /><HeldItemIcon item={mons[id].item} inIcon /></span>}
               </button>
             )
           })}
@@ -181,7 +182,7 @@ export function UnovaTeamScreen({ readOnly = false, canEvolve, onEvolve, mons, i
               <button key={i} type="button" className={`team-cell ${active ? 'unova-bar' : 'unova-bar-off'}${i >= limit ? ' unova-pc-locked' : ''}`}
                 data-place={placeKey(place)} style={{ left: cell.x, top: cell.y, width: 38, height: 36 }}
                 aria-label={slotLabel(place, id)} aria-disabled={i >= limit || undefined} {...drag.handlers(place)} {...hoverHandlers(place)}>
-                {id && !hidden && <span className="unova-pc-party-icon"><MemberIcon spriteId={mons[id].species} /></span>}
+                {id && !hidden && <span className="unova-pc-party-icon"><MemberIcon spriteId={mons[id].species} /><HeldItemIcon item={mons[id].item} inIcon /></span>}
               </button>
             )
           })}

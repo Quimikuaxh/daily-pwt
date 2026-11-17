@@ -9,6 +9,8 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 - **Implementada el 17/11/2026.** Reglas y contrato de guardado en [TORRE-BATALLA.md](TORRE-BATALLA.md). Verificación completa: `validate:data`, `tsc -b`, lint, build, Vitest 3827/3827, E2E 253/253 y tanda de tiempos 25/25 (uno omitido por configuración).
 - **Migración en producción (17/11/2026, autorizada por Jose):** `20261117000000_pwt_tower.sql` aplicada. Comprobado: RLS y políticas en `tower_runs` y `tower_operations`, sin privilegios directos para `anon`/`authenticated`, `get_tower`/`save_tower` solo para `authenticated` (un invitado recibe 401).
 - **En `main` desde el 17/11/2026** (fast-forward de `feature/torre-batalla`, decisión de Jose).
+- **Seguir la serie con el mismo equipo (Jose, 17/11/2026; por hacer).** Tras ganar los siete combates, el jugador elige entre seguir con el mismo equipo o salir y empezar una serie nueva. Si sigue, los rivales salen al azar sin repetirse hasta haber derrotado a todos los entrenadores del PWT; cada séptimo combate es un campeón, también sin repetir, hasta agotarlos. Falta decidir qué pasa al agotar los campeones antes que los líderes (o al revés), y si una derrota cierra la racha entera como ahora.
+- **Sexo original de los Pokémon del PWT (Jose, 17/11/2026; por hacer).** Daily y Torre deben usar el sexo con que salen en N2/B2. Ninguna fuente lo publica (`F2-DATOS.md`, «Género»): hay que extraerlo de la ROM de Negro 2, como las piezas de `gen:n2b2-ui`. Hasta entonces se sortea. En el daily, aplicarlo desde el día siguiente al despliegue, como `GENDERS_FROM`, para no cambiar retos publicados.
 
 ## Campaña Nuzlocke de Hoenn Esmeralda
 

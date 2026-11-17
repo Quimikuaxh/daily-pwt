@@ -20,10 +20,11 @@ import { emeraldTheme } from '../console/themes/emerald'
 import { candidateOf, emeraldDex } from './draftModel'
 import { badgeCount } from './hoennRoute'
 import { unovaSummaryMember } from '../campaign-unova/unovaSummary'
-import { fittingLayout, initialLayout, layoutToSave, lineup, savedLayout, teamMonOf, type TeamLayout } from './teamModel'
+import { fillParty, fittingLayout, initialLayout, layoutToSave, lineup, savedLayout, teamMonOf, type TeamLayout } from './teamModel'
 import { equippedMoves, legalMoves, moveInfo } from './movesModel'
 import { setCampaignMemberMoves } from '../../core/nuzlocke/progression'
 import type { CampaignBattleDefinition } from '../../core/nuzlocke/battle'
+import { campaignRivalGender } from '../../core/nuzlocke/emeraldGender'
 import { LocalCampaignSession } from '../../battle/campaignSession'
 import { createCampaignWorkerClient, type CampaignBattleClient } from '../../battle/client'
 import { battleInput } from './campaignBattle'
@@ -142,6 +143,12 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
   const battleDefinition = definition as unknown as CampaignBattleDefinition
   /** Preparando un combate de la Liga (Alto Mando o campeón). */
   const inLeague = (state: CampaignState) => encounters[state.encounterIndex].kind !== 'gym'
+  /**
+   * Tienda abierta en la preparación hasta entrar en la Liga (Jose, 17/11/2026): tras el octavo gimnasio aún se compra; al pulsar
+   * Continuar hacia la Liga se aplican sus evoluciones y se fija la plantilla, y desde ahí ya no (en el juego no se sale de la Liga).
+   * Cerrarla también al aplicar las evoluciones evita comprar después un objeto que hace evolucionar (Garra Afilada, Roca del Rey).
+   */
+  const shopOpen = (state: CampaignState) => state.phase === 'prepare' && (!inLeague(state) || (!state.leagueEvolved && !state.leagueRoster))
   /** Plazas del equipo: las del líder en los gimnasios; seis en la Liga. */
   const teamLimit = (state: CampaignState) => encounters[state.encounterIndex].kind === 'gym' ? encounters[state.encounterIndex].team.length : 6
   /** Los de la Liga, en orden (Alto Mando y campeón). */
@@ -331,8 +338,8 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     if (!state || view !== 'route') return null
     return (
       <>
-        {/* Sin Tienda en la Liga: en el juego no se puede salir de ella (Jose, 13/11/2026). */}
-        {state.phase === 'prepare' && !inLeague(state) && (
+        {/* Sin Tienda dentro de la Liga: en el juego no se puede salir de ella (Jose, 13/11/2026); antes de entrar, sí (`shopOpen`). */}
+        {shopOpen(state) && (
           <button type="button" className="campaign-restart" aria-label={esCampaign.exchange.openLabel(state.battlePoints ?? 0)} onClick={() => setView('exchange')}>
             {esCampaign.exchange.open}
           </button>
@@ -427,12 +434,15 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
     const shown = roster ? { ...state, members: state.members.filter((member) => { return roster.includes(member.id) }) } : state
     const limit = roster ? shown.members.filter((member) => { return !member.fainted }).length : teamLimit(state)
     const preferred = roster ?? team ?? state.lastTeam ?? []
+    const layout = fittingLayout(teamLayout, shown, limit) ?? (roster ? null : savedLayout(state, limit)) ?? initialLayout(shown, limit, preferred)
+    // Preparando la Liga (sin plantilla) entran los seis aunque la colocación guardada venga del octavo gimnasio con menos.
+    const leaguePrep = inLeague(state) && !roster && !teamLayout
     return (
     <kit.screens.Team
       data={data}
       details={(id) => memberDetails(state, id)}
       mons={Object.fromEntries(shown.members.map((member) => [member.id, teamMonOf(member, data)]))}
-      initial={fittingLayout(teamLayout, shown, limit) ?? (roster ? null : savedLayout(state, limit)) ?? initialLayout(shown, limit, preferred)}
+      initial={leaguePrep ? fillParty(layout, limit) : layout}
       limit={limit}
       rivalName={encounters[state.encounterIndex].nameEs}
       itemName={emeraldItemName}
@@ -537,6 +547,8 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
 
   // Sets para los paneles del combate mientras el motor lo prepara (Jose, 12/11/2026: tardaban en salir): los del jugador y el rival
   // con la habilidad de la especie; cuando llega la preparación, los del registro (los del motor).
+  // Proporción de hembras desde el dex de la app (sin cargar el simulador): `maleRatio` null, sin sexo.
+  const femaleShareOf = (species: string) => { const ratio = data.dex.species[species]?.maleRatio; return ratio === undefined ? undefined : ratio === null ? null : 1 - ratio }
   const provisionalSets = (current: CampaignState, lineup: readonly string[]): SideSets => {
     const flat = (value: number) => ({ hp: value, atk: value, def: value, spa: value, spd: value, spe: value })
     const set = (species: string, level: number, item: string | null | undefined, moves: readonly string[], gender?: 'M' | 'F' | null) => ({
@@ -547,7 +559,8 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
       const member = current.members.find((candidate) => { return candidate.id === id })
       return member ? [set(member.species, member.level, member.item, equippedMoves(definition, current, member), member.gender)] : []
     })
-    return { player, rival: battleDefinition.encounters[current.encounterIndex].team.map((member) => set(member.species, member.level, member.item, member.moves, member.gender)) }
+    const encounter = battleDefinition.encounters[current.encounterIndex]
+    return { player, rival: encounter.team.map((member) => set(member.species, member.level, member.item, member.moves, campaignRivalGender(encounter.id, kit.rules?.generation ?? 3, member, femaleShareOf))) }
   }
 
   // DATOS de un miembro (Jose, 12/11/2026): la ficha del draft con sus movimientos equipados, su nivel y su objeto.
@@ -634,7 +647,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
       const member = state.members.find((candidate) => { return candidate.id === id })
       if (!member) return []
       const mon = teamMonOf(member, data)
-      return [{ id, species: member.species, name: kit.speciesLabel(speciesName(member.species)), level: member.level, hp: mon.hp, fainted: member.fainted }]
+      return [{ id, species: member.species, name: kit.speciesLabel(speciesName(member.species)), level: member.level, hp: mon.hp, fainted: member.fainted, item: member.item ?? null }]
     })
     return (
       <kit.screens.League
@@ -655,7 +668,7 @@ function CampaignView({ data, onExit, store, newSession, canStartBattle = () => 
   }
 
   const exchangeScreen = () => {
-    if (view !== 'exchange' || state?.phase !== 'prepare' || inLeague(state)) return null
+    if (view !== 'exchange' || !state || !shopOpen(state)) return null
     return (
       <kit.screens.Exchange
         points={state.battlePoints ?? 0}

@@ -1,3 +1,4 @@
+import { presentedActiveIndex } from '../../../battle/presented'
 import type { BattleTeamSet } from '../battleTypes'
 import type { BattleRequest, BattleView, MonView, RequestPokemon } from '../../../battle/protocol'
 import { battleIdentity, parseBattleIdentity } from '../../../battle/identity'
@@ -185,7 +186,8 @@ export function rivalMembers(view: BattleView | null, data: GameData, team: read
         hpPercentOnly: true,
         status: fainted ? null : mon?.status ?? null,
         fainted,
-        active: view?.rival.active === index,
+        // Con Ilusión, «en combate» es el que imita, para no descubrir al real (Jose, 17/11/2026).
+        active: view ? presentedActiveIndex(view.rival) === index : false,
         canSendOut: false,
         types: species.types.map((typeName) => ({ id: typeName, label: data.names.types[typeName] ?? typeName })),
         itemId: mon?.item ?? set.item,

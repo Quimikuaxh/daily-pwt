@@ -299,6 +299,8 @@
 /* En las casillas del equipo (26 x 24 por dentro), el icono a su tamaño. */
 .unova-pc-party-icon { left: 0; top: 0; width: 26px; height: 24px; overflow: hidden; }
 .unova-pc-party-icon .bt-member-icon { left: -7px; top: -4px; }
+/* Objeto equipado (HeldItemIcon) en la esquina de abajo a la derecha de la casilla, como en la placa del equipo. */
+.bt-party-held[data-in-icon] { position: absolute; right: 1px; bottom: 1px; }
 
 .unova-pc-icon .bt-member-icon,
 .unova-pc-held .bt-member-icon {

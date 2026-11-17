@@ -19,6 +19,17 @@
 | Roster completo y calendario (21/10/2026) | **Los 53 entrenadores se barajan todos juntos** (solo azar, sin restricciones de región; el 27/10/2026 se añadió el reparto: ver «Reparto de entrenadores») en una única entrada base del `rosterSchedule`, rebarajada desde el inicio: no se mantienen los 6 de F1 delante ni se añaden los 47 en una entrada posterior. `LAUNCH_DATE` sigue provisional (2026-10-19) y la fija Jose al final; con la fecha actual los días ya jugados (19 a 21 de octubre) pasan a Hiedra, Fredo y Antón y Máximo toca el 2026-11-26 (ver `F2-DATOS.md`, «Calendario») | Decisión de Jose. Cambia los retos ya publicados. Descartado: mantener los 6 delante, entrada de calendario nueva en fecha futura y restricciones por región |
 | Skills de diseño | `web-design-guidelines` (revisión UI/accesibilidad) y `playwright-cli` (verificación visual con capturas) | `taste-skill` excluye pantallas de app; solo se aprovecha su bucle mirar-y-corregir sobre capturas. `image-to-code` no aplica (requiere generar imágenes) |
 
+### Mejoras de lockes, daily y Torre (17/11/2026)
+
+Decisiones de Jose:
+- **Miniatura de la Torre en Modos de juego:** la opción C. Seis líderes apilados en pirámide sobre el escenario del PWT y Máximo en la cima. Descartadas: la escalera diagonal de rivales (A) y Nate ante la escalera sobre la cuadrícula de la pantalla de equipo (B).
+- **Icono de objeto equipado:** se muestra en las fichas de equipo en combate (daily, Torre y lockes), en Equipo y PC de los lockes y en la selección de participantes de la Liga.
+- **Ilusión:** mientras dura, el Pokémon con Ilusión se presenta en combate como el último de su equipo en los dos bandos, con su sprite, su nombre y su caja de PS, para que no se descubra. La pantalla de Datos muestra siempre el Pokémon real.
+- **Tipo del movimiento:** se muestra en la pantalla de modificar los movimientos de un Pokémon de los dos lockes.
+- **Tienda antes de la Liga:** tras ganar el octavo gimnasio y hasta entrar en la Liga, se puede seguir comprando. Dentro de la Liga, no.
+- **Sexo de los rivales:** el del juego original; si el original no lo fija o no se conoce, se sortea. Teselia lo trae en su catálogo. En Hoenn se calcula con la regla de Esmeralda (`CreateNPCTrainerParty`: byte 0x88 con entrenador, 0x78 con entrenadora y 0x80 en combate doble, frente a la proporción de hembras de la especie; `src/core/nuzlocke/emeraldGender.ts`). Del PWT (daily y Torre) ninguna fuente lo publica: se sigue sorteando hasta extraerlo de la ROM (PENDIENTE). Los combates guardados sin sexo en los rivales se reanudan sin él.
+- **Sexo en Hoenn:** los reclutas reciben sexo por sorteo al reclutarlos, como en Teselia (`maleRatio` en el catálogo de progresión), y la caja de PS de Esmeralda pinta ♂/♀ detrás del nombre con los colores del juego. Los reclutas anteriores siguen sin sexo. *Descartado:* que el sexo solo contara en el simulador sin verse.
+
 ### Torre Batalla (17/11/2026)
 
 Las reglas de la serie y el contrato de guardado están en [Torre Batalla](TORRE-BATALLA.md).

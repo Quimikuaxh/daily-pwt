@@ -29,6 +29,10 @@ En el editor de movimientos de Teselia, usa las flechas bajo «Puede aprender» 
 
 La Torre Batalla está en «Modos de juego». Antes de empezar la serie, arrastra las fichas para reordenar el equipo o selecciona Mover. Abre Datos para consultar los movimientos y objetos asignados. Entre rondas verás el siguiente rival y podrás volver a Hoy para continuar más tarde. El juego guarda también el combate en curso y restaura el equipo al empezar cada ronda.
 
+En las pantallas de equipo (combate del daily, Torre y lockes; Equipo y PC y Liga de los lockes), un icono junto al Pokémon indica que lleva objeto. Con Ilusión, el combate presenta al Pokémon como el último de su equipo hasta que se rompe; Datos muestra siempre el real.
+
+En los lockes, la Tienda sigue abierta tras el octavo gimnasio hasta que se pulsa Continuar hacia la Liga; al preparar la Liga entran los seis en el equipo aunque el último gimnasio admitiera menos. El editor de movimientos de Teselia indica el tipo del movimiento señalado. Los rivales de los lockes llevan el sexo del juego original (en Hoenn, calculado con la regla de Esmeralda); en Hoenn los reclutas reciben sexo al reclutarlos y la caja de PS lo muestra.
+
 En «Datos → Información» de Teselia se ven las evoluciones y sus requisitos. Al ganar un gimnasio de Hoenn o Teselia, confirma el aviso para ver la ruta si el nuevo tramo incorpora objetos o MT/MO.
 
 En combate, pulsa el nombre del objeto equipado en «Pokémon → Datos» para consultar su efecto. En Hoenn aparece en la pestaña «Estadísticas». La ficha se cierra al pulsar fuera o con Escape.

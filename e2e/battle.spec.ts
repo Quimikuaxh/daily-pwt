@@ -42,8 +42,10 @@ test.describe('Partida completa contra la IA trivial', () => {
   })
 
   test('E2E-05 misma semilla y mismas decisiones: mismo resultado y registro', async ({ page }) => {
-    // Dos partidas completas con intro y mensajes uno a uno; en webkit no caben en los 120 s por defecto.
-    test.setTimeout(300_000)
+    // Dos partidas completas con intro y mensajes uno a uno, abriendo el Registro en cada turno (el Resultado lo desmonta, así que se lee
+    // durante el combate). En webkit, solo tarda ~3,7 min, pero con 4 trabajadores en paralelo pasaba de 4,7 a más de 5 min y agotaba los
+    // 300 s (17/11/2026, igual con `main` que con la rama: no es una regresión). El mismo margen que las partidas sueltas de arriba.
+    test.setTimeout(420_000)
     // Las dos partidas son prácticas: el oficial solo se juega una vez por día (DEC-43) y el test trata del motor, no del guardado.
     const runs: { lines: string[]; outcome: unknown }[] = []
     for (let run = 0; run < 2; run += 1) {

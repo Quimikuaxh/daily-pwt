@@ -32,6 +32,15 @@ describe('pantalla de equipo', () => {
     expect(within(group).getAllByRole('button')[2]).toHaveAccessibleName(/paralizado/i)
   })
 
+  // UT-246 (Jose, 17/11/2026): el que lleva objeto lleva su icono junto al del Pokémon; el que no, no.
+  it('las placas de los que llevan objeto llevan el icono de objeto equipado', () => {
+    const team = members().map((member, i) => ({ ...member, itemId: i === 0 ? 'leftovers' : '' }))
+    const { container } = render(<PartyScreen members={team} data={realData} forced={false} enabled onChoose={() => undefined} onClose={() => undefined} />)
+    const panels = Array.from(container.querySelectorAll<HTMLElement>('.bt-party-panel'))
+    expect(panels.map((panel) => panel.querySelectorAll('.bt-party-held').length)).toEqual([1, 0, 0, 0, 0, 0])
+    expect(panels[0].querySelector('.bt-party-held')).toHaveAttribute('src', expect.stringMatching(/party\/held-item\.png$/))
+  })
+
   it('cada placa lleva su icono de menú, nivel y PS, y los debilitados llevan la placa roja', () => {
     const { container } = render(<PartyScreen members={members({ 1: { condition: '0 fnt' } })} data={realData} forced={false} enabled onChoose={() => undefined} onClose={() => undefined} />)
     expect(container.querySelectorAll('.bt-member-icon')).toHaveLength(6)

@@ -9,7 +9,7 @@ import { emeraldSprite, emeraldTheme } from '../console/themes/emerald'
 import type { BitmapFont } from '../console/theme'
 import { hpBarColors, slotImage, slotRect, type SlotState } from './partySlotModel'
 
-export type SlotMon = { species: string; name: string; level: number; hp: number; maxHp: number }
+export type SlotMon = { species: string; name: string; level: number; hp: number; maxHp: number; item?: string | null }
 
 type PartySlotProps = {
   i: number
@@ -35,6 +35,7 @@ export function PartySlot({ i, mon, state, bounce = false, description }: PartyS
           <GameText text={mon.name} x={r.name[0]} y={r.name[1]} width={40} face="small" color="equipo" hidden />
           <GameText text={`{LV}${mon.level}`} x={r.lv[0]} y={r.lv[1]} face="small" color="equipo" hidden />
           <GameText text={description} x={r.desc[0]} y={r.desc[1]} width={64} color="equipo" hidden />
+          <HeldIcon mon={mon} top={r.icon} />
         </>
       )}
       {mon && !description && (
@@ -45,8 +46,18 @@ export function PartySlot({ i, mon, state, bounce = false, description }: PartyS
           <GameText text={padNumber(font, mon.hp, 3)} x={r.hp[0]} y={r.hp[1]} face="small" color="equipo" hidden />
           <GameText text={`/${padNumber(font, mon.maxHp, 3)}`} x={r.max[0]} y={r.max[1]} face="small" color="equipo" hidden />
           <i className="party-hp-bar" style={{ left: r.bar[0], top: r.bar[1], width: Math.ceil(48 * ratio), background: `linear-gradient(${dark} 0 1px, ${light} 1px)` }} />
+          <HeldIcon mon={mon} top={r.icon} />
         </>
       )}
     </>
   )
+}
+
+/**
+ * Icono de objeto equipado (Jose, 17/11/2026), donde lo pone party_menu.c: su centro, 4 px a la derecha y 10 abajo del centro del icono
+ * de 32 x 32 (UpdatePartyMonHeldItemSprite). El icono va en x −8, así que el de 8 x 8 queda en (8, icono + 22).
+ */
+function HeldIcon({ mon, top }: { mon: SlotMon; top: number }) {
+  if (!mon.item) return null
+  return <img className="party-held-item" src={emeraldTheme.asset('objeto-equipado')} alt="" style={{ left: 8, top: top + 22 }} />
 }

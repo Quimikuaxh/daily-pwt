@@ -85,6 +85,11 @@ export type MonView = {
   item?: string
   /** PP actuales y máximos de sus movimientos, en el orden del set (pantalla de datos; los del rival, en el botón RIVAL). */
   moves?: { id: string; pp: number; maxPp: number }[]
+  /**
+   * Ilusión activa (solo el activo): índice en `team` del Pokémon que imita, el último de su equipo. El combate lo presenta con su
+   * sprite, nombre y género (Jose, 17/11/2026, en los dos bandos); los PS, el nivel, los menús y Datos son los del Pokémon real.
+   */
+  illusion?: number
 }
 
 import type { FieldState } from './fieldState'

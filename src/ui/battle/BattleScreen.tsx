@@ -1,3 +1,4 @@
+import { presentedActive } from '../../battle/presented'
 import { trainerSprite, trainerVsSprite } from '../common/spriteUrls'
 import { substituteAiForSeed } from '../../battle/seed'
 import type { BattleChallenge } from './battleTypes'
@@ -238,7 +239,9 @@ export function BattleScreen({ client, data, challenge, playerLead, battleSeed, 
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [dialog, advance])
 
-  const activePlayerName = battle.view?.player.active == null ? null : speciesName(battle.view.player.team[battle.view.player.active].species, '')
+  // «¿Qué hará…?» con el nombre que se ve en el campo: con Ilusión, el del Pokémon que imita (Jose, 17/11/2026).
+  const shownPlayer = battle.view ? presentedActive(battle.view.player) : null
+  const activePlayerName = shownPlayer ? speciesName(shownPlayer.species, '') : null
   const prompt = canActNow && !forcedSwitch && battle.introPhase === 'done' && activePlayerName ? es.battle.whatWillDo(activePlayerName) : null
   const statusOpen = mode === 'replay' ? replayStatus : touchMode === 'field'
   const note = statusOpen && fieldNote && fieldNote.over === battle.message ? fieldNote.text : null

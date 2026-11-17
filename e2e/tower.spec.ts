@@ -51,7 +51,10 @@ test('Torre: ordena el equipo una vez, reanuda el combate y termina la serie al 
   await page.getByRole('button', { name: 'Volver', exact: true }).click()
   await battle.decide()
   await battle.waitForActionOrResult()
-  await expect.poll(async () => (await read(page)).battle?.decisions.length).toBe(1)
+  // La serie sale de una semilla aleatoria: si el primer movimiento bloquea (Enfado, Hiperrayo…), los turnos forzados también se guardan
+  // como decisiones. Lo que se comprueba es que haya alguna y que la reanudación conserve las mismas (17/11/2026: esperaba 1 y hubo 3).
+  await expect.poll(async () => (await read(page)).battle?.decisions.length ?? 0).toBeGreaterThan(0)
+  const decided = (await read(page)).battle!.decisions.length
   const history = await battle.logLines()
   await battle.exitButton.click()
   await expect(page.getByRole('dialog')).toContainText('Podrás reanudar este combate desde la Torre Batalla.')
@@ -63,7 +66,7 @@ test('Torre: ordena el equipo una vez, reanuda el combate y termina la serie al 
   await expect(page.locator('[data-place^="party-"]')).toHaveCount(0)
   await page.getByRole('button', { name: 'Reanudar combate' }).click()
   await battle.waitForActionOrResult()
-  expect((await read(page)).battle?.decisions.length).toBe(1)
+  expect((await read(page)).battle?.decisions.length).toBe(decided)
   expect((await read(page)).state.team).toEqual(ordered.state.team)
   expect(await battle.logLines()).toEqual(history)
 

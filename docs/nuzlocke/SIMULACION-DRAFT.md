@@ -75,7 +75,7 @@ Cada candidato, entre la media rival × 0,94 y la media rival × 1,08 (límites 
 Resultado con 100 semillas (tablas abajo): ningún fallo; pool mínimo tras exclusiones **18 en Marcial** (mediana 20) y 35 o más en el resto. **Erico** solo tiene **dos** candidatos de tipo propio supereficaz en su pool (antes de exclusiones), así que la garantía se fuerza en 77 de 100 tramos: casi siempre sale uno de esos dos. No es un fallo, pero sí el tramo más concentrado; si se quiere más variedad ahí, la opción sería ampliar solo la cobertura de tipo de ese hito (no decidido).
 
 <!-- draft-relative:start -->
-JSON fuente: SHA-256 `6373238cbd809bd1e087e8a8c4c1540a1c8551452e9b7c902354a570d6921fcd`. Muestra: **100 semillas por combinación**; ventanas **−6 %/+8 %**; escenarios **A**.
+JSON fuente: SHA-256 `b72601cd5edcd0dbae310313f3d601af258f23915196b76e16c25583a1c9c1b7`. Muestra: **100 semillas por combinación**; ventanas **−6 %/+8 %**; escenarios **A**.
 
 Lectura común de las tablas por hito: «Otras ofertas» cuenta sorteos con más de un cuarteto legal posible; «Familias ≥2 / 4» cuenta ofertas con al menos dos familias y con cuatro familias distintas. «Rep.» son plazas de especies vistas en ofertas anteriores de la misma semilla / plazas del hito. «BST/rival» es la media ofrecida relativa a la referencia rival. «Tipos» muestra los dos más presentes por plaza, contando ambos tipos propios. Todas estas columnas describen el brazo con garantía.
 
@@ -164,7 +164,7 @@ La estabilidad se comprueba con 100 semillas en los nueve tramos: cuatro candida
 Fuente persistente de las tablas absolutas: [draft-results-absolute-100.json](draft-results-absolute-100.json). Las tablas de porcentajes se conservan en la sección de comparación histórica.
 
 <!-- draft-absolute:start -->
-JSON fuente: SHA-256 `77b96a571f99a7edf110c973d70635425ce56110ac43a5d0f48499b00c3e8108`. Muestra: **100 semillas por combinación**; ventanas **−30/+40**; escenarios **A**.
+JSON fuente: SHA-256 `526b3567afc69e9a67e9e3df3f260e7529533312b7e043aa17aee1809083717b`. Muestra: **100 semillas por combinación**; ventanas **−30/+40**; escenarios **A**.
 
 Lectura común de las tablas por hito: «Otras ofertas» cuenta sorteos con más de un cuarteto legal posible; «Familias ≥2 / 4» cuenta ofertas con al menos dos familias y con cuatro familias distintas. «Rep.» son plazas de especies vistas en ofertas anteriores de la misma semilla / plazas del hito. «BST/rival» es la media ofrecida relativa a la referencia rival. «Tipos» muestra los dos más presentes por plaza, contando ambos tipos propios. Todas estas columnas describen el brazo con garantía.
 
@@ -251,7 +251,7 @@ La garantía reduce **cero especies** del pool general del mismo estado: restrin
 Fuente persistente: [JSON de resultados, 100 semillas](draft-results-100.json). Incluye ambos brazos, frecuencias completas de especies y tipos, mínimos/medianas/medias/máximos, parámetros y hashes de catálogos. Las tablas siguientes resumen el brazo con garantía y comparan la cobertura con el control. Los nombres de tipos son etiquetas de lectura, sin cambiar el catálogo ni el trabajo de localización D6.
 
 <!-- draft-tables:start -->
-JSON fuente: SHA-256 `b702fe053552e4349b81f6bcdf6c00661b899913e4e0e6a9a439264508f207b4`. Muestra: **100 semillas por combinación**; ventanas **±10 %, ±15 %, ±20 %, ±25 %**; escenarios **A/B/C**.
+JSON fuente: SHA-256 `9b6b6266261369c81c44acff9751abbc5a71a6ac3445e2063532f440c3a3dbff`. Muestra: **100 semillas por combinación**; ventanas **±10 %, ±15 %, ±20 %, ±25 %**; escenarios **A/B/C**.
 
 Lectura común de las tablas por hito: «Otras ofertas» cuenta sorteos con más de un cuarteto legal posible; «Familias ≥2 / 4» cuenta ofertas con al menos dos familias y con cuatro familias distintas. «Rep.» son plazas de especies vistas en ofertas anteriores de la misma semilla / plazas del hito. «BST/rival» es la media ofrecida relativa a la referencia rival. «Tipos» muestra los dos más presentes por plaza, contando ambos tipos propios. Todas estas columnas describen el brazo con garantía.
 

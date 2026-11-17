@@ -176,13 +176,23 @@ function SkillsPage({ member }: { member: PartyMember }) {
   )
 }
 
-function MovesTopPage({ member, moveIndex, data, detail }: { member: PartyMember; moveIndex: number; data: GameData; detail: PartyMove | null }) {
+function MovesTopPage({ member, moveIndex, data, detail, withType }: { member: PartyMember; moveIndex: number; data: GameData; detail: PartyMove | null; withType: boolean }) {
   const move = detail ?? member.moves[moveIndex]
   if (!move) return null
   const description = moveDescription(move.id)
   const dexMove = data.dex.moves[move.id]
   return (
     <>
+      {/* Editor de movimientos de los lockes (Jose, 17/11/2026): el señalado en «Puede aprender» no tiene placa, así que su tipo va aquí,
+          en una fila sobre las tres casillas del fondo; la placa de tipo ya trae su color. En el diario la placa de cada movimiento basta. */}
+      {withType && move.typeName && (
+        <>
+          <Label x={80} band={moveDetailRow(-1)}>{text.types}</Label>
+          <span className="bt-sum-types" style={at({ x: 156, y: 33 })}>
+            <TypeBadge typeName={move.typeName} label={move.typeLabel ?? move.typeName} compact />
+          </span>
+        </>
+      )}
       <Label x={80} band={moveDetailRow(0)}>{text.category}</Label>
       <span className="bt-sum-category" style={at({ x: 156, y: 48 })}>
         {move.category && <CategoryIcon category={move.category} />}
@@ -334,7 +344,7 @@ export default function SummaryScreen({ members, initialSlot, data, onClose, ini
 
       {page === 0 && <InfoPage member={member} />}
       {page === 1 && <SkillsPage member={member} />}
-      {page === 2 && <MovesTopPage member={member} moveIndex={moveIndex} data={data} detail={detailMove} />}
+      {page === 2 && <MovesTopPage member={member} moveIndex={moveIndex} data={data} detail={detailMove} withType={onMovePick !== undefined} />}
       {page !== 0 && <MoveSlots member={member} page={page} moveIndex={detailMove ? -1 : moveIndex} onPick={pickMove} />}
       <SharedBottom member={member} data={data} inspectItem={inspectItem} />
 
