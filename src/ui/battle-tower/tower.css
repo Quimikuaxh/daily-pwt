@@ -59,3 +59,11 @@
   .tower-grid { grid-template-columns: 1fr; }
   .tower-rival { order: -1; }
 }
+
+/* Victoria (TowerVictory): bandas del escenario, a todo el ancho de la pantalla de arriba; botones bajo la consola. */
+.tower-victory-band { position: absolute; left: 0; width: 256px; }
+/* La sección solo agrupa para el lector de pantalla: sin caja, la consola mide la columna entera para escalar (ConsoleStage, layoutParent);
+   con caja `auto` se medía a sí misma y en móvil quedaba a más escala de la que cabe. */
+.tower-victory > section { display: contents; }
+.tower-victory > section > * { grid-column: 2; }
+.tower-victory-actions { display: flex; gap: 12px; justify-self: center; }

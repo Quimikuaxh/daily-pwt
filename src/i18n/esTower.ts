@@ -15,6 +15,15 @@ export const esTower = {
   won: 'Torre completada',
   lost: 'Fin de la serie',
   wins: (wins: number, total: number) => `${wins} de ${total} victorias`,
+  // Pantalla de victoria (maqueta aprobada el 17/11/2026, docs/maquetas/torre/victoria.png).
+  victory: {
+    band: '¡Torre Batalla superada!',
+    teamTitle: 'TU EQUIPO',
+    you: 'TÚ',
+    beaten: 'Rivales vencidos',
+    champion: (name: string) => `${name}, campeón`,
+    member: (name: string, level: number) => `${name}, nivel ${level}`,
+  },
   loading: 'Cargando partida…',
   saveError: 'No se ha podido guardar la serie.',
   cloud: {

@@ -7,6 +7,7 @@
 - Usa la IA del reto diario en los siete combates.
 - Inicia cada combate con los PS, PP y objetos del equipo restaurados y sin estados alterados.
 - Tras las seis primeras victorias, muestra el siguiente rival y permite volver a Hoy dejando la partida guardada. La séptima victoria completa la serie. Una derrota cierra la serie y la siguiente se sortea de nuevo.
+- Al completar la serie, muestra la pantalla de victoria (maqueta en `docs/maquetas/torre/victoria.png`): arriba, el escenario del PWT con la banda «¡Torre Batalla superada!», los seis líderes al fondo en el orden en que cayeron y el campeón delante; abajo, el equipo en las placas de la pantalla de equipo. Nueva serie sortea otra; Volver a Hoy la deja guardada. Una derrota sigue mostrando la tarjeta de fin de serie.
 - Conserva tanto la pausa entre rondas como las decisiones del combate en curso. Usa el navegador como invitado y la cuenta con sesión iniciada, como en los lockes. La Torre tiene su propia partida guardada.
 
 ## Integración

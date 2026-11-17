@@ -29,6 +29,7 @@ import { UnovaResultScreen } from '../ui/campaign-unova/UnovaResultScreen'
 import { UnovaShareScreen } from '../ui/campaign-unova/UnovaShareScreen'
 import { loadGameData } from '../data/gameData'
 import { BattlePanelsMock, SidePanelsMock, StatusMock } from './sidePanels'
+import { TowerVictoryMock } from './towerVictory'
 import '../index.css'
 import '../ui/campaign/campaign.css'
 
@@ -439,6 +440,8 @@ if (shareMode === 'ataques') {
       )}
     </div>,
   )
+} else if (shareMode === 'torre-victoria') {
+  createRoot(document.getElementById('root')!).render(<TowerVictoryMock />)
 } else if (shareMode === 'estados') {
   createRoot(document.getElementById('root')!).render(<StatusMock />)
 } else if (shareMode === 'paneles-combate') {

@@ -29,6 +29,7 @@ Decisiones de Jose:
 - **Tienda antes de la Liga:** tras ganar el octavo gimnasio y hasta entrar en la Liga, se puede seguir comprando. Dentro de la Liga, no.
 - **Sexo de los rivales:** el del juego original; si el original no lo fija o no se conoce, se sortea. Teselia lo trae en su catálogo. En Hoenn se calcula con la regla de Esmeralda (`CreateNPCTrainerParty`: byte 0x88 con entrenador, 0x78 con entrenadora y 0x80 en combate doble, frente a la proporción de hembras de la especie; `src/core/nuzlocke/emeraldGender.ts`). Del PWT (daily y Torre) ninguna fuente lo publica: se sigue sorteando hasta extraerlo de la ROM (PENDIENTE). Los combates guardados sin sexo en los rivales se reanudan sin él.
 - **Sexo en Hoenn:** los reclutas reciben sexo por sorteo al reclutarlos, como en Teselia (`maleRatio` en el catálogo de progresión), y la caja de PS de Esmeralda pinta ♂/♀ detrás del nombre con los colores del juego. Los reclutas anteriores siguen sin sexo. *Descartado:* que el sexo solo contara en el simulador sin verse.
+- **Victoria de la Torre:** la opción A de las maquetas (`docs/maquetas/torre/victoria.png`, móvil en `victoria-movil.png`), al estilo del Salón de la Fama de Teselia: escenario del PWT con los siete vencidos y el equipo en placas. *Descartada:* la B, una página con tarjetas de equipo y rivales como la pausa entre rondas.
 
 ### Torre Batalla (17/11/2026)
 

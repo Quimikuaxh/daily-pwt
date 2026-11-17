@@ -108,3 +108,26 @@ test('Torre: una pausa guardada muestra el próximo rival y empieza con el equip
   expect((await read(page)).battle?.decisions).toEqual([])
   await expect(page.getByTestId('player-hp')).toContainText(initial.state.team[0].nameEs)
 })
+
+// E2E-90 (Jose, 17/11/2026, maqueta A): al ganar la serie sale la pantalla de victoria con los siete vencidos y el equipo; Nueva serie
+// sortea otra y vuelve a la preparación.
+test('Torre: una serie ganada muestra la victoria con los vencidos y el equipo, y Nueva serie empieza otra', async ({ page }) => {
+  const today = new TodayPage(page)
+  await today.goto(undefined, 'ai=trivial')
+  await openTower(page)
+  await page.getByRole('button', { name: 'Nueva serie' }).click()
+  const initial = await read(page)
+  await page.evaluate(([key, value]) => localStorage.setItem(key, JSON.stringify(value)), [key, { ...initial, state: { ...initial.state, phase: 'won', index: 6 } }] as const)
+  await page.reload()
+  await today.challengeNumber.waitFor()
+  await openTower(page)
+  await expect(page.getByRole('heading', { name: 'Torre completada. 7 de 7 victorias' })).toBeAttached()
+  const champion = initial.state.rivals[6].trainer.nameEs
+  await expect(page.locator('.tower-victory ol li').last()).toHaveText(`${champion}, campeón`)
+  await expect(page.locator('.tower-victory ul li')).toHaveCount(6)
+  await expect(page.locator('.tower-victory .unova-hall img[src*="-vs.png"]')).toHaveCount(7)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'sin desplazamiento horizontal').toBe(true)
+  await page.getByRole('button', { name: 'Nueva serie' }).click()
+  await expect(page.locator('[data-place="party-0"]')).toBeVisible()
+  expect((await read(page)).state.seed).not.toEqual(initial.state.seed)
+})

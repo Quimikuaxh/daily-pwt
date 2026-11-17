@@ -14,6 +14,7 @@ import { BattleScreen } from '../battle/BattleScreen'
 import { trainerSprite } from '../common/spriteUrls'
 import { MemberIcon } from '../battle/party/MemberIcon'
 import { TowerTeam } from './TowerTeam'
+import { TowerVictory } from './TowerVictory'
 import './tower.css'
 
 type Props = {
@@ -127,9 +128,13 @@ export default function TowerScreen({ data, playerName, createClient, ai, settin
         {replayFailed && <button type="button" className="btn" onClick={() => { setEntered(null); setReplayFailed(false) }}>{t.retry}</button>}
       </div>
     ) }
+    // Serie ganada: la pantalla de victoria (maqueta aprobada el 17/11/2026); la derrota sigue con su tarjeta.
+    if (run?.phase === 'won') {
+      return <TowerVictory data={data} run={run} title={t.name} playerName={playerName} busy={cloudStatus === 'saving'} onNewSeries={beginSeries} onExit={onExit} />
+    }
     if (!run || finished) { return (
       <div className="tower-card">
-        {finished ? <><h2>{run.phase === 'won' ? t.won : t.lost}</h2><p>{t.wins(run.index + (run.phase === 'won' ? 1 : 0), TOWER_ROUNDS)}</p></> : <p>{t.hint}</p>}
+        {finished ? <><h2>{t.lost}</h2><p>{t.wins(run.index, TOWER_ROUNDS)}</p></> : <p>{t.hint}</p>}
         <button type="button" className="btn btn-primary" disabled={cloudStatus === 'saving'} onClick={beginSeries}>{t.newRun}</button>
       </div>
     ) }
@@ -173,7 +178,7 @@ export default function TowerScreen({ data, playerName, createClient, ai, settin
         </div>
       </header>
       <main className="tower-main" id="tower-main">
-        {run?.phase !== 'prepare' && <h1>{t.name}</h1>}
+        {run?.phase !== 'prepare' && run?.phase !== 'won' && <h1>{t.name}</h1>}
         {content}
       </main>
     </div>
