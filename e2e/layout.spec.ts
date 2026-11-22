@@ -367,3 +367,25 @@ test.describe('Pantalla de datos: cada texto centrado en su franja', () => {
     }
   })
 })
+
+// E2E-92 (Jose, 22/11/2026): la pantalla del combate se pinta a su escala desde el primer fotograma. Antes salía un instante a escala 1
+// y saltaba; en la repetición, que vuelve a montar el combate en cada salto de turno, se veía encogerse y volver.
+test.describe('Combate: escala desde el primer fotograma', () => {
+  test('E2E-92 el ancho de la pantalla del combate no cambia tras montarse', async ({ page }) => {
+    await page.addInitScript(() => {
+      const widths: string[] = []
+      ;(window as unknown as { __stageWidths: string[] }).__stageWidths = widths
+      const tick = () => {
+        const stage = document.querySelector<HTMLElement>('.bt-stage')
+        if (stage) widths.push(stage.style.width)
+        requestAnimationFrame(tick)
+      }
+      requestAnimationFrame(tick)
+    })
+    await startBattle(page)
+    await page.waitForTimeout(500)
+    const widths = await page.evaluate(() => (window as unknown as { __stageWidths: string[] }).__stageWidths)
+    expect(widths.length).toBeGreaterThan(0)
+    expect(new Set(widths).size, `anchos pintados: ${[...new Set(widths)].join(', ')}`).toBe(1)
+  })
+})

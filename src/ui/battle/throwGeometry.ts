@@ -1,3 +1,4 @@
+import { fitPoint } from './trainerSpriteFit'
 import spriteBoxes from '../../generated/sprite-boxes.json'
 import type { Avatar } from './introAssets'
 import { PLAYER_SPRITE_CENTER_X, backSpriteHeight, playerSpriteBottom, playerSpriteScale } from './playerSpriteAnchor'
@@ -38,7 +39,8 @@ export function playerLandingPoint(backSpriteId: string): Point {
 export function rivalHandPoint(trainerSpriteId: string): Point {
   const box = boxes.trainer?.[trainerSpriteId]
   const [width, height] = box ? [box[2], box[3]] : [FALLBACK_SPRITE_HEIGHT, FALLBACK_SPRITE_HEIGHT]
-  return { x: RIVAL_TRAINER_FEET.x + RIVAL_HAND.fromCenter * width, y: RIVAL_TRAINER_FEET.y + RIVAL_HAND.fromFeet * height }
+  const hand = { x: RIVAL_TRAINER_FEET.x + RIVAL_HAND.fromCenter * width, y: RIVAL_TRAINER_FEET.y + RIVAL_HAND.fromFeet * height }
+  return fitPoint(trainerSpriteId, RIVAL_TRAINER_FEET, hand)
 }
 
 export function rivalLandingPoint(frontSpriteId: string): Point {

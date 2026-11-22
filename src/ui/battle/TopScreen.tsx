@@ -10,6 +10,7 @@ import { VsBanner } from './VsBanner'
 import { speciesSprite, substituteSprite, trainerSideSprite, trainerSprite, trainerVsSprite } from '../common/spriteUrls'
 import { es } from '../../i18n/es'
 import { DataBox } from './DataBox'
+import { trainerSpriteFit } from './trainerSpriteFit'
 import { IntroLayer, IrisWipe } from './IntroLayer'
 import { MessageBox } from './MessageBox'
 import { resolveHiddenPowerId } from '../../core/hiddenPower'
@@ -132,6 +133,7 @@ export function TopScreen({ view, data, challenge, introPhase, switchAnim, avata
         <IntroLayer
           trainerName={challenge.trainer.nameEs}
           trainerSpriteUrl={trainerSprite(challenge.trainer.sprite)}
+          trainerSpriteStyle={trainerSpriteFit(challenge.trainer.sprite)}
           avatar={avatar}
           player={{ hand: playerHandPoint(avatar), landing: playerLandingPoint(playerSpriteId) }}
           rival={{ hand: rivalHandPoint(challenge.trainer.sprite), landing: rivalLandingPoint(rivalSpriteId) }}

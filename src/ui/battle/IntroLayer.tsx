@@ -9,6 +9,8 @@ export type LaunchPath = { hand: Point; landing: Point }
 type IntroLayerProps = {
   trainerName: string
   trainerSpriteUrl: string
+  /** Ajuste de tamaño y posición de algunos sprites (`trainerSpriteFit`). */
+  trainerSpriteStyle?: CSSProperties
   avatar: Avatar
   player: LaunchPath
   rival: LaunchPath
@@ -39,13 +41,15 @@ const poseStyle = (sheet: string, [x, y, width, height]: Box): CSSProperties => 
 })
 
 /** Entrenadores, Poké Balls y rayo de la intro del combate (PRD §10.2.1) y de los cambios de Pokémon. Solo decorativa: el texto va en la caja de mensajes. */
-export function IntroLayer({ trainerName, trainerSpriteUrl, avatar, player, rival }: IntroLayerProps) {
+export function IntroLayer({ trainerName, trainerSpriteUrl, trainerSpriteStyle, avatar, player, rival }: IntroLayerProps) {
   const ballStyle: CSSProperties = { backgroundImage: `url(${uiAsset('fx/pokeball-strip.png')})` }
   const shine = uiAsset('fx/shine.png')
   return (
     <div className="bt-intro" aria-hidden="true" style={{ ...pathVariables('player', player), ...pathVariables('rival', rival) } as CSSProperties}>
       <div className="bt-trainer bt-trainer-rival">
-        <Sprite src={trainerSpriteUrl} name={trainerName} width={96} height={96} className="bt-trainer-img" />
+        <div style={trainerSpriteStyle}>
+          <Sprite src={trainerSpriteUrl} name={trainerName} width={96} height={96} className="bt-trainer-img" />
+        </div>
       </div>
       <div className="bt-trainer bt-trainer-player">
         <img className="bt-avatar-stand" src={avatar.stand} alt="" />

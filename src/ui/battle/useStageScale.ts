@@ -1,4 +1,4 @@
-import { useEffect, useState, type RefObject } from 'react'
+import { useLayoutEffect, useState, type RefObject } from 'react'
 
 /** Cada pantalla de la DS mide 256x192; el lienzo lógico apila la de batalla y la táctil. */
 export const SCREEN_WIDTH = 256
@@ -92,7 +92,9 @@ export function stageScaleFor(containerWidth: number, viewportHeight: number): S
 export function useStageScale(containerRef: RefObject<HTMLElement | null>, reservedHeight = 0): StageScale {
   const [stage, setStage] = useState({ scale: 1, wide: false, frame: false, layout: 'stacked', sideZoom: 1 } as StageScale)
 
-  useEffect(() => {
+  // Antes de pintar: con `useEffect` el primer fotograma salía a escala 1 y después saltaba a la buena, y en la repetición (que vuelve a
+  // montar el combate en cada salto de turno) la pantalla se encogía un instante (Jose, 22/11/2026).
+  useLayoutEffect(() => {
     const container = containerRef.current
     if (!container) return
     const update = () => {
