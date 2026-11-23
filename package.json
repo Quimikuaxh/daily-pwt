@@ -52,7 +52,8 @@
     "gen:emerald-calendar": "node scripts/build-emerald-calendar.mjs",
     "gen:emerald-move-sounds": "node scripts/build-emerald-move-sounds.mjs",
     "gen:emerald-moves": "node scripts/build-emerald-moves.mjs",
-    "gen:emerald-cries": "node scripts/build-emerald-cries.mjs"
+    "gen:emerald-cries": "node scripts/build-emerald-cries.mjs",
+    "gen:icons": "node scripts/build-icons.mjs"
   },
   "dependencies": {
     "@pkmn/sim": "0.10.11",

@@ -4,6 +4,11 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 **Ramas (23/10/2026):** todo lo hecho hasta las animaciones está en `main` (las ramas apiladas se unieron con fast-forward y se borraron, decisión de Jose). El sonido va en `feature/f3-sonido` (desde `main`): los audios ya están descargados y versionados (se descargaron en local, desde la nube las fuentes están bloqueadas); falta implementarlo según «Sonido: plan de implementación».
 
+## Buscadores (SEO)
+
+- **Hecho en el código (23/11/2026, DEC-108):** metadatos, vista previa, datos estructurados, iconos, manifest, sitemap y texto de presentación.
+- **Falta, a cargo de Jose:** dar de alta la propiedad en Google Search Console y pasar la etiqueta de verificación para ponerla en `index.html`; después, enviar `sitemap.xml` y pedir la indexación (README, «Buscadores y vista previa»). Publicar el enlace en Reddit, foros o Discord de Pokémon y en listas de juegos diarios.
+
 ## Torre Batalla (`feature/torre-batalla`)
 
 - **Implementada el 17/11/2026.** Reglas y contrato de guardado en [TORRE-BATALLA.md](TORRE-BATALLA.md). Verificación completa: `validate:data`, `tsc -b`, lint, build, Vitest 3827/3827, E2E 253/253 y tanda de tiempos 25/25 (uno omitido por configuración).

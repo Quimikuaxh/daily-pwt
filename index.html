@@ -4,12 +4,68 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0f1424" />
-    <meta name="description" content="Daily PWT: cada día, un combate contra un entrenador del Pokémon World Tournament de Negro 2 y Blanco 2." />
-    <title>Daily PWT</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Ccircle cx=%278%27 cy=%278%27 r=%277%27 fill=%27%23e63946%27/%3E%3Cpath d=%27M1 8h14a7 7 0 0 1-14 0z%27 fill=%27%23fff%27/%3E%3C/svg%3E" />
+    <title>Daily PWT · Un combate Pokémon cada día (Negro 2 y Blanco 2)</title>
+    <meta name="description" content="Juego diario gratis en el navegador: cada día, un combate Pokémon contra un entrenador del Pokémon World Tournament (PWT) de Negro 2 y Blanco 2. Racha, práctica, Nuzlocke de Hoenn y de Teselia y Torre Batalla." />
+    <link rel="canonical" href="https://quimikuaxh.github.io/daily-pwt/" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="./favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <!-- Vista previa al compartir el enlace (WhatsApp, Discord, redes): las URL tienen que ser absolutas. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Daily PWT" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:title" content="Daily PWT · Un combate Pokémon cada día" />
+    <meta property="og:description" content="Cada día, un combate contra un entrenador del Pokémon World Tournament de Negro 2 y Blanco 2. Gratis, en el navegador." />
+    <meta property="og:url" content="https://quimikuaxh.github.io/daily-pwt/" />
+    <meta property="og:image" content="https://quimikuaxh.github.io/daily-pwt/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Daily PWT: un combate Pokémon cada día, con una captura del combate" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Daily PWT · Un combate Pokémon cada día" />
+    <meta name="twitter:description" content="Cada día, un combate contra un entrenador del Pokémon World Tournament de Negro 2 y Blanco 2." />
+    <meta name="twitter:image" content="https://quimikuaxh.github.io/daily-pwt/og.png" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "VideoGame",
+        "name": "Daily PWT",
+        "url": "https://quimikuaxh.github.io/daily-pwt/",
+        "image": "https://quimikuaxh.github.io/daily-pwt/og.png",
+        "description": "Juego diario en el navegador: cada día, un combate Pokémon contra un entrenador del Pokémon World Tournament (PWT) de Negro 2 y Blanco 2.",
+        "inLanguage": "es",
+        "genre": ["Estrategia", "Combates por turnos", "Juego diario"],
+        "gamePlatform": "Navegador web",
+        "applicationCategory": "Game",
+        "operatingSystem": "Cualquiera (navegador)",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+      }
+    </script>
+    <style>
+      /* Antes de que cargue la aplicación: fondo oscuro (sin destello blanco) y el texto de presentación, que también leen los buscadores. */
+      body { margin: 0; background: #0f1424; color: #d8dde8; }
+      .seo-intro { max-width: 40rem; margin: 0 auto; padding: 3rem 1.25rem; font: 1rem/1.5 system-ui, sans-serif; }
+      .seo-intro h1 { margin: 0 0 1rem; font-size: 1.75rem; color: #f0f0f0; }
+      .seo-intro a { color: #f8c830; }
+      /* Solo se ve si la aplicación tarda o no carga (sin JavaScript): en una carga normal React lo sustituye antes y no destella. */
+      .seo-intro { animation: seo-intro-show 0s 1.5s both; }
+      @keyframes seo-intro-show { from { visibility: hidden; } to { visibility: visible; } }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <!-- React sustituye este contenido al montar la aplicación. -->
+    <div id="root">
+      <main class="seo-intro">
+        <h1>Daily PWT</h1>
+        <p>Un combate Pokémon cada día contra los entrenadores del Pokémon World Tournament (PWT) de Pokémon Negro 2 y Blanco 2: líderes de gimnasio, Alto Mando y campeones de todas las regiones.</p>
+        <p>Cada día tienes un rival y un equipo de seis Pokémon nuevos. Elige quién sale primero, gana el combate oficial del día, mantén tu racha y comparte el resultado. Después puedes practicar, ver repeticiones y jugar la Nuzlocke de Hoenn, la Nuzlocke de Teselia y la Torre Batalla.</p>
+        <p>Gratis, en el navegador y sin descargas. Proyecto de fans, no oficial.</p>
+        <noscript><p>Para jugar necesitas activar JavaScript.</p></noscript>
+        <p><a href="./privacidad.html">Política de privacidad</a></p>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

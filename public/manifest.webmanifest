@@ -1,0 +1,15 @@
+{
+  "name": "Daily PWT",
+  "short_name": "Daily PWT",
+  "description": "Un combate Pokémon cada día contra los entrenadores del Pokémon World Tournament de Negro 2 y Blanco 2.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f1424",
+  "theme_color": "#0f1424",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

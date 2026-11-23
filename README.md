@@ -60,6 +60,7 @@ npm install
 | `npm run dev` | Servidor de desarrollo de Vite. |
 | `npm run build` | Comprueba tipos (`tsc -b`) y genera el sitio estático en `dist/`. |
 | `npm run preview` | Sirve `dist/` con `vite preview` para probar el build. |
+| `npm run gen:icons` | Regenera los iconos PNG y la imagen de vista previa `public/og.png` (ver «Buscadores y vista previa»). |
 | `npm test` | Tests unitarios y de componentes con Vitest (una pasada). |
 | `npm run test:watch` | Vitest en modo interactivo. |
 | `npm run test:e2e` | Tests end-to-end con Playwright. |
@@ -108,6 +109,13 @@ El build de producción no incluye los ganchos de prueba (ver [Ganchos de prueba
 `.github/workflows/deploy.yml` valida (job `validate`, el de `ci.yml`), construye y publica `dist/` en GitHub Pages en cada push a `main` (también se puede lanzar a mano desde la pestaña Actions). Como las rutas son relativas, funciona bajo `https://<usuario>.github.io/daily-pwt/` sin configurar `base`.
 
 Configuración única del repositorio: Settings > Pages > Source = **GitHub Actions**.
+
+### Buscadores y vista previa (SEO)
+
+- `index.html` lleva el título y la descripción con las palabras que se buscan, la URL canónica, Open Graph y Twitter (imagen `public/og.png` de 1200 × 630 al compartir el enlace), datos estructurados (`VideoGame`, JSON-LD), iconos y `manifest.webmanifest`. Las URL de la canónica, Open Graph y JSON-LD son absolutas (`SITE_URL`): si cambia el dominio, se cambian ahí y en `public/sitemap.xml`.
+- Dentro de `#root` va un texto de presentación que leen los buscadores sin ejecutar JavaScript; React lo sustituye al montar. Solo se ve si la aplicación tarda más de 1,5 s o no carga.
+- `npm run gen:icons` regenera desde `public/favicon.svg` los iconos PNG (`favicon-32`, `apple-touch-icon`, `icon-192`, `icon-512`) y `public/og.png` (plantilla `scripts/og/og.html` con la captura `scripts/og/combate.png`). Usa el Chromium de Playwright, sin red.
+- **Google Search Console** (lo hace Jose con su cuenta): añadir la propiedad «Prefijo de URL» `https://quimikuaxh.github.io/daily-pwt/`, verificarla con la etiqueta `<meta name="google-site-verification">` (se pone en el `<head>` de `index.html` y se despliega), enviar el sitemap `sitemap.xml` y pedir la indexación de la portada. El `robots.txt` tendría que estar en la raíz del dominio (`quimikuaxh.github.io`), fuera de este repositorio; no hace falta para indexar.
 
 Las acciones de los workflows van en versiones que corren en Node 24 (`checkout@v7`, `setup-node@v7`, `upload-artifact@v7`, `upload-pages-artifact@v5`, `deploy-pages@v5`; 29/10/2026): con las anteriores GitHub avisaba de que Node 20 está obsoleto. El proyecto usa Node 22 (`engines` y `node-version`).
 

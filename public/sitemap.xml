@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Para Google Search Console (SEO, 23/11/2026). Solo las páginas que se pueden enlazar; el reto cambia cada día. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://quimikuaxh.github.io/daily-pwt/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>https://quimikuaxh.github.io/daily-pwt/privacidad.html</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
+</urlset>
