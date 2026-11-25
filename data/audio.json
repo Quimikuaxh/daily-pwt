@@ -239,7 +239,7 @@
       "id": "champion-alder",
       "source": "ost-bw",
       "file": "Disc 4/17 - Battle! (Champion).flac",
-      "_nota": "Tema de Mirto (Alder) en Negro y Blanco (decisión de Jose, 28/10/2026)",
+      "_nota": "Tema de Mirto (Alder) en Negro y Blanco. Mirto lo usó del 28/10 al 25/11/2026; desde entonces vuelve al de Iris (champion-unova, decisión de Jose). Ahora no lo usa nadie.",
       "loopStartSec": 29.54,
       "loopEndSec": 79.2076
     },
@@ -1487,7 +1487,6 @@
   ],
   "trainers": {
     "_nota": "Tema propio de un entrenador, en vez del de su categoría y región (gym-<región> o champion-<región>).",
-    "mirto": "champion-alder",
     "cheren": "rival-cheren"
   }
 }

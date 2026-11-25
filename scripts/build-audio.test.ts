@@ -120,8 +120,8 @@ describe('scripts/build-audio.mjs', () => {
     for (const trainer of trainers) {
       expect(index.music[index.trainers[trainer.id] ?? `${trainer.category === 'leader' ? 'gym' : 'champion'}-${trainer.region}`], trainer.id).toBeDefined()
     }
-    // Temas propios (Jose, 28/10/2026): Mirto y Cheren, con los de Negro y Blanco.
-    expect(index.trainers).toEqual({ mirto: 'champion-alder', cheren: 'rival-cheren' })
+    // Temas propios (Jose, 28/10/2026): Cheren, con el de Negro y Blanco. Mirto vuelve al de Iris el 25/11/2026 (cambio de requisito).
+    expect(index.trainers).toEqual({ cheren: 'rival-cheren' })
     expect(() => trainerMusicOf({ ...manifest(), trainers: { mirto: 'inventado' } } as never)).toThrow(/Tema desconocido/)
     const ids = { music: manifest().music.map((item) => item.id), sfx: manifest().sfx.map((item) => item.id) }
     for (const kind of ['music', 'sfx'] as const) {
