@@ -29,6 +29,15 @@ Juego web diario estilo Daily Red contra los entrenadores del Pokémon World Tou
 | Cómo se extraen y fusionan los datos del PWT | `docs/F2-DATOS.md` |
 | Uso, comandos, construcción, despliegue, créditos | `README.md` |
 | Maquetas aprobadas (PNG) | `docs/maquetas/<tema>/` (las de Teselia, en `docs/maquetas/teselia/`) |
+| Planes e informes de auditoría de seguridad | `docs/privado/` (ignorado por git; ver «Seguridad») |
+
+## Seguridad
+
+El repositorio es público. Nada que describa cómo atacar la web o el back se versiona: planes de auditoría, listas de pruebas,
+hallazgos, ni pasos para reproducir un fallo. Va en `docs/privado/` (ignorado) y no sale de la máquina de Jose. En `PENDIENTE.md`,
+un commit o un PR solo cabe una descripción genérica del arreglo («endurecer permisos de X»), sin el detalle de cómo se explotaba.
+Motivo: una lista de qué probar o de qué falló señala los huecos a cualquiera antes de que estén cerrados. No aplica a las decisiones
+de diseño ya documentadas (RLS, `security definer`, DEC-63, DEC-89): describen las defensas, no sus fallos.
 
 ## Comandos
 

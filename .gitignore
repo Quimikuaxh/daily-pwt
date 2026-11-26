@@ -18,3 +18,6 @@ e2e-artifacts/
 *.log
 dist-anim
 __pycache__/
+
+# Auditorías de seguridad: planes e informes, nunca en el repositorio público (CLAUDE.md)
+docs/privado/
