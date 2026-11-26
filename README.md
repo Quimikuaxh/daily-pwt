@@ -143,7 +143,7 @@ Opcional ([DEC-77](docs/ARQUITECTURA.md), RF-115 a RF-119): con cuenta, un bot m
 2. **Servidor del juego**: en Discord, «+» → «Crear el mío» → «Daily PWT». Con el modo desarrollador (Ajustes de usuario → Avanzado), clic derecho en el servidor → «Copiar ID del servidor» (`DISCORD_GUILD_ID`). Meter el bot con `https://discord.com/oauth2/authorize?client_id=<DISCORD_CLIENT_ID>&scope=bot&permissions=1` (permiso «Crear invitación», el que pide meter a los jugadores).
 3. **Supabase**:
    - Database → Extensions: activar **pg_net** (con pg_cron, que ya estaba).
-   - SQL Editor: ejecutar `supabase/migrations/20261103000000_pwt_aviso_discord.sql` (programa `pwt-discord-reminders` cada 15 minutos) y guardar en Vault la dirección de la función y un secreto inventado (p. ej. `openssl rand -hex 32`):
+   - SQL Editor: ejecutar `supabase/migrations/20261103000000_pwt_aviso_discord.sql` y `20261126000000_pwt_discord_link_check.sql` (la función la necesita para comprobar el `state`; sin ella toda vinculación vuelve con `?discord=error`). La primera programa `pwt-discord-reminders` cada 15 minutos) y guardar en Vault la dirección de la función y un secreto inventado (p. ej. `openssl rand -hex 32`):
      ```sql
      select vault.create_secret('https://<ref>.supabase.co/functions/v1/pwt-discord', 'pwt_discord_url');
      select vault.create_secret('<secreto>', 'pwt_discord_cron_secret');

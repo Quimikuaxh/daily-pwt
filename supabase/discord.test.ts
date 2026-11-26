@@ -57,6 +57,21 @@ describe('aviso por Discord (UT-140)', () => {
     expect(await t.call(second, `select pwt.discord_reminder()`)).toMatchObject({ name: 'ana' })
   })
 
+  it('discord_link_check dice si un state vale sin gastarlo: pendiente sí; inventado, caducado o ya usado no', async () => {
+    const check = async (state: string) => (await t.admin<{ ok: boolean }>(`select pwt.discord_link_check($1) as ok`, [state]))[0].ok
+    const player = await t.user()
+    const state = await t.call<string>(player, `select pwt.discord_link_start('UTC')`)
+    expect(await check(state)).toBe(true)
+    expect(await check(state)).toBe(true)
+    await t.admin(`select pwt.discord_link_finish($1, '55', 'eva')`, [state])
+    expect(await check(state)).toBe(false)
+    expect(await check('inventado')).toBe(false)
+
+    const old = await t.call<string>(await t.user(), `select pwt.discord_link_start('UTC')`)
+    await t.admin(`update pwt.discord_link_states set expires_at = now() - interval '1 second' where state = $1`, [old])
+    expect(await check(old)).toBe(false)
+  })
+
   it('cambia la hora (de media en media hora) y el interruptor; desvincular lo borra', async () => {
     const player = await linked()
     await t.as(player, `select pwt.set_discord_reminder(false, 450, 'America/Mexico_City')`)
@@ -100,6 +115,8 @@ describe('aviso por Discord (UT-140)', () => {
   it('lo de la Edge Function no se llama desde la API y las tablas no se leen', async () => {
     const player = await linked()
     await expect(t.as(player, `select pwt.discord_link_finish('x', '1', 'y')`)).rejects.toThrow()
+    await expect(t.as(player, `select pwt.discord_link_check('x')`)).rejects.toThrow()
+    await expect(t.as(null, `select pwt.discord_link_check('x')`)).rejects.toThrow()
     await expect(t.as(player, `select * from pwt.discord_due_reminders()`)).rejects.toThrow()
     await expect(t.as(player, `select pwt.discord_report($1, true)`, [player.id])).rejects.toThrow()
     await expect(t.as(player, `select pwt.discord_ping()`)).rejects.toThrow()

@@ -7,6 +7,8 @@
  * - `GET ?code=…&state=…`: vuelve de Discord. Se lee su usuario, se termina la vinculación (`pwt.discord_link_finish`), se le mete en el
  *   servidor del juego (el bot solo puede escribir por privado a quien comparte servidor con él) y se le manda un mensaje de bienvenida.
  *   Acaba volviendo a la web con `?discord=ok|cancelled|error`.
+ * - En los dos `GET`, el `state` se comprueba antes de hablar con Discord (`pwt.discord_link_check`, sin gastarlo): uno inventado,
+ *   caducado o ya usado vuelve a la web con `?discord=error` sin redirigir a Discord ni canjear el `code`.
  * - `POST` con la cabecera `x-pwt-cron`: lo llama `pg_cron` cada 15 minutos (`pwt.discord_ping`); manda los avisos que tocan.
  */
 
@@ -98,12 +100,21 @@ export function createHandler(env: DiscordEnv, fetcher: Fetch = fetch, wait: (ms
     const me = await fetcher(`${DISCORD_API}/users/@me`, { headers: { Authorization: `Bearer ${accessToken}` } })
     if (!me.ok) return 'error'
     const user = (await me.json()) as { id: string; username: string; global_name?: string | null }
-    // Primero el state: si no vale (caducado, repetido), no se toca nada en Discord.
+    // Consume el state (una sola vez); si entre la comprobación y aquí caducó o se usó, lanza y no se mete a nadie en el servidor.
     const userId = await rpc<string>('discord_link_finish', { p_state: state, p_discord_id: user.id, p_discord_name: user.global_name || user.username })
     const joined = await bot(`/guilds/${env.DISCORD_GUILD_ID}/members/${user.id}`, { method: 'PUT', body: { access_token: accessToken } })
     const delivered = joined.ok && (await sendPrivate(user.id, MESSAGES.welcome(env.PWT_SITE_URL)))
     await rpc('discord_report', { p_user_id: userId, p_delivered: delivered })
     return 'ok'
+  }
+
+  /** `state` pendiente y sin caducar, sin gastarlo. Si la comprobación falla, se trata como no válido. */
+  async function stateIsValid(state: string): Promise<boolean> {
+    try {
+      return (await rpc<boolean>('discord_link_check', { p_state: state })) === true
+    } catch {
+      return false
+    }
   }
 
   async function sendReminders(): Promise<{ sent: number; failed: number }> {
@@ -127,6 +138,7 @@ export function createHandler(env: DiscordEnv, fetcher: Fetch = fetch, wait: (ms
 
     const start = url.searchParams.get('start')
     if (start) {
+      if (!(await stateIsValid(start))) return back('error')
       const authorize = new URL('https://discord.com/oauth2/authorize')
       authorize.search = new URLSearchParams({
         client_id: env.DISCORD_CLIENT_ID, response_type: 'code', redirect_uri: redirectUri, scope: 'identify guilds.join', state: start, prompt: 'none',
@@ -138,6 +150,7 @@ export function createHandler(env: DiscordEnv, fetcher: Fetch = fetch, wait: (ms
     const code = url.searchParams.get('code')
     const state = url.searchParams.get('state')
     if (!code || !state) return back('error')
+    if (!(await stateIsValid(state))) return back('error')
     try {
       return back(await finishLink(code, state))
     } catch {

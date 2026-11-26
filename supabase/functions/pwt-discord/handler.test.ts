@@ -43,7 +43,10 @@ const discordOk: Route[] = [
   on('POST', `${DISCORD_API}/users/@me/channels`, () => json({ id: 'dm-1' })),
   on('POST', `${DISCORD_API}/channels/dm-1/messages`, () => json({ id: 'm' })),
 ]
+const stateValid = on('POST', rpcUrl('discord_link_check'), () => json(true))
+const stateInvalid = on('POST', rpcUrl('discord_link_check'), () => json(false))
 const rpcOk: Route[] = [
+  stateValid,
   on('POST', rpcUrl('discord_link_finish'), () => json('user-1')),
   on('POST', rpcUrl('discord_report'), () => new Response(null, { status: 204 })),
 ]
@@ -52,21 +55,38 @@ const get = (query: string) => new Request(`${FUNCTION_URL}?${query}`)
 const bodyOf = (calls: Call[], url: string) => calls.filter((call) => call.url === url).map((call) => JSON.parse(call.body ?? 'null'))
 
 describe('Edge Function pwt-discord (UT-141)', () => {
-  it('?start lleva a Discord a autorizar con su state, identify y guilds.join, y vuelta a la función', async () => {
-    const { fetcher } = fakeFetch()
+  it('?start comprueba el state y lleva a Discord a autorizar con él, identify y guilds.join, y vuelta a la función', async () => {
+    const { fetcher, calls } = fakeFetch(stateValid)
     const response = await createHandler(ENV, fetcher)(get('start=abc'))
     expect(response.status).toBe(302)
     const target = new URL(response.headers.get('Location')!)
     expect(target.origin + target.pathname).toBe('https://discord.com/oauth2/authorize')
     expect(Object.fromEntries(target.searchParams)).toMatchObject({ client_id: 'cliente', state: 'abc', scope: 'identify guilds.join', redirect_uri: FUNCTION_URL, response_type: 'code' })
-    expect(fetcher).not.toHaveBeenCalled()
+    expect(bodyOf(calls, rpcUrl('discord_link_check'))).toEqual([{ p_state: 'abc' }])
+    expect(calls.some((call) => call.url.startsWith(DISCORD_API))).toBe(false)
+  })
+
+  it('?start con un state que no existe (o si la comprobación falla) vuelve a la web con error, sin pasar por Discord', async () => {
+    for (const route of [stateInvalid, on('POST', rpcUrl('discord_link_check'), () => json({ message: 'boom' }, 500))]) {
+      const response = await createHandler(ENV, fakeFetch(route).fetcher)(get('start=inventado'))
+      expect(response.headers.get('Location')).toBe(`${ENV.PWT_SITE_URL}?discord=error`)
+    }
+  })
+
+  it('a la vuelta, un state inventado, caducado o usado vuelve con error sin canjear el code ni llamar a Discord', async () => {
+    const { fetcher, calls } = fakeFetch(stateInvalid, ...discordOk, on('POST', rpcUrl('discord_link_finish'), () => json('user-1')))
+    const response = await createHandler(ENV, fetcher)(get('code=c0de&state=inventado'))
+    expect(response.headers.get('Location')).toBe(`${ENV.PWT_SITE_URL}?discord=error`)
+    expect(calls.some((call) => call.url.startsWith(DISCORD_API))).toBe(false)
+    expect(calls.some((call) => call.url === rpcUrl('discord_link_finish'))).toBe(false)
   })
 
   it('a la vuelta vincula con el state, mete al jugador en el servidor, le da la bienvenida por privado y vuelve a la web', async () => {
     const { fetcher, calls } = fakeFetch(...discordOk, ...rpcOk)
     const response = await createHandler(ENV, fetcher)(get('code=c0de&state=abc'))
     expect(response.headers.get('Location')).toBe(`${ENV.PWT_SITE_URL}?discord=ok`)
-    expect(new URLSearchParams(calls[0].body).get('redirect_uri')).toBe(FUNCTION_URL)
+    expect(calls[0].url).toBe(rpcUrl('discord_link_check'))
+    expect(new URLSearchParams(calls.find((call) => call.url === `${DISCORD_API}/oauth2/token`)!.body).get('redirect_uri')).toBe(FUNCTION_URL)
     expect(bodyOf(calls, rpcUrl('discord_link_finish'))).toEqual([{ p_state: 'abc', p_discord_id: '42', p_discord_name: 'Jose' }])
     expect(bodyOf(calls, `${DISCORD_API}/guilds/900/members/42`)).toEqual([{ access_token: 'acceso' }])
     expect(bodyOf(calls, `${DISCORD_API}/channels/dm-1/messages`)).toEqual([{ content: MESSAGES.welcome(ENV.PWT_SITE_URL) }])
@@ -74,11 +94,11 @@ describe('Edge Function pwt-discord (UT-141)', () => {
     expect(calls.find((call) => call.url.startsWith(ENV.SUPABASE_URL))?.headers).toMatchObject({ 'Content-Profile': 'pwt', Authorization: 'Bearer service' })
   })
 
-  it('cancelar en Discord vuelve con cancelled; un state que no vale, con error y sin tocar el servidor de Discord', async () => {
+  it('cancelar en Discord vuelve con cancelled; un state que se gasta entre la comprobación y el final, con error y sin tocar el servidor de Discord', async () => {
     const cancelled = await createHandler(ENV, fakeFetch().fetcher)(get('error=access_denied&state=abc'))
     expect(cancelled.headers.get('Location')).toBe(`${ENV.PWT_SITE_URL}?discord=cancelled`)
 
-    const { fetcher, calls } = fakeFetch(on('POST', rpcUrl('discord_link_finish'), () => json({ message: 'invalid_state' }, 400)), ...discordOk)
+    const { fetcher, calls } = fakeFetch(stateValid, on('POST', rpcUrl('discord_link_finish'), () => json({ message: 'invalid_state' }, 400)), ...discordOk)
     const response = await createHandler(ENV, fetcher)(get('code=c0de&state=viejo'))
     expect(response.headers.get('Location')).toBe(`${ENV.PWT_SITE_URL}?discord=error`)
     expect(calls.some((call) => call.url.includes('/guilds/'))).toBe(false)

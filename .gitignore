@@ -21,3 +21,6 @@ __pycache__/
 
 # Auditorías de seguridad: planes e informes, nunca en el repositorio público (CLAUDE.md)
 docs/privado/
+
+# Config local del preview del navegador
+.claude/launch.json
