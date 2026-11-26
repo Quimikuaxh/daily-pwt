@@ -10,6 +10,8 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 - **Vinculación de Discord (26/11/2026):** la función `pwt-discord` comprueba el `state` antes de hablar con Discord (DEC-77, `discord_link_check`; UT-140, UT-141). **En producción el 26/11/2026:** migración `20261126000000_pwt_discord_link_check.sql` aplicada (solo `service_role`; `anon` recibe 42501) y función desplegada (versión 7, sin JWT): `POST` sin secreto → 403; `?start=` y vuelta con `state` inventado → `?discord=error`, sin pasar por Discord. Falta probar una vinculación real desde Cuenta (Jose).
 
+- **Esquema `public` del proyecto compartido (26/11/2026):** cerrado a `anon` y `authenticated` (DEC-63, UT-253). Migración `20261126010000_pwt_public_cerrado.sql` **aplicada en producción**: 0 permisos de la clave pública en tablas, secuencias y funciones de `public`; `service_role` los conserva; heardle responde. Pendiente: comprobar claude-test en su web (entra como propietario, no debería notarlo).
+
 ## Buscadores (SEO)
 
 - **Hecho en el código (23/11/2026, DEC-108):** metadatos, vista previa, datos estructurados, iconos, manifest, sitemap y texto de presentación.
