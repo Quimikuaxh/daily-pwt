@@ -75,6 +75,11 @@ export const esCloud = {
     openPlayer: (nickname: string) => `Ver las estadísticas de ${nickname}`,
     points: 'Puntos del mes',
     streak: 'Racha',
+    // «Vivos hoy» (Jose, 27/11/2026): Pokémon en pie al acabar el oficial de hoy, al momento; «—» si aún no lo ha terminado.
+    survivors: 'Vivos hoy',
+    survivorsColumn: 'Vivos',
+    survivorsNote: 'Pokémon en pie al acabar el combate oficial de hoy; «—» si aún no lo ha jugado.',
+    notPlayed: '—',
     global: 'Todos',
     friends: 'Solo amigos',
     kindLabel: 'Ranking',

@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { CloudError, type CloudApi, type CloudDay, type FriendProfile, type HistoryItem, type PlayerRow, type PointsRow, type RankingPage, type SharedReplay, type StreakRow, type Summary } from './api'
+import { CloudError, type CloudApi, type CloudDay, type FriendProfile, type HistoryItem, type PlayerRow, type PointsRow, type RankingPage, type SharedReplay, type StreakRow, type Summary, type SurvivorsRow } from './api'
 import type { Cloud } from './account'
 import { cloudConfig } from './config'
 import { discordStartUrl } from './discordLink'
@@ -97,6 +97,7 @@ export function supabaseApi(client: SupabaseClient, functionsUrl: string): Cloud
       return { ...result, rows: numeric(result.rows, 'points') }
     },
     streakRanking: (scope, page) => rpc<RankingPage<StreakRow>>('streak_ranking_page', { p_scope: scope, p_page: page }),
+    survivorsRanking: (scope, page) => rpc<RankingPage<SurvivorsRow>>('survivors_ranking_page', { p_scope: scope, p_page: page }),
     dayWins: (date) => rpc<{ wins: number; players: number }>('day_wins', { p_date: date }),
     searchPlayers: (query) => rpc<PlayerRow[]>('search_players', { p_query: query }),
     sendFriendRequest: (nickname) => rpc('send_friend_request', { p_nickname: nickname }),

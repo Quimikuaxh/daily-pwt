@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { CloudApi, PointsRow, RankingPage, RankingScope, StreakRow } from '../../cloud/api'
+import type { CloudApi, PointsRow, RankingPage, RankingScope, StreakRow, SurvivorsRow } from '../../cloud/api'
 import { es } from '../../i18n/es'
 import { esCloud } from '../../i18n/esCloud'
 import { VerifiedIcon } from '../common/VerifiedIcon'
@@ -8,8 +8,11 @@ import { Loading } from '../common/Loading'
 
 const text = esCloud.ranking
 
-type Kind = 'points' | 'streak'
-type Rows = ({ kind: 'points' } & RankingPage<PointsRow>) | ({ kind: 'streak' } & RankingPage<StreakRow>)
+type Kind = 'points' | 'streak' | 'survivors'
+type Rows = ({ kind: 'points' } & RankingPage<PointsRow>) | ({ kind: 'streak' } & RankingPage<StreakRow>) | ({ kind: 'survivors' } & RankingPage<SurvivorsRow>)
+const KINDS = ['points', 'streak', 'survivors'] as const satisfies readonly Kind[]
+const KIND_LABEL = { points: text.points, streak: text.streak, survivors: text.survivors }
+const COLUMN = { points: text.pointsColumn, streak: text.streakColumn, survivors: text.survivorsColumn }
 
 /** Primer día del mes de `date` (YYYY-MM-DD) desplazado `offset` meses. */
 export function monthStart(date: string, offset = 0): string {
@@ -41,10 +44,12 @@ export function RankingsPanel({ api, today, member, onOpen }: { api: CloudApi | 
   useEffect(() => {
     if (!api) return
     let cancelled = false
-    const load =
+    const load: Promise<Rows> =
       kind === 'points'
-        ? api.pointsRanking(month, scope, page).then((loaded): Rows => ({ kind, ...loaded }))
-        : api.streakRanking(scope, page).then((loaded): Rows => ({ kind, ...loaded }))
+        ? api.pointsRanking(month, scope, page).then((loaded) => ({ kind, ...loaded }))
+        : kind === 'streak'
+          ? api.streakRanking(scope, page).then((loaded) => ({ kind, ...loaded }))
+          : api.survivorsRanking(scope, page).then((loaded) => ({ kind, ...loaded }))
     load.then(
       (rows) => !cancelled && setResult({ key, rows }),
       () => !cancelled && setResult({ key, rows: null }),
@@ -62,9 +67,9 @@ export function RankingsPanel({ api, today, member, onOpen }: { api: CloudApi | 
     <div className="rankings-panel">
       <div className="ranking-filters">
         <div className="segmented" role="group" aria-label={text.kindLabel}>
-          {(['points', 'streak'] as const).map((option) => (
+          {KINDS.map((option) => (
             <button key={option} type="button" className="segmented-option" aria-pressed={kind === option} onClick={() => choose(() => setKind(option))}>
-              {option === 'points' ? text.points : text.streak}
+              {KIND_LABEL[option]}
             </button>
           ))}
         </div>
@@ -87,6 +92,7 @@ export function RankingsPanel({ api, today, member, onOpen }: { api: CloudApi | 
       <RankingBody available={api !== null} loading={loading} rows={rows} onOpen={onOpen} />
       {rows && <Pagination rows={rows} onPage={setPage} />}
       {kind === 'points' && monthOffset === 0 && <p className="stats-note">{text.closedOnly}</p>}
+      {kind === 'survivors' && <p className="stats-note">{text.survivorsNote}</p>}
     </div>
   )
 }
@@ -133,13 +139,13 @@ function RankingTable({ rows, onOpen }: { rows: Rows; onOpen?: (nickname: string
           <tr>
             <th scope="col" aria-label={text.position}>{text.positionShort}</th>
             <th scope="col">{text.player}</th>
-            <th scope="col">{rows.kind === 'points' ? text.pointsColumn : text.streakColumn}</th>
+            <th scope="col">{COLUMN[rows.kind]}</th>
           </tr>
         </thead>
         <tbody>
           {rows.rows.map((row, index) => (
             <tr key={`${row.rank}-${row.nickname ?? index}`} className={row.me ? 'ranking-me' : undefined} aria-current={row.me ? 'true' : undefined}>
-              <td>{row.rank}</td>
+              <td>{row.rank ?? text.notPlayed}</td>
               <td className="ranking-player">
                 <span className="ranking-player-line">
                   {onOpen && row.nickname && !row.me ? (
@@ -151,7 +157,7 @@ function RankingTable({ rows, onOpen }: { rows: Rows; onOpen?: (nickname: string
                   {row.me && <span className="ranking-you">{text.you}</span>}
                 </span>
               </td>
-              <td>{'points' in row ? es.ranking.formatPoints(row.points) : row.streak}</td>
+              <td>{'points' in row ? es.ranking.formatPoints(row.points) : 'streak' in row ? row.streak : (row.survivors ?? text.notPlayed)}</td>
             </tr>
           ))}
         </tbody>

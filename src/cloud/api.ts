@@ -27,6 +27,8 @@ export type RankingScope = 'global' | 'friends'
 /** `verified`: jugador con cuenta (tick). `nickname` es `null` si era sin cuenta y su nombre se liberó (RF-113). */
 export type PointsRow = { rank: number; nickname: string | null; verified: boolean; points: number; provisional: boolean; me: boolean }
 export type StreakRow = { rank: number; nickname: string | null; verified: boolean; streak: number; me: boolean }
+/** «Vivos hoy» (Jose, 27/11/2026): Pokémon en pie al acabar el oficial de hoy; `rank` y `survivors` a `null` si aún no lo ha terminado. */
+export type SurvivorsRow = { rank: number | null; nickname: string | null; verified: boolean; survivors: number | null; me: boolean }
 /** Una página de 20 de un ranking (RF-108). `myPage`: la página del jugador, o `null` si no aparece. */
 export type RankingPage<Row> = { page: number; pages: number; total: number; myPage: number | null; rows: Row[] }
 
@@ -98,6 +100,7 @@ export interface CloudApi {
   /** `page` null: la del jugador (o la primera, si no aparece). */
   pointsRanking(month: string, scope: RankingScope, page: number | null): Promise<RankingPage<PointsRow>>
   streakRanking(scope: RankingScope, page: number | null): Promise<RankingPage<StreakRow>>
+  survivorsRanking(scope: RankingScope, page: number | null): Promise<RankingPage<SurvivorsRow>>
   /** «Victorias de jugadores: X/Y» bajo el rival de Hoy: oficiales de ese día terminados y validados, y cuántos de ellos ganaron. */
   dayWins(date: string): Promise<{ wins: number; players: number }>
   searchPlayers(query: string): Promise<PlayerRow[]>

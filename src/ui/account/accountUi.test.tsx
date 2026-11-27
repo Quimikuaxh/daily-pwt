@@ -128,6 +128,34 @@ describe('cuenta en la interfaz (UT-100)', () => {
     expect(api.streakRanking).toHaveBeenCalledWith('friends', null)
   })
 
+  // UT-256 (Jose, 27/11/2026): «Vivos hoy», sin selector de mes; en «Solo amigos», «—» para quien aún no ha jugado.
+  it('Rankings «Vivos hoy»: Pokémon en pie del oficial de hoy, «—» si aún no ha jugado, sin selector de mes', async () => {
+    const api = fakeApi({
+      mySummary: async () => ({ nickname: 'Jose', registered: true, points: [], incomingRequests: 0 }),
+      survivorsRanking: async () =>
+        rankingPage([
+          { rank: 1, nickname: 'Ana', verified: true, survivors: 6, me: false },
+          { rank: 2, nickname: 'Jose', verified: true, survivors: 0, me: true },
+          { rank: null, nickname: 'Bea', verified: false, survivors: null, me: false },
+        ]),
+    })
+    const { user } = await mount(GOOGLE, api)
+    await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
+    await user.click(await screen.findByRole('tab', { name: 'Rankings' }))
+    await user.click(await screen.findByRole('button', { name: 'Solo amigos' }))
+    await user.click(screen.getByRole('button', { name: 'Vivos hoy' }))
+    await waitFor(() => expect(api.survivorsRanking).toHaveBeenCalledWith('friends', null))
+    const table = await screen.findByRole('table')
+    expect(within(table).getAllByRole('columnheader').map((cell) => cell.textContent)).toEqual(['#', 'Jugador', 'Vivos'])
+    expect(within(table).getAllByRole('row').slice(1).map((row) => within(row).getAllByRole('cell').map((cell) => cell.textContent?.trim()))).toEqual([
+      ['1', 'AnaCon cuenta', '6'],
+      ['2', 'JoseCon cuenta(tú)', '0'],
+      ['—', 'Bea', '—'],
+    ])
+    expect(screen.queryByRole('button', { name: 'Mes anterior' })).toBeNull()
+    expect(screen.getByText(/«—» si aún no lo ha jugado/)).toBeInTheDocument()
+  })
+
   it('Rankings por páginas de 20: se abre en la del jugador, se pasa de página y se vuelve a la suya (RF-108)', async () => {
     const row = (rank: number, me = false) => ({ rank, nickname: me ? 'Jose' : `Jugador_${rank}`, verified: true, points: 100 - rank, provisional: false, me })
     const pages: Record<string, ReturnType<typeof rankingPage<ReturnType<typeof row>>>> = {

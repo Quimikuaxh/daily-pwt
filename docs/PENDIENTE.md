@@ -12,6 +12,10 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 - **Esquema `public` del proyecto compartido (26/11/2026):** cerrado a `anon` y `authenticated` (DEC-63, UT-253). Migración `20261126010000_pwt_public_cerrado.sql` **aplicada en producción**: 0 permisos de la clave pública en tablas, secuencias y funciones de `public`; `service_role` los conserva; heardle responde. Pendiente: comprobar claude-test en su web (entra como propietario, no debería notarlo).
 
+## Ranking «Vivos hoy» (27/11/2026)
+
+- **Hecho** (RF-107c, DEC-109): tercera opción de Rankings. **Falta, a cargo de Jose:** aplicar en producción la migración `20261127000000_pwt_vivos_hoy.sql` (solo funciones) antes de desplegar la web; sin ella, esa opción dice que no se ha podido cargar el ranking.
+
 ## Buscadores (SEO)
 
 - **Hecho en el código (23/11/2026, DEC-108):** metadatos, vista previa, datos estructurados, iconos, manifest, sitemap y texto de presentación.
