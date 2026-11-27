@@ -14,7 +14,7 @@ Solo lo que pasa a F2/F3. El alcance de cada fase está en `PRD.md` §0.
 
 ## Ranking «Vivos hoy» (27/11/2026)
 
-- **Hecho** (RF-107c, DEC-109): tercera opción de Rankings. **Falta, a cargo de Jose:** aplicar en producción la migración `20261127000000_pwt_vivos_hoy.sql` (solo funciones) antes de desplegar la web; sin ella, esa opción dice que no se ha podido cargar el ranking.
+- **Hecho** (RF-107c, DEC-109): tercera opción de Rankings. Migración `20261127000000_pwt_vivos_hoy.sql` (solo funciones) **aplicada en producción** el 27/11/2026: `survivors_ranking_page` responde con la clave pública; `survivors_ranked` no es ejecutable por `anon` ni `authenticated`.
 
 ## Buscadores (SEO)
 
