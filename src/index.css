@@ -378,6 +378,12 @@ img.sprite,
   flex-direction: column;
 }
 
+/* Hueco de la barra de desplazamiento siempre reservado en Estadísticas: con una lista larga (Racha) la barra estrechaba el contenido
+   y los filtros de Rankings saltaban a otra línea respecto a una corta (Hoy) (Jose, 28/11/2026). */
+.stats-dialog .modal-body {
+  scrollbar-gutter: stable;
+}
+
 .loading {
   flex: 1;
 }

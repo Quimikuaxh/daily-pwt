@@ -92,6 +92,13 @@ describe('translateLine: líneas con texto (UT-45)', () => {
     expect(tr('|-ability|p2a: Starmie|Intimidate|boost')).not.toMatch(/Intimidate/)
   })
 
+  // UT-257 (Jose, 28/11/2026): ya en +6 (o −6) el simulador manda 0 fases y el mensaje decía «ha subido».
+  it('una característica que ya no puede subir o bajar más lo dice', () => {
+    expect(tr('|-boost|p1a: Chandelure|spa|0')).toBe('¡El Ataque Especial de Chandelure ya no puede aumentar más!')
+    expect(tr('|-unboost|p1a: Chandelure|def|0')).toBe('¡La Defensa de Chandelure ya no puede disminuir más!')
+    expect(tr('|-boost|p1a: Chandelure|spa|1')).toBe('¡El Ataque Especial de Chandelure ha subido!')
+  })
+
   it('una baya que sube una característica lo dice en el mensaje; otros objetos, el mensaje de siempre (decisión de Jose)', () => {
     expect(tr('|-enditem|p2a: Garchomp|Salac Berry|[eat]')).toBeNull()
     expect(tr('|-boost|p2a: Garchomp|spe|1|[from] item: Salac Berry')).toBe('¡La Baya Aslac ha subido la Velocidad del Garchomp de Camila!')

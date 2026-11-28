@@ -18,6 +18,9 @@ describe('frases de Esmeralda', () => {
     expect(translateLine('|-resisted|p2a: Geodude', emerald)).toBe('No es muy eficaz…')
     expect(translateLine('|-boost|p2a: Geodude|def|1', emerald)).toBe('¡La DEFENSA de GEODUDE enemigo subió!')
     expect(translateLine('|-unboost|p1a: Abra|spe|2', emerald)).toBe('¡La VELOCIDAD de ABRA bajó mucho!')
+    // UT-257: ya en +6 o −6.
+    expect(translateLine('|-boost|p2a: Geodude|def|0', emerald)).toBe('¡La DEFENSA de GEODUDE enemigo no subirá más!')
+    expect(translateLine('|-unboost|p1a: Abra|spe|0', emerald)).toBe('¡La VELOCIDAD de ABRA no bajará más!')
     expect(translateLine('|-heal|p2a: Geodude|30/100|[from] item: Oran Berry', emerald)).toBe('¡GEODUDE enemigo recuperó PS con su BAYA ARANJA!')
   })
 

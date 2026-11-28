@@ -548,6 +548,9 @@ export const es = {
     statFell: (stat: string, mon: string, stages: number) =>
       `¡${stat} de ${mon} ${stages >= 3 ? 'ha bajado muchísimo' : stages === 2 ? 'ha bajado mucho' : 'ha bajado'}!`,
     statMaxed: (stat: string, mon: string) => `¡${stat} de ${mon} ha llegado al máximo!`,
+    // Ya en +6 o −6, el simulador manda la subida o bajada con 0 fases (Jose, 28/11/2026: decía «ha subido»).
+    statWontRise: (stat: string, mon: string) => `¡${stat} de ${mon} ya no puede aumentar más!`,
+    statWontFall: (stat: string, mon: string) => `¡${stat} de ${mon} ya no puede disminuir más!`,
     boostsReset: (mon: string) => `¡Los cambios de características de ${mon} han desaparecido!`,
     negativeBoostsReset: (mon: string) => `¡${mon} ha recuperado las características que le habían bajado!`,
     allBoostsReset: 'Todos los cambios de características han desaparecido.',

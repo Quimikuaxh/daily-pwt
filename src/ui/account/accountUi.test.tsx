@@ -128,8 +128,8 @@ describe('cuenta en la interfaz (UT-100)', () => {
     expect(api.streakRanking).toHaveBeenCalledWith('friends', null)
   })
 
-  // UT-256 (Jose, 27/11/2026): «Vivos hoy», sin selector de mes; en «Solo amigos», «—» para quien aún no ha jugado.
-  it('Rankings «Vivos hoy»: Pokémon en pie del oficial de hoy, «—» si aún no ha jugado, sin selector de mes', async () => {
+  // UT-256 (Jose, 27/11/2026): «Hoy» (antes «Vivos hoy»; cambio de texto del 28/11/2026), sin selector de mes; en «Solo amigos», «—» para quien aún no ha jugado.
+  it('Rankings «Hoy»: Pokémon en pie del oficial de hoy, «—» si aún no ha jugado, sin selector de mes', async () => {
     const api = fakeApi({
       mySummary: async () => ({ nickname: 'Jose', registered: true, points: [], incomingRequests: 0 }),
       survivorsRanking: async () =>
@@ -143,7 +143,7 @@ describe('cuenta en la interfaz (UT-100)', () => {
     await user.click(screen.getByRole('button', { name: 'Estadísticas' }))
     await user.click(await screen.findByRole('tab', { name: 'Rankings' }))
     await user.click(await screen.findByRole('button', { name: 'Solo amigos' }))
-    await user.click(screen.getByRole('button', { name: 'Vivos hoy' }))
+    await user.click(screen.getByRole('button', { name: 'Hoy' }))
     await waitFor(() => expect(api.survivorsRanking).toHaveBeenCalledWith('friends', null))
     const table = await screen.findByRole('table')
     expect(within(table).getAllByRole('columnheader').map((cell) => cell.textContent)).toEqual(['#', 'Jugador', 'Vivos'])

@@ -122,7 +122,10 @@ function translateBoost(f: Fields, ctx: TranslateContext, direction: 'up' | 'dow
   const mon = monText(ctx, f.args[0])
   const stat = (log.statLabels as Record<string, string>)[f.args[1]]
   if (!stat) return null
-  const stages = Number(f.args[2]) || 1
+  const parsed = Number(f.args[2])
+  // 0 fases: ya estaba en +6 (o −6) y no cambia. Sin número (líneas antiguas), una.
+  if (parsed === 0) return direction === 'up' ? log.statWontRise(stat, mon) : log.statWontFall(stat, mon)
+  const stages = parsed || 1
   // Bayas que suben una característica (Aslac, Lichi…): el mensaje dice que ha sido la baya (decisión de Jose). Su `-enditem [eat]` no se enseña.
   const from = f.tags.get('from') ?? ''
   const berry = direction === 'up' && /^item:/.test(from) && toId(from.replace(/^item:\s*/, '')).endsWith('berry')

@@ -32,6 +32,9 @@ export const emeraldLog: BattleLog = {
   // Gen 3 solo distingue una o dos fases («rose» / «sharply rose»).
   statRose: (stat: string, mon: string, stages: number) => `¡${statWord(stat)} de ${mon} ${stages >= 2 ? 'subió mucho' : 'subió'}!`,
   statFell: (stat: string, mon: string, stages: number) => `¡${statWord(stat)} de ${mon} ${stages >= 2 ? 'bajó mucho' : 'bajó'}!`,
+  // sText_StatsWontIncrease2 / sText_StatsWontDecrease2: «{X}'s {STAT} won't go higher / lower!».
+  statWontRise: (stat: string, mon: string) => `¡${statWord(stat)} de ${mon} no subirá más!`,
+  statWontFall: (stat: string, mon: string) => `¡${statWord(stat)} de ${mon} no bajará más!`,
   rivalWon: () => '¡No te quedan POKéMON que puedan combatir!',
   // sText_PkmnRestoredHPUsing y sText_PkmnHadEnergyDrained: «{X} restored health using its {ITEM}!» y «{X} had its energy drained!».
   healed: (mon: string) => `¡${mon} recuperó PS!`,
